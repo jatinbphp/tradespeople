@@ -1,0 +1,110 @@
+<?php include ("include/header.php") ?>
+
+<link href="css/jquery-ui.css" rel="stylesheet"> 
+<script type="text/javascript" src="js/jquery-ui.js"></script> 
+<!-- Slider -->
+ <div class="home-demo">
+	<div class="owl-carousel banner-slider">
+		<div class="item">
+			<div class="set-slide" style="background: url(img/banner.png);">
+				<div class="container">
+				<div class="row">
+					<div class="col-sm-7">
+						<div class="slice-text">
+					<p class="nomargin headHead1">Find Services</p>
+					<h2 style="margin-top:0px;"> across the UK </h2>
+					<p> Traders People Hub has thousands of local and reliable Builders across the UK. We screen our trade members and every job is up for review. Post your job now to get quick responses from local Builders across the UK. </p>
+					<!--<div class="banner-btn">
+						<a href="<?php echo base_url('post-job'); ?>" class="btn btn-warning btn-lg">Post a job now</a>
+					</div>-->
+				</div>
+					</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Slider -->
+
+<div class="list-tradesmen nwess1">
+	<div class="container">
+		<div class="row">			
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="top-search">
+							<div class="input-group">
+							    <input type="email" placeholder="Search"  class="form-control">
+							    <span class="input-group-btn">
+								<a class="button btn btn-default">
+									<i class="fa fa-search"></i>
+								</a>
+							    </span>
+							</div>
+						</div>
+					</div>
+					<?php 
+						if(!empty($all_services)){
+							foreach($all_services as $list){
+					?>
+								<div class="col-sm-3">
+									<!-- loop -->
+									<div class="tradespeople-box">
+										<div class="tradespeople-box-img">
+											<a href="<?php echo base_url().'service/'.$list['slug']?>">
+												<img src="<?php echo 'img/services/'.$list['image']; ?>">
+											</a>
+										</div>
+										<div class="tradespeople-box-avtar">
+											<div class="avtar">	
+												<img src="<?php echo 'img/profile/'.$list['profile']; ?>">
+											</div>
+											<div class="names">
+												<a href="<?php echo base_url().'profile/'.$list['user_id']?>">
+													<?php echo $list['trading_name']; ?>
+												</a>					
+											</div>											
+										</div>
+										<div class="tradespeople-box-desc">
+											<a href="<?php echo base_url().'service/'.$list['slug']?>">
+												<p>
+													<?php
+														$totalChr = strlen($list['service_name']);
+														if($totalChr > 60 ){
+															echo substr($list['service_name'], 0, 60).'...';		
+														}else{
+															echo $list['service_name'];
+														}
+													?>
+												</p>
+											</a>
+										</div>
+										<div class="rating">
+											<b>
+												<i class="fa fa-star active"></i>
+												4.5
+											</b>
+											(1174)	
+										</div>
+										<div class="price">
+											<a href="<?php echo base_url().'service/'.$list['slug']?>">
+												<b>
+													<?php echo 'From £'.$list['price']; ?>	
+												</b>
+											</a>
+										</div>
+									</div>									
+								</div>
+					<?php			
+
+							}
+						}
+					?>
+				</div>					
+			</div>
+		</div>
+	</div>
+</div>
+<?php include ("include/footer.php") ?>
+

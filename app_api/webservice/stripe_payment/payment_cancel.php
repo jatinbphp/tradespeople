@@ -1,0 +1,1 @@
+<h1>Payment Error : <?php echo $_GET['error']; ?></h1>

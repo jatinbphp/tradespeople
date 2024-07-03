@@ -1,0 +1,22 @@
+1 = "reminder to accept award", 
+2 = "Account verification reminder"
+3 = "Signup reminder after 3 hours"	
+4 = "Email reply reminder"
+5 = "Repost reminder count"
+6 = "Job summary for homeowner"
+
+7 = "Create milestone reminder 1 hr"
+8 = "Create milestone reminder 3 hr"
+9 = "Create milestone reminder 12 hr"
+10 = "Create milestone reminder 24 hr"
+11 = "Create milestone reminder 30 hr"
+12 = "Create milestone reminder 36 hr"
+13 = "Create milestone reminder 48 hr"
+14 = "Create milestone reminder 72 hr"
+
+15 = "provide feedback reminder homeowner after 24 hours"
+16 = "provide feedback reminder homeowner after 1 week"
+17 = "provide feedback reminder homeowner after 2 week"
+18 = "provide feedback reminder homeowner after 3 week"
+19 = "provide feedback reminder homeowner after 4 week"
+20 = "provide feedback reminder homeowner after 5 week"

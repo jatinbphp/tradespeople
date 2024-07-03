@@ -1,0 +1,8 @@
+[27-Sep-2021 12:37:00 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'npass1_npass'@'localhost' (using password: YES) in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/con1.php on line 17
+[27-Sep-2021 12:37:03 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'npass1_npass'@'localhost' (using password: YES) in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/con1.php on line 17
+[27-Sep-2021 18:09:41 Asia/Kolkata] PHP Warning:  Invalid argument supplied for foreach() in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/paypal_payment_url.php on line 100
+[27-Sep-2021 18:09:41 Asia/Kolkata] PHP Warning:  Invalid argument supplied for foreach() in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/paypal_payment_url.php on line 100
+[27-Sep-2021 18:09:47 Asia/Kolkata] PHP Warning:  Invalid argument supplied for foreach() in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/paypal_payment_url.php on line 100
+[27-Sep-2021 18:10:55 Asia/Kolkata] PHP Warning:  Invalid argument supplied for foreach() in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/paypal_payment_url.php on line 100
+[27-Sep-2021 18:13:24 Asia/Kolkata] PHP Warning:  Invalid argument supplied for foreach() in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/paypal_payment_url.php on line 100
+[27-Sep-2021 18:13:59 Asia/Kolkata] PHP Warning:  Invalid argument supplied for foreach() in /home/youngiw2/public_html/2021/trades_people_hub/webservice/paypal/paypal_payment_url.php on line 100
