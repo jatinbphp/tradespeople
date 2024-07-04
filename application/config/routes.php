@@ -228,7 +228,9 @@ $route['addons']                                 = 'addon/index';
 $route['make-addon-payment/(:any)']              = 'addon/make_addon_payment/$1';
 $route['my-services']              				 = 'Users/my_services';
 $route['add-service']              	 	         = 'Users/addServices';
+$route['add-service2']                           = 'Users/addServices2';
 $route['edit-service/(:num)']              	 	 = 'Users/editServices/$1';
+$route['test']                    = 'Users/pTest';
 $route['delete-service/(:num)']              	 = 'Users/deleteServices/$1';
 
 //$route['blog-detail/(:any)']='home/blog_detail/$1';

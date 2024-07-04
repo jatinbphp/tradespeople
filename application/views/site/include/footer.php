@@ -1818,6 +1818,7 @@ function send_review_invitation(id){
 
 <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js"></script>
 <script type="text/javascript">
   $('.slider-for').slick({
    slidesToShow: 1,
@@ -1844,5 +1845,19 @@ function send_review_invitation(id){
   centerMode: false,
   variableWidth: true,
 
+});
+
+$('#positive_keywords').tagsinput({
+    maxTags: 5
+});
+
+// Restrict input to letters and numbers only
+$('#positive_keywords').on('beforeItemAdd', function(event) {
+    var tag = event.item;
+    // Regular expression to match letters and numbers only
+    var regex = /^[a-zA-Z0-9]+$/;
+    if (!regex.test(tag)) {
+        event.cancel = true; // Cancel adding the tag
+    }
 });
 </script>

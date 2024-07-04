@@ -149,6 +149,7 @@ if($check_budget && $check_budget['status']==0){
 <link href="<?php echo base_url(); ?>css/owl.carousel.min.css" rel="stylesheet">
 <link href="<?php echo base_url(); ?>css/font-awesome.min.css" rel="stylesheet">
 <link href="<?php echo site_url().'css/sweetalert.css'; ?>" rel="stylesheet">
+<link href="<?php echo site_url().'css/bootstrap-tagsinput.css'; ?>" rel="stylesheet">
 <link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css" />
@@ -161,6 +162,7 @@ if($check_budget && $check_budget['status']==0){
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.fancybox.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/scripts.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/owl.carousel.min.js"></script>
+<!-- <script type="text/javascript" src="<?php echo base_url(); ?>js/tagify.js"></script> -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4GTdudcf_UQnKPmPW4QKt82kel3Fhd6c&amp;libraries=places"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
 <script src="<?php echo site_url().'js/sweetalert.js'; ?>"></script>
@@ -180,6 +182,16 @@ $(document).ready(function(){
 	});
 });
 </script>
+ <!-- <script>
+    // if IE, add IE tagify's polyfills
+    !function( d ) {
+        if( !d.currentScript ){
+            var s = d.createElement( 'script' );
+            s.src = '<?php echo base_url(); ?>js/tagify.polyfills.min.js';
+            d.head.appendChild( s );
+        }
+    }(document)
+</script> -->
 <style type="text/css">
 .head{
 	padding:5px 15px;

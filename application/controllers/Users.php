@@ -5,6 +5,7 @@ class Users extends CI_Controller
 	public function __construct() {
 		parent::__construct();
 		$this->load->model('common_model');
+		$this->load->model('search_model');
 		$this->words = array('gmail.com','yahoo.com','yahoo','gmail','skype','hotmail','live','phone numbers','phone number','outlook','icloud mail','yahoo! mail','yahoo mail','aol mail','gmx','yandex','mail','lycos','protonmail','proton mail','tutanota','zoho mail','zohomail','077','074','020','0','1','2','3','4','5','6','7','8','9','@','www','http://','https://','.com','.uk','.co.uk','.gov.uk','.me.uk','.ac.uk','.org.uk','.Itd.uk','.mod.uk ','.mil.uk','.net.uk','.nic.uk','.nhs.uk','.pic.uk','.sch.uk','.pic.uk:','.info','.io','.cloud','.online','.ai','.net','.org');
 			error_reporting(0);
 			if($this->session->userdata('user_id')){
@@ -2233,22 +2234,16 @@ public function exists_refferals() {
 
 	public function addServices(){
 		if($this->session->userdata('user_id')) {
-      $category=$this->common_model->get_all_category('category');
-      if(!empty($category)){
-      	foreach($category as $key => $list){
-      		$category[$key]['path'] = $this->common_model->getFullPathId($list['cat_id']);
-      	}
-      }
-      $data['category'] = $category;
-			$this->load->view('site/add-service',$data);
+			$data['cities'] = $this->search_model->getJobCities();
+      $this->load->view('site/add-service',$data);
     } 
 	}
 
 	public function storeServices($value=''){
 		$this->form_validation->set_rules('service_name','Service Name','required');
-		$this->form_validation->set_rules('category','Categroy','required');
 		$this->form_validation->set_rules('description','Description','required');
-		$this->form_validation->set_rules('price','Price','required');
+		$this->form_validation->set_rules('location','Location','required');
+		// $this->form_validation->set_rules('price','Price','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('msg','<div class="alert alert-danger">' .validation_errors() . '</div>');
@@ -2256,7 +2251,7 @@ public function exists_refferals() {
 			$newImg = '';		
 			if($_FILES['image']['name']){ 
 				$config['upload_path']="img/services";
-				$config['allowed_types'] = 'jpeg|gif|jpg|png';
+				$config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|avi|wmv|mkv';
 				$config['encrypt_name']=true;
 				$this->load->library("upload",$config);
 				if ($this->upload->do_upload('image')) {
@@ -2270,10 +2265,7 @@ public function exists_refferals() {
 				'user_id'=>$user_id,
 				'service_name'=>$this->input->post('service_name'), 
 				'slug'=>str_replace(' ','-',strtolower($this->input->post('service_name'))), 
-				'category'=>$this->input->post('category'),
 				'description'=>trim($this->input->post('description')),
-				'price'=> $this->input->post('price'),
-				'status'=> $this->input->post('status'),
 				'image'=> $newImg
 			);
 			
@@ -2288,13 +2280,26 @@ public function exists_refferals() {
 						$runImg = $this->common_model->update('service_images',array('id'=>$mId),$insert);
 					}
 				}
+				$this->session->set_userdata('currentSid',$mId);
 
 				$this->session->set_flashdata('msg','<div class="alert alert-success">Your service has been added successfully.</div>');
 			} else {
 				$this->session->set_flashdata('msg','<div class="alert alert-danger">We have not found any changes.</div>');
 			}
 		}	
-		redirect('my-services'); 
+		redirect('add-service2'); 
+	}
+
+	public function addServices2(){
+		if($this->session->userdata('user_id')) {
+			$data['service'] = [];
+			if($this->session->userdata('currentSid')) {
+				$id = $this->session->userdata('currentSid');
+				$data['service'] = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
+			}
+      $data['category']=$this->common_model->get_parent_category('category');
+      $this->load->view('site/add-service2',$data);
+    } 
 	}
 
 	public function editServices($id=""){
@@ -2376,4 +2381,19 @@ public function exists_refferals() {
 		}
 		redirect('my-services');		
 	}	
+
+	public function getSubCategory(){
+		$id = $this->input->post('cat_id');
+		$subCategory=$this->common_model->get_sub_category('category',$id);
+		$option = '';
+		if(!empty($subCategory)){
+			$option .= '<option value="">Please Select</option>';
+			foreach($subCategory as $sCat){
+				$option .= '<option value="'.$sCat['cat_id'].'">'.$sCat['cat_name'].'</option>';
+			}
+		}
+		echo $option;
+	}
 }	
+
+

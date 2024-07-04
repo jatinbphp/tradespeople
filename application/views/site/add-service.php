@@ -57,114 +57,75 @@
 								<div class="row">
 									<div class="col-sm-12">
 										<!-- Text input-->
-										<div class="form-group"> <label
-										class="col-md-12 control-label"
-										for="">Service Name*</label>  <div
-										class="col-md-12"> <input
-										id="service" name="service_name"
-										placeholder="Service Name"
-										class="form-control input-md" type="text" value="" required>
-                                        
-											</div>
-										</div>
-									</div>									
-									<div class="col-sm-12">
-										<!-- Text input-->
 										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Category*</label>  
+											<label class="col-md-12 control-label" for="">Service Title</label>
 											<div class="col-md-12">
-												<select class="form-control input-md" name="category" id="category" required>
-													<option value="">Please select</option>
-													<?php 
-														foreach($category as $list){		
-													?>
-														<option value="<?php echo $list['cat_id']; ?>">
-															<?php echo $list['path']?>
-														</option>
-													<?php		
-														}
-													?>
-												</select>
+												<input id="service" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" value="" required>
 											</div>
 										</div>
 									</div>
-																			
-								</div>
-								<div class="row">
-									<div class="col-sm-3">
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Image*</label>
-											<div class="col-md-12">
-												<div id="imageContainer">
-													<img src="<?php echo base_url()?>img/upImage.png" alt="Click to select image" width="200" height="217">
-													<input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
-												</div>
-
-												<input type="hidden" name="service_image_old" value="" >
-											</div>
-										</div>
-									</div>
-
-									<div class="col-md-9">
+									<div class="col-md-12">
 										<div class="form-group">
 											<label class="col-md-12 control-label" for="">
 												About Your Service 
 											</label>
 											<div class="col-md-12">
-												<textarea class="form-control input-md" name="description" id="description" rows="10"></textarea>
+												<textarea class="form-control input-md" name="description" id="description" placeholder="Description" rows="10"></textarea>
 											</div>
 										</div>
 									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm-6">
-										<!-- Text input-->
+									<div class="col-sm-12">
 										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Price*</label>  
+											<label class="col-md-12 control-label" for="">Location</label>
 											<div class="col-md-12">
-												<input id="price" name="price" placeholder="Price" class="form-control input-md" type="text" value="" required>
-											</div>
-										</div>
-									</div>
-									<div class="col-sm-6">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Status*</label>  
-											<div class="col-md-12">
-												<select class="form-control input-md" name="status" id="status" required>
-													<option value="1">Active</option>
-													<option value="0">Inactive</option>
+												<select class="form-control input-md" name="location"  id="city_id">
+													<option value="">Select Location</option>
+													<?php foreach ($cities as $city) { ?>
+														<option value="<?php echo $city['city']; ?>">
+															<?php echo $city['city']; ?>
+														</option>
+													<?php } ?>
 												</select>
 											</div>
 										</div>
 									</div>
-								</div>
-							</div>                        
-							<!-- Edit-section-->
-
-							<!-- Edit-section--> 
-							<div class="edit-user-section">
-								<div class="col-md-12">
-									<h2>Add Multiple Images</h2>
-									<input type="hidden" name="multiImgIds" id="multiImgIds">
-									<div class="row loader">
-										<div class="loader_ajax_small"></div>
-										<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageAdd">
-											<div class="addWorkImage imagePreviewPlus imgUp">
-												<input type="file" name="serviceImage" id="serviceImage">
-												<img src="<?php echo base_url()?>img/upImage.png" id="defaultImg">
+									<div class="col-sm-12">
+										<!-- Text input-->
+										<div class="form-group">
+											<label class="col-md-12 control-label" for="">
+												Positive Keywords
+											</label>
+											<div class="col-md-12">
+												<input id="positive_keywords" name="positive_keywords" placeholder="Positive Keywords" class="form-control input-md" data-role="tagsinput" type="text" value="">
+												<span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
 											</div>
 										</div>
-										<div id="previousImg"></div>
-									</div>
+									</div>									
 								</div>
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label class="col-md-12 control-label" for="">
+												Upload Image/Video (Optional)
+											</label>
+											<div class="col-md-12">
+												<div id="imageContainer">
+													<img src="<?php echo base_url()?>img/plus2.png" alt="Click to select image" width="175" height="175" style=
+													"margin-left:5px;">
+													<input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
+												</div>
+												<input type="hidden" name="service_image_old" value="" >
+											</div>
+										</div>
+									</div>
+								</div>								
 							</div>                        
 							<!-- Edit-section-->
 							  
 							<div class="edit-user-section gray-bg">
 								<div class="row nomargin">
 									<div class="col-sm-12">
-										<button type="submit" class="btn btn-primary submit_btn">Save</button>
+										<button type="submit" class="btn btn-primary submit_btn">Continue</button>
 									</div>                                 
 								</div>
 							</div>                        

@@ -2132,6 +2132,16 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
+	public function get_sub_category($table, $id)
+	{
+		$this->db->where('is_delete', 0);
+		$this->db->where('cat_parent', $id);
+		$this->db->order_by("cat_id", "asc");
+		$this->db->select(['cat_id','cat_name','slug']);
+		$query = $this->db->get($table);
+		return $query->result_array();
+	}
+
 	function get_all_local_category($table)
 	{
 
