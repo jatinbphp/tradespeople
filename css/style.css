@@ -8465,9 +8465,16 @@ ul.nav.login.d-lg-none {
 }
 
 #imageContainer{
-    width: 190px;
+    width: fit-content;
+    padding: 5px;
     border: 1px solid #b0c0d3;
     border-radius: 10px;
+}
+
+#imageContainer img{
+    border-radius: 5px;
+    width: 175px; 
+    height: 175px;
 }
 
 .tagify {
@@ -8486,4 +8493,28 @@ ul.nav.login.d-lg-none {
     margin-bottom: 1em;
     border-radius: 5px;
     background: #F1F1F1;
+}
+.file-upload-btn {
+    text-align: center;
+    padding: 20px 15px !important;
+    border: 1px solid #b0c0d3;
+    border-radius: 10px;
+    width: fit-content;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.file-upload-btn img {
+    height: 30px;
+    width: 30px;
+    border-radius: 0;
+}
+.file-upload-btn .btn-text {
+    padding-top: 10px;
+}
+.file-upload-btn .btn-text span {
+    display: block;
+    color: #3a87ad;
+}
+.file-upload-btn input {
+    display: none;
 }

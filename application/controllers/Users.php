@@ -2239,15 +2239,45 @@ public function exists_refferals() {
     } 
 	}
 
+	public function addServices2(){
+		if($this->session->userdata('store_service1')) {
+			$data['category']=$this->common_model->get_parent_category('category');
+      $this->load->view('site/add-service2',$data);
+    } else {
+      redirect('dashboard');
+    }
+	}
+
+	public function addServices3(){
+		if($this->session->userdata('store_service2')) {
+			$sesData = $this->session->userdata('store_service2');
+			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$sesData['category']);
+			if(!empty($data['ex_service'])){
+				$this->load->view('site/add-service3',$data);	
+			}else{
+				$this->load->view('site/add-service4',$data);
+			}      
+    } else {
+      redirect('dashboard');
+    }
+	}
+
+	public function addServices4(){
+		if($this->session->userdata('store_service2')) {
+			$this->load->view('site/add-service4',$data);
+    } else {
+      redirect('dashboard');
+    }
+	}
+
 	public function storeServices($value=''){
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
-		// $this->form_validation->set_rules('price','Price','required');
-		
+				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('msg','<div class="alert alert-danger">' .validation_errors() . '</div>');
-		} else {	
+		} else {
 			$newImg = '';		
 			if($_FILES['image']['name']){ 
 				$config['upload_path']="img/services";
@@ -2259,47 +2289,55 @@ public function exists_refferals() {
 					$newImg = $profile;
 				} 
 			}
-			$user_id = $this->session->userdata('user_id');
+			$insert['user_id'] = $this->session->userdata('user_id');
+			$insert['service_name'] = $this->input->post('service_name');
+			$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
+			$insert['description'] = trim($this->input->post('description'));
+			$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
+			$insert['image'] = $newImg;
 
-			$data = array(
-				'user_id'=>$user_id,
-				'service_name'=>$this->input->post('service_name'), 
-				'slug'=>str_replace(' ','-',strtolower($this->input->post('service_name'))), 
-				'description'=>trim($this->input->post('description')),
-				'image'=> $newImg
-			);
-			
-			$run = $this->common_model->insert('my_services',$data);				
-
-			if($run){
-				$mIds = $this->input->post('multiImgIds');
-				if(!empty($mIds)){
-					$mIdArr = explode(',', $mIds);
-					foreach($mIdArr as $mId){
-						$insert['service_id'] = $run;
-						$runImg = $this->common_model->update('service_images',array('id'=>$mId),$insert);
-					}
-				}
-				$this->session->set_userdata('currentSid',$mId);
-
-				$this->session->set_flashdata('msg','<div class="alert alert-success">Your service has been added successfully.</div>');
-			} else {
-				$this->session->set_flashdata('msg','<div class="alert alert-danger">We have not found any changes.</div>');
-			}
-		}	
-		redirect('add-service2'); 
+			$this->session->set_userdata('store_service1',$insert);	
+			redirect('add-service2'); 
+		}
 	}
 
-	public function addServices2(){
-		if($this->session->userdata('user_id')) {
-			$data['service'] = [];
-			if($this->session->userdata('currentSid')) {
-				$id = $this->session->userdata('currentSid');
-				$data['service'] = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
-			}
-      $data['category']=$this->common_model->get_parent_category('category');
-      $this->load->view('site/add-service2',$data);
-    } 
+	public function storeServices2($value=''){
+		$this->form_validation->set_rules('category','Service Name','required');
+		$this->form_validation->set_rules('sub_category','Description','required');
+				
+		if ($this->form_validation->run()==false) {
+			$this->session->set_flashdata('msg','<div class="alert alert-danger">' .validation_errors() . '</div>');
+		} else {	
+			$insert['category'] = $this->input->post('category');
+			$insert['sub_category'] = $this->input->post('sub_category');
+			$insert['service_type'] = $this->input->post('service_type');
+			$insert['plugins'] = $this->input->post('plugins');
+
+			$this->session->set_userdata('store_service2',$insert);
+			redirect('add-service3'); 
+		}			
+	}
+
+	public function storeServices3($value=''){
+		if(!empty($this->input->post('ex_service')) && count($this->input->post('ex_service')) > 0){
+			$insert['ex_service'] = $this->input->post('ex_service');
+			$this->session->set_userdata('store_service3',$insert);
+		}else{
+			$insert['ex_service'] = '';
+			$this->session->set_userdata('store_service3',$insert);
+		}
+		redirect('add-service4'); 			
+	}
+
+	public function storeServices4($value=''){
+		$step1 = $this->session->userdata('store_service1');
+		$step2 = $this->session->userdata('store_service2');
+		$step3 = $this->session->userdata('store_service3');
+		$insert = array_merge($step1, $step2, $step3);
+
+		echo '<pre>';
+		print_r($insert);
+		exit;
 	}
 
 	public function editServices($id=""){

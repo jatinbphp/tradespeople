@@ -2142,6 +2142,14 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
+	public function get_ex_service($table, $id)
+	{
+		$this->db->where('category', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get($table);
+		return $query->result_array();
+	}
+
 	function get_all_local_category($table)
 	{
 

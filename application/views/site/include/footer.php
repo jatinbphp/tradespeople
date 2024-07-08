@@ -1715,7 +1715,7 @@ function updateDeviceId(device_id){
               //echo $this->db->last_query();
               //echo '<pre>'; print_r($my_completed_job); echo '</pre>';
               
-              if(count($my_completed_job) > 0){ 
+              if(!empty($my_completed_job) && count($my_completed_job) > 0){ 
                 foreach($my_completed_job as $Rkey => $Rrow){
                   echo '<option value="'.$Rrow['job_id'].'">'.$Rrow['title'].'</option>';
                 } 
@@ -1855,7 +1855,7 @@ $('#positive_keywords').tagsinput({
 $('#positive_keywords').on('beforeItemAdd', function(event) {
     var tag = event.item;
     // Regular expression to match letters and numbers only
-    var regex = /^[a-zA-Z0-9]+$/;
+    var regex = /^[a-zA-Z0-9\s]+$/;
     if (!regex.test(tag)) {
         event.cancel = true; // Cancel adding the tag
     }

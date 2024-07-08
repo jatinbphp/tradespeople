@@ -110,8 +110,7 @@
 											</label>
 											<div class="col-md-12">
 												<div id="imageContainer">
-													<img src="<?php echo base_url()?>img/plus2.png" alt="Click to select image" width="175" height="175" style=
-													"margin-left:5px;">
+													<img src="<?php echo base_url()?>img/plus2.png" alt="Click to select image">
 													<input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
 												</div>
 												<input type="hidden" name="service_image_old" value="" >
@@ -195,70 +194,3 @@
 	} 
 </script>
 <?php include 'include/footer.php'; ?>
-
-<!--****************FILE UPLOAD FUNCTION CODE START****************-->
-<script>
-	const dropArea = document.querySelector(".addWorkImage"),
-		button = dropArea.querySelector("img"),
-		input = dropArea.querySelector("input");
-	let file;
-	var filename;
-
-	button.onclick = () => {input.click();};
-
-	input.addEventListener("change", function (e) {
-		e.preventDefault();
-		var multiImgIds = $('#multiImgIds').val();
-		var file_data = $('#serviceImage').prop('files')[0];
-		var form_data = new FormData();
-		form_data.append('file', file_data);
-		form_data.append('service_id', 0);
-		$('.loader_ajax_small').show();
-		$('#previousImg').css('opacity', '0.6');
-		$.ajax({
-			url:site_url+'users/dragDropService',
-			type: "POST",
-			data: form_data,
-			contentType: false,
-			cache: false,
-			processData:false,
-			dataType:'json',
-			success: function(response){
-				if(response.status == 1){
-					if(multiImgIds != ""){
-						var ids = multiImgIds+','+response.id;
-						$('#multiImgIds').val(ids);
-					}else{
-						$('#multiImgIds').val(response.id);
-					}
-					var portElement = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
-						'<div class="boxImage imgUp">'+
-						'<div class="imagePreviewPlus">'+
-						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+')"><i class="fa fa-trash"></i></button></div>'+
-						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-						'</div></div></div>';
-					$('#previousImg').append(portElement);
-					$('.loader_ajax_small').hide();
-					$('#previousImg').css('opacity', '1');
-				}
-			}
-		});
-	});
-
-	$('.removeImage').on('click', function(e){
-		removeImage($(this).attr('data-id'));
-	});
-
-	function removeImage(imgId){
-		$.ajax({
-			url:site_url+'users/removeServiceImage',
-			type:"POST",
-			data:{'imgId':imgId},
-			success:function(data){
-				$('#portDiv'+imgId).remove();
-				alert('image deleted successfully');
-			}
-		});
-	}
-</script>
-<!--****************FILE UPLOAD FUNCTION CODE END****************-->

@@ -42,7 +42,7 @@ class Home extends CI_Controller
 	}
     
   public function index(){
-    $pageData = [];
+  	$pageData = [];
     $pageData['customer_rev'] = $this->common_model->get_customer_reviews();
     $pageData['all_services']=$this->common_model->get_all_service('my_services',8);
     $pageData['all_categoty']=$this->common_model->get_parent_category('category',8);
@@ -243,7 +243,7 @@ class Home extends CI_Controller
 	}
 
   public function login(){
-    if($this->session->userdata('user_id')){
+  	if($this->session->userdata('user_id')){
 			if($this->session->userdata('type')==3){
 				redirect('affiliate-dashboard');
 			} else {
