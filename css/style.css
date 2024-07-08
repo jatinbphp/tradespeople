@@ -8064,10 +8064,23 @@ ul.nav.login.d-lg-none {
     margin: 0;
     flex-wrap: wrap;
     gap: 15px 30px;
+    align-items: flex-start;
+    align-self: flex-start;
+    break-inside: avoid;
+    left: 0;
+    right: 0;
+    column-count: 4;
+  column-gap: 30px;  
 
 }
+.categories-menu .categories>li>.menu-panel>li {
+    -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
 .categories-menu .categories>li:hover .menu-panel {
-    display: flex;
+    display: block;
 }
 .categories-menu .categories>li .menu-panel ul li a {
     color: #62646a;
@@ -8078,7 +8091,8 @@ ul.nav.login.d-lg-none {
     position: relative;
     text-decoration: none;
 }
-.categories-menu .categories>li .menu-panel ul li:first-child a {
+
+.categories-menu .categories>li>.menu-panel>li>a {
     color: #404145;
     font-size: 16px;
     font-weight: 600;

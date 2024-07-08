@@ -2372,8 +2372,35 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	}
 
 	public function categoryDetail($slug=''){
-		$data['category_details'] = $this->common_model->GetSingleData('category',['slug'=>$slug]);
-		$data['all_services']=$this->common_model->get_all_service('my_services',8);
+		$category = $this->common_model->GetSingleData('category',['slug'=>$slug]);
+		$data['category_details'] = $category;
+		$data['services']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0));
+		$data['categories_data']=$this->getHirarchicalCategoryData();
+		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat(($category['cat_id'] ?? 0));
 		$this->load->view('site/home_category_details',$data);
+	}
+
+	public function getHirarchicalCategoryData(){
+		$allCategory = $this->common_model->get_parent_category('category');
+		$hirarchicalData = [];
+		foreach($allCategory as $data){
+			$categoryId = $data['cat_id'] ?? 0;
+			if(!$categoryId){
+				continue;
+			}
+			$cData = $this->common_model->getAllChiledCat($categoryId);
+			$chileds = [];
+			foreach($cData as $chiledData){
+				$categoryId = $chiledData['cat_id'] ?? 0;
+				if(!$categoryId){
+					continue;
+				}
+				$chiledData['chiled'] = $this->common_model->getAllChiledCat($categoryId); 
+				$chileds[] = $chiledData;
+			}
+			$data['chiled'] = $chileds;
+			$hirarchicalData[] = $data;
+		}
+		return $hirarchicalData;
 	}
 }

@@ -2191,6 +2191,11 @@ class Common_model extends CI_Model
         return $parentFullPath ? $parentFullPath . '-> ' . $category['cat_name'] : $category['cat_name'];
     }
 
+	public function getAllChiledCat($id)
+	{
+		return $this->common_model->GetAllData('category', array('cat_parent' => $id, 'is_delete' => 0), 'cat_id');
+	}
+
 	function get_all_packages($table)
 	{
 		$query = $this->db->query("Select * from $table where is_delete=0 and status=0 and id!=44 order by id asc");
@@ -2654,6 +2659,24 @@ class Common_model extends CI_Model
 		
 
 		return $query->result_array();
+	}
+
+	public function getServiceByCategoriesId($categoryId)
+	{
+		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
+		$this->db->from('my_services ms');
+		$this->db->join('category c', 'ms.category = c.cat_id', 'left');
+		$this->db->join('users u', 'ms.user_id = u.id', 'left');
+		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
+		$this->db->where('ms.status', 1);
+		$this->db->where('ms.sub_category', $categoryId);
+		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');
+		$this->db->order_by('average_rating', 'DESC');
+		$this->db->limit(500);
+
+		$query = $this->db->get();
+		return $query->result_array();
+
 	}
 
 	function get_chat_list($id)
