@@ -63,7 +63,7 @@
 											Encourage buyer to choose your service by featuring a variety of your work.
 										</span>
 										<hr>
-										<div id="video-div">
+										<div class="" id="video-div" style="border-bottom:1px solid #b0c0d3;">
 											<h4>
 												Get image guidelines
 											</h4>
@@ -74,15 +74,15 @@
 												Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
 											</span>
 
-											<div id="imageContainer1" class="file-upload-btn">
+											<div id="imageContainer1" class="file-upload-btn imgUp">
 												<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
 												 <div class="btn-text">Drag & drop video or <span>Browser</span></div>
 												 <input type="file" name="video" id="profile" class="form-control input-md" accept="video/*" onchange="return seepreview();">
 											</div>
 											<div id="imgpreview"></div>
 										</div>
-										<hr>
-										<div id="image-div">
+										
+										<div id="image-div" style="margin-top: 10px; border-bottom:1px solid #b0c0d3;">
 											<label class="col-md-12 control-label" for="" style="padding: 0;">
 												Images (up to 3)
 											</label>
@@ -91,7 +91,7 @@
 											</span>
 
 											<div class="row loader">
-												<div class="loader_ajax_small"></div>
+												<div id="loader1" class="loader_ajax_small"></div>
 												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 													<div class="file-upload-btn addWorkImage imgUp">
 														<img src="img/dImg.png" id="defaultImg">
@@ -101,10 +101,10 @@
 												</div>
 											</div>
 											<input type="hidden" name="multiImgIds" id="multiImgIds">
-											<div id="previousImg"></div>
+											<div class="row" id="previousImg"></div>
 										</div>
-
-										<div id="image-div">
+										
+										<div id="doc-div" style="margin-top: 10px;">
 											<label class="col-md-12 control-label" for="" style="padding: 0;">
 												Documents (up to 2)
 											</label>
@@ -113,9 +113,9 @@
 											</span>
 
 											<div class="row loader">
-												<div class="loader_ajax_small"></div>
+												<div id="loader2" class="loader_ajax_small"></div>
 												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
-													<div class="file-upload-btn addWorkImage imgUp">
+													<div class="file-upload-btn addWorkDoc imgUp">
 														<img src="img/defaultDoc.png" id="defaultDoc">
 														<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
 														<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
@@ -123,7 +123,7 @@
 												</div>
 											</div>
 											<input type="hidden" name="multiDocIds" id="multiDocIds">
-											<div id="previousDoc"></div>
+											<div class="row" id="previousDoc"></div>
 										</div>										
 									</div>														
 								</div>																
@@ -219,7 +219,7 @@
 		var form_data = new FormData();
 		form_data.append('file', file_data);
 		form_data.append('service_id', 0);
-		$('.loader_ajax_small').show();
+		$('#loader1').show();
 		$('#previousImg').css('opacity', '0.6');
 		$.ajax({
 			url:site_url+'users/dragDropService',
@@ -240,42 +240,99 @@
 					var portElement = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
 						'<div class="boxImage imgUp">'+
 						'<div class="imagePreviewPlus">'+
-						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+')"><i class="fa fa-trash"></i></button></div>'+
+						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
 						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
 						'</div></div></div>';
 					$('#previousImg').append(portElement);
-					$('.loader_ajax_small').hide();
+					$('#loader1').hide();
 					$('#previousImg').css('opacity', '1');
 				}
 			}
 		});
 	});
 
-	$('.removeImage').on('click', function(e){
-		removeImage($(this).attr('data-id'));
+	const dropArea1 = document.querySelector(".addWorkDoc"),
+		button1 = dropArea1.querySelector("img"),
+		input1 = dropArea1.querySelector("input");
+	let file1;
+	var filename1;
+
+	button1.onclick = () => {input1.click();};
+
+	input1.addEventListener("change", function (e) {
+		e.preventDefault();
+		var multiDocIds = $('#multiDocIds').val();
+
+		var idsArray = multiDocIds.split(',');
+    	var totalCount = idsArray.length;
+
+    	if(totalCount >= 2){
+    		alert("Up to 2 PDFs can be uploaded for your service.");
+    		return false;
+    	}
+
+		var file_data = $('#profile3').prop('files')[0];
+		var form_data = new FormData();
+		form_data.append('file', file_data);
+		form_data.append('service_id', 0);
+		$('#loader2').show();
+		$('#previousDoc').css('opacity', '0.6');
+		$.ajax({
+			url:site_url+'users/dragDropService',
+			type: "POST",
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData:false,
+			dataType:'json',
+			success: function(response){
+				if(response.status == 1){
+					if(multiDocIds != ""){
+						var ids = multiDocIds+','+response.id;
+						$('#multiDocIds').val(ids);
+					}else{
+						$('#multiDocIds').val(response.id);
+					}
+					var portElement = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
+						'<div class="boxImage imgUp">'+
+						'<div class="imagePreviewPlus">'+
+						'<div class="text-right"><button type="button" class="btn btn-danger removeDoc" onclick="removeImage('+response.id+',2)"><i class="fa fa-trash"></i></button></div>'+
+						'<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="'+response.id+'">'+
+						'</div></div></div>';
+					$('#previousDoc').append(portElement);
+					$('#loader2').hide();
+					$('#previousDoc').css('opacity', '1');
+				}
+			}
+		});
 	});
 
-	function removeImage(imgId){
+	function removeImage(imgId, type){
 		$.ajax({
 			url:site_url+'users/removeServiceImage',
 			type:"POST",
 			data:{'imgId':imgId},
 			success:function(data){
 				$('#portDiv'+imgId).remove();
-				removeIdFromHiddenField(imgId.toString());
-				alert('image deleted successfully');
+				if(type == 1){
+					removeIdFromHiddenField(imgId.toString(), 'multiImgIds');
+					alert('image deleted successfully');
+				}else{
+					removeIdFromHiddenField(imgId.toString(), 'multiDocIds');
+					alert('document deleted successfully');
+				}				
 			}
 		});
 	}
 
-	function removeIdFromHiddenField(idToRemove) {
-        var hiddenFieldValue = $('#multiImgIds').val();
+	function removeIdFromHiddenField(idToRemove, divId) {
+        var hiddenFieldValue = $('#'+divId).val();
         var idsArray = hiddenFieldValue.split(',');
         var newIdsArray = idsArray.filter(function(id) {
             return id !== idToRemove.toString();
         });
         var newHiddenFieldValue = newIdsArray.join(',');
-        $('#multiImgIds').val(newHiddenFieldValue);        
+        $('#'+divId).val(newHiddenFieldValue);        
     }
 </script>
 <!--****************FILE UPLOAD FUNCTION CODE END****************-->
