@@ -82,71 +82,66 @@
 		</div>
 	</div>
 </div>
-<hr class="my0">
-
-<div class="service-list">
-	<div class="container">
-		<h1 class="head-home">Most Popular Services</h1>
-		<div class="row">
-			<?php 
-				if(!empty($all_services)){
-					foreach($all_services as $list){
-			?>
-						<div class="col-sm-3">
-							<!-- loop -->
-							<div class="tradespeople-box">
-								<div class="tradespeople-box-img">
-									<a href="<?php echo base_url().'service/'.$list['slug']?>">
-										<img src="<?php echo  base_url().'img/services/'.$list['image']; ?>">
-									</a>
+<?php if(!empty($all_services)): ?>
+	<hr class="my0">
+	<div class="service-list">
+		<div class="container">
+			<h1 class="head-home">Most Popular Services</h1>
+			<div class="row">
+				<?php foreach($all_services as $list){ ?>
+					<div class="col-sm-3">
+						<!-- loop -->
+						<div class="tradespeople-box">
+							<div class="tradespeople-box-img">
+								<a href="<?php echo base_url().'service/'.$list['slug']?>">
+									<img src="<?php echo  base_url().'img/services/'.$list['image']; ?>">
+								</a>
+							</div>
+							<div class="tradespeople-box-avtar">
+								<div class="avtar">	
+									<img src="<?php echo  base_url().'img/profile/'.$list['profile']; ?>">
 								</div>
-								<div class="tradespeople-box-avtar">
-									<div class="avtar">	
-										<img src="<?php echo  base_url().'img/profile/'.$list['profile']; ?>">
-									</div>
-									<div class="names">
-										<a href="<?php echo base_url().'profile/'.$list['user_id']?>">
-											<?php echo $list['trading_name']; ?>
-										</a>					
-									</div>											
-								</div>
-								<div class="tradespeople-box-desc">
-									<a href="<?php echo base_url().'service/'.$list['slug']?>">
-										<p>
-											<?php
-												$totalChr = strlen($list['service_name']);
-												if($totalChr > 60 ){
-													echo substr($list['service_name'], 0, 60).'...';		
-												}else{
-													echo $list['service_name'];
-												}
-											?>
-										</p>
-									</a>
-								</div>
-								<div class="rating">
+								<div class="names">
+									<a href="<?php echo base_url().'profile/'.$list['user_id']?>">
+										<?php echo $list['trading_name']; ?>
+									</a>					
+								</div>											
+							</div>
+							<div class="tradespeople-box-desc">
+								<a href="<?php echo base_url().'service/'.$list['slug']?>">
+									<p>
+										<?php
+											$totalChr = strlen($list['service_name']);
+											if($totalChr > 60 ){
+												echo substr($list['service_name'], 0, 60).'...';		
+											}else{
+												echo $list['service_name'];
+											}
+										?>
+									</p>
+								</a>
+							</div>
+							<div class="rating">
+								<b>
+									<i class="fa fa-star active"></i>
+									<?php echo number_format($list['average_rating'],1); ?>
+								</b>
+								(<?php echo $list['total_reviews']; ?>)	
+							</div>
+							<div class="price">
+								<a href="<?php echo base_url().'service/'.$list['slug']?>">
 									<b>
-										<i class="fa fa-star active"></i>
-										<?php echo number_format($list['average_rating'],1); ?>
+										<?php echo 'From £'.$list['price']; ?>	
 									</b>
-									(<?php echo $list['total_reviews']; ?>)	
-								</div>
-								<div class="price">
-									<a href="<?php echo base_url().'service/'.$list['slug']?>">
-										<b>
-											<?php echo 'From £'.$list['price']; ?>	
-										</b>
-									</a>
-								</div>
-							</div>									
-						</div>
-				<?php
-					}
-				}
-			?>
+								</a>
+							</div>
+						</div>									
+					</div>
+				<?php } ?>
+			</div>
 		</div>
 	</div>
-</div>
+<?php endif; ?>
 <hr class="my0">
 
 <?php 
