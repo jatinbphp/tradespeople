@@ -50,86 +50,114 @@
 				</div>
 				<div class="col-sm-9">
 					<div class="user-right-side">
-						<h1>Edit Service</h1> 
-						<form action="<?= site_url().'users/storeServices'; ?>" id="update_service" method="post" enctype="multipart/form-data">  
-							<div class="edit-user-section">
-								<div class="msg"><?= $this->session->flashdata('msg');?></div>
-								<div class="row">
-									<div class="col-sm-12">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Service Title</label>
-											<div class="col-md-12">
-												<input id="service" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" value="" required>
-											</div>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">
-												About Your Service 
-											</label>
-											<div class="col-md-12">
-												<textarea class="form-control input-md" name="description" id="description" placeholder="Description" rows="10"></textarea>
-											</div>
-										</div>
-									</div>
-									<div class="col-sm-12">
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Location</label>
-											<div class="col-md-12">
-												<select class="form-control input-md" name="location"  id="city_id">
-													<option value="">Select Location</option>
-													<?php foreach ($cities as $city) { ?>
-														<option value="<?php echo $city['city']; ?>">
-															<?php echo $city['city']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-										</div>
-									</div>
-									<div class="col-sm-12">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">
-												Positive Keywords
-											</label>
-											<div class="col-md-12">
-												<input id="positive_keywords" name="positive_keywords" placeholder="Positive Keywords" class="form-control input-md" data-role="tagsinput" type="text" value="">
-												<span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
-											</div>
-										</div>
-									</div>									
-								</div>
-								<div class="row">
-									<div class="col-sm-6">
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">
-												Upload Image/Video (Optional)
-											</label>
-											<div class="col-md-12">
-												<div id="imageContainer">
-													<img src="<?php echo base_url()?>img/plus2.png" alt="Click to select image">
-													<input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
+						<h1>Add Service</h1>
+						<ul class="nav nav-tabs">
+							<li class="active"><a data-toggle="tab" href="#step2">Step-1</a></li>
+							<li><a data-toggle="tab" href="#step2">Step-2</a></li>
+							<li><a data-toggle="tab" href="#step3">Step-3</a></li>
+							<li><a data-toggle="tab" href="#step4">Step-4</a></li>
+							<li><a data-toggle="tab" href="#step5">Step-5</a></li>
+							<li><a data-toggle="tab" href="#step6">Step-6</a></li>
+							<li><a data-toggle="tab" href="#step7">Step-7</a></li>
+						</ul>
+						<div class="tab-content">
+							<div id="step1" class="tab-pane fade in active">
+								<form action="<?= site_url().'users/storeServices'; ?>" id="update_service" method="post" enctype="multipart/form-data">  
+									<div class="edit-user-section">
+										<div class="msg"><?= $this->session->flashdata('msg');?></div>
+										<div class="row">
+											<div class="col-sm-12">
+												<!-- Text input-->
+												<div class="form-group">
+													<label class="col-md-12 control-label" for="">Service Title</label>
+													<div class="col-md-12">
+														<input id="service" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" value="" required>
+													</div>
 												</div>
-												<input type="hidden" name="service_image_old" value="" >
 											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-md-12 control-label" for="">
+														About Your Service 
+													</label>
+													<div class="col-md-12">
+														<textarea class="form-control input-md" name="description" id="description" placeholder="Description" rows="10"></textarea>
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-12">
+												<div class="form-group">
+													<label class="col-md-12 control-label" for="">Location</label>
+													<div class="col-md-12">
+														<select class="form-control input-md" name="location"  id="city_id">
+															<option value="">Select Location</option>
+															<?php foreach ($cities as $city) { ?>
+																<option value="<?php echo $city['city']; ?>">
+																	<?php echo $city['city']; ?>
+																</option>
+															<?php } ?>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-12">
+												<!-- Text input-->
+												<div class="form-group">
+													<label class="col-md-12 control-label" for="">
+														Positive Keywords
+													</label>
+													<div class="col-md-12">
+														<input id="positive_keywords" name="positive_keywords" placeholder="Positive Keywords" class="form-control input-md" data-role="tagsinput" type="text" value="">
+														<span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
+													</div>
+												</div>
+											</div>									
 										</div>
-									</div>
-								</div>								
-							</div>                        
-							<!-- Edit-section-->
-							  
-							<div class="edit-user-section gray-bg">
-								<div class="row nomargin">
-									<div class="col-sm-12">
-										<button type="submit" class="btn btn-primary submit_btn">Continue</button>
-									</div>                                 
-								</div>
-							</div>                        
-							<!-- Edit-section-->
-						</form>
+										<div class="row">
+											<div class="col-sm-6">
+												<div class="form-group">
+													<label class="col-md-12 control-label" for="">
+														Upload Image/Video (Optional)
+													</label>
+													<div class="col-md-12">
+														<div id="imageContainer">
+															<img src="<?php echo base_url()?>img/plus2.png" alt="Click to select image">
+															<input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
+														</div>
+														<input type="hidden" name="service_image_old" value="" >
+													</div>
+												</div>
+											</div>
+										</div>								
+									</div>                        
+									<div class="edit-user-section gray-bg">
+										<div class="row nomargin">
+											<div class="col-sm-12">
+												<button type="submit" class="btn btn-primary submit_btn">Continue</button>
+											</div>                                 
+										</div>
+									</div>                        
+								</form>
+							</div>
+							<div id="step2" class="tab-pane fade">
+								<?php $this->load->view('site/add-service2'); ?>
+							</div>
+							<div id="step3" class="tab-pane fade">
+								<?php $this->load->view('site/add-service3'); ?>
+							</div>
+							<div id="step4" class="tab-pane fade">
+								<?php $this->load->view('site/add-service4'); ?>
+							</div>
+							<div id="step5" class="tab-pane fade">
+								<?php $this->load->view('site/add-service5'); ?>
+							</div>
+							<div id="step6" class="tab-pane fade">
+								<?php $this->load->view('site/add-service6'); ?>
+							</div>
+							<div id="step7" class="tab-pane fade">
+								<?php $this->load->view('site/add-service7'); ?>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

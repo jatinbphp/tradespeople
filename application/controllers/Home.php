@@ -2362,7 +2362,8 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 	public function services(){
 		$data['all_services']=$this->common_model->get_all_service('my_services',0);
-			$this->load->view('site/all_services',$data);
+		$data['categories_data']=$this->getHirarchicalCategoryData();
+		$this->load->view('site/all_services',$data);
 	}
 
 	public function serviceDetail($slug=""){

@@ -2235,17 +2235,19 @@ public function exists_refferals() {
 	public function addServices(){
 		if($this->session->userdata('user_id')) {
 			$data['cities'] = $this->search_model->getJobCities();
-      $this->load->view('site/add-service',$data);
-    } 
+			$data['category']=$this->common_model->get_parent_category('category');
+			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$sesData['category']);
+      		$this->load->view('site/add-service',$data);
+    	} 
 	}
 
 	public function addServices2(){
 		if($this->session->userdata('store_service1')) {
 			$data['category']=$this->common_model->get_parent_category('category');
-      $this->load->view('site/add-service2',$data);
-    } else {
-      redirect('dashboard');
-    }
+      		$this->load->view('site/add-service2',$data);
+		} else {
+			redirect('dashboard');
+		}
 	}
 
 	public function addServices3(){
@@ -2257,17 +2259,17 @@ public function exists_refferals() {
 			}else{
 				$this->load->view('site/add-service4',$data);
 			}      
-    } else {
-      redirect('dashboard');
-    }
+		} else {
+			redirect('dashboard');
+		}
 	}
 
 	public function addServices4(){
 		if($this->session->userdata('store_service2')) {
 			$this->load->view('site/add-service4',$data);
-    } else {
-      redirect('dashboard');
-    }
+		} else {
+			redirect('dashboard');
+		}
 	}
 
 	public function addServices5(){

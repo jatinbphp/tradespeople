@@ -1,4 +1,3 @@
-<?php include 'include/header.php'; ?>
 <style>
 	.tox-toolbar__primary, .tox-editor-header{
 		display:none !important;
@@ -41,110 +40,94 @@
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
 </style>
-<div class="acount-page membership-page">
-	<div class="container">
-		<div class="user-setting">
-			<div class="row">
-				<div class="col-sm-3">
-					<?php include 'include/sidebar.php'; ?>
-				</div>
-				<div class="col-sm-9">
-					<div class="user-right-side">
-						<h1>Add Service</h1> 
-						<form action="<?= site_url().'users/storeServices4'; ?>" id="update_service" method="post" enctype="multipart/form-data">  
-							<div class="edit-user-section">
-								<div class="msg"><?= $this->session->flashdata('msg');?></div>
-								<div class="row">
-									<div class="col-sm-12">
-										<h4 class="text-info">
-											Show case your service in a service gallery
-										</h4>
-										<span>
-											Encourage buyer to choose your service by featuring a variety of your work.
-										</span>
-										<hr>
-										<div id="video-div">
-											<h4>
-												Get image guidelines
-											</h4>
-											<label class="col-md-12 control-label" for="" style="padding: 0;">
-												Video (one only)
-											</label>
-											<span>
-												Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
-											</span>
+<form action="<?= site_url().'users/storeServices4'; ?>" id="update_service" method="post" enctype="multipart/form-data">  
+	<div class="edit-user-section">
+		<div class="msg"><?= $this->session->flashdata('msg');?></div>
+		<div class="row">
+			<div class="col-sm-12">
+				<h4 class="text-info">
+					Show case your service in a service gallery
+				</h4>
+				<span>
+					Encourage buyer to choose your service by featuring a variety of your work.
+				</span>
+				<hr>
+				<div id="video-div">
+					<h4>
+						Get image guidelines
+					</h4>
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Video (one only)
+					</label>
+					<span>
+						Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
+					</span>
 
-											<div id="imageContainer1" class="file-upload-btn">
-												<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
-												 <div class="btn-text">Drag & drop video or <span>Browser</span></div>
-												 <input type="file" name="video" id="profile" class="form-control input-md" accept="video/*" onchange="return seepreview();">
-											</div>
-											<div id="imgpreview"></div>
-										</div>
-										<hr>
-										<div id="image-div">
-											<label class="col-md-12 control-label" for="" style="padding: 0;">
-												Images (up to 3)
-											</label>
-											<span>
-												Get noticed by the right buyer with visual examples of your services.
-											</span>
-
-											<div class="row loader">
-												<div class="loader_ajax_small"></div>
-												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
-													<div class="file-upload-btn addWorkImage imgUp">
-														<img src="img/dImg.png" id="defaultImg">
-														<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
-														<input type="file" name="workImage" id="profile2">		
-													</div>
-												</div>
-											</div>
-											<input type="hidden" name="multiImgIds" id="multiImgIds">
-											<div id="previousImg"></div>
-										</div>
-
-										<div id="image-div">
-											<label class="col-md-12 control-label" for="" style="padding: 0;">
-												Documents (up to 2)
-											</label>
-											<span>
-												Show some of the best work you created in a document (PDFs only)
-											</span>
-
-											<div class="row loader">
-												<div class="loader_ajax_small"></div>
-												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
-													<div class="file-upload-btn addWorkImage imgUp">
-														<img src="img/defaultDoc.png" id="defaultDoc">
-														<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
-														<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
-													</div>
-												</div>
-											</div>
-											<input type="hidden" name="multiDocIds" id="multiDocIds">
-											<div id="previousDoc"></div>
-										</div>										
-									</div>														
-								</div>																
-							</div>                        
-							<!-- Edit-section-->
-							  
-							<div class="edit-user-section gray-bg">
-								<div class="row nomargin">
-									<div class="col-sm-12">
-										<button type="submit" class="btn btn-primary submit_btn">Continue</button>
-									</div>                                 
-								</div>
-							</div>                        
-							<!-- Edit-section-->
-						</form>
+					<div id="imageContainer1" class="file-upload-btn">
+						<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
+							<div class="btn-text">Drag & drop video or <span>Browser</span></div>
+							<input type="file" name="video" id="profile" class="form-control input-md" accept="video/*" onchange="return seepreview();">
 					</div>
+					<div id="imgpreview"></div>
 				</div>
-			</div>
+				<hr>
+				<div id="image-div">
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Images (up to 3)
+					</label>
+					<span>
+						Get noticed by the right buyer with visual examples of your services.
+					</span>
+
+					<div class="row loader">
+						<div class="loader_ajax_small"></div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
+							<div class="file-upload-btn addWorkImage imgUp">
+								<img src="img/dImg.png" id="defaultImg">
+								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
+								<input type="file" name="workImage" id="profile2">		
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="multiImgIds" id="multiImgIds">
+					<div id="previousImg"></div>
+				</div>
+
+				<div id="image-div">
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Documents (up to 2)
+					</label>
+					<span>
+						Show some of the best work you created in a document (PDFs only)
+					</span>
+
+					<div class="row loader">
+						<div class="loader_ajax_small"></div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
+							<div class="file-upload-btn addWorkImage imgUp">
+								<img src="img/defaultDoc.png" id="defaultDoc">
+								<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
+								<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="multiDocIds" id="multiDocIds">
+					<div id="previousDoc"></div>
+				</div>										
+			</div>														
+		</div>																
+	</div>                        
+	<!-- Edit-section-->
+		
+	<div class="edit-user-section gray-bg">
+		<div class="row nomargin">
+			<div class="col-sm-12">
+				<button type="submit" class="btn btn-primary submit_btn">Continue</button>
+			</div>                                 
 		</div>
-	</div>
-</div>
+	</div>                        
+	<!-- Edit-section-->
+</form>
 
 <!--****************FILE UPLOAD FUNCTION CODE START****************-->
 <script>
