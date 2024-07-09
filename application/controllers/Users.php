@@ -2216,7 +2216,7 @@ public function exists_refferals() {
 		}
 		echo json_encode($data);
 	}
-	
+
 	public function removePortfolio(){
 		$user_id = $this->session->userdata('user_id');
 		$this->db->where('id',$this->input->post('pImgId'))->where('userid', $user_id)->delete('user_portfolio');
@@ -2313,6 +2313,7 @@ public function exists_refferals() {
 			$insert['description'] = trim($this->input->post('description'));
 			$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
 			$insert['image'] = $newImg;
+			$insert['status'] = 0;
 
 			$this->session->set_userdata('store_service1',$insert);	
 			redirect('add-service2'); 
@@ -2364,6 +2365,7 @@ public function exists_refferals() {
 		}
 
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
+		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
 
 		$newVid = '';		
 		if($_FILES['video']['name']){ 
@@ -2383,15 +2385,17 @@ public function exists_refferals() {
 
 		if($run){
 			$this->session->set_userdata('latest_service',$run);
+			$input['service_id'] = $run;
 			if(count($mImgs) > 0){
-				foreach($mImgs as $imgId){
-					$input['service_id'] = $run;
+				foreach($mImgs as $imgId){					
 					$run = $this->common_model->update('service_images',array('id'=>$imgId),$input);
 				}
 			}
-			$this->session->unset_userdata('store_service1');
-			$this->session->unset_userdata('store_service2');
-			$this->session->unset_userdata('store_service3');
+			if(count($mDocs) > 0){
+				foreach($mDocs as $docId){
+					$run = $this->common_model->update('service_images',array('id'=>$docId),$input);
+				}
+			}			
 		}
 		redirect('add-service5');
 	}
@@ -2407,6 +2411,36 @@ public function exists_refferals() {
 			}
 		}
 		redirect('add-service6');
+	}
+
+	public function storeServices6($value=''){
+		$this->form_validation->set_rules('available_mon_fri','Available Monday to Friday','required');
+		$this->form_validation->set_rules('not_available_days','Not Available On Weekends','required');
+		
+		if ($this->form_validation->run()==false) {
+			$this->session->set_flashdata('msg','<div class="alert alert-danger">' .validation_errors() . '</div>');
+		} else {
+			$insert['service_id'] = $this->session->userdata('latest_service');
+			$insert['available_mon_fri'] = $this->input->post('available_mon_fri');
+			$insert['selected_dates'] = $this->input->post('selected_dates');
+			$insert['time_slot'] = $this->input->post('time_slot');
+			$insert['weekend_available'] = $this->input->post('weekend_available');
+			$insert['not_available_days'] = $this->input->post('not_available_days');
+
+			$run = $this->common_model->insert('service_availability', $insert);
+
+			if($run){
+				$this->session->unset_userdata('store_service1');
+				$this->session->unset_userdata('store_service2');
+				$this->session->unset_userdata('store_service3');
+				$this->session->unset_userdata('latest_service');
+
+				$this->session->set_flashdata('msg','<div class="alert alert-success">Your service has been posted successfully.</div>');
+			} else {
+				$this->session->set_flashdata('msg','<div class="alert alert-danger">Something is wrong. Your Service is not posted!!!</div>');
+			}
+		}
+		redirect('my-services');		
 	}
 
 	public function editServices($id=""){

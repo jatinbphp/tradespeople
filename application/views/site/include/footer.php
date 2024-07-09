@@ -1828,28 +1828,41 @@ function send_review_invitation(id){
       "July", "August", "September", "October", "November", "December"
   ];
   $(document).ready(function() {
-    var currentDate = new Date(); // Get current date
-
+    var today = new Date();
     $('#datepicker').multiDatesPicker({
         minDate: 0, // Ensure today's date can be selected
         onSelect: function(dateText, inst) {
             var selectedDates = $('#datepicker').multiDatesPicker('getDates');
-            if (!selectedDates.includes(currentDate.toISOString().slice(0,10))) {
-                selectedDates.push(currentDate.toISOString().slice(0,10)); // Add current date if not already selected
-            }
             $('#selectedDates').val(selectedDates.join(','));
-            updateAvailabilityMessage(); // Update the availability message
+            updateAvailabilityMessage();
         }
     });
 
-    // Manually add current date if it's selected by default
+    $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
+
+    $('#yesCheckbox').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#noCheckbox').prop('checked', false);
+            $('#datepicker').datepicker("option", "disabled", true);
+            $('#datePickerDiv').hide();
+        }
+    });
+
+    $('#noCheckbox').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#yesCheckbox').prop('checked', false);
+            $('#datepicker').datepicker("option", "disabled", false);
+            $('#datePickerDiv').show();
+        }
+    });
+
     var selectedDates = $('#datepicker').multiDatesPicker('getDates');
-    if (!selectedDates.includes(currentDate.toISOString().slice(0,10))) {
-        selectedDates.push(currentDate.toISOString().slice(0,10)); // Add current date if not already selected
+    if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
+        selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected
     }
     $('#selectedDates').val(selectedDates.join(','));
-    updateAvailabilityMessage(); // Update the availability message
-  });
+    updateAvailabilityMessage();
+});
 
   $('.slider-for').slick({
     slidesToShow: 1,
@@ -1894,29 +1907,59 @@ function send_review_invitation(id){
   function formatSentence(selectedDates, timeSlot) {
     var sentence = "";
     if (selectedDates.length > 0 && timeSlot) {
-        var month = ""; // To store the current month name
-        var formattedDates = selectedDates.map(function(dateStr) {
-            var date = new Date(dateStr);
-            var currentMonth = monthNames[date.getMonth()];
-            if (currentMonth !== month) {
-                month = currentMonth;
-                return month + " " + formatDate(date);
-            } else {
-                return formatDate(date);
-            }
-        });
+      // Sort the dates
+      selectedDates.sort(function(a, b) {
+          return new Date(a) - new Date(b);
+      });
 
-        sentence = "Not available on: " + formattedDates.join(", ");
-        sentence += " Till " + timeSlot;
+      var groupedDates = {}; // To store dates grouped by month
+
+      selectedDates.forEach(function(dateStr) {
+        var date = new Date(dateStr);
+        var month = monthNames[date.getMonth()];
+        if (!groupedDates[month]) {
+          groupedDates[month] = [];
+        }
+        groupedDates[month].push(date);
+      });
+
+      var formattedDates = [];
+      for (var month in groupedDates) {
+        var dates = groupedDates[month];
+        var dateRanges = [];
+        var start = dates[0];
+        var end = start;
+
+        for (var i = 1; i < dates.length; i++) {
+          if (dates[i] - end === 86400000) { // Check if the next date is consecutive (1 day in ms)
+              end = dates[i];
+          } else {
+              dateRanges.push(formatDateRange(start, end));
+              start = dates[i];
+              end = start;
+          }
+        }
+        dateRanges.push(formatDateRange(start, end)); // Add the last range
+        formattedDates.push(month + " " + dateRanges.join(", "));
+      }
+      sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
     }
     return sentence;
   }
 
-   function formatDate(date) {
-      var day = date.getDate();
-      var suffix = getOrdinalSuffix(day);
-      return day + suffix;
+  function formatDateRange(start, end) {
+    if (start.getTime() === end.getTime()) {
+        return formatDate(start);
+    } else {
+        return formatDate(start) + " to " + formatDate(end);
     }
+  }
+
+  function formatDate(date) {
+    var day = date.getDate();
+    var suffix = getOrdinalSuffix(day);
+    return day + suffix;
+  }
 
   function getOrdinalSuffix(date) {
     if (date > 3 && date < 21) return 'th';
@@ -1932,6 +1975,9 @@ function send_review_invitation(id){
     var selectedDates = $('#selectedDates').val().split(',');
     var timeSlot = $('#timeSlot').val();
     var sentence = formatSentence(selectedDates, timeSlot);
-    $('#notAvailablMsg').text(sentence); // Update the availability text
+    console.log('sentence====>'+sentence);
+    if(sentence != ""){
+      $('#notAvailablMsg').show().html(sentence); // Update the availability text  
+    }    
   }
 </script>
