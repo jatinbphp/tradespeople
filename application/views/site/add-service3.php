@@ -29,7 +29,7 @@
 														<div class="col-sm-12">
 															<div class="form-group">
 																<div class="form-check" style="margin: 0;">
-																	<input class="form-check-input" type="checkbox" name="ex_service[]" value="<?php echo $list['id']?>" style="margin-right:10px;">
+																	<input class="form-check-input" type="checkbox" name="extra_service[]" value="<?php echo $list['id']?>" style="margin-right:10px;">
 																	<label class="form-check-label" style="margin-top:10px; font-weight: normal;"><?php echo $list['ex_service_name']?></label>
 																</div>
 															</div>

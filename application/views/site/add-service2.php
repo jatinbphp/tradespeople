@@ -52,7 +52,7 @@
 										<div class="form-group">
 											<label class="col-md-12 control-label" for="">Select Plugins</label>
 											<div class="col-md-12">
-												<select class="form-control input-md tradesCategory" name="plugins" id="plugins" multiple>
+												<select class="form-control input-md tradesCategory" name="plugins[]" id="plugins" multiple>
 													<option value="">Select Plugins</option>
 												</select>
 											</div>

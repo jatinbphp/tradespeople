@@ -77,7 +77,7 @@
 											<div id="imageContainer1" class="file-upload-btn">
 												<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
 												 <div class="btn-text">Drag & drop video or <span>Browser</span></div>
-												 <input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
+												 <input type="file" name="video" id="profile" class="form-control input-md" accept="video/*" onchange="return seepreview();">
 											</div>
 											<div id="imgpreview"></div>
 										</div>
@@ -102,6 +102,28 @@
 											</div>
 											<input type="hidden" name="multiImgIds" id="multiImgIds">
 											<div id="previousImg"></div>
+										</div>
+
+										<div id="image-div">
+											<label class="col-md-12 control-label" for="" style="padding: 0;">
+												Documents (up to 2)
+											</label>
+											<span>
+												Show some of the best work you created in a document (PDFs only)
+											</span>
+
+											<div class="row loader">
+												<div class="loader_ajax_small"></div>
+												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
+													<div class="file-upload-btn addWorkImage imgUp">
+														<img src="img/defaultDoc.png" id="defaultDoc">
+														<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
+														<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
+													</div>
+												</div>
+											</div>
+											<input type="hidden" name="multiDocIds" id="multiDocIds">
+											<div id="previousDoc"></div>
 										</div>										
 									</div>														
 								</div>																
@@ -132,6 +154,10 @@
 
 	document.getElementById('imageContainer2').addEventListener('click', function() {
 		document.getElementById('profile2').click();
+	});
+
+	document.getElementById('imageContainer3').addEventListener('click', function() {
+		document.getElementById('profile3').click();
 	});
 
 	document.getElementById('profile').addEventListener('change', function(e) {

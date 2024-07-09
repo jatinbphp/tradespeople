@@ -2270,6 +2270,22 @@ public function exists_refferals() {
     }
 	}
 
+	public function addServices5(){
+		if($this->session->userdata('latest_service')) {
+			$this->load->view('site/add-service5',$data);
+    } else {
+      redirect('dashboard');
+    }
+	}
+
+	public function addServices6(){
+		if($this->session->userdata('latest_service')) {
+			$this->load->view('site/add-service6',$data);
+    } else {
+      redirect('dashboard');
+    }
+	}
+
 	public function storeServices($value=''){
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
@@ -2311,19 +2327,25 @@ public function exists_refferals() {
 			$insert['category'] = $this->input->post('category');
 			$insert['sub_category'] = $this->input->post('sub_category');
 			$insert['service_type'] = $this->input->post('service_type');
-			$insert['plugins'] = $this->input->post('plugins');
+			$insert['plugins'] = json_decode($this->input->post('plugins'));
 
 			$this->session->set_userdata('store_service2',$insert);
-			redirect('add-service3'); 
+
+			$ex_service=$this->common_model->get_ex_service('extra_service',$insert['category']);
+			if(!empty($ex_service)){
+				redirect('add-service3');
+			}else{
+				redirect('add-service4');
+			}
 		}			
 	}
 
 	public function storeServices3($value=''){
-		if(!empty($this->input->post('ex_service')) && count($this->input->post('ex_service')) > 0){
-			$insert['ex_service'] = $this->input->post('ex_service');
+		if(!empty($this->input->post('extra_service')) && count($this->input->post('extra_service')) > 0){
+			$insert['extra_service'] = implode(',', $this->input->post('extra_service'));
 			$this->session->set_userdata('store_service3',$insert);
 		}else{
-			$insert['ex_service'] = '';
+			$insert['extra_service'] = '';
 			$this->session->set_userdata('store_service3',$insert);
 		}
 		redirect('add-service4'); 			
@@ -2333,11 +2355,56 @@ public function exists_refferals() {
 		$step1 = $this->session->userdata('store_service1');
 		$step2 = $this->session->userdata('store_service2');
 		$step3 = $this->session->userdata('store_service3');
-		$insert = array_merge($step1, $step2, $step3);
+		$insert = array_merge($step1, $step2);
 
-		echo '<pre>';
-		print_r($insert);
-		exit;
+		if ($step3 !== null) {
+		  $insert = array_merge($insert, $step3);
+		}
+
+		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
+
+		$newVid = '';		
+		if($_FILES['video']['name']){ 
+			$config['upload_path']="img/services";
+			$config['allowed_types'] = 'mp4|avi|wmv|mkv';
+			$config['encrypt_name']=true;
+			$this->load->library("upload",$config);
+			if ($this->upload->do_upload('video')) {
+				$video=$this->upload->data("file_name");
+				$newVid = $video;
+			} 
+		}
+
+		$insert['video'] = $newVid;
+
+		$run = $this->common_model->insert('my_services', $insert);		
+
+		if($run){
+			$this->session->set_userdata('latest_service',$run);
+			if(count($mImgs) > 0){
+				foreach($mImgs as $imgId){
+					$input['service_id'] = $run;
+					$run = $this->common_model->update('service_images',array('id'=>$imgId),$input);
+				}
+			}
+			$this->session->unset_userdata('store_service1');
+			$this->session->unset_userdata('store_service2');
+			$this->session->unset_userdata('store_service3');
+		}
+		redirect('add-service5');
+	}
+
+	public function storeServices5($value=''){
+		$faqs = $this->input->post('faq');
+		if(!empty($faqs) && count($faqs) > 0){
+			foreach ($faqs as $key => $list) {
+				$insert['service_id'] = $this->session->userdata('latest_service');
+				$insert['question'] = $list['question'];
+				$insert['answer'] = $list['answer'];
+				$run = $this->common_model->insert('service_faqs', $insert);
+			}
+		}
+		redirect('add-service6');
 	}
 
 	public function editServices($id=""){
