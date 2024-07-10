@@ -1,7 +1,0 @@
-user can submit offer from here https://prnt.sc/S5eNh55PXhuj
-this section is dynamic now https://prnt.sc/8h6BWylzM86H
-accept and reject button showed here https://prnt.sc/rIQHqvxH6QN-
-both user can submit offer accept and close button only show when opposite user submited offer
-this button will not show to user who claim dispute
-accept and close button working well
-let me know the function of reject button
