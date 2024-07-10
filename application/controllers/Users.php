@@ -2587,7 +2587,6 @@ public function exists_refferals() {
 		echo $option;
 	}
 
-<<<<<<< HEAD
 	public function setServiceData($data) {
 		$serviceData = $this->session->userdata('service_data');
 		if($serviceData){
@@ -2606,7 +2605,6 @@ public function exists_refferals() {
 		$this->session->unset_userdata('service_data');
 		$this->session->unset_userdata('next_step');
 	}
-=======
 	public function deleteAllServices(){
 		$ids = $this->input->post('servicesIds');
 		if(count($ids) > 0){
@@ -2632,7 +2630,6 @@ public function exists_refferals() {
 			echo 0;
 		}
 	}		
->>>>>>> a4f724c08bc924442f4a3ed2793f4887a1c9f654
 }	
 
 
