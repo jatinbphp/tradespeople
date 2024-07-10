@@ -270,6 +270,13 @@
     	}
 
 		var file_data = $('#profile2').prop('files')[0];
+
+		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
+	    if (validImageTypes.indexOf(file_data.type) === -1) {
+	        alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+	        return false;
+	    }
+
 		var form_data = new FormData();
 		form_data.append('file', file_data);
 		form_data.append('service_id', 0);
