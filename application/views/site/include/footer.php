@@ -1828,41 +1828,43 @@ function send_review_invitation(id){
       "July", "August", "September", "October", "November", "December"
   ];
   $(document).ready(function() {
-    var today = new Date();
-    $('#datepicker').multiDatesPicker({
-        minDate: 0, // Ensure today's date can be selected
-        onSelect: function(dateText, inst) {
-            var selectedDates = $('#datepicker').multiDatesPicker('getDates');
-            $('#selectedDates').val(selectedDates.join(','));
-            updateAvailabilityMessage();
-        }
-    });
+    if($('#datepicker').length){
+      var today = new Date();
+      $('#datepicker').multiDatesPicker({
+          minDate: 0, // Ensure today's date can be selected
+          onSelect: function(dateText, inst) {
+              var selectedDates = $('#datepicker').multiDatesPicker('getDates');
+              $('#selectedDates').val(selectedDates.join(','));
+              updateAvailabilityMessage();
+          }
+      });
 
-    $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
+      $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
 
-    $('#yesCheckbox').on('change', function() {
-        if ($(this).is(':checked')) {
-            $('#noCheckbox').prop('checked', false);
-            $('#datepicker').datepicker("option", "disabled", true);
-            $('#datePickerDiv').hide();
-        }
-    });
+      $('#yesCheckbox').on('change', function() {
+          if ($(this).is(':checked')) {
+              $('#noCheckbox').prop('checked', false);
+              $('#datepicker').datepicker("option", "disabled", true);
+              $('#datePickerDiv').hide();
+          }
+      });
 
-    $('#noCheckbox').on('change', function() {
-        if ($(this).is(':checked')) {
-            $('#yesCheckbox').prop('checked', false);
-            $('#datepicker').datepicker("option", "disabled", false);
-            $('#datePickerDiv').show();
-        }
-    });
+      $('#noCheckbox').on('change', function() {
+          if ($(this).is(':checked')) {
+              $('#yesCheckbox').prop('checked', false);
+              $('#datepicker').datepicker("option", "disabled", false);
+              $('#datePickerDiv').show();
+          }
+      });
 
-    var selectedDates = $('#datepicker').multiDatesPicker('getDates');
-    if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
-        selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected
-    }
-    $('#selectedDates').val(selectedDates.join(','));
-    updateAvailabilityMessage();
-});
+      var selectedDates = $('#datepicker').multiDatesPicker('getDates');
+      if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
+          selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected
+      }
+      $('#selectedDates').val(selectedDates.join(','));
+      updateAvailabilityMessage();  
+    }    
+  });
 
   $('.slider-for').slick({
     slidesToShow: 1,

@@ -4004,10 +4004,10 @@ background: #2463ba;
     margin-left: 0;
 }
 .verification-checklist ul.list li i{
-    background-color: red;
+/*    background-color: red;*/
     border-radius: 40px;
     padding: 9px 10px;
-    color: #fff;
+    color: #000;
     margin: 5px 0;
 }
 .verification-checklist ul.list li i.fa.fa-check{

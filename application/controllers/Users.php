@@ -2313,7 +2313,7 @@ public function exists_refferals() {
 			$insert['image'] = $newImg;
 			$insert['status'] = 0;
 
-			$this->session->set_userdata('store_service1',$insert);	
+			$this->session->set_userdata('store_service1',$insert);
 			redirect('add-service2'); 
 		}
 	}
@@ -2413,7 +2413,7 @@ public function exists_refferals() {
 
 	public function storeServices6($value=''){
 		$this->form_validation->set_rules('available_mon_fri','Available Monday to Friday','required');
-		$this->form_validation->set_rules('not_available_days','Not Available On Weekends','required');
+		$this->form_validation->set_rules('weekend_available','Available On Weekends','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('msg','<div class="alert alert-danger">' .validation_errors() . '</div>');
@@ -2428,17 +2428,20 @@ public function exists_refferals() {
 			$run = $this->common_model->insert('service_availability', $insert);
 
 			if($run){
+				$input['status'] = 1;
+				$run = $this->common_model->update('my_services',array('id'=>$this->session->userdata('latest_service')),$input);	
+
 				$this->session->unset_userdata('store_service1');
 				$this->session->unset_userdata('store_service2');
 				$this->session->unset_userdata('store_service3');
-				$this->session->unset_userdata('latest_service');
+				$this->session->unset_userdata('latest_service');							
 
 				$this->session->set_flashdata('msg','<div class="alert alert-success">Your service has been posted successfully.</div>');
 			} else {
 				$this->session->set_flashdata('msg','<div class="alert alert-danger">Something is wrong. Your Service is not posted!!!</div>');
 			}
-		}
-		redirect('my-services');		
+			redirect('my-services');
+		}				
 	}
 
 	public function editServices($id=""){
@@ -2514,6 +2517,9 @@ public function exists_refferals() {
 				}
 			}
 			$this->common_model->delete(['id'=>$id], 'my_services');
+			$this->common_model->delete(['service_id'=>$id], 'service_availability');
+			$this->common_model->delete(['service_id'=>$id], 'service_faqs');			
+			$this->common_model->delete(['service_id'=>$id], 'service_rating');			
 			$this->session->set_flashdata('msg','<div class="alert alert-success">Service has been deleted successfully!!</div>');
 		}else{
 			$this->session->set_flashdata('msg','<div class="alert alert-danger">Something is wrong!!</div>');
@@ -2533,6 +2539,32 @@ public function exists_refferals() {
 		}
 		echo $option;
 	}
+
+	public function deleteAllServices(){
+		$ids = $this->input->post('servicesIds');
+		if(count($ids) > 0){
+			foreach($ids as $id){
+				$service = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+				if(!empty($service)){
+					unlink('img/services/'.$service['image']);
+					$service_images=$this->common_model->get_service_image('service_images',$id);
+					if(!empty($service_images)){
+						foreach($service_images as $list){
+							unlink('img/services/'.$list['image']);				
+							$this->common_model->delete(['id'=>$list['id']], 'service_images');
+						}
+					}
+					$this->common_model->delete(['id'=>$id], 'my_services');
+					$this->common_model->delete(['service_id'=>$id], 'service_availability');
+					$this->common_model->delete(['service_id'=>$id], 'service_faqs');			
+					$this->common_model->delete(['service_id'=>$id], 'service_rating');	
+				}
+			}
+			echo 1;
+		}else{
+			echo 0;
+		}
+	}		
 }	
 
 
