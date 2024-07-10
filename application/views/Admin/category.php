@@ -106,6 +106,55 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
   </div>
 </div>
 
+<div class="modal fade in" id="FAQsModel">
+  <div class="modal-body" id="msg">
+    <div class="modal-dialog modal-lg">	 
+      <div class="modal-content">
+      	<div class="modal-header">
+      		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          	<span aria-hidden="true">×</span>
+          </button>
+          <h4 class="modal-title">Add Category FAQs</h4>
+      	</div>
+      	<div class="modal-body form_width100">
+      		<input type="hidden" name="catId" id="faqCatId">
+      		<div class="faqsMsg"></div>
+      		<div class="form-group">
+						<label for="question"> Question:</label>
+						<textarea type="textarea" name="question" id="question" placeholder="Question" rows="3" class="form-control">
+						</textarea>
+				 	</div>
+				 	<div class="form-group">
+						<label for="question"> Answer:</label>
+						<textarea type="textarea" name="answer" id="answer" placeholder="Answer" rows="3" class="form-control">
+						</textarea>
+				 	</div>
+				 	<div class="text-right">
+				 		<button type="button" class="btn btn-info signup_btn" id="storeFAQs">Save</button>
+				 	</div>
+					<div class="row" style="margin-top: 15px;">
+						<div class="col-sm-12">
+							<table id="serviceListTable" class="table table-bordered table-striped">
+	              <thead>
+	                <tr>                  
+										<th>S.No</th> 
+										<th>Question & Answer</th>
+										<th>Action</th>
+									</tr>
+	              </thead>
+	              <tbody id="faqList"></tbody>							
+	            </table>
+						</div> 	
+					</div>
+	      </div>
+      	<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade in" id="add_category">
    <div class="modal-body" id="msg">
       <div class="modal-dialog">	 
@@ -431,7 +480,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 	 	}
 	}
 
-	function openExServiceModdal(catId){
+	function openExServiceModal(catId){
 		$('#catId').val(catId);
 		$.ajax({
 			url:site_url+'Admin/Admin/getExService/'+catId,
@@ -455,7 +504,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 					$('.exServiceMsg').html('<p class="alert alert-success" style="padding:7px;">Extra service addedd suvvessfully</p>').show();
 					$('#ex_service_name').val('');
 					$('#serviceList').empty().html(data);
-					hideMsg();
+					hideMsg('exServiceMsg');
 				}				
 			}
 		});
@@ -470,16 +519,63 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 					if(data != ""){
 						$('.exServiceMsg').html('<p class="alert alert-success" style="padding:7px;">'+data+'</p>').show();
 						$('#ex'+exId).remove();
-						hideMsg();
+						hideMsg('exServiceMsg');
 					}				
 				}
 			});
 		}
 	}
 
-	function hideMsg(){
+	function openFAQModal(catId){
+		$('#faqCatId').val(catId);
+		$.ajax({
+			url:site_url+'Admin/Admin/getFAQS/'+catId,
+			type:'POST',			
+			success:function(data){
+				$('#faqList').empty().html(data);
+				$('#FAQsModel').modal('show');
+			}
+		});
+	}
+
+	$('#storeFAQs').on('click', function(){
+		var catId = $('#faqCatId').val();
+		var question = $('#question').val();
+		var answer = $('#answer').val();
+		$.ajax({
+			url:site_url+'Admin/Admin/addFAQs/'+catId,
+			type:'POST',
+			data:{question:question,answer:answer},			
+			success:function(data){
+				if(data != ""){
+					$('.faqsMsg').html('<p class="alert alert-success" style="padding:7px;">FAQs addedd suvvessfully</p>').show();
+					$('#faqsMsg').val('');
+					$('#faqList').empty().html(data);
+					hideMsg('faqsMsg');
+				}				
+			}
+		});
+	});
+
+	function removeFAQs(faqId){
+		if(confirm('Are you sure you want to remove this FAQs?')){
+			$.ajax({
+				url:site_url+'Admin/Admin/removeFAQs/'+faqId,
+				type:'POST',			
+				success:function(data){
+					if(data != ""){
+						$('.faqsMsg').html('<p class="alert alert-success" style="padding:7px;">'+data+'</p>').show();
+						$('#faqs'+faqId).remove();
+						hideMsg('faqsMsg');
+					}				
+				}
+			});
+		}
+	}
+
+	function hideMsg(cName){
     setTimeout(function() {
-      $('.exServiceMsg').fadeOut('slow', function() {
+      $('.'+cName).fadeOut('slow', function() {
         $(this).hide();
       });
     }, 3000);

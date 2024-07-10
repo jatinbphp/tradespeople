@@ -31,10 +31,10 @@
 	</div>
 </div>
 
-<div class="popular-subcategories">
-	<div class="container">
-		<div class="popular-subcategories-slider">
-			<?php if(isset($first_chiled_categories) && count($first_chiled_categories)): ?>
+<?php if(isset($first_chiled_categories) && count($first_chiled_categories)): ?>
+	<div class="popular-subcategories">
+		<div class="container">
+			<div class="popular-subcategories-slider">			
 				<?php foreach($first_chiled_categories as $category): ?>
 					<div>
 						<?php $image_path = FCPATH . 'img/category/' . ($category['cat_image'] ?? ''); ?>
@@ -52,16 +52,16 @@
 							</svg>
 						</a>
 					</div>
-				<?php endforeach ?>
-			<?php endif; ?>
+				<?php endforeach ?>			
+			</div>
 		</div>
 	</div>
-</div>
+<?php endif; ?>
 
-<div class="service-list">
-	<div class="container">
-		<div class="row">
-			<?php if(!empty($services)): ?>
+<?php if(!empty($services)): ?>
+	<div class="service-list">
+		<div class="container">
+			<div class="row">			
 				<?php foreach($services as $list): ?>
 					<div class="col-sm-3">
 						<div class="tradespeople-box">
@@ -110,22 +110,48 @@
 							</div>
 						</div>									
 					</div>
-				<?php endforeach; ?>
-			<?php endif; ?>
-		</div>
-	</div>
-</div>
-
-<!-- <div class="service-list">
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="tradespeople-box">
-					<?php echo ($category_details['description'] ?? '') ?>
-				</div>							
+				<?php endforeach; ?>			
 			</div>
 		</div>
 	</div>
-</div> -->
+<?php endif; ?>
+
+<?php if(!empty($faqs) && count($faqs)):?>
+	<div class="container" style="padding-bottom: 30px;">
+		<div class="row">
+			<div class="col-sm-12">
+				<h1 class="title text-center">
+					<?php echo ($category_details['cat_name'] ?? '').' FAQs' ?>
+				</h1>
+				<div class="row">
+					<?php if(count($faqs) == 1):?>
+						<?php foreach($faqs as $list):?>
+						<div class="col-sm-12">
+							<div>
+								<b><?php echo $list['question']; ?></b>
+							</div>
+							<div style="margin-top: 10px;">
+								<?php echo $list['answer']; ?>
+							</div>
+						</div>
+						<?php endforeach; ?>
+					<?php endif; ?>
+					<?php if(count($faqs) > 1):?>
+						<?php foreach($faqs as $list):?>
+						<div class="col-sm-6">
+							<div>
+								<b><?php echo $list['question']; ?></b>
+							</div>
+							<div style="margin-top: 10px;">
+								<?php echo $list['answer']; ?>
+							</div>
+						</div>
+						<?php endforeach; ?>
+					<?php endif; ?>	
+				</div>
+			</div>
+		</div>
+	</div>
+<?php endif; ?>
 
 <?php include ("include/footer.php") ?>

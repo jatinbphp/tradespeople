@@ -2377,6 +2377,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['category_details'] = $category;
 		$data['services']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0));
 		$data['categories_data']=$this->getHirarchicalCategoryData();
+		$data['faqs'] = $this->common_model->get_faqs('category_faqs',($category['cat_id'] ?? 0));
 		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat(($category['cat_id'] ?? 0));
 		$this->load->view('site/home_category_details',$data);
 	}

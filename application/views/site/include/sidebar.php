@@ -98,6 +98,31 @@ $settings = $this->common_model->get_all_data('admin');
 	
 	</div>
 	<div class="user-page-menu">
+		<?php if($this->session->userdata('type')==1){ ?>
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+							<span><i class="fa fa-th" aria-hidden="true"></i></span> My Services
+							</a>
+						</h4>
+					</div>
+					<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+                  
+							<p><a href="<?php echo base_url('my-services'); ?>"> <span><i class="fa fa-list-ul" aria-hidden="true"></i></span> List Service</a></p>
+                   
+							<p><a href="<?php echo base_url('my-services'); ?>"> <span><i class="fa fa-gear" aria-hidden="true"></i></span> Manage Service</a></p>
+                      
+							<p><a href="#"> <span><i class="fa fa-cart-plus" aria-hidden="true"></i></span> Orders</a></p>
+									
+						</div>
+					</div>
+				</div>
+			</div>
+		<?php } ?>
+
 		<?php if($page_name=='dashboard'){ ?>
       <p>
 				<a href="<?php echo base_url('dashboard'); ?>" class="active"><span><i class="fa fa-home" aria-hidden="true"></i></span> My Account</a>
@@ -170,9 +195,6 @@ $settings = $this->common_model->get_all_data('admin');
 					</div>
 				</div>
 			</div>
-
-			<p><a href="<?php echo base_url('my-services'); ?>"><span><i class="fa fa-th" aria-hidden="true"></i></span> My Services</a></p>
-
 			<p><a href="<?php echo base_url('verify'); ?>"><span><i class="fa fa-unlock-alt" aria-hidden="true"></i></span> Account Verification</a></p>
 
 			<?php if($settings[0]['payment_method'] == 1){?>

@@ -264,8 +264,10 @@ class Admin extends CI_Controller
 
             }
 
+            $action .= '<a href="javascript:void(0);" class="btn btn-warning btn-xs" style="margin-top:1px" onclick="openFAQModal('.$member->cat_id.')">FAQs</a> ';   
+
             if($member->cat_parent == 0){
-                $action .= '<a href="javascript:void(0);" class="btn btn-primary btn-xs" style="margin-top:1px" onclick="openExServiceModdal('.$member->cat_id.')">Extra Service</a> ';    
+                $action .= '<a href="javascript:void(0);" class="btn btn-primary btn-xs" style="margin-top:1px" onclick="openExServiceModal('.$member->cat_id.')">Extra Service</a> ';    
             }            
 
             $action .= '
@@ -2966,6 +2968,67 @@ class Admin extends CI_Controller
         $run = $this->Common_model->delete(['id' => $exId], 'extra_service');
         if($run){
             echo 'Extra service deleted successfully.';
+        }else{
+            echo 'Something is wrong!!!';
+        }
+    }
+
+    public function getFAQS($catId=""){
+        $faqs = $this->Common_model->get_faqs('category_faqs',$catId);
+        $tr = '';
+        if(!empty($faqs)){
+            $i = 1;
+            foreach($faqs as $list){
+                $tr .= '<tr id="faqs'.$list['id'].'">
+                            <td>'.$i.'</td>
+                            <td>
+                            <h5 class="text-bold">Question:</h5>
+                            '.$list['question'].'
+                            <br><h5 class="text-bold">Answer:</h5>
+                            '.$list['answer'].'
+                            </td>
+                            <td><button class="btn btn-danger" onclick="removeFAQs('.$list['id'].')"><i class="fa fa-trash"></i></button></td>
+                            </tr>';
+                    $i++;
+            }
+        }
+        echo $tr;
+    }
+
+    public function addFAQs($catId=""){
+        $data = array(
+            'category_id'=>$catId,
+            'question'=>$this->input->post('question'),             
+            'answer'=>$this->input->post('answer'),             
+        );        
+        $run = $this->Common_model->insert('category_faqs',$data);
+        $tr = '';
+        if($run){
+            $faqs = $this->Common_model->get_faqs('category_faqs',$catId);
+            if(!empty($faqs)){
+                $i = 1;
+                foreach($faqs as $list){
+                    $tr .= '<tr id="faqs'.$list['id'].'">
+                            <td>'.$i.'</td>
+                            <td>
+                            <h5 class="text-bold">Question:</h5>
+                            '.$list['question'].'
+                            <br><h5 class="text-bold">Answer:</h5>
+                            '.$list['answer'].'
+                            </td>
+                            <td><button class="btn btn-danger" onclick="removeFAQs('.$list['id'].')"><i class="fa fa-trash"></i></button></td>
+                            </tr>';
+                    $i++;
+                }
+            }            
+        }
+        echo $tr;
+    }
+
+    public function removeFAQs($faqId=''){
+        $run = $this->Common_model->delete(['id' => $faqId], 'category_faqs');
+        if($run){
+            echo 'FAQS deleted successfully.';
         }else{
             echo 'Something is wrong!!!';
         }
