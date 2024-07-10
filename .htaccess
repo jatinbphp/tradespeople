@@ -1,12 +1,5 @@
-<<<<<<< HEAD
 RewriteEngine on
 RewriteCond $1 !^(index\.php|resources|robots\.txt)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-=======
-RewriteEngine on
-RewriteCond $1 !^(index\.php|resources|robots\.txt)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
->>>>>>> 5a17caf2e72b8938fcd8f7621219a52614fbb9e3
 RewriteRule ^(.*)$ index.php?/$1 [QSA,L]
