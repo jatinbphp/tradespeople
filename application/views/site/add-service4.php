@@ -2,7 +2,7 @@
 	.tox-toolbar__primary, .tox-editor-header{
 		display:none !important;
 	}
-	#profile {
+	#videoprofile {
 		display: none;
 	}
 	#imageContainer1 {
@@ -40,109 +40,38 @@
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
 </style>
-<div class="acount-page membership-page">
-	<div class="container">
-		<div class="user-setting">
-			<div class="row">
-				<div class="col-sm-3">
-					<?php include 'include/sidebar.php'; ?>
-				</div>
-				<div class="col-sm-9">
-					<div class="user-right-side">
-						<h1>Add Service</h1> 
-						<form action="<?= site_url().'users/storeServices4'; ?>" id="update_service" method="post" enctype="multipart/form-data">  
-							<div class="edit-user-section">
-								<div class="msg"><?= $this->session->flashdata('msg');?></div>
-								<div class="row">
-									<div class="col-sm-12">
-										<h4 class="text-info">
-											Show case your service in a service gallery
-										</h4>
-										<span>
-											Encourage buyer to choose your service by featuring a variety of your work.
-										</span>
-										<hr>
-										<div class="" id="video-div" style="border-bottom:1px solid #b0c0d3;">
-											<h4>
-												Get image guidelines
-											</h4>
-											<label class="col-md-12 control-label" for="" style="padding: 0;">
-												Video (one only)
-											</label>
-											<span>
-												Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
-											</span>
+<form action="<?= site_url().'users/storeServices4'; ?>" method="post" enctype="multipart/form-data">  
+	<div class="edit-user-section">
+		<div class="msg"><?= $this->session->flashdata('msg');?></div>
+		<div class="row">
+			<div class="col-sm-12">
+				<h4 class="text-info">
+					Show case your service in a service gallery
+				</h4>
+				<span>
+					Encourage buyer to choose your service by featuring a variety of your work.
+				</span>
+				<hr>
+				<div class="" id="video-div" style="border-bottom:1px solid #b0c0d3;">
+					<h4>
+						Get image guidelines
+					</h4>
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Video (one only)
+					</label>
+					<span>
+						Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
+					</span>
 
-											<div id="imageContainer1" class="file-upload-btn imgUp">
-												<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
-												 <div class="btn-text">Drag & drop video or <span>Browser</span></div>
-												 <input type="file" name="video" id="profile" class="form-control input-md" accept="video/*" onchange="return seepreview();">
-											</div>
-											<div id="imgpreview"></div>
-										</div>
-										
-										<div id="image-div" style="margin-top: 10px; border-bottom:1px solid #b0c0d3;">
-											<label class="col-md-12 control-label" for="" style="padding: 0;">
-												Images (up to 3)
-											</label>
-											<span>
-												Get noticed by the right buyer with visual examples of your services.
-											</span>
-
-											<div class="row loader">
-												<div id="loader1" class="loader_ajax_small"></div>
-												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
-													<div class="file-upload-btn addWorkImage imgUp">
-														<img src="img/dImg.png" id="defaultImg">
-														<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
-														<input type="file" name="workImage" id="profile2">		
-													</div>
-												</div>
-											</div>
-											<input type="hidden" name="multiImgIds" id="multiImgIds">
-											<div class="row" id="previousImg"></div>
-										</div>
-										
-										<div id="doc-div" style="margin-top: 10px;">
-											<label class="col-md-12 control-label" for="" style="padding: 0;">
-												Documents (up to 2)
-											</label>
-											<span>
-												Show some of the best work you created in a document (PDFs only)
-											</span>
-
-											<div class="row loader">
-												<div id="loader2" class="loader_ajax_small"></div>
-												<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
-													<div class="file-upload-btn addWorkDoc imgUp">
-														<img src="img/defaultDoc.png" id="defaultDoc">
-														<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
-														<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
-													</div>
-												</div>
-											</div>
-											<input type="hidden" name="multiDocIds" id="multiDocIds">
-											<div class="row" id="previousDoc"></div>
-										</div>										
-									</div>														
-								</div>																
-							</div>                        
-							<!-- Edit-section-->
-							  
-							<div class="edit-user-section gray-bg">
-								<div class="row nomargin">
-									<div class="col-sm-12">
-										<button type="submit" class="btn btn-primary submit_btn">Continue</button>
-									</div>                                 
-								</div>
-							</div>                        
-							<!-- Edit-section-->
-						</form>
+					<div id="imageContainer1" class="file-upload-btn imgUp">
+						<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
+						<div class="btn-text">Drag & drop video or <span>Browser</span></div>
+						<input type="file" name="video" id="videoprofile" class="form-control input-md" accept="video/*" onchange="return seeVideoPreview();">
 					</div>
 					<div id="imgpreview"></div>
 				</div>
-				<hr>
-				<div id="image-div">
+				
+				<div id="image-div" style="margin-top: 10px; border-bottom:1px solid #b0c0d3;">
 					<label class="col-md-12 control-label" for="" style="padding: 0;">
 						Images (up to 3)
 					</label>
@@ -151,7 +80,7 @@
 					</span>
 
 					<div class="row loader">
-						<div class="loader_ajax_small"></div>
+						<div id="loader1" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 							<div class="file-upload-btn addWorkImage imgUp">
 								<img src="img/dImg.png" id="defaultImg">
@@ -161,10 +90,27 @@
 						</div>
 					</div>
 					<input type="hidden" name="multiImgIds" id="multiImgIds">
-					<div id="previousImg"></div>
+					<div class="row" id="previousImg">
+						<?php if(isset($serviceData['multi_images']) && $serviceData['multi_images']): ?>
+							<?php foreach($serviceData['multi_images'] as $id => $image): ?>
+								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+								<div class="boxImage imgUp">
+									<div class="imagePreviewPlus">
+										<div class="text-right">
+											<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
+												<i class="fa fa-trash"></i>
+											</button>
+										</div>
+										<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
+									</div>
+								</div>
+							</div>
+							<?php endforeach ?>
+						<?php endif; ?>
+					</div>
 				</div>
-
-				<div id="image-div">
+				
+				<div id="doc-div" style="margin-top: 10px;">
 					<label class="col-md-12 control-label" for="" style="padding: 0;">
 						Documents (up to 2)
 					</label>
@@ -173,9 +119,9 @@
 					</span>
 
 					<div class="row loader">
-						<div class="loader_ajax_small"></div>
+						<div id="loader2" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
-							<div class="file-upload-btn addWorkImage imgUp">
+							<div class="file-upload-btn addWorkDoc imgUp">
 								<img src="img/defaultDoc.png" id="defaultDoc">
 								<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
 								<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
@@ -183,27 +129,39 @@
 						</div>
 					</div>
 					<input type="hidden" name="multiDocIds" id="multiDocIds">
-					<div id="previousDoc"></div>
+					<div class="row" id="previousDoc">
+						<?php if(isset($serviceData['multi_files']) && $serviceData['multi_files']): ?>
+							<?php foreach($serviceData['multi_files'] as $id => $file): ?>
+								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+									<div class="boxImage imgUp">
+										<div class="imagePreviewPlus">
+											<div class="text-right">
+												<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
+											</div>
+											<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="PDF">
+										</div>
+									</div>
+								</div>
+							<?php endforeach ?>
+						<?php endif; ?>
+					</div>
 				</div>										
 			</div>														
 		</div>																
-	</div>                        
-	<!-- Edit-section-->
-		
+	</div>
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
 			<div class="col-sm-12">
 				<button type="submit" class="btn btn-primary submit_btn">Continue</button>
 			</div>                                 
 		</div>
-	</div>                        
-	<!-- Edit-section-->
+	</div>
 </form>
 
 <!--****************FILE UPLOAD FUNCTION CODE START****************-->
 <script>
 	document.getElementById('imageContainer1').addEventListener('click', function() {
-		document.getElementById('profile').click();
+		document.getElementById('videoprofile').click();
 	});
 
 	document.getElementById('imageContainer2').addEventListener('click', function() {
@@ -214,7 +172,7 @@
 		document.getElementById('profile3').click();
 	});
 
-	document.getElementById('profile').addEventListener('change', function(e) {
+	document.getElementById('videoprofile').addEventListener('change', function(e) {
 		var file = e.target.files[0];
 		var reader = new FileReader();
 
@@ -227,8 +185,8 @@
 		reader.readAsDataURL(file);
 	});
 
-	function seepreview(){
-	  	var fileUploads = $("#profile")[0];
+	function seeVideoPreview(){
+	  	var fileUploads = $("#videoprofile")[0];
 	    var file = fileUploads.files[0];
 	    
 	    // Check if the file is a video
@@ -272,14 +230,15 @@
 		var file_data = $('#profile2').prop('files')[0];
 
 		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
-	    if (validImageTypes.indexOf(file_data.type) === -1) {
-	        alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
-	        return false;
-	    }
+        if (validImageTypes.indexOf(file_data.type) === -1) {
+            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+            return false;
+        }
 
 		var form_data = new FormData();
 		form_data.append('file', file_data);
 		form_data.append('service_id', 0);
+		form_data.append('type', 'image');
 		$('#loader1').show();
 		$('#previousImg').css('opacity', '0.6');
 		$.ajax({
@@ -331,11 +290,18 @@
     		alert("Up to 2 PDFs can be uploaded for your service.");
     		return false;
     	}
-
 		var file_data = $('#profile3').prop('files')[0];
+
+		var validFileTypes = ["application/pdf"];
+		if (validFileTypes.indexOf(file_data.type) === -1) {
+			alert("Please upload a valid PDF file.");
+			return false;
+		}
+		
 		var form_data = new FormData();
 		form_data.append('file', file_data);
 		form_data.append('service_id', 0);
+		form_data.append('type', 'file');
 		$('#loader2').show();
 		$('#previousDoc').css('opacity', '0.6');
 		$.ajax({
@@ -396,5 +362,3 @@
         $('#'+divId).val(newHiddenFieldValue);        
     }
 </script>
-<!--****************FILE UPLOAD FUNCTION CODE END****************-->
-<?php include 'include/footer.php'; ?>

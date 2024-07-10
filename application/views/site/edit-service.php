@@ -51,7 +51,7 @@
 				<div class="col-sm-9">
 					<div class="user-right-side">
 						<h1>Edit Service</h1> 
-						<form action="<?= site_url().'users/updateServices/'.$service['id']; ?>" id="update_service" method="post" enctype="multipart/form-data">  
+						<form action="<?= site_url().'users/updateServices/'.$service['id']; ?>" method="post" enctype="multipart/form-data">  
 							<div class="edit-user-section">
 								<div class="msg"><?= $this->session->flashdata('msg');?></div>
 								<div class="row">

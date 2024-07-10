@@ -2200,6 +2200,7 @@ public function exists_refferals() {
 	public function dragDropService(){
 		$data['status'] = 0;
 		$service_id = $this->input->post('service_id');
+		$type = $this->input->post('type');
 		if(!empty($_FILES)){
 			$tempFile = $_FILES['file']['tmp_name'];
 			$targetFile = 'img/services/'. $_FILES['file']['name'];
@@ -2212,6 +2213,24 @@ public function exists_refferals() {
 				$data['status'] = 1;
 				$data['id'] = $uploaded;
 				$data['imgName'] = base_url().'img/services/'.$fileName;
+				$serviceData = $this->session->userdata('service_data');
+				if($type == 'file'){
+					if(isset($serviceData['multi_files']) && $serviceData['multi_files']){
+						$multiFiles = $serviceData['multi_files'];
+						$multiFiles[$uploaded] = $data['imgName'];
+					}else{
+						$multiFiles[$uploaded] = $data['imgName'];
+					}
+					$this->setServiceData(['multi_files' => $multiFiles]);
+				} else {
+					if(isset($serviceData['multi_images']) && $serviceData['multi_images']){
+						$multiImages = $serviceData['multi_images'];
+						$multiImages[$uploaded] = $data['imgName'];
+					}else{
+						$multiImages[$uploaded] = $data['imgName'];
+					}
+					$this->setServiceData(['multi_images' => $multiImages]);
+				}
 			}
 		}
 		echo json_encode($data);
@@ -2236,6 +2255,7 @@ public function exists_refferals() {
 		if($this->session->userdata('user_id')) {
 			$data['cities'] = $this->search_model->getJobCities();
 			$data['category']=$this->common_model->get_parent_category('category');
+			$sesData = $this->session->userdata('store_service2');
 			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$sesData['category']);
       		$this->load->view('site/add-service',$data);
     	} 
@@ -2296,7 +2316,7 @@ public function exists_refferals() {
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('msg','<div class="alert alert-danger">' .validation_errors() . '</div>');
 		} else {
-			$newImg = '';		
+			$newImg = '';
 			if($_FILES['image']['name']){ 
 				$config['upload_path']="img/services";
 				$config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|avi|wmv|mkv';
@@ -2312,11 +2332,15 @@ public function exists_refferals() {
 			$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 			$insert['description'] = trim($this->input->post('description'));
 			$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
+			$insert['location'] = trim($this->input->post('location'));
+			$insert['price'] = trim($this->input->post('price'));
 			$insert['image'] = $newImg;
 			$insert['status'] = 0;
 
 			$this->session->set_userdata('store_service1',$insert);
-			redirect('add-service2'); 
+			$this->session->set_userdata('next_step',2);
+			$this->setServiceData($insert);
+			redirect('add-service'); 
 		}
 	}
 
@@ -2330,15 +2354,21 @@ public function exists_refferals() {
 			$insert['category'] = $this->input->post('category');
 			$insert['sub_category'] = $this->input->post('sub_category');
 			$insert['service_type'] = $this->input->post('service_type');
-			$insert['plugins'] = json_decode($this->input->post('plugins'));
-
+			if(!empty($this->input->post('plugins'))){
+				$insert['plugins'] = implode(',', $this->input->post('plugins'));
+			} else {
+				$insert['plugins'] = '';
+			}
 			$this->session->set_userdata('store_service2',$insert);
+			$this->setServiceData($insert);
 
 			$ex_service=$this->common_model->get_ex_service('extra_service',$insert['category']);
 			if(!empty($ex_service)){
-				redirect('add-service3');
+				$this->session->set_userdata('next_step',3);
+				redirect('add-service');
 			}else{
-				redirect('add-service4');
+				$this->session->set_userdata('next_step',4);
+				redirect('add-service');
 			}
 		}			
 	}
@@ -2351,7 +2381,9 @@ public function exists_refferals() {
 			$insert['extra_service'] = '';
 			$this->session->set_userdata('store_service3',$insert);
 		}
-		redirect('add-service4'); 			
+		$this->setServiceData($insert);
+		$this->session->set_userdata('next_step',4);
+		redirect('add-service'); 			
 	}
 
 	public function storeServices4($value=''){
@@ -2367,7 +2399,8 @@ public function exists_refferals() {
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
 
-		$newVid = '';		
+		$newVid = '';
+
 		if($_FILES['video']['name']){ 
 			$config['upload_path']="img/services";
 			$config['allowed_types'] = 'mp4|avi|wmv|mkv';
@@ -2395,13 +2428,23 @@ public function exists_refferals() {
 				foreach($mDocs as $docId){
 					$run = $this->common_model->update('service_images',array('id'=>$docId),$input);
 				}
-			}			
+			}
+			$this->setServiceData($insert);
 		}
-		redirect('add-service5');
+		$this->session->set_userdata('next_step',5);
+		redirect('add-service');
 	}
 
 	public function storeServices5($value=''){
-		$faqs = $this->input->post('faq');
+		$faqs = $this->input->post('faq', []);
+		$serviceData = $this->session->userdata('service_data');
+		if(isset($serviceData['faqs']) && $serviceData['faqs']){
+			$oldFaqs = $serviceData['faqs'];
+			$allFaqs = array_merge($oldFaqs, $faqs);
+		}else{
+			$allFaqs = $faqs;
+		}
+		$this->setServiceData(['faqs' => $allFaqs]);
 		if(!empty($faqs) && count($faqs) > 0){
 			foreach ($faqs as $key => $list) {
 				$insert['service_id'] = $this->session->userdata('latest_service');
@@ -2410,7 +2453,8 @@ public function exists_refferals() {
 				$run = $this->common_model->insert('service_faqs', $insert);
 			}
 		}
-		redirect('add-service6');
+		$this->session->set_userdata('next_step',6);
+		redirect('add-service');
 	}
 
 	public function storeServices6($value=''){
@@ -2426,9 +2470,8 @@ public function exists_refferals() {
 			$insert['time_slot'] = $this->input->post('time_slot');
 			$insert['weekend_available'] = $this->input->post('weekend_available');
 			$insert['not_available_days'] = $this->input->post('not_available_days');
-
 			$run = $this->common_model->insert('service_availability', $insert);
-
+		
 			if($run){
 				$input['status'] = 1;
 				$run = $this->common_model->update('my_services',array('id'=>$this->session->userdata('latest_service')),$input);	
@@ -2436,30 +2479,32 @@ public function exists_refferals() {
 				$this->session->unset_userdata('store_service1');
 				$this->session->unset_userdata('store_service2');
 				$this->session->unset_userdata('store_service3');
-				$this->session->unset_userdata('latest_service');							
+				$this->session->unset_userdata('latest_service');
+				$this->reserServiceTabData();							
 
 				$this->session->set_flashdata('msg','<div class="alert alert-success">Your service has been posted successfully.</div>');
 			} else {
 				$this->session->set_flashdata('msg','<div class="alert alert-danger">Something is wrong. Your Service is not posted!!!</div>');
 			}
+
 			redirect('my-services');
 		}				
 	}
 
 	public function editServices($id=""){
 		if($this->session->userdata('user_id')) {
-      $user_id = $this->session->userdata('user_id');
+      		$user_id = $this->session->userdata('user_id');
 			$data['service'] = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
 			$category=$this->common_model->get_all_category('category');
-      if(!empty($category)){
-      	foreach($category as $key => $list){
-      		$category[$key]['path'] = $this->common_model->getFullPathId($list['cat_id']);
-      	}
-      }
-      $data['category'] = $category;
+			if(!empty($category)){
+				foreach($category as $key => $list){
+					$category[$key]['path'] = $this->common_model->getFullPathId($list['cat_id']);
+				}
+			}
+			$data['category'] = $category;
 			$data['service_images']=$this->common_model->get_service_image('service_images',$id);
 			$this->load->view('site/edit-service',$data);
-    } 
+    	} 
 	}
 
 	public function updateServices($id=""){
@@ -2542,6 +2587,24 @@ public function exists_refferals() {
 		echo $option;
 	}
 
+	public function setServiceData($data) {
+		$serviceData = $this->session->userdata('service_data');
+		if($serviceData){
+			if($data){
+				$allData = array_merge($serviceData, $data);
+			}
+		} else {
+			$allData = $data;
+		}
+
+		$this->session->set_userdata('service_data', $allData);
+	}
+
+
+	public function reserServiceTabData() {
+		$this->session->unset_userdata('service_data');
+		$this->session->unset_userdata('next_step');
+	}
 	public function deleteAllServices(){
 		$ids = $this->input->post('servicesIds');
 		if(count($ids) > 0){
@@ -2568,5 +2631,6 @@ public function exists_refferals() {
 		}
 	}		
 }	
+
 
 
