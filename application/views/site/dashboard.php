@@ -3,149 +3,138 @@
 <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.min.js"></script>
 <style type="text/css">
-	.trads-offer{
-    color:#FF3500;
-}
-.tradsman-banner .card {
-	background:#fff;
-	border-radius:5px;
-	padding:10px !important;
-	margin-bottom:10px;
-	position: relative;
-	overflow: hidden;
-	padding: 10px 10px 10px 0px !important;
-}
-.tradsman-banner .card:before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 18%;
-	background-color: #fff;
-	height: 100%;
-}
+		.trads-offer{
+	    color:#FF3500;
+	}
+	.tradsman-banner .card {
+		background:#fff;
+		border-radius:5px;
+		padding:10px !important;
+		margin-bottom:10px;
+		position: relative;
+		overflow: hidden;
+		padding: 10px 10px 10px 0px !important;
+	}
+	.tradsman-banner .card:before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 18%;
+		background-color: #fff;
+		height: 100%;
+	}
 
-.tradsman-banner .card p{
-	font-size:18px;
-	font-weight:500;
-	margin: 0;
-}
-#vote_buttons:hover {
-	cursor:pointer;  
-}
-/*
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1; 
-  padding-top: 100px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto; 
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4); 
-}
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 43%;
-}*/
-.emailmsg{
-  text-align: center;
-  background: green;
-  color: white;
-  padding: 10px;
-  font-size: 15px;
-	display: none;
-}
+	.tradsman-banner .card p{
+		font-size:18px;
+		font-weight:500;
+		margin: 0;
+	}
+	#vote_buttons:hover {
+		cursor:pointer;  
+	}
+	/*
+	.modal {
+	  display: none;
+	  position: fixed;
+	  z-index: 1; 
+	  padding-top: 100px;
+	  left: 0;
+	  top: 0;
+	  width: 100%;
+	  height: 100%;
+	  overflow: auto; 
+	  background-color: rgb(0,0,0);
+	  background-color: rgba(0,0,0,0.4); 
+	}
+	.modal-content {
+	  background-color: #fefefe;
+	  margin: auto;
+	  padding: 20px;
+	  border: 1px solid #888;
+	  width: 43%;
+	}*/
+	.emailmsg{
+	  text-align: center;
+	  background: green;
+	  color: white;
+	  padding: 10px;
+	  font-size: 15px;
+		display: none;
+	}
 
-.animate-text {
-	-webkit-backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  -webkit-transform: translate3d(0,0,0);
-}
+	.animate-text {
+		-webkit-backface-visibility: hidden;
+	  -webkit-perspective: 1000;
+	  -webkit-transform: translate3d(0,0,0);
+	}
 
-.animate-text > span {
-  overflow:hidden;
-  white-space:nowrap;
-}
+	.animate-text > span {
+	  overflow:hidden;
+	  white-space:nowrap;
+	}
 
-.animate-text > span:first-of-type {
-  animation: showup 7s;
-/*  background-color: #FFF;*/
-}
+	.animate-text > span:first-of-type {
+	  animation: showup 7s;
+	/*  background-color: #FFF;*/
+	}
 
-.animate-text > span:last-of-type {
-  width:0px;
-/*  animation: reveal 7s;*/
-}
+	.animate-text > span:last-of-type {
+	  width:0px;
+	/*  animation: reveal 7s;*/
+	}
 
-.animate-text > span:last-of-type {
-  animation: slidein 7s;
-}
+	.animate-text > span:last-of-type {
+	  animation: slidein 7s;
+	}
 
-@keyframes showup {
-  0% {opacity:0; padding-left: 40%;}
-  20% {opacity:1; padding-left: 40%}
-  35% {opacity:1; padding-left: 0%}
-  100% {opacity:1; padding-left: 0%}
-}
+	@keyframes showup {
+	  0% {opacity:0; padding-left: 40%;}
+	  20% {opacity:1; padding-left: 40%}
+	  35% {opacity:1; padding-left: 0%}
+	  100% {opacity:1; padding-left: 0%}
+	}
 
-@keyframes slidein {
-  0% { margin-left:-150%; }
-  20% { margin-left:-150%; }
-  35% { margin-left:0%; }
-  100% { margin-left:0%; }
-}
+	@keyframes slidein {
+	  0% { margin-left:-150%; }
+	  20% { margin-left:-150%; }
+	  35% { margin-left:0%; }
+	  100% { margin-left:0%; }
+	}
 
-/*@keyframes slidein {
-  0% { margin-left:40%; }
-  20% { margin-left:40%; }
-  35% { margin-left:0%; }
-  100% { margin-left:0%; }
-}*/
+	/*@keyframes slidein {
+	  0% { margin-left:40%; }
+	  20% { margin-left:40%; }
+	  35% { margin-left:0%; }
+	  100% { margin-left:0%; }
+	}*/
 
-/*@keyframes slidein {
-  0% { margin-left:-800px; }
-  20% { margin-left:-800px; }
-  35% { margin-left:0px; }
-  100% { margin-left:0px; }
-}*/
+	/*@keyframes slidein {
+	  0% { margin-left:-800px; }
+	  20% { margin-left:-800px; }
+	  35% { margin-left:0px; }
+	  100% { margin-left:0px; }
+	}*/
 
-@keyframes reveal {
-  0% {opacity:0;width:0px;}
-  20% {opacity:1;width:0px;}
-  30% {width:355px;}
-  100% {opacity:1;}
-/*  100% {opacity:0;width:355px;}*/
-}
-
-
-
+	@keyframes reveal {
+	  0% {opacity:0;width:0px;}
+	  20% {opacity:1;width:0px;}
+	  30% {width:355px;}
+	  100% {opacity:1;}
+	/*  100% {opacity:0;width:355px;}*/
+	}
 </style>
 <?php if($this->session->userdata('type')==1) { ?>
-<div class="acount-page membership-page">
-	
+<div class="acount-page membership-page">	
 	<div class="container">
-
-		
-
 		<div class="row">
-
 			<div class="col-md-3">
 				<!-- sidebar here -->
 				<?php include 'include/sidebar.php'; ?> 
 				<!-- sidebar here -->
-			</div>
-
- 
+			</div> 
 			<div class="col-md-9">
 				 <?php 
-
  if($this->session->userdata('type')==1){
 	$settings = $this->db->where('id', 3)->get('admin_settings')->row();
 	if($settings->banner == 'enable'){
@@ -168,7 +157,7 @@
 				<?php if($this->session->userdata('type')==1){?>
 				
 				<div class="mjq-sh">
-					<h2><strong>Your to do list</strong>  </h2>
+					<h2><strong>Key Metrics</strong>  </h2>
 				</div>
 				
 				<?php if($this->session->flashdata('error')) { ?>
@@ -182,52 +171,30 @@
 				<div class="verification-checklist">
 					<ul class="list">
 						<li>
-							<div class="title">Email address</div>
-							<?php if($user_profile['u_email_verify']==1){ ?>
-							<i class="fa fa-check" aria-hidden="true"></i>      
-							<div class="sub-title">Verified</div>
-
-			
-							<?php }else{ ?> 
-							<i class="fa fa-times" aria-hidden="true"></i>  
-							<div class="sub-title"><a href="<?php echo site_url(); ?>email-verify">Verify Now</a></div>
-							<?php } ?>
+							<div class="title">Sale</div>
+							<div class="sub-title">
+								<i class="fa fa-gbp"></i>0.00
+							</div>
 						</li>
 
 						<li>
-							<div class="title">Edit Profile</div>
-							<?php if(empty($user_profile['about_business'])){ ?>
-								<i class="fa fa-times" aria-hidden="true"></i>
-								<div class="sub-title"><a href="<?= site_url().'edit-profile'?>">Complete Now</a></div>
-							<?php }else{?>
-								<i class="fa fa-check" aria-hidden="true"></i>
-								<div class="sub-title"><a href="<?= site_url().'edit-profile'?>" style="color:#464c5b;">Completed</a></div>
-							<?php }?>
+							<div class="title">Open Orders</div>
+							<div class="sub-title">
+								0
+							</div>
 						</li>
 
 						<li>
-							<div class="title">Phone number</div>
-							<?php if($user_profile['is_phone_verified'] != 0){ ?>
-							<i class="fa fa-check" aria-hidden="true"></i>
-							<div class="sub-title">Verified</div>
-							<?php }else{ ?>
-							<i class="fa fa-times" aria-hidden="true"></i>
-							<div class="sub-title"><a href="<?php echo site_url().'users/verify_phone'; ?>">Verify Now</a></div>
-							<?php } ?>
+							<div class="title">Buyer Messages</div>
+							<div class="sub-title">
+								0
+							</div>
 						</li>
 						<li>
-							<div class="title">Address</div>
-							<?php if($user_profile['u_status_add']==0){ ?>
-							<i class="fa fa-times" aria-hidden="true"></i>
-							<div class="sub-title"><a data-target="#address_verify" href="" data-toggle="modal">Verify Now</a></div>
-							<?php }else if($user_profile['u_status_add']==1){ ?>
-							<i class="fa fa-hourglass" aria-hidden="true"></i>
-							<div class="sub-title"><p>Under Review</p></div>
-							<?php }else if($user_profile['u_status_add']==2){ ?>
-							<i class="fa fa-check" aria-hidden="true"></i>
-							<div class="sub-title">Verified</div>
-							<?php } ?>
-
+							<div class="title">Total Balance</div>
+							<div class="sub-title">
+								<i class="fa fa-gbp"></i>0.00
+							</div>
 						</li>
 						<div class="modal fade popup" id="address_verify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 							<div class="modal-dialog" role="document">
@@ -272,7 +239,7 @@
 								</div>
 							</div>
 						</div>
-						<li>
+						<!--<li>
 							<div class="title">Verification ID card</div>
 							<?php if($user_profile['u_id_card_status']==0){ ?>
 							<i class="fa fa-times" aria-hidden="true"></i>
@@ -285,7 +252,7 @@
 							<div class="sub-title">Verified</div>
 							<?php } ?>
 
-						</li>
+						</li>-->
 						<div class="modal fade popup" id="idcard_verify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 							<div class="modal-dialog" role="document">
 								<div class="modal-content">
@@ -329,7 +296,7 @@
 								</div>
 							</div>
 						</div>
-						<li>
+						<!--<li>
 							<div class="title">Public Liability</div>
 							<?php if($user_profile['u_status_insure']==0){ ?>
 							<i class="fa fa-times" aria-hidden="true"></i>
@@ -341,7 +308,7 @@
 							<i class="fa fa-check" aria-hidden="true"></i>
 							<div class="sub-title">Verified</div>
 							<?php } ?>
-						</li>
+						</li>-->
 						<div class="modal fade popup" id="public_liability" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 							<div class="modal-dialog" role="document">
 								<div class="modal-content">
@@ -624,144 +591,145 @@
 				<?php } ?>
 				
 				<div class="mjq-sh">
-					<h2><strong>Work in Progress</strong> </h2>
+					<h2><strong>Active Orders</strong> </h2>
 				</div> 
-				
-				<?php if($work_progress){ ?> 
-				<div class="table-responsive">
-				<table class="table table_nw DataTable">
-					<thead>
-						<tr class="th_class">
-						 <th style="display: none;"></th>
-							<th>Job Id</th> 
-							<th>Job Title</th>
-							<th style="width: 120px;">Category</th>
-							<th>Posted By</th>
-							<?php if($show_buget==1){ ?>
-							<th style="width: 115px;">Budget</th>
-							<?php } ?>
-							<th style="width: 97px;">Postcode / Distance</th>
-							<th>Status</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-   
-					<tbody>
-						<?php 
-						foreach($work_progress as $key=>$list) { 
-						$get_job_detail = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$list['job_id']));
-						$get_users=$this->common_model->GetColumnName('users',array('id'=>$get_job_detail['userid']),array('f_name','l_name')); 
-						$tradesment=$this->common_model->GetColumnName('users',array('id'=>$list['bid_by']),array('trading_name')); 
-						?>
-						<tr class="tr_class">
-							<td style="display: none;"><?php  echo $key+1; ?></td>
-							<td><?php echo $get_job_detail['project_id']; ?></td>
-							<td>
-							<?php
-							if($get_job_detail['direct_hired']==1){
-									$job_title = 'Work for '.$tradesment['trading_name'];
-									} else {
-									$job_title = $get_job_detail['title'];
-							 }
-							?>
-								<a href="<?php echo base_url('details/?post_id='.$list['job_id']); ?>"><?php echo $job_title; ?></a>
-							</td>
-							<td>
-							
-								<?php
-								$selected_lang = explode(',',$get_job_detail['category']);
-								$cat_data='';
-								foreach($category as $row) { 
-									if(in_array($row['cat_id'],$selected_lang)) {
-										$cat_data .= $row['cat_name'].', ';
-									}
-								} 
-								echo rtrim($cat_data,', '); ?>
-							</td>
-							
-							<td>
-								<?php 
-								
-								echo $get_users['f_name'].' '.$get_users['l_name']; ?>
-							</td>
-							<?php if($show_buget==1){ ?>
-							<td style="width: 115px;"><?php echo ($get_job_detail['budget'])?'£'.$get_job_detail['budget']:''; ?><?php echo ($get_job_detail['budget2'])?' - £'.$get_job_detail['budget2']:''; ?></td>
-							<?php } ?>
-							<td>
-									<?php 
-									
-									$len = (strlen($get_job_detail['post_code'])>=7)?4:3;
-									
-									echo strtoupper(substr($get_job_detail['post_code'],0,$len));
-									
-									/*$distance = getDistance($user_data['postal_code'],$get_job_detail['post_code']);
-									
-									if($distance['status']){
-										echo '<br>'.$distance['duration_in_traffic']->text;
-									} */
-									
-									$distance = getDistanceByLatLng($get_job_detail['latitude'],$get_job_detail['longitude'],$user_data['latitude'],$user_data['longitude']);
-									
-									
-									
-									echo '<br>'.$distance.' miles';
-									
-									
-									?>
-							</td>
-							<td> 
-								<?php if($get_job_detail['status']==0 || $get_job_detail['status']==1 || $get_job_detail['status']==3){ ?>
-								
-								<span class="label label-success">Open</span>
-								
-								<?php } if($get_job_detail['status']==7){ ?>
-								
-								<span class="label label-success">In Progress</span>
-								
-								<?php } if($get_job_detail['status']==8){?>
-								
-								<span class="label label-danger">Rejected Award</span>
-								
-								<?php }if($get_job_detail['status']==5){ ?>
-								
-								<span class="label label-success">Completed</span>
-								
-								<?php }if($get_job_detail['status']==4){ ?>
-								
-								<span class="label label-success">Awaiting Acceptance</span>
-								<?php } ?>
-							</td>
-							<td>
-								
-								<?php if($get_job_detail['status']==7){?>
-					
-								<a class="btn btn-anil_btn" href="<?php echo base_url('payments?post_id='.$get_job_detail['job_id']); ?>">View milestones</a> 
-								
-								<?php } else { ?>
-								
-								<a class="btn btn-anil_btn" href="<?php echo base_url('proposals?post_id='.$get_job_detail['job_id']); ?>">View Quotes</a>
-								
-								<?php } ?>
-								
-							</td>
-								
-								
 
-						</tr> 
-						<?php } ?>
-
-					</tbody>
-				</table>
-				</div>
-				<?php }else{ ?>
-					
-				<div class="verify-page">
-					<div  style="background-color:#fff;padding: 10px;" class="">
-						<p>No jobs found.</p>
+				<div class="row" id="OrderList">
+					<div class="col-sm-12">
+						<div class="row">
+							<div class="col-sm-4">
+								
+							</div>
+						</div>
 					</div>
 				</div>
-				<br> <br>
 				
+				<?php if($work_progress){ ?> 
+					<!--<div class="table-responsive">
+						<table class="table table_nw DataTable">
+							<thead>
+								<tr class="th_class">
+								 <th style="display: none;"></th>
+									<th>Job Id</th> 
+									<th>Job Title</th>
+									<th style="width: 120px;">Category</th>
+									<th>Posted By</th>
+									<?php if($show_buget==1){ ?>
+									<th style="width: 115px;">Budget</th>
+									<?php } ?>
+									<th style="width: 97px;">Postcode / Distance</th>
+									<th>Status</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+		   
+							<tbody>
+								<?php 
+								foreach($work_progress as $key=>$list) { 
+								$get_job_detail = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$list['job_id']));
+								$get_users=$this->common_model->GetColumnName('users',array('id'=>$get_job_detail['userid']),array('f_name','l_name')); 
+								$tradesment=$this->common_model->GetColumnName('users',array('id'=>$list['bid_by']),array('trading_name')); 
+								?>
+								<tr class="tr_class">
+									<td style="display: none;"><?php  echo $key+1; ?></td>
+									<td><?php echo $get_job_detail['project_id']; ?></td>
+									<td>
+									<?php
+									if($get_job_detail['direct_hired']==1){
+											$job_title = 'Work for '.$tradesment['trading_name'];
+											} else {
+											$job_title = $get_job_detail['title'];
+									 }
+									?>
+										<a href="<?php echo base_url('details/?post_id='.$list['job_id']); ?>"><?php echo $job_title; ?></a>
+									</td>
+									<td>
+										<?php
+										$selected_lang = explode(',',$get_job_detail['category']);
+										$cat_data='';
+										foreach($category as $row) { 
+											if(in_array($row['cat_id'],$selected_lang)) {
+												$cat_data .= $row['cat_name'].', ';
+											}
+										} 
+										echo rtrim($cat_data,', '); ?>
+									</td>
+									
+									<td>
+										<?php 
+										
+										echo $get_users['f_name'].' '.$get_users['l_name']; ?>
+									</td>
+									<?php if($show_buget==1){ ?>
+									<td style="width: 115px;"><?php echo ($get_job_detail['budget'])?'£'.$get_job_detail['budget']:''; ?><?php echo ($get_job_detail['budget2'])?' - £'.$get_job_detail['budget2']:''; ?></td>
+									<?php } ?>
+									<td>
+											<?php 
+											
+											$len = (strlen($get_job_detail['post_code'])>=7)?4:3;
+											
+											echo strtoupper(substr($get_job_detail['post_code'],0,$len));
+											
+											/*$distance = getDistance($user_data['postal_code'],$get_job_detail['post_code']);
+											
+											if($distance['status']){
+												echo '<br>'.$distance['duration_in_traffic']->text;
+											} */
+											
+											$distance = getDistanceByLatLng($get_job_detail['latitude'],$get_job_detail['longitude'],$user_data['latitude'],$user_data['longitude']);
+											
+											
+											
+											echo '<br>'.$distance.' miles';
+											
+											
+											?>
+									</td>
+									<td> 
+										<?php if($get_job_detail['status']==0 || $get_job_detail['status']==1 || $get_job_detail['status']==3){ ?>
+										
+										<span class="label label-success">Open</span>
+										
+										<?php } if($get_job_detail['status']==7){ ?>
+										
+										<span class="label label-success">In Progress</span>
+										
+										<?php } if($get_job_detail['status']==8){?>
+										
+										<span class="label label-danger">Rejected Award</span>
+										
+										<?php }if($get_job_detail['status']==5){ ?>
+										
+										<span class="label label-success">Completed</span>
+										
+										<?php }if($get_job_detail['status']==4){ ?>
+										
+										<span class="label label-success">Awaiting Acceptance</span>
+										<?php } ?>
+									</td>
+									<td>									
+										<?php if($get_job_detail['status']==7){?>
+							
+										<a class="btn btn-anil_btn" href="<?php echo base_url('payments?post_id='.$get_job_detail['job_id']); ?>">View milestones</a> 
+										
+										<?php } else { ?>
+										
+										<a class="btn btn-anil_btn" href="<?php echo base_url('proposals?post_id='.$get_job_detail['job_id']); ?>">View Quotes</a>
+										
+										<?php } ?>									
+									</td>
+								</tr> 
+								<?php } ?>
+							</tbody>
+						</table>
+					</div>-->
+				<?php }else{ ?>					
+					<!--<div class="verify-page">
+						<div  style="background-color:#fff;padding: 10px;" class="">
+							<p>No jobs found.</p>
+						</div>
+					</div>
+					<br> <br>-->				
 				<?php  } ?>
 
 				<?php  }else{ if($posts){  ?>

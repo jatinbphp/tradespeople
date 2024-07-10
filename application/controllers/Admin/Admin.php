@@ -264,6 +264,10 @@ class Admin extends CI_Controller
 
             }
 
+            if($member->cat_parent == 0){
+                $action .= '<a href="javascript:void(0);" class="btn btn-primary btn-xs" style="margin-top:1px" onclick="openExServiceModdal('.$member->cat_id.')">Extra Service</a> ';    
+            }            
+
             $action .= '
 <div class="modal fade in" id="edit_category' . $member->cat_id . '">
 	<div class="modal-body" >
@@ -2915,5 +2919,55 @@ class Admin extends CI_Controller
         $json['msg'] = 'Selected users have been deleted successfully.';
 		
         echo json_encode($json); 
+    }
+
+    public function getExService($catId=""){
+        $exServices = $this->Common_model->get_ex_service('extra_service',$catId);
+        $tr = '';
+        if(!empty($exServices)){
+            $i = 1;
+            foreach($exServices as $list){
+                $tr .= '<tr id="ex'.$list['id'].'">
+                        <td>'.$i.'</td>
+                        <td>'.$list['ex_service_name'].'</td>
+                        <td><button class="btn btn-danger" onclick="removeExService('.$list['id'].')"><i class="fa fa-trash"></i></button></td>
+                        </tr>';
+                $i++;
+            }
+        }
+        echo $tr;
+    }
+
+    public function addExService($catId=""){
+        $data = array(
+            'category'=>$catId,
+            'ex_service_name'=>$this->input->post('ex_service_name'),             
+        );        
+        $run = $this->Common_model->insert('extra_service',$data);
+        $tr = '';
+        if($run){
+            $exServices = $this->Common_model->get_ex_service('extra_service',$catId);
+            if(!empty($exServices)){
+                $i = 1;
+                foreach($exServices as $list){
+                    $tr .= '<tr id="ex'.$list['id'].'">
+                            <td>'.$i.'</td>
+                            <td>'.$list['ex_service_name'].'</td>
+                            <td><button class="btn btn-danger" onclick="removeExService('.$list['id'].')"><i class="fa fa-trash"></i></button></td>
+                            </tr>';
+                    $i++;
+                }
+            }            
+        }
+        echo $tr;
+    }
+
+    public function removeExService($exId=''){
+        $run = $this->Common_model->delete(['id' => $exId], 'extra_service');
+        if($run){
+            echo 'Extra service deleted successfully.';
+        }else{
+            echo 'Something is wrong!!!';
+        }
     }
 }

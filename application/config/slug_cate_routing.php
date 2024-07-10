@@ -1,5 +1,5 @@
 <?php
-$my_my_sq_li_con = mysqli_connect("localhost","root","","tradespeoplehub");
+$my_my_sq_li_con = mysqli_connect("localhost","pma","nxsolteam","tradespeoplehub");
 
 $my_my_route_sql = "select slug from category where is_delete = 0";
 

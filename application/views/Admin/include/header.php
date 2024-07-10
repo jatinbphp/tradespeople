@@ -474,7 +474,8 @@
 
                       $new_user_count_m = $this->Common_model->check_admin_unread('users', ['is_admin_read' => 0, 'type' => 3], 'id');
 
-                      $total_afiliate_request = $affiliate + $afi_pending_payout + $unreadMessages1 + $new_user_count_m;
+                      // $total_afiliate_request = $affiliate + $afi_pending_payout + $unreadMessages1 + $new_user_count_m;
+                      $total_afiliate_request = 0;
                       $affiliate              = $affiliate + $new_user_count_m;
                       // $new_contact_m = $this->Common_model->check_admin_unread('contact_request',array('is_admin_read'=>0,'type'=>3),'id');
 
@@ -504,7 +505,8 @@
                   $homeown_pending_payout = $this->Common_model->get_marketer_payouts_pending(2);                  
 
                       $homeown            = $this->db->select('*')->from('referrals_earn_list')->join('users', 'users.id = referrals_earn_list.user_id')->where(['users.is_admin_read' => 0, 'referrals_earn_list.referred_type' => 2])->count_all_results();
-                      $total_home_request = $homeown + $homeown_pending_payout;
+                      // $total_home_request = $homeown + $homeown_pending_payout;
+                      $total_home_request = 0;
                   ?>
               <i class="fa fa-pie-chart"></i> <span>Homeowner referrals<?php echo ($total_home_request > 0) ? '<span style="background:red;color:#fff;" class="badge">' . $total_home_request . '</span>' : ''; ?></span>
               <span class="pull-right-container">

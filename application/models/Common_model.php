@@ -2142,6 +2142,14 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
+	public function get_ex_service($table, $id)
+	{
+		$this->db->where('category', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get($table);
+		return $query->result_array();
+	}
+
 	function get_all_local_category($table)
 	{
 
@@ -2182,6 +2190,11 @@ class Common_model extends CI_Model
         $parentFullPath = $this->getFullPathId($category['cat_parent']);
         return $parentFullPath ? $parentFullPath . '-> ' . $category['cat_name'] : $category['cat_name'];
     }
+
+	public function getAllChiledCat($id)
+	{
+		return $this->common_model->GetAllData('category', array('cat_parent' => $id, 'is_delete' => 0), 'cat_id');
+	}
 
 	function get_all_packages($table)
 	{
@@ -2648,6 +2661,24 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
+	public function getServiceByCategoriesId($categoryId)
+	{
+		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
+		$this->db->from('my_services ms');
+		$this->db->join('category c', 'ms.category = c.cat_id', 'left');
+		$this->db->join('users u', 'ms.user_id = u.id', 'left');
+		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
+		$this->db->where('ms.status', 1);
+		$this->db->where('ms.sub_category', $categoryId);
+		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');
+		$this->db->order_by('average_rating', 'DESC');
+		$this->db->limit(500);
+
+		$query = $this->db->get();
+		return $query->result_array();
+
+	}
+
 	function get_chat_list($id)
 	{
 		$query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id group by post_id order by MAX(id) desc");
@@ -2978,5 +3009,36 @@ class Common_model extends CI_Model
 		} else {
 			return false;
 		}
+	}
+
+	public function checkFile($image){
+		$image_path = FCPATH . $image;
+
+		if (isset($image) && file_exists($image_path)) {
+		    $mimeType = mime_content_type($image_path);
+
+		    // Define allowed image and video MIME types
+		    $imageMimeTypes = ['image/jpg','image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+		    $videoMimeTypes = ['video/mp4', 'video/avi', 'video/mpeg', 'video/quicktime', 'video/webm'];
+
+		    if (in_array($mimeType, $imageMimeTypes)) {
+		        // It's an image
+		        $mediaTag = '<img src="' . base_url() . $image . '" alt="service" style="width: 65px;" />';
+		    } elseif (in_array($mimeType, $videoMimeTypes)) {
+		        // It's a video
+		        $mediaTag = '<video width="100" height="62" controls>
+		                        <source src="' . base_url() . $image . '" type="' . $mimeType . '">
+		                        Your browser does not support the video tag.
+		                     </video>';
+		    } else {
+		        // It's neither an image nor a video
+		        $mediaTag = '<img src="' . base_url('img/default-image.jpg') . '" alt="service" style="width: 65px;" />';
+		    }
+		} else {
+		    // File does not exist, show default image
+		    $mediaTag = '<img src="' . base_url('img/default-image.jpg') . '" alt="service" style="width: 65px;" />';
+		}
+
+		echo $mediaTag;
 	}
 }

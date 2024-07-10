@@ -2,60 +2,7 @@
 
 <link href="css/jquery-ui.css" rel="stylesheet"> 
 <script type="text/javascript" src="js/jquery-ui.js"></script> 
-
-<div class="categories-menu-main">
-	<div class="container">
-		<nav class="categories-menu">
-			<button class="left"><span class="icon-chevron"><svg width="8" height="15" viewBox="0 0 8 15" xmlns="http://www.w3.org/2000/svg"><path d="M7.2279 0.690653L7.84662 1.30934C7.99306 1.45578 7.99306 1.69322 7.84662 1.83968L2.19978 7.5L7.84662 13.1603C7.99306 13.3067 7.99306 13.5442 7.84662 13.6907L7.2279 14.3094C7.08147 14.4558 6.84403 14.4558 6.69756 14.3094L0.153374 7.76518C0.00693607 7.61875 0.00693607 7.38131 0.153374 7.23484L6.69756 0.690653C6.84403 0.544184 7.08147 0.544184 7.2279 0.690653Z"></path></svg></span></button>
-			<ul class="categories">
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a>
-					<ul class="menu-panel">
-						<ul class="menu-bucket">
-							<li><a href="#">Data Science ML</a></li>
-							<li><a href="#">Machine Learning new</a></li>
-							<li><a href="#">Computer Vision</a></li>
-							<li><a href="#">NLP</a></li>
-							<li><a href="#">Deep Learning</a></li>
-							<li><a href="#">Generative Models</a></li>
-							<li><a href="#">Time Series Analysis</a></li>
-						</ul>
-						<ul class="menu-bucket">
-							<li><a href="#">Data Science ML</a></li>
-							<li><a href="#">Machine Learning new</a></li>
-							<li><a href="#">Computer Vision</a></li>
-							<li><a href="#">NLP</a></li>
-							<li><a href="#">Deep Learning</a></li>
-							<li><a href="#">Generative Models</a></li>
-							<li><a href="#">Time Series Analysis</a></li>
-						</ul>
-						<ul class="menu-bucket">
-							<li><a href="#">Data Science ML</a></li>
-							<li><a href="#">Machine Learning new</a></li>
-							<li><a href="#">Computer Vision</a></li>
-							<li><a href="#">NLP</a></li>
-							<li><a href="#">Deep Learning</a></li>
-							<li><a href="#">Generative Models</a></li>
-							<li><a href="#">Time Series Analysis</a></li>
-						</ul>
-
-					</ul>
-				</li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-				<li><a href="#">Graphics & Design</a></li>
-			</ul>
-		</nav>
-	</div>
-
-</div>
-
-
+<?php $this->load->view('site/category_header'); ?>
 <div class="categories-results">
 	<div class="container">
 		<h1>Results for <b>seo</b></h1>

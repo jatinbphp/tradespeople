@@ -1715,7 +1715,7 @@ function updateDeviceId(device_id){
               //echo $this->db->last_query();
               //echo '<pre>'; print_r($my_completed_job); echo '</pre>';
               
-              if(count($my_completed_job) > 0){ 
+              if(!empty($my_completed_job) && count($my_completed_job) > 0){ 
                 foreach($my_completed_job as $Rkey => $Rrow){
                   echo '<option value="'.$Rrow['job_id'].'">'.$Rrow['title'].'</option>';
                 } 
@@ -1818,46 +1818,168 @@ function send_review_invitation(id){
 
 <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js">  
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-ui-multidatespicker@1.6.6/jquery-ui.multidatespicker.js"></script>
+ 
 <script type="text/javascript">
+  var monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+  ];
+  $(document).ready(function() {
+    if($('#datepicker').length){
+      var today = new Date();
+      $('#datepicker').multiDatesPicker({
+          minDate: 0, // Ensure today's date can be selected
+          onSelect: function(dateText, inst) {
+              var selectedDates = $('#datepicker').multiDatesPicker('getDates');
+              $('#selectedDates').val(selectedDates.join(','));
+              updateAvailabilityMessage();
+          }
+      });
+
+      $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
+
+      $('#yesCheckbox').on('change', function() {
+          if ($(this).is(':checked')) {
+              $('#noCheckbox').prop('checked', false);
+              $('#datepicker').datepicker("option", "disabled", true);
+              $('#datePickerDiv').hide();
+          }
+      });
+
+      $('#noCheckbox').on('change', function() {
+          if ($(this).is(':checked')) {
+              $('#yesCheckbox').prop('checked', false);
+              $('#datepicker').datepicker("option", "disabled", false);
+              $('#datePickerDiv').show();
+          }
+      });
+
+      var selectedDates = $('#datepicker').multiDatesPicker('getDates');
+      if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
+          selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected
+      }
+      $('#selectedDates').val(selectedDates.join(','));
+      updateAvailabilityMessage();  
+    }    
+  });
+
   $('.slider-for').slick({
-   slidesToShow: 1,
-   slidesToScroll: 1,
-   arrows: false,
-   fade: true,
-   asNavFor: '.slider-nav'
- });
- $('.slider-nav').slick({
-   slidesToShow: 4,
-   slidesToScroll: 1,
-   asNavFor: '.slider-for',
-   dots: false,
-   arrows: false,
-   focusOnSelect: true
- });
- $('.popular-subcategories-slider').slick({
-  dots: false,
-  infinite: true,
-  arrows: true,
-  speed: 300,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  centerMode: false,
-  variableWidth: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+    fade: true,
+    asNavFor: '.slider-nav'
+  });
 
-});
+  $('.slider-nav').slick({
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    asNavFor: '.slider-for',
+    dots: false,
+    arrows: false,
+    focusOnSelect: true
+  });
 
-$('#positive_keywords').tagsinput({
-    maxTags: 5
-});
+  $('.popular-subcategories-slider').slick({
+    dots: false,
+    infinite: true,
+    arrows: true,
+    speed: 300,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: false,
+    variableWidth: true,
+  });
 
-// Restrict input to letters and numbers only
-$('#positive_keywords').on('beforeItemAdd', function(event) {
-    var tag = event.item;
-    // Regular expression to match letters and numbers only
-    var regex = /^[a-zA-Z0-9]+$/;
-    if (!regex.test(tag)) {
-        event.cancel = true; // Cancel adding the tag
+  $('#positive_keywords').tagsinput({
+      maxTags: 5
+  });
+  
+  $('#positive_keywords').on('beforeItemAdd', function(event) {
+      var tag = event.item;
+      var regex = /^[a-zA-Z0-9\s]+$/;
+      if (!regex.test(tag)) {
+          event.cancel = true; // Cancel adding the tag
+      }
+  });
+
+  function formatSentence(selectedDates, timeSlot) {
+    var sentence = "";
+    if (selectedDates.length > 0 && timeSlot) {
+      // Sort the dates
+      selectedDates.sort(function(a, b) {
+          return new Date(a) - new Date(b);
+      });
+
+      var groupedDates = {}; // To store dates grouped by month
+
+      selectedDates.forEach(function(dateStr) {
+        var date = new Date(dateStr);
+        var month = monthNames[date.getMonth()];
+        if (!groupedDates[month]) {
+          groupedDates[month] = [];
+        }
+        groupedDates[month].push(date);
+      });
+
+      var formattedDates = [];
+      for (var month in groupedDates) {
+        var dates = groupedDates[month];
+        var dateRanges = [];
+        var start = dates[0];
+        var end = start;
+
+        for (var i = 1; i < dates.length; i++) {
+          if (dates[i] - end === 86400000) { // Check if the next date is consecutive (1 day in ms)
+              end = dates[i];
+          } else {
+              dateRanges.push(formatDateRange(start, end));
+              start = dates[i];
+              end = start;
+          }
+        }
+        dateRanges.push(formatDateRange(start, end)); // Add the last range
+        formattedDates.push(month + " " + dateRanges.join(", "));
+      }
+      sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
     }
-});
+    return sentence;
+  }
+
+  function formatDateRange(start, end) {
+    if (start.getTime() === end.getTime()) {
+        return formatDate(start);
+    } else {
+        return formatDate(start) + " to " + formatDate(end);
+    }
+  }
+
+  function formatDate(date) {
+    var day = date.getDate();
+    var suffix = getOrdinalSuffix(day);
+    return day + suffix;
+  }
+
+  function getOrdinalSuffix(date) {
+    if (date > 3 && date < 21) return 'th';
+    switch (date % 10) {
+      case 1:  return "st";
+      case 2:  return "nd";
+      case 3:  return "rd";
+      default: return "th";
+    }
+  }
+
+  function updateAvailabilityMessage() {
+    var selectedDates = $('#selectedDates').val().split(',');
+    var timeSlot = $('#timeSlot').val();
+    var sentence = formatSentence(selectedDates, timeSlot);
+    console.log('sentence====>'+sentence);
+    if(sentence != ""){
+      $('#notAvailablMsg').show().html(sentence); // Update the availability text  
+    }    
+  }
 </script>

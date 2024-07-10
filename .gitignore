@@ -3,6 +3,7 @@
 application/cache/*
 !application/cache/index.html
 
+application/config
 application/logs/*
 application/newLogs/*
 !application/logs/index.html
@@ -21,7 +22,17 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 #-------------------------
 /nbproject/
 .idea/*
-img/*
+img/blog
+img/category
+img/common
+img/costguide
+img/dispute
+img/HomeBanner
+img/jobs
+img/profile
+img/request_cancel
+img/services
+img/verify
 
 ## Sublime Text cache files
 *.tmlanguage.cache
