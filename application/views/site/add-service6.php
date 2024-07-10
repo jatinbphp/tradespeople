@@ -1,4 +1,3 @@
-<?php include 'include/header.php'; ?>
 <style>
 	.addFaqs{cursor: pointer;}
 </style>
@@ -131,10 +130,58 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-</div>
 
+			<div class="col-sm-12" style="margin-top:10px; border-bottom:1px solid #b0c0d3;">
+				<span>If No add the days and time you not available</span><br>
+				<span style="font-size: 12px; color: #b0c0d3;">
+					Days you will not available?
+				</span>
+				<input type="hidden" name="selectedDates" id="selectedDates">
+				<div id="datepicker" style="width: 100%; margin:10px 0;">
+				</div>
+				<span style="font-size: 12px; color: #b0c0d3;">
+					Time you will not be available?
+				</span>
+				<div>
+					<select class="form-control input-md"
+						name="time" id="timeSlot">
+						<option value="">Specify your unavailable time range</option>
+						<?php
+						for ($hour = 0; $hour <= 23; $hour++) {
+							$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
+							$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
+							echo "<option value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+						}
+						?>
+					</select>
+				</div>
+				<div style="border-bottom:1px solid #b0c0d3; padding: 10px 0;">
+					<span>
+						Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+					</span>
+				</div>
+				<div id="notAvailablMsg" style="padding: 10px 0;">
+					<span>
+						Not available from: 
+						<span class="text-info pull-right">
+							May 2nd to 3rd, till 08:00 pm
+						</span>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>                        
+	<!-- Edit-section-->
+		
+	<div class="edit-user-section gray-bg">
+		<div class="row nomargin">
+			<div class="col-sm-12">
+				<button type="submit" class="btn btn-primary submit_btn">Continue</button>
+			</div>                                 
+		</div>
+	</div>                        
+	<!-- Edit-section-->
+</form>
 
 <script>
 	$(document).ready(function() {

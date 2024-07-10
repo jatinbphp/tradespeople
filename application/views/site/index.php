@@ -155,7 +155,7 @@
 ?>
 		<li>
 			<a href="<?php echo base_url().'category/'.$cat['slug']; ?>">
-				<img src="https://fiverr-res.cloudinary.com/npm-assets/@fiverr/logged_out_homepage_perseus/graphics-design.3272c08.svg" alt="graphics_design" loading="lazy">
+				<img src="<?php echo base_url('img/category_logo.svg') ?>" alt="category" loading="lazy">
 				<p><?php echo $cat['cat_name']; ?></p>
 			</a>
 		</li>

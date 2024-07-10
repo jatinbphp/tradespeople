@@ -1,4 +1,3 @@
-<?php include 'include/header.php'; ?>
 <style>
 	.tox-toolbar__primary, .tox-editor-header{
 		display:none !important;
@@ -140,11 +139,66 @@
 							<!-- Edit-section-->
 						</form>
 					</div>
+					<div id="imgpreview"></div>
 				</div>
-			</div>
+				<hr>
+				<div id="image-div">
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Images (up to 3)
+					</label>
+					<span>
+						Get noticed by the right buyer with visual examples of your services.
+					</span>
+
+					<div class="row loader">
+						<div class="loader_ajax_small"></div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
+							<div class="file-upload-btn addWorkImage imgUp">
+								<img src="img/dImg.png" id="defaultImg">
+								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
+								<input type="file" name="workImage" id="profile2">		
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="multiImgIds" id="multiImgIds">
+					<div id="previousImg"></div>
+				</div>
+
+				<div id="image-div">
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Documents (up to 2)
+					</label>
+					<span>
+						Show some of the best work you created in a document (PDFs only)
+					</span>
+
+					<div class="row loader">
+						<div class="loader_ajax_small"></div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
+							<div class="file-upload-btn addWorkImage imgUp">
+								<img src="img/defaultDoc.png" id="defaultDoc">
+								<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
+								<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="multiDocIds" id="multiDocIds">
+					<div id="previousDoc"></div>
+				</div>										
+			</div>														
+		</div>																
+	</div>                        
+	<!-- Edit-section-->
+		
+	<div class="edit-user-section gray-bg">
+		<div class="row nomargin">
+			<div class="col-sm-12">
+				<button type="submit" class="btn btn-primary submit_btn">Continue</button>
+			</div>                                 
 		</div>
-	</div>
-</div>
+	</div>                        
+	<!-- Edit-section-->
+</form>
 
 <!--****************FILE UPLOAD FUNCTION CODE START****************-->
 <script>
