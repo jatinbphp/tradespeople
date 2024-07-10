@@ -2372,8 +2372,21 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$this->load->view('site/service_details',$data);
 	}
 
-	public function categoryDetail($slug=''){
-		$category = $this->common_model->GetSingleData('category',['slug'=>$slug]);
+	public function categoryDetail($slug='', $slug2='', $slug3=''){
+		if($slug2 == "" && $slug3 == ""){
+			$category = $this->common_model->GetSingleData('category',['slug'=>$slug]);
+			$data['step'] = 1;
+		}
+		if($slug2 != "" && $slug3 == ""){
+			$category = $this->common_model->GetSingleData('category',['slug'=>$slug2]);
+			$data['step'] = 2;
+		}
+		if($slug3 != ""){
+			$category = $this->common_model->GetSingleData('category',['slug'=>$slug3]);
+			$data['step'] = 3;
+		}
+
+		$data['breadcrumb'] = $this->common_model->get_breadcrumb(($category['cat_id'] ?? 0));
 		$data['category_details'] = $category;
 		$data['services']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0));
 		$data['categories_data']=$this->getHirarchicalCategoryData();

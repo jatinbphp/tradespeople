@@ -1915,7 +1915,7 @@ class Common_model extends CI_Model
 	public function get_service_image($table, $id)
 	{
 		$result = array();
-		$sql = "SELECT * from $table where service_id=$id  order by id desc";
+		$sql = "SELECT * from $table where service_id=$id order by id desc";
 		$query = $this->db->query($sql);
 		$result = $query->result_array();
 		return $result;
@@ -2203,6 +2203,24 @@ class Common_model extends CI_Model
 	{
 		return $this->common_model->GetAllData('category', array('cat_parent' => $id, 'is_delete' => 0), 'cat_id');
 	}
+
+	public function get_single_parent_category($parent_id) {
+		 $this->db->select('cat_id, cat_name, cat_parent, slug');
+        $query = $this->db->get_where('category', array('cat_id' => $parent_id));
+        return $query->row_array();
+    }
+
+	public function get_breadcrumb($category_id) {
+        $breadcrumb = [];
+        $category = $this->common_model->GetSingleData('category',['cat_id'=>$category_id]);
+
+        while ($category) {
+            array_unshift($breadcrumb, $category);
+            $category = $this->get_single_parent_category($category['cat_parent']);
+        }
+
+        return $breadcrumb;
+    }
 
 	function get_all_packages($table)
 	{

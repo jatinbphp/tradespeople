@@ -8654,6 +8654,17 @@ ul.nav.login.d-lg-none {
     background-color: #fff;
     padding: 12px;
 }
+
+.popular-subcategories-slider .slick-slide .innerCat {
+    border-radius: 50px!important;   
+    order: 1px solid #efeff0; 
+    box-shadow:none;
+}
+
+.popular-subcategories-slider .slick-slide .innerCat:hover {
+    border: 1px solid #000; 
+}
+
 .popular-subcategories-slider .slick-slide div img {
     height: 48px;
     width: 48px;
@@ -9068,6 +9079,7 @@ ul.nav.login.d-lg-none {
     list-style: none;
     background-color: transparent;
     border-radius: 0;
+    margin-top: 20px;
 }
 .breadcrumb > li {
     font-size: 16px;
@@ -9214,3 +9226,19 @@ button.switch-month {
 button.switch-month:hover {
   color: #1089ff; }
 
+.title {
+    font-weight: 700;
+}
+.how-fiverr-works .title {
+    margin-top: 0;
+}
+.how-fiverr-works .explanation-video {
+    display: inline-flex;
+    align-items: center;
+        flex-wrap: wrap;
+}
+.how-fiverr-works .explanation-video .sc-subtitle {
+    color: #74767e;
+    padding-right: 0;
+    margin: 0;
+}
