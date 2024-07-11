@@ -189,18 +189,6 @@
 		<div class="row">			
 			<div class="col-sm-12">
 				<div class="row">
-					<div class="col-sm-12">
-						<div class="top-search">
-							<div class="input-group">
-								<input type="email" placeholder="Search"  class="form-control">
-								<span class="input-group-btn">
-									<a class="button btn btn-default">
-										<i class="fa fa-search"></i>
-									</a>
-								</span>
-							</div>
-						</div>
-					</div>
 					<?php 
 					if(!empty($all_services)){
 						foreach($all_services as $list){

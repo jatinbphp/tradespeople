@@ -2605,6 +2605,7 @@ public function exists_refferals() {
 		$this->session->unset_userdata('service_data');
 		$this->session->unset_userdata('next_step');
 	}
+	
 	public function deleteAllServices(){
 		$ids = $this->input->post('servicesIds');
 		if(count($ids) > 0){

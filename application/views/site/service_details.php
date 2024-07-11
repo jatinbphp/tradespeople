@@ -213,9 +213,9 @@
 											</div>
 										</div>
 
-										<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
+										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
 											<span>+</span><span>$</span><span>141</span>
-										</div>
+										</div> -->
 									</li>
 								</ul>
 							</div>
@@ -233,9 +233,9 @@
 											</div>
 										</div>
 
-										<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
+										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
 											<span>+</span><span>$</span><span>42</span>
-										</div>
+										</div> -->
 									</li>
 								</ul>
 							</div>
@@ -253,9 +253,9 @@
 											</div>
 										</div>
 
-										<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
+										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
 											<span>+</span><span>$</span><span>56</span>
-										</div>
+										</div> -->
 									</li>
 								</ul>
 							</div>

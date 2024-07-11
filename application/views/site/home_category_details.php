@@ -3,38 +3,36 @@
 <script type="text/javascript" src="js/jquery-ui.js"></script>
 <?php $this->load->view('site/category_header'); ?>
 <?php if($step == 1):?>
-<div class="categories-banner">
-	<div class="bnanner-img">
-		<?php $image_path = FCPATH . 'img/category/' . $category_details['cat_image']; ?>
-		<?php if(isset($category_details['cat_image']) && file_exists($image_path)): ?>
-			<?php $image = base_url('img/category/').$category_details['cat_image']; ?>	
-		<?php else: ?>
-			<?php $image = base_url('img/category_default.webp'); ?>	
-		<?php endif ?>
-		<img src="<?php echo $image; ?>" alt="categoty" />
-	</div>
-	<div class="categories-banner-des">
-		<div class="container">	
-			<div class="box-overlay">
-				<h1 class="title"><?php echo ($category_details['cat_name'] ?? '') ?></h1>
-				<p><?php echo ($category_details['meta_title'] ?? '') ?></p>
-				<div class="categories-banner-video">
-					<a href="<?php echo site_url('how-it-work') ?>" class="btn-play">
-						<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill">
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M8 0a8 8 0 1 0 8 8 8.009 8.009 0 0 0-8-8ZM5.742 11.778 11.655 8.3a.348.348 0 0 0 0-.6L5.742 4.222a.348.348 0 0 0-.525.3v6.956a.348.348 0 0 0 .525.3Z">
-							</path>
-						</svg>
-						How Trades People Hub Works
-					</a>
+	<div class="categories-banner">
+		<div class="bnanner-img">
+			<?php $image_path = FCPATH . 'img/category/' . $category_details['cat_image']; ?>
+			<?php if(isset($category_details['cat_image']) && file_exists($image_path)): ?>
+				<?php $image = base_url('img/category/').$category_details['cat_image']; ?>	
+			<?php else: ?>
+				<?php $image = base_url('img/category_default.webp'); ?>	
+			<?php endif ?>
+			<img src="<?php echo $image; ?>" alt="categoty" />
+		</div>
+		<div class="categories-banner-des">
+			<div class="container">	
+				<div class="box-overlay">
+					<h1 class="title"><?php echo ($category_details['cat_name'] ?? '') ?></h1>
+					<p><?php echo ($category_details['meta_title'] ?? '') ?></p>
+					<div class="categories-banner-video">
+						<a href="<?php echo site_url('how-it-work') ?>" class="btn-play">
+							<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill">
+								<path fill-rule="evenodd" clip-rule="evenodd" d="M8 0a8 8 0 1 0 8 8 8.009 8.009 0 0 0-8-8ZM5.742 11.778 11.655 8.3a.348.348 0 0 0 0-.6L5.742 4.222a.348.348 0 0 0-.525.3v6.956a.348.348 0 0 0 .525.3Z">
+								</path>
+							</svg>
+							How Trades People Hub Works
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-<?php endif; ?>
-
-
-<div class="container">
+<?php else: ?>
+	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
 				<ul class="breadcrumb">
@@ -64,18 +62,17 @@
 			</div>
 		</div>
 	</div>
-<div class="container how-fiverr-works">
-	<div class="row">
-		<div class="col-sm-12">
-			<h1 class="title"><?php echo ($category_details['cat_name'] ?? '') ?></h1>
-			<div class="explanation-video">
-				<p class="sc-subtitle"><?php echo ($category_details['meta_title'] ?? '') ?></p>
+	<div class="container how-fiverr-works">
+		<div class="row">
+			<div class="col-sm-12">
+				<h1 class="title"><?php echo ($category_details['cat_name'] ?? '') ?></h1>
+				<div class="explanation-video">
+					<p class="sc-subtitle"><?php echo ($category_details['meta_title'] ?? '') ?></p>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-
-
+<?php endif; ?>
 
 <?php if(isset($first_chiled_categories) && count($first_chiled_categories)): ?>
 	<div class="popular-subcategories">

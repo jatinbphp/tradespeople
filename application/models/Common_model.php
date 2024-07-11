@@ -914,7 +914,7 @@ class Common_model extends CI_Model
 				$return['region'] = $response->result->region;
 				$return['status'] = 1;
 			} else {
-				$return['status'] = 0;
+				$return['status'] = 1;
 				$return['msg'] = "Please enter valid UK postcode";
 			}
 		}
@@ -2687,7 +2687,7 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getServiceByCategoriesId($categoryId)
+	public function getServiceByCategoriesId($categoryId, $step)
 	{
 		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
 		$this->db->from('my_services ms');
@@ -2695,7 +2695,13 @@ class Common_model extends CI_Model
 		$this->db->join('users u', 'ms.user_id = u.id', 'left');
 		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
 		$this->db->where('ms.status', 1);
-		$this->db->where('ms.sub_category', $categoryId);
+		if($step == 1){
+			$this->db->where('ms.category', $categoryId);
+		}elseif($step == 2){
+			$this->db->where('ms.sub_category', $categoryId);
+		}else{
+			$this->db->where('ms.service_type', $categoryId);
+		}		
 		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');
 		$this->db->order_by('average_rating', 'DESC');
 		$this->db->limit(500);
