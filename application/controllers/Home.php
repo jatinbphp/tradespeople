@@ -2422,4 +2422,8 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		}
 		return $hirarchicalData;
 	}
+
+	public function checkout(){
+		$this->load->view('site/checkout');
+	}
 }
