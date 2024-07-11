@@ -2421,11 +2421,13 @@ public function exists_refferals() {
 			$this->session->set_userdata('latest_service',$run);
 			$input['service_id'] = $run;
 			if(count($mImgs) > 0){
+				$input['type'] = 1;
 				foreach($mImgs as $imgId){					
 					$run = $this->common_model->update('service_images',array('id'=>$imgId),$input);
 				}
 			}
 			if(count($mDocs) > 0){
+				$input['type'] = 2;
 				foreach($mDocs as $docId){
 					$run = $this->common_model->update('service_images',array('id'=>$docId),$input);
 				}

@@ -79,6 +79,13 @@
 		<div class="container">
 			<div class="popular-subcategories-slider">			
 				<?php foreach($first_chiled_categories as $category): ?>
+					<?php 
+                        $categoryUrl = $this->common_model->get_breadcrumb(($category['cat_id'] ?? 0));
+                        $breadurl = site_url('category');
+                        foreach ($categoryUrl as $catUrl){
+                        	$breadurl .= '/' . $catUrl['slug'];
+                        }
+                    ?>
 					<div>
 						<?php $image_path = FCPATH . 'img/category/' . ($category['cat_image'] ?? ''); ?>
 						<?php if(isset($category['cat_image']) && file_exists($image_path)): ?>
@@ -86,7 +93,7 @@
 						<?php else: ?>
 							<?php $image = base_url('img/category_logo.svg'); ?>	
 						<?php endif ?>
-						<a href="<?php echo site_url('category/'.($category_details['slug'] ?? '').'/'.($category['slug'] ?? '')) ?>" class="<?php echo $step != 1 ? 'innerCat' : '';?>" >
+						<a href="<?php echo $breadurl; ?>" class="<?php echo $step != 1 ? 'innerCat' : '';?>" >
 							<img src="<?php echo $image; ?>" alt="categoty" />	
 							<!-- <img class="m-r-12" src="https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto/v1/attachments/generic_asset/asset/4e99f7989f6e3ea9fc115fc017051455-1630332866288/Whiteboard%20_%20Animated%20Explainers.png" alt="<?php echo ($category['cat_name'] ?? '') ?>"> -->
 							<p><?php echo ($category['cat_name'] ?? '') ?></p>
