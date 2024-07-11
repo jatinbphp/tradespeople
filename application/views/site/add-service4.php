@@ -37,6 +37,7 @@
 	.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
 	.imgUp{margin-bottom:15px}
 	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
+	.removeDoc {position: absolute; top: 0; right: 0; margin-right: 15px;}
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
 </style>

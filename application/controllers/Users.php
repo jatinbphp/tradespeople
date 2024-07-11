@@ -2548,7 +2548,11 @@ public function exists_refferals() {
 
 	public function removeServiceImage(){
 		$user_id = $this->session->userdata('user_id');
-		$this->db->where('id',$this->input->post('imgId'))->delete('service_images');
+		$serviceImages = $this->common_model->GetSingleData('service_images',['id'=>$this->input->post('imgId')]);
+		if(!empty($serviceImages)){
+			unlink('img/services/'.$serviceImages['image']);
+			$this->db->where('id',$this->input->post('imgId'))->delete('service_images');
+		}
 		exit;
 	}
 
@@ -2605,7 +2609,7 @@ public function exists_refferals() {
 		$this->session->unset_userdata('service_data');
 		$this->session->unset_userdata('next_step');
 	}
-	
+
 	public function deleteAllServices(){
 		$ids = $this->input->post('servicesIds');
 		if(count($ids) > 0){
