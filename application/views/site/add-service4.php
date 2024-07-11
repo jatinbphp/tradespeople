@@ -101,20 +101,18 @@
 					<div class="row" id="previousImg">
 						<?php if(isset($serviceData['multi_images']) && $serviceData['multi_images']): ?>
 							<?php foreach($serviceData['multi_images'] as $id => $image): ?>
-								<?php if(file_exists($image) && $image): ?>
-									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
-										<div class="boxImage imgUp">
-											<div class="imagePreviewPlus">
-												<div class="text-right">
-													<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
-														<i class="fa fa-trash"></i>
-													</button>
-												</div>
-												<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
+								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+									<div class="boxImage imgUp">
+										<div class="imagePreviewPlus">
+											<div class="text-right">
+												<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
+													<i class="fa fa-trash"></i>
+												</button>
 											</div>
+											<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
 										</div>
 									</div>
-								<?php endif; ?>			
+								</div>		
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
@@ -142,18 +140,16 @@
 					<div class="row" id="previousDoc">
 						<?php if(isset($serviceData['multi_files']) && $serviceData['multi_files']): ?>
 							<?php foreach($serviceData['multi_files'] as $id => $file): ?>
-								<?php if(file_exists($file) && $file): ?>
-									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
-										<div class="boxImage imgUp">
-											<div class="imagePreviewPlus">
-												<div class="text-right">
-													<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
-												</div>
-												<img style="width: inherit; height: inherit;" src="<?php echo base_url()?>img/defaultDoc.png" alt="PDF">
+								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+									<div class="boxImage imgUp">
+										<div class="imagePreviewPlus">
+											<div class="text-right">
+												<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
 											</div>
+											<img style="width: inherit; height: inherit;" src="<?php echo base_url()?>img/defaultDoc.png" alt="PDF">
 										</div>
 									</div>
-								<?php endif; ?>
+								</div>
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
