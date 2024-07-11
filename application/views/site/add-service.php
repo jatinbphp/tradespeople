@@ -68,12 +68,12 @@
 					<div class="user-right-side">
 						<h1>Add Service</h1>
 						<ul id="myTabs" class="nav nav-tabs">
-							<li class="<?php echo ($active == 1) ? 'active ' : ''; echo ($nextStep >= 1) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step1">Step-1</a></li>
-							<li class="<?php echo ($active == 2) ? 'active ' : ''; echo ($nextStep >= 2) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step2">Step-2</a></li>
-							<li class="<?php echo ($active == 3) ? 'active ' : ''; echo ($nextStep >= 3) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step3">Step-3</a></li>
-							<li class="<?php echo ($active == 4) ? 'active ' : ''; echo ($nextStep >= 4) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step4">Step-4</a></li>
-							<li class="<?php echo ($active == 5) ? 'active ' : ''; echo ($nextStep >= 5) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step5">Step-5</a></li>
-							<li class="<?php echo ($active == 6) ? 'active ' : ''; echo ($nextStep >= 6) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step6">Step-6</a></li>
+							<li class="<?php echo ($active == 1) ? 'active ' : ''; echo ($nextStep >= 1) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step1">Service Details</a></li>
+							<li class="<?php echo ($active == 2) ? 'active ' : ''; echo ($nextStep >= 2) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step2">Categroy</a></li>
+							<li class="<?php echo ($active == 3) ? 'active ' : ''; echo ($nextStep >= 3) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step3">Extra Service</a></li>
+							<li class="<?php echo ($active == 4) ? 'active ' : ''; echo ($nextStep >= 4) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step4">Gallery</a></li>
+							<li class="<?php echo ($active == 5) ? 'active ' : ''; echo ($nextStep >= 5) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step5">FAQs</a></li>
+							<li class="<?php echo ($active == 6) ? 'active ' : ''; echo ($nextStep >= 6) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step6">Availability</a></li>
 						</ul>
 						<div class="tab-content">
 							<div id="step1" class="tab-pane fade <?php echo ($active == 1) ? 'active in' : '' ?>">
