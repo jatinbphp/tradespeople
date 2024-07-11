@@ -7,9 +7,18 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<ul class="breadcrumb">
-					<li><a href="#0"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path d="M12.773 14.5H3.227a.692.692 0 0 1-.482-.194.652.652 0 0 1-.2-.468V7.884H.5l7.041-6.212a.694.694 0 0 1 .918 0L15.5 7.884h-2.046v5.954a.652.652 0 0 1-.2.468.692.692 0 0 1-.481.194Zm-4.091-1.323h3.409V6.664L8 3.056 3.91 6.664v6.513h3.408v-3.97h1.364v3.97Z"></path></svg></a></li>
-					<li><a href="#">service</a></li>
-					<li class="current">test</li>
+					<li><a href="<?php echo base_url(""); ?>"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path d="M12.773 14.5H3.227a.692.692 0 0 1-.482-.194.652.652 0 0 1-.2-.468V7.884H.5l7.041-6.212a.694.694 0 0 1 .918 0L15.5 7.884h-2.046v5.954a.652.652 0 0 1-.2.468.692.692 0 0 1-.481.194Zm-4.091-1.323h3.409V6.664L8 3.056 3.91 6.664v6.513h3.408v-3.97h1.364v3.97Z"></path></svg></a></li>
+					<?php 
+						$breadcrumb = $this->common_model->get_breadcrumb(($service_details['service_type'] ?? 0));
+					    $url = site_url('category');
+					    $total_items = count($breadcrumb);
+	    				$current_item = 0;
+					    foreach ($breadcrumb as $category): 
+				    	$current_item++;
+				        $url .= '/' . $category['slug'];				        
+				    ?> 				    		
+				    	<li><a href="<?php echo $url; ?>"><?php echo $category['cat_name']; ?></a></li>
+				    <?php endforeach; ?>
 				</ul>
 			</div>
 		</div>
@@ -61,32 +70,28 @@
 			<div class="col-sm-8">
 				<div class="about-this">
 					<h2 class="title">About this service</h2>
-					<p><i>Welcome to the journey of amazing design experience?</i></p>
-					<p>You must be here in search of a professional and creative logo for your business thae can make your business nam <b>STAND OUT? <i>Yes you are at the perfect stop!</i></b> We have years of experience in creative designs and working with branda!</p>
-					<h2 class="title">What you get with this Offer</h2>
-					<div class="table-responsive">
-						<table class="table">
-							<tbody>
-								<tr>
-									<td>Logo transparency</td>
-									<td><i class="fa fa-check" aria-hidden="true"></i></td>
-
-								</tr>
-								<tr>
-									<td>Vector file</td>
-									<td><i class="fa fa-check" aria-hidden="true"></i></td>
-								</tr>
-								<tr>
-									<td>Printable file</td>
-									<td><i class="fa fa-check" aria-hidden="true"></i></td>
-								</tr>
-								<tr>
-									<td>3D mockup</td>
-									<td><i class="fa fa-check" aria-hidden="true"></i></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>			
+					<p>
+						<?php echo $service_details['description']; ?>
+					</p>
+					<?php if(!empty($service_details['plugins'])): ?>
+						<h2 class="title">What you get with this Offer</h2>
+						<div class="table-responsive">
+							<table class="table">
+								<tbody>
+									<?php $plugins = explode(',', $service_details['plugins']); ?>
+									<?php foreach($plugins as $plugin): ?>
+										<?php
+											$pDetail = $this->common_model->GetSingleData('category',['cat_id'=>$plugin]); 											
+										?>
+									<tr>
+										<td><?php echo $pDetail['cat_name']; ?></td>
+										<td><i class="fa fa-check" aria-hidden="true"></i></td>
+									</tr>
+								<?php endforeach; ?>
+								</tbody>
+							</table>
+						</div>
+					<?php endif; ?>
 				</div>
 			</div>
 			<div class="col-sm-4">
@@ -194,65 +199,34 @@
 
 		<div class="row order-hourlie-addons">
 			<div class="col-sm-8">
+				<?php if(!empty($service_details['extra_service'])): ?>
 				<h2 class="title">Get more with Offer Add-ons</h2>
 				<div class="content-text clear addons-container">
 					<ul class="addons clearfix boxmodelfix">
-						<li class="item bg-fill clearfix clear">
-							<div class="checkbox col-xs-7 col-sm-9">
-								<div class="form-check">
-									<div class="check-box">
-										<input class="checkbox-effect" id="business" type="checkbox" value="business" name="get-up-1">
-										<label for="business"><div><h6>I can business Insider Press Release</h6>
-											<p class="discreet small eta">Additional 2 working days</p></div></label>
-										</div>
-									</div>
-								</div>
-								<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
-									<span>+</span><span>$</span><span>141</span>
-								</div>
-							</li>
-						</ul>
-					</div>
-					<div class="content-text clear addons-container">
-						<ul class="addons clearfix boxmodelfix">
+						<?php $exServices = explode(',', $service_details['extra_service']); ?>
+						<?php foreach($exServices as $exs): ?>
+							<?php
+								$exDetail = $this->common_model->GetSingleData('extra_service',['id'=>$exs]);
+							?>
 							<li class="item bg-fill clearfix clear">
 								<div class="checkbox col-xs-7 col-sm-9">
 									<div class="form-check">
 										<div class="check-box">
-											<input class="checkbox-effect" id="Do-Follw" type="checkbox" value="Do-Follw" name="get-up-1">
-											<label for="Do-Follw"><div><h6>I can 132+ Do-Follw High PR or DA 30+ Highiy Authorized Backlinks</h6>
-												<p class="discreet small eta">Additional 2 working days</p></div>
+											<input class="checkbox-effect" id="business" type="checkbox" value="business" name="get-up-1">
+											<label for="business">
+												<div>
+													<h6><?php echo $exDetail['ex_service_name']; ?></h6>
+												</div>
 											</label>
 										</div>
 									</div>
-								</div>
-								<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
-									<span>+</span><span>$</span><span>42</span>
-								</div>
+								</div>								
 							</li>
+						<?php endforeach; ?>
+						
 						</ul>
 					</div>
-					<div class="content-text clear addons-container">
-						<ul class="addons clearfix boxmodelfix">
-							<li class="item bg-fill clearfix clear">
-								<div class="checkbox col-xs-7 col-sm-9">
-									<div class="form-check">
-										<div class="check-box">
-											<input class="checkbox-effect" id="Authorized" type="checkbox" value="Authorized" name="get-up-1">
-											<label for="Authorized"><div><h6>I can 132+ Do-Follw High PR or DA 30+ Highiy Authorized Backlinks</h6>
-												<p class="discreet small eta">Additional 2 working days</p></div>
-											</label>
-										</div>
-									</div>
-								</div>
-
-<<<<<<< HEAD
-								<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
-									<span>+</span><span>$</span><span>56</span>
-								</div>
-							</li>
-						</ul>
-					</div>
+					<?php endif; ?>					
 				</div>
 				<div class="col-sm-4">
 					<div class="order-hourlie-addons-sidebar">
@@ -262,129 +236,31 @@
 				</div>
 			</div>
 
-			<div class="row faq-accordion help-center">
-
-				<div class="col-sm-8">
-					<h2 class="title">FAQ</h2>
-					<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-						
-						<div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="headingOne">
-								<h4 class="panel-title">
-									<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="collapsed">
-										Can you guarantee Google first page rankings?
-									</a>
-								</h4>
-							</div>
-							<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-								<div class="panel-body">
-									<p>I don't guarantee a first-page ranking, but I do guarantee an improvement in your website's ranking and visibility through high-quality backlinks and other proven off-page SEO strategies. Our goal is to help you achieve long-term success online.</p>
+			<?php if(!empty($service_faqs)): ?>
+				<div class="row faq-accordion help-center">
+					<div class="col-sm-8">
+						<h2 class="title">FAQ</h2>
+						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+							<?php foreach($service_faqs as $key => $faq): ?>
+								<div class="panel panel-default">
+								<div class="panel-heading" role="tab" id="heading<?php echo $key; ?>">
+									<h4 class="panel-title">
+										<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse<?php echo $key; ?>" aria-expanded="false" aria-controls="collapse<?php echo $key; ?>">
+											<?php echo $faq['question']; ?>
+										</a>
+									</h4>
 								</div>
-=======
-										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
-											<span>+</span><span>$</span><span>141</span>
-										</div> -->
-									</li>
-								</ul>
-							</div>
-							<div class="content-text clear addons-container">
-								<ul class="addons clearfix boxmodelfix">
-									<li class="item bg-fill clearfix clear">
-										<div class="checkbox col-xs-7 col-sm-9">
-											<div class="form-check">
-												<div class="check-box">
-													<input class="checkbox-effect" id="Do-Follw" type="checkbox" value="Do-Follw" name="get-up-1">
-													<label for="Do-Follw"><div><h6>I can 132+ Do-Follw High PR or DA 30+ Highiy Authorized Backlinks</h6>
-														<p class="discreet small eta">Additional 2 working days</p></div>
-													</label>
-												</div>
-											</div>
-										</div>
-
-										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
-											<span>+</span><span>$</span><span>42</span>
-										</div> -->
-									</li>
-								</ul>
-							</div>
-							<div class="content-text clear addons-container">
-								<ul class="addons clearfix boxmodelfix">
-									<li class="item bg-fill clearfix clear">
-										<div class="checkbox col-xs-7 col-sm-9">
-											<div class="form-check">
-												<div class="check-box">
-													<input class="checkbox-effect" id="Authorized" type="checkbox" value="Authorized" name="get-up-1">
-													<label for="Authorized"><div><h6>I can 132+ Do-Follw High PR or DA 30+ Highiy Authorized Backlinks</h6>
-														<p class="discreet small eta">Additional 2 working days</p></div>
-													</label>
-												</div>
-											</div>
-										</div>
-
-										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
-											<span>+</span><span>$</span><span>56</span>
-										</div> -->
-									</li>
-								</ul>
->>>>>>> 96adb6005cf4997159024e9ce5d7f3f16f3b3b07
-							</div>
-						</div>
-						
-						<div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="headingTwo">
-								<h4 class="panel-title">
-									<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Please Read!</a>
-								</h4>
-							</div>
-							<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-								<div class="panel-body">      
-									<p>I will not accept any adults, casinos, escorts, gambling, or illegal sites.</p>
+								<div id="collapse<?php echo $key; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading<?php echo $key; ?>">
+									<div class="panel-body">
+										<p><?php echo $faq['answer']; ?></p>
+									</div>
 								</div>
 							</div>
-						</div>
-
-						<div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="headingThree">
-								<h4 class="panel-title">
-									<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Are these SEO backlinks Google safe?</a>
-								</h4>
-							</div>
-							<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-								<div class="panel-body">
-									<p>These links are 100% Google Panda and Penguin-safe! Most backlinks are from high-quality authority sites with few outbound links, so they are old domain, contextual, and relevant.</p>
-								</div>
-							</div>
-						</div>       
-						
-						<div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="headingFour">
-								<h4 class="panel-title">
-									<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">How long for results?</a>
-								</h4>
-							</div>
-							<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-								<div class="panel-body">
-									<p>SEO is not a fixed science, and it is impossible to guarantee positions. Therefore I have no idea how long to get on the first page. Usually, it takes up to 2 months for sites that are well optimized (on-page) to see SERP movement on Google, but with our indexing service, we can see faster results.</p>
-								</div>
-							</div>
-						</div>
-						
-						<div class="panel panel-default">
-							<div class="panel-heading" role="tab" id="headingFive">
-								<h4 class="panel-title">
-									<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">Do you create all the SEO backlinks all at once?</a>
-								</h4>
-							</div>
-							<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
-								<div class="panel-body">
-									<p>This is a great question. If someone creates backlinks all at once, it will make your website look worse in google's eyes. With my service, your link profile will look natural because I will drip-feed all the links daily.</p>
-								</div>
-							</div>
+							<?php endforeach; ?>
 						</div>
 					</div>
-
 				</div>
-			</div>
+			<?php endif; ?>
 
 			<div class="row">
 				<div class="col-sm-8">

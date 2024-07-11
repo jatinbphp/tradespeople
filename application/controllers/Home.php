@@ -2369,10 +2369,13 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	public function serviceDetail($slug=""){
 		$data['service_details'] = $this->common_model->GetSingleData('my_services',['slug'=>$slug]);
 		$sId = $data['service_details']['id'];
-		$data['service_images']=$this->common_model->get_service_image('service_images',$data['service_details']['id']);
+		$uId = $data['service_details']['id'];
+		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
-		$data['service_faqs'] = $this->common_model->GetSingleData('service_faqs',['service_id'=>$sId]);
+		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
 		$data['service_rating'] = $this->common_model->GetSingleData('service_rating',['service_id'=>$sId]);
+		$data['service_user'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
+		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId]);
 		$this->load->view('site/service_details',$data);
 	}
 
