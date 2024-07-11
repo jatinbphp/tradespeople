@@ -68,7 +68,11 @@
 						<div class="btn-text">Drag & drop video or <span>Browser</span></div>
 						<input type="file" name="video" id="videoprofile" class="form-control input-md" accept="video/*" onchange="return seeVideoPreview();">
 					</div>
-					<div id="imgpreview"></div>
+					<div id="videoPreview">
+						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
+							<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px; height:113px;"></video>
+						<?php endif; ?>	
+					</div>
 				</div>
 				
 				<div id="image-div" style="margin-top: 10px; border-bottom:1px solid #b0c0d3;">
@@ -186,7 +190,7 @@
 	});
 
 	function seeVideoPreview(){
-	  	var fileUploads = $("#videoprofile")[0];
+		var fileUploads = $("#videoprofile")[0];
 	    var file = fileUploads.files[0];
 	    
 	    // Check if the file is a video
@@ -197,9 +201,9 @@
 	            var video = document.createElement('video');
 	            video.src = e.target.result;
 	            video.onloadedmetadata = function () {
-	                var height = this.videoHeight;
+	            	var height = this.videoHeight;
 	                var width = this.videoWidth;
-	                $('#imgpreview').html('<video src="' + video.src + '" controls style="width:162px; height:113px;"></video>'); 
+	                $('#videoPreview').html('<video src="' + video.src + '" controls style="width:162px; height:113px;"></video>'); 
 	            }
 	        }
 	    } else {
