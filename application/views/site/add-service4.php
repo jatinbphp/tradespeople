@@ -71,7 +71,10 @@
 					</div>
 					<div id="videoPreview">
 						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
-							<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px; height:113px;"></video>
+							<?php $video_path = FCPATH . 'img/services/' . ($serviceData['video'] ?? ''); ?>
+							<?php if(file_exists($video_path) && $video_path): ?>
+								<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px; height:113px;"></video>
+							<?php endif; ?>	
 						<?php endif; ?>	
 					</div>
 				</div>
@@ -98,18 +101,20 @@
 					<div class="row" id="previousImg">
 						<?php if(isset($serviceData['multi_images']) && $serviceData['multi_images']): ?>
 							<?php foreach($serviceData['multi_images'] as $id => $image): ?>
-								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
-								<div class="boxImage imgUp">
-									<div class="imagePreviewPlus">
-										<div class="text-right">
-											<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
-												<i class="fa fa-trash"></i>
-											</button>
+								<?php if(file_exists($image) && $image): ?>
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+										<div class="boxImage imgUp">
+											<div class="imagePreviewPlus">
+												<div class="text-right">
+													<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
+														<i class="fa fa-trash"></i>
+													</button>
+												</div>
+												<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
+											</div>
 										</div>
-										<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
 									</div>
-								</div>
-							</div>
+								<?php endif; ?>			
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
@@ -137,16 +142,18 @@
 					<div class="row" id="previousDoc">
 						<?php if(isset($serviceData['multi_files']) && $serviceData['multi_files']): ?>
 							<?php foreach($serviceData['multi_files'] as $id => $file): ?>
-								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
-									<div class="boxImage imgUp">
-										<div class="imagePreviewPlus">
-											<div class="text-right">
-												<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
+								<?php if(file_exists($file) && $file): ?>
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+										<div class="boxImage imgUp">
+											<div class="imagePreviewPlus">
+												<div class="text-right">
+													<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
+												</div>
+												<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="PDF">
 											</div>
-											<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="PDF">
 										</div>
 									</div>
-								</div>
+								<?php endif; ?>
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
