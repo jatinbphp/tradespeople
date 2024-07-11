@@ -9515,7 +9515,6 @@ button.switch-month:hover {
 .gig-page-packages-table tr td .fa-times {
     color: #464c5b;
 }
-=======
 .title {
     font-weight: 700;
 }
@@ -9532,4 +9531,162 @@ button.switch-month:hover {
     padding-right: 0;
     margin: 0;
 }
->>>>>>> 96adb6005cf4997159024e9ce5d7f3f16f3b3b07
+.checkout-page {
+    padding: 50px 0;
+}
+.form__radio {
+    align-items: center;
+    background-color: #fff2e6;
+    border-radius: 6px;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.0625);
+    display: flex;
+    padding: 15px;
+    border: 1px solid #ff7300;
+    margin-bottom: 15px;
+}
+.form__radio label {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 1em;
+    margin: 0;
+    font-weight: 600;
+    font-size: 16px;
+}
+.form__radio .icon {
+    height: 24px;
+    display: inline-block;
+    fill: currentColor;
+    width: 24px;
+    vertical-align: middle;
+}
+.form__radio input[type="radio"] {
+    margin: 0;
+    width: 22px;
+    height: 22px;
+}
+.checkout-form .form-check {
+    margin: 0
+}
+.checkout-form {
+    border: 1px solid #efeff0;
+    padding: 15px;
+}
+.checkout-form .title {
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+.checkout-form .form-group:last-child {
+    margin-bottom: 0
+}
+.checkout-form .form-check label {
+    padding: 0;
+    margin: 0; 
+}
+.checkout-form .form-check .checkbox-effect:not(:checked) + label:after, 
+.checkout-form .form-check .checkbox-effect:checked + label:after {
+        top: 0;
+    left: 6px;
+}
+.checkout-form .form-check label:hover {
+    background-color: #fff;
+}
+.checkout-form .fa-info-circle {
+    color: #3d78cb;
+    font-size: 16px;
+}
+
+
+.celebration-box {
+    border: 1px solid #efeff0;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 1em;
+    margin-bottom: 20px;
+}
+.celebration-box svg {
+    min-width: 24px;
+}
+.celebration-box p {
+    margin: 0;
+}
+.summary-box {
+    background: #f3f8fd;
+    padding: 15px;
+}
+.summary-box .summary-box-heding {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dfdfdf;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.summary-box .summary-box-heding h4 {
+    margin: 0;
+}
+.summary-box .summary-box-heding span {
+    font-weight: 600;
+    display: block;
+}
+.summary-box .summary-box-heding span:last-child {
+    text-decoration: line-through;
+    color: #ff7300;
+}
+.summary-feature-article {
+    border-bottom: 1px solid #dfdfdf;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.summary-feature-article a {
+    display: flex;
+    justify-content: space-between;
+    gap:20px;
+    color: #464c5b;
+}
+.summary-feature-article img {
+    width: 80px;
+    min-width: 80px;
+}
+.summary-feature-article p {
+    margin: 0;
+}
+.summary-box ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.summary-box ul li {
+    display: flex;
+     justify-content: space-between;
+     align-items: center;
+}
+.summary-box ul li p {
+    margin: 0;
+}
+.summary-box ul li+li {
+    margin-top: 10px;
+}
+.summary-box ul li:last-child {
+    border-top: 1px solid #dfdfdf;
+    padding-top: 15px;
+    margin-top: 20px;
+    font-size: 18px;
+    padding-bottom: 5px;
+}
+.summary-box ul li input {
+    max-width: 180px;
+}
+.summary-box ul li .btn {
+    background: transparent;
+    font-weight: 600;
+}
+.summary-box ul li .price .line-through {
+    text-decoration: line-through;
+}
+.summary-box ul li .price span:last-child {
+    color: #54be93;
+    margin-left: 8px;
+}

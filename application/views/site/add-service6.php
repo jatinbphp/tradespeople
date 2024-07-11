@@ -1,8 +1,7 @@
 <style>
 	.addFaqs{cursor: pointer;}
 </style>
-<?php echo "<pre>"; print_r($serviceData); echo "</pre>"; ?>
-<form action="<?= site_url().'users/storeServices6'; ?>" method="post" enctype="multipart/form-data">  
+<form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
 		<div class="row">
@@ -17,7 +16,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input" <?php echo (isset($serviceData['available_mon_fri']) && $serviceData['available_mon_fri'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="yes" id="yesCheckbox" style="margin-right:10px;">
+								<input class="form-check-input" <?php echo (isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="yes" id="yesCheckbox" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Yes</label>
 							</div>
 						</div>
@@ -25,7 +24,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input" <?php echo (isset($serviceData['available_mon_fri']) && $serviceData['available_mon_fri'] == 'no') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="no" id="noCheckbox" style="margin-right:10px;">
+								<input class="form-check-input" <?php echo (isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'no') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="no" id="noCheckbox" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">No</label>
 							</div>
 						</div>
@@ -45,16 +44,14 @@
 					Time you will not be available?
 				</span>
 				<div>
-					<select class="form-control input-md"
-						name="time_slot" id="timeSlot">
+					<select class="form-control input-md" name="time_slot" id="timeSlot">
 						<option value="">Specify your unavailable time range</option>
-						<?php
-						for ($hour = 0; $hour <= 23; $hour++) {
+						<?php for ($hour = 0; $hour <= 23; $hour++) {
 							$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
 							$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
-							echo "<option value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
-						}
-						?>
+							echo "<option " . (isset($serviceData['service_availiblity']['time_slot']) && $serviceData['service_availiblity']['time_slot'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+
+						}?>
 					</select>
 				</div>
 				<div style="padding: 10px 0;">
@@ -71,7 +68,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input weekends-checkbox" <?php echo (isset($serviceData['weekend_available']) && $serviceData['weekend_available'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="weekend_available" value="yes" id="weekendYes" style="margin-right:10px;">
+								<input class="form-check-input weekends-checkbox" <?php echo (isset($serviceData['service_availiblity']['weekend_available']) && $serviceData['service_availiblity']['weekend_available'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="weekend_available" value="yes" id="weekendYes" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Yes</label>
 							</div>
 						</div>
@@ -79,7 +76,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input weekends-checkbox" <?php echo (isset($serviceData['weekend_available']) && $serviceData['weekend_available'] == 'no') ? 'checked' : '' ?> type="checkbox" name="weekend_available" value="no" id="weekendNo" style="margin-right:10px;">
+								<input class="form-check-input weekends-checkbox" <?php echo (isset($serviceData['service_availiblity']['weekend_available']) && $serviceData['service_availiblity']['weekend_available'] == 'no') ? 'checked' : '' ?> type="checkbox" name="weekend_available" value="no" id="weekendNo" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">No</label>
 							</div>
 						</div>
@@ -118,8 +115,12 @@
 	</div>                        
 	<!-- Edit-section-->
 </form>
-
 <script>
+	<?php $datesArray = []; ?>
+	<?php if(isset($serviceData['service_availiblity']['selected_dates']) && $serviceData['service_availiblity']['selected_dates']): ?>
+		<?php $datesArray = explode(',', $serviceData['service_availiblity']['selected_dates']); ?>
+	<?php endif; ?>
+	selectedDate = '<?php echo json_encode($datesArray); ?>';
 	$(document).ready(function() {
         $('.weekends-checkbox').on('change', function() {
         	var weekends = $(this).val();
@@ -134,6 +135,8 @@
         $('.group-checkbox').on('change', function() {
             $('.group-checkbox').not(this).prop('checked', false);
         });
+		$('#timeSlot').trigger('change');
+		$('.weekends-checkbox').trigger('change');
     });
 	$('#timeSlot').on('change', function() {
         updateAvailabilityMessage(); // Call formatSentence when time slot changes

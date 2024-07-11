@@ -157,6 +157,7 @@ if($check_budget && $check_budget['status']==0){
 <link rel="stylesheet" href="<?php echo site_url().'css/jquery-ui.css'; ?>">
 <script type="text/javascript" >
 	var site_url='<?php echo base_url(); ?>';
+	var selectedDate = undefined;
 </script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
