@@ -1,4 +1,4 @@
-<form action="<?= site_url().'users/storeServices2'; ?>" method="post" enctype="multipart/form-data">  
+<form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
 		<div class="row">

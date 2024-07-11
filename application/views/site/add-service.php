@@ -58,11 +58,11 @@
 						}
 						// unset($_SESSION);
 						// session_destroy();
-						$serviceData = $this->session->userdata('edit_service_data');
+						$serviceData = $this->session->userdata('service_data');
 						
 						// echo "<Pre>";
 						// // print_r($_SESSION);
-						// print_r($serviceData);
+						//print_r($serviceData);
 						// echo "</Pre>";
 					?>
 					<div class="user-right-side">
@@ -77,22 +77,22 @@
 						</ul>
 						<div class="tab-content">
 							<div id="step1" class="tab-pane fade <?php echo ($active == 1) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service1', ['serviceData' => $serviceData]); ?>
+								<?php $this->load->view('site/add-service1', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices']); ?>
 							</div>
 							<div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service2', ['serviceData' => $serviceData]); ?>
+								<?php $this->load->view('site/add-service2', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices2']); ?>
 							</div>
 							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service3', ['serviceData' => $serviceData]); ?>
+								<?php $this->load->view('site/add-service3', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices3']); ?>
 							</div>
 							<div id="step4" class="tab-pane fade <?php echo ($active == 4) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service4', ['serviceData' => $serviceData]); ?>
+								<?php $this->load->view('site/add-service4', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices4']); ?>
 							</div>
 							<div id="step5" class="tab-pane fade <?php echo ($active == 5) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service5', ['serviceData' => $serviceData]); ?>
+								<?php $this->load->view('site/add-service5', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices5']); ?>
 							</div>
 							<div id="step6" class="tab-pane fade <?php echo ($active == 6) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service6'); ?>
+								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices6']); ?>
 							</div>
 						</div>
 					</div>

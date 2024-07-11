@@ -41,7 +41,7 @@
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
 </style>
-<form action="<?= site_url().'users/storeServices4'; ?>" method="post" enctype="multipart/form-data">  
+<form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
 		<div class="row">
