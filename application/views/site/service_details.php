@@ -250,6 +250,7 @@
 									</div>
 								</div>
 
+<<<<<<< HEAD
 								<div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
 									<span>+</span><span>$</span><span>56</span>
 								</div>
@@ -283,6 +284,53 @@
 								<div class="panel-body">
 									<p>I don't guarantee a first-page ranking, but I do guarantee an improvement in your website's ranking and visibility through high-quality backlinks and other proven off-page SEO strategies. Our goal is to help you achieve long-term success online.</p>
 								</div>
+=======
+										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
+											<span>+</span><span>$</span><span>141</span>
+										</div> -->
+									</li>
+								</ul>
+							</div>
+							<div class="content-text clear addons-container">
+								<ul class="addons clearfix boxmodelfix">
+									<li class="item bg-fill clearfix clear">
+										<div class="checkbox col-xs-7 col-sm-9">
+											<div class="form-check">
+												<div class="check-box">
+													<input class="checkbox-effect" id="Do-Follw" type="checkbox" value="Do-Follw" name="get-up-1">
+													<label for="Do-Follw"><div><h6>I can 132+ Do-Follw High PR or DA 30+ Highiy Authorized Backlinks</h6>
+														<p class="discreet small eta">Additional 2 working days</p></div>
+													</label>
+												</div>
+											</div>
+										</div>
+
+										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
+											<span>+</span><span>$</span><span>42</span>
+										</div> -->
+									</li>
+								</ul>
+							</div>
+							<div class="content-text clear addons-container">
+								<ul class="addons clearfix boxmodelfix">
+									<li class="item bg-fill clearfix clear">
+										<div class="checkbox col-xs-7 col-sm-9">
+											<div class="form-check">
+												<div class="check-box">
+													<input class="checkbox-effect" id="Authorized" type="checkbox" value="Authorized" name="get-up-1">
+													<label for="Authorized"><div><h6>I can 132+ Do-Follw High PR or DA 30+ Highiy Authorized Backlinks</h6>
+														<p class="discreet small eta">Additional 2 working days</p></div>
+													</label>
+												</div>
+											</div>
+										</div>
+
+										<!-- <div class="addon-price col-xs-5 col-sm-3 price-tag medium text-right js-addon-price">
+											<span>+</span><span>$</span><span>56</span>
+										</div> -->
+									</li>
+								</ul>
+>>>>>>> 96adb6005cf4997159024e9ce5d7f3f16f3b3b07
 							</div>
 						</div>
 						

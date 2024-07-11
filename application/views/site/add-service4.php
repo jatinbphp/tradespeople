@@ -37,6 +37,7 @@
 	.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
 	.imgUp{margin-bottom:15px}
 	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
+	.removeDoc {position: absolute; top: 0; right: 0; margin-right: 15px;}
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
 </style>
@@ -68,7 +69,14 @@
 						<div class="btn-text">Drag & drop video or <span>Browser</span></div>
 						<input type="file" name="video" id="videoprofile" class="form-control input-md" accept="video/*" onchange="return seeVideoPreview();">
 					</div>
-					<div id="imgpreview"></div>
+					<div id="videoPreview">
+						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
+							<?php $video_path = FCPATH . 'img/services/' . ($serviceData['video'] ?? ''); ?>
+							<?php if(file_exists($video_path) && $video_path): ?>
+								<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px; height:113px;"></video>
+							<?php endif; ?>	
+						<?php endif; ?>	
+					</div>
 				</div>
 				
 				<div id="image-div" style="margin-top: 10px; border-bottom:1px solid #b0c0d3;">
@@ -83,7 +91,7 @@
 						<div id="loader1" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 							<div class="file-upload-btn addWorkImage imgUp">
-								<img src="img/dImg.png" id="defaultImg">
+								<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
 								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
 								<input type="file" name="workImage" id="profile2">		
 							</div>
@@ -93,18 +101,20 @@
 					<div class="row" id="previousImg">
 						<?php if(isset($serviceData['multi_images']) && $serviceData['multi_images']): ?>
 							<?php foreach($serviceData['multi_images'] as $id => $image): ?>
-								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
-								<div class="boxImage imgUp">
-									<div class="imagePreviewPlus">
-										<div class="text-right">
-											<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
-												<i class="fa fa-trash"></i>
-											</button>
+								<?php if(file_exists($image) && $image): ?>
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+										<div class="boxImage imgUp">
+											<div class="imagePreviewPlus">
+												<div class="text-right">
+													<button type="button" class="btn btn-danger removeImage" onclick="removeImage('<?php echo $id ?>', 1)">
+														<i class="fa fa-trash"></i>
+													</button>
+												</div>
+												<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
+											</div>
 										</div>
-										<img style="width: inherit; height: inherit;" src="<?php echo $image ?>" alt="Image">
 									</div>
-								</div>
-							</div>
+								<?php endif; ?>			
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
@@ -122,7 +132,7 @@
 						<div id="loader2" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
 							<div class="file-upload-btn addWorkDoc imgUp">
-								<img src="img/defaultDoc.png" id="defaultDoc">
+								<img src="<?php echo base_url()?>img/defaultDoc.png" id="defaultDoc">
 								<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
 								<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
 							</div>
@@ -132,16 +142,18 @@
 					<div class="row" id="previousDoc">
 						<?php if(isset($serviceData['multi_files']) && $serviceData['multi_files']): ?>
 							<?php foreach($serviceData['multi_files'] as $id => $file): ?>
-								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
-									<div class="boxImage imgUp">
-										<div class="imagePreviewPlus">
-											<div class="text-right">
-												<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
+								<?php if(file_exists($file) && $file): ?>
+									<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
+										<div class="boxImage imgUp">
+											<div class="imagePreviewPlus">
+												<div class="text-right">
+													<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
+												</div>
+												<img style="width: inherit; height: inherit;" src="<?php echo base_url()?>img/defaultDoc.png" alt="PDF">
 											</div>
-											<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="PDF">
 										</div>
 									</div>
-								</div>
+								<?php endif; ?>
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
@@ -186,7 +198,7 @@
 	});
 
 	function seeVideoPreview(){
-	  	var fileUploads = $("#videoprofile")[0];
+		var fileUploads = $("#videoprofile")[0];
 	    var file = fileUploads.files[0];
 	    
 	    // Check if the file is a video
@@ -197,9 +209,9 @@
 	            var video = document.createElement('video');
 	            video.src = e.target.result;
 	            video.onloadedmetadata = function () {
-	                var height = this.videoHeight;
+	            	var height = this.videoHeight;
 	                var width = this.videoWidth;
-	                $('#imgpreview').html('<video src="' + video.src + '" controls style="width:162px; height:113px;"></video>'); 
+	                $('#videoPreview').html('<video src="' + video.src + '" controls style="width:162px; height:113px;"></video>'); 
 	            }
 	        }
 	    } else {

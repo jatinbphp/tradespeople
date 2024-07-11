@@ -2372,10 +2372,27 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$this->load->view('site/service_details',$data);
 	}
 
-	public function categoryDetail($slug=''){
-		$category = $this->common_model->GetSingleData('category',['slug'=>$slug]);
+	public function categoryDetail($slug='', $slug2='', $slug3=''){
+		if($slug2 == "" && $slug3 == ""){
+			$category = $this->common_model->GetSingleData('category',['slug'=>$slug]);
+			$step = 1;
+		}
+		if($slug2 != "" && $slug3 == ""){
+			$category = $this->common_model->GetSingleData('category',['slug'=>$slug2]);
+			$step = 2;
+		}
+		if($slug3 != ""){
+			$category = $this->common_model->GetSingleData('category',['slug'=>$slug3]);
+			$step = 3;
+		}
+
+		// echo $step;exit;
+
+		$data['breadcrumb'] = $this->common_model->get_breadcrumb(($category['cat_id'] ?? 0));
 		$data['category_details'] = $category;
-		$data['services']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0));
+		$data['services']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0),$step);
+		$data['step'] = $step;
+
 		$data['categories_data']=$this->getHirarchicalCategoryData();
 		$data['faqs'] = $this->common_model->get_faqs('category_faqs',($category['cat_id'] ?? 0));
 		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat(($category['cat_id'] ?? 0));

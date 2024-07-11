@@ -914,7 +914,7 @@ class Common_model extends CI_Model
 				$return['region'] = $response->result->region;
 				$return['status'] = 1;
 			} else {
-				$return['status'] = 0;
+				$return['status'] = 1;
 				$return['msg'] = "Please enter valid UK postcode";
 			}
 		}
@@ -1915,7 +1915,7 @@ class Common_model extends CI_Model
 	public function get_service_image($table, $id)
 	{
 		$result = array();
-		$sql = "SELECT * from $table where service_id=$id  order by id desc";
+		$sql = "SELECT * from $table where service_id=$id order by id desc";
 		$query = $this->db->query($sql);
 		$result = $query->result_array();
 		return $result;
@@ -2070,8 +2070,6 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-
-
 	public function get_cheild($id)
 	{
 		$clields = $this->common_model->get_all_data('category', array('cat_parent' => $id), 'cat_id');
@@ -2158,6 +2156,22 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
+	public function getServiceFaqs($id)
+	{
+		$this->db->where('service_id', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get('service_faqs');
+		return $query->result_array();
+	}
+
+	public function getServiceAvailability($id)
+	{
+		$this->db->where('service_id', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get('service_availability');
+		return $query->row_array();
+	}
+
 	function get_all_local_category($table)
 	{
 
@@ -2203,6 +2217,24 @@ class Common_model extends CI_Model
 	{
 		return $this->common_model->GetAllData('category', array('cat_parent' => $id, 'is_delete' => 0), 'cat_id');
 	}
+
+	public function get_single_parent_category($parent_id) {
+		 $this->db->select('cat_id, cat_name, cat_parent, slug');
+        $query = $this->db->get_where('category', array('cat_id' => $parent_id));
+        return $query->row_array();
+    }
+
+	public function get_breadcrumb($category_id) {
+        $breadcrumb = [];
+        $category = $this->common_model->GetSingleData('category',['cat_id'=>$category_id]);
+
+        while ($category) {
+            array_unshift($breadcrumb, $category);
+            $category = $this->get_single_parent_category($category['cat_parent']);
+        }
+
+        return $breadcrumb;
+    }
 
 	function get_all_packages($table)
 	{
@@ -2669,7 +2701,7 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getServiceByCategoriesId($categoryId)
+	public function getServiceByCategoriesId($categoryId, $step)
 	{
 		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
 		$this->db->from('my_services ms');
@@ -2677,7 +2709,13 @@ class Common_model extends CI_Model
 		$this->db->join('users u', 'ms.user_id = u.id', 'left');
 		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
 		$this->db->where('ms.status', 1);
-		$this->db->where('ms.sub_category', $categoryId);
+		if($step == 1){
+			$this->db->where('ms.category', $categoryId);
+		}elseif($step == 2){
+			$this->db->where('ms.sub_category', $categoryId);
+		}else{
+			$this->db->where('ms.service_type', $categoryId);
+		}		
 		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');
 		$this->db->order_by('average_rating', 'DESC');
 		$this->db->limit(500);
