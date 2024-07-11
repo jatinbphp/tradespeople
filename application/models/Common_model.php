@@ -1915,10 +1915,30 @@ class Common_model extends CI_Model
 	public function get_service_image($table, $id)
 	{
 		$result = array();
-		$sql = "SELECT * from $table where service_id=$id order by id desc";
+		$sql = "SELECT * from $table where service_id=$id AND type=1 order by id desc";
 		$query = $this->db->query($sql);
 		$result = $query->result_array();
 		return $result;
+	}
+	public function make_all_image($mainImg, $sliderImgs)
+	{
+		$slider = '';
+		$image_path = FCPATH . 'img/services/' . $mainImg;
+		if(isset($mainImg) && file_exists($image_path)){
+			$main_image = base_url('img/services/').$mainImg;
+			$slider .= '<div><img src="'.$main_image.'" class="img-responsive"></div>';
+		}
+
+		if(count($sliderImgs)){
+			foreach($sliderImgs as $img){
+				$sliderImgPath = FCPATH . 'img/services/' . $img['image'];
+				if(isset($img['image']) && file_exists($sliderImgPath)){
+					$slider_mage = base_url('img/services/').$img['image'];
+					$slider .= '<div><img src="'.$slider_mage.'" class="img-responsive"></div>';
+				}
+			}
+		}
+		return $slider;
 	}
 	public function getAdminRow($table)
 	{

@@ -19,28 +19,24 @@
 				<div class="service-detail-slider-main">
 					<div class="row">
 						<div class="col-sm-8">
-							<h2 class="title">I will edit your short video ads</h2>	
+							<h2 class="title"><?php echo $service_details['service_name']?></h2>	
 							<div class="service-detail-slider">						
 								<div class="slider slider-for">
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
+									<?php
+										echo $this->common_model->make_all_image($service_details['image'], $service_images);										
+									?>
 								</div>
 								<div class="slider slider-nav">
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
-									<div><img src="<?php echo site_url('img/stp-3d.jpg') ?>" class="img-responsive"></div>
+									<?php
+										echo $this->common_model->make_all_image($service_details['image'], $service_images);										
+									?>									
 								</div>
 							</div>
 						</div>
 						<div class="col-sm-4">
 							<div class="sidebar-main">
 								<div class="service-detail-sidebar">
-									<h2 class="title">$65.00</h2>
+									<h2 class="title"><?php echo '£'.number_format($service_details['price'],2); ?></h2>
 									<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
 									<h4><i class="fa fa-clock-o" aria-hidden="true"></i> 7-day delivery</h4>				
 									<ul>
@@ -51,7 +47,7 @@
 										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
 									</ul>
 									<form>
-										<input class="btn btn-warning btn-lg" type="submit" value="Order ($65)">
+										<input class="btn btn-warning btn-lg" type="submit" value="Order (<?php echo '£'.number_format($service_details['price'],2); ?>)">
 									</form>
 								</div>
 							</div>
@@ -64,7 +60,7 @@
 		<div class="row">
 			<div class="col-sm-8">
 				<div class="about-this">
-					<h2 class="title">About this gig</h2>
+					<h2 class="title">About this service</h2>
 					<p><i>Welcome to the journey of amazing design experience?</i></p>
 					<p>You must be here in search of a professional and creative logo for your business thae can make your business nam <b>STAND OUT? <i>Yes you are at the perfect stop!</i></b> We have years of experience in creative designs and working with branda!</p>
 					<h2 class="title">What you get with this Offer</h2>
