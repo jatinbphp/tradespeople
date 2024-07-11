@@ -1,6 +1,7 @@
 <style>
 	.addFaqs{cursor: pointer;}
 </style>
+<?php echo "<pre>"; print_r($serviceData); echo "</pre>"; ?>
 <form action="<?= site_url().'users/storeServices6'; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
@@ -16,7 +17,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input" type="checkbox" name="available_mon_fri" value="yes" id="yesCheckbox" style="margin-right:10px;">
+								<input class="form-check-input" <?php echo (isset($serviceData['available_mon_fri']) && $serviceData['available_mon_fri'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="yes" id="yesCheckbox" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Yes</label>
 							</div>
 						</div>
@@ -24,7 +25,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input" type="checkbox" name="available_mon_fri" value="no" id="noCheckbox" style="margin-right:10px;">
+								<input class="form-check-input" <?php echo (isset($serviceData['available_mon_fri']) && $serviceData['available_mon_fri'] == 'no') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="no" id="noCheckbox" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">No</label>
 							</div>
 						</div>
@@ -70,7 +71,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input weekends-checkbox" type="checkbox" name="weekend_available" value="yes" id="weekendYes" style="margin-right:10px;">
+								<input class="form-check-input weekends-checkbox" <?php echo (isset($serviceData['weekend_available']) && $serviceData['weekend_available'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="weekend_available" value="yes" id="weekendYes" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Yes</label>
 							</div>
 						</div>
@@ -78,7 +79,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input weekends-checkbox" type="checkbox" name="weekend_available" value="no" id="weekendNo" style="margin-right:10px;">
+								<input class="form-check-input weekends-checkbox" <?php echo (isset($serviceData['weekend_available']) && $serviceData['weekend_available'] == 'no') ? 'checked' : '' ?> type="checkbox" name="weekend_available" value="no" id="weekendNo" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">No</label>
 							</div>
 						</div>

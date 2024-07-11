@@ -2295,17 +2295,17 @@ public function exists_refferals() {
 	public function addServices5(){
 		if($this->session->userdata('latest_service')) {
 			$this->load->view('site/add-service5',$data);
-    } else {
-      redirect('dashboard');
-    }
+		} else {
+			redirect('dashboard');
+		}
 	}
 
 	public function addServices6(){
 		if($this->session->userdata('latest_service')) {
 			$this->load->view('site/add-service6',$data);
-    } else {
-      redirect('dashboard');
-    }
+		} else {
+			redirect('dashboard');
+		}
 	}
 
 	public function storeServices($value=''){
@@ -2494,15 +2494,42 @@ public function exists_refferals() {
 	public function editServices($id=""){
 		if($this->session->userdata('user_id')) {
       		$user_id = $this->session->userdata('user_id');
-			$data['service'] = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
-			$category=$this->common_model->get_all_category('category');
-			if(!empty($category)){
-				foreach($category as $key => $list){
-					$category[$key]['path'] = $this->common_model->getFullPathId($list['cat_id']);
+			$serviceData = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
+			if(!$serviceData){
+				return ;
+			}
+			$this->setEditServiceData($serviceData);
+			$data['category'] = $this->common_model->get_parent_category('category');
+			$data['cities'] = $this->search_model->getJobCities();
+			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$serviceData['category']);
+			$faqs = $this->common_model->getServiceFaqs($id);
+			$serviceAvailiblity = $this->common_model->getServiceAvailability($id);
+			$this->setEditServiceData(['faqs' => $faqs, 'service_availiblity' => $serviceAvailiblity]);
+			$service_images=$this->common_model->get_service_image('service_images',$id);
+
+			foreach($service_images as $imageData){
+				$image = $imageData['image'] ?? '';
+				$id    = $imageData['id'] ?? '';
+				$file_extension = strtolower(pathinfo($image, PATHINFO_EXTENSION));
+				if($file_extension == 'pdf'){
+					if(isset($serviceData['multi_files']) && $serviceData['multi_files']){
+						$multiFiles = $serviceData['multi_files'];
+						$multiFiles[$id] = site_url()."img/defaultDoc.png";
+					}else{
+						$multiFiles[$id] = site_url()."img/defaultDoc.png";
+					}
+					$this->setEditServiceData(['multi_files' => $multiFiles]);
+				} else {
+					if(isset($serviceData['multi_images']) && $serviceData['multi_images']){
+						$multiImages = $serviceData['multi_images'];
+						$multiImages[$id] = site_url()."img/services/".$image;
+					}else{
+						$multiImages[$id] = site_url()."img/services/".$image;
+					}
+					$this->setEditServiceData(['multi_images' => $multiImages]);
 				}
 			}
-			$data['category'] = $category;
-			$data['service_images']=$this->common_model->get_service_image('service_images',$id);
+
 			$this->load->view('site/edit-service',$data);
     	} 
 	}
@@ -2598,6 +2625,19 @@ public function exists_refferals() {
 		}
 
 		$this->session->set_userdata('service_data', $allData);
+	}
+
+	public function setEditServiceData($data) {
+		$serviceData = $this->session->userdata('edit_service_data');
+		if($serviceData){
+			if($data){
+				$allData = array_merge($serviceData, $data);
+			}
+		} else {
+			$allData = $data;
+		}
+
+		$this->session->set_userdata('edit_service_data', $allData);
 	}
 
 

@@ -51,148 +51,51 @@
 				<div class="col-sm-9">
 					<div class="user-right-side">
 						<h1>Edit Service</h1> 
-						<form action="<?= site_url().'users/updateServices/'.$service['id']; ?>" method="post" enctype="multipart/form-data">  
-							<div class="edit-user-section">
-								<div class="msg"><?= $this->session->flashdata('msg');?></div>
-								<div class="row">
-									<div class="col-sm-12">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Service Name*</label>  
-											<div class="col-md-12">
-												<input id="service" name="service_name" placeholder="Service Name" class="form-control input-md" type="text" value="<?php echo $service['service_name']; ?>" required>
-                                        
-											</div>
-										</div>
-									</div>									
-									<div class="col-sm-12">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Category*</label>  
-											<div class="col-md-12">
-												<select class="form-control input-md" name="category" id="category" required>
-													<option value="">Please select</option>
-							
-													<?php 
-														foreach($category as $list){
-															$selected = $service['category'] == $list['cat_id'] ? 'selected' : '';
-													?>
-														<option value="<?php echo $list['cat_id']; ?>" <?php echo $selected;?>>
-															<?php echo $list['path']?>
-														</option>
-													<?php		
-														}
-													?>
-												</select>
-											</div>
-										</div>
-									</div>																			
-								</div>
-								<div class="row">
-									<div class="col-sm-3">
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Image*</label>
-											<div class="col-md-12">
-												<div id="imageContainer">
-													<?php if($service['image']){ ?>
-														<img src="<?php echo base_url();?>img/services/<?php echo $service['image'];?>"  width='200' height='217'>
-													<?php }else{ ?>
-													<img src="<?php echo base_url()?>img/upImage.png" alt="Click to select image" width="200" height="217">
-													<?php }?>
-													<input type="file" name="image" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
-												</div>
+						<?php
+						$nextStep = $this->session->userdata('next_step');
 
-												<input type="hidden" name="service_image_old" value="<?= $service['image']; ?>" >
-											</div>
-										</div>
-									</div>
-
-									<div class="col-md-9">
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">
-												About Your Service 
-											</label>
-											<div class="col-md-12">
-												<textarea class="form-control input-md" name="description" id="description" rows="10">
-													<?php echo $service['description']; ?>
-												</textarea>								
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm-6">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Price*</label>  
-											<div class="col-md-12">
-												<input id="price" name="price" placeholder="Price" class="form-control input-md" type="text" value="<?php echo $service['price']; ?>" required>     
-											</div>
-										</div>
-									</div>
-									<div class="col-sm-6">
-										<!-- Text input-->
-										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Status*</label> 
-											<div class="col-md-12">
-												<select class="form-control input-md" name="status" id="status" required>
-													<option value="1" <?php echo $service['status'] == 1 ? 'selected' : ''; ?>  >Active</option>
-													<option value="0" <?php echo $service['status'] == 0 ? 'selected' : ''; ?>>Inactive</option>
-												</select>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>                        
-							<!-- Edit-section-->
-
-							<!-- Edit-section--> 
-							<div class="edit-user-section">
-									<div class="col-md-12">
-										<h2>Add Multiple Images</h2>
-										<div class="row loader">
-											<div class="loader_ajax_small"></div>
-											<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageAdd">
-												<div class="addWorkImage imagePreviewPlus imgUp">
-													<input type="file" name="serviceImage" id="serviceImage">
-													<img src="<?php echo base_url()?>img/upImage.png" id="defaultImg">
-												</div>
-											</div>
-											<div id="previousImg">
-											<?php
-											if(!empty($service_images)){
-												foreach ($service_images as $img){
-											?>
-													<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $img['id'];?>">
-														<div class="boxImage imgUp">
-															<div class="imagePreviewPlus">
-																<div class="text-right">
-																	<button type="button" class="btn btn-danger removeImage" data-id="<?php echo $img['id']?>"><i class="fa fa-trash"></i></button>
-																</div>
-																<img style="width: inherit; height: inherit;" src="<?php echo base_url().'img/services/'.$img['image'];?>" alt="">
-															</div>
-														</div>
-													</div>
-											<?php
-												}
-											}
-											?>
-											</div>											
-										</div>
-									</div>
-								</div>
-                        
-							<!-- Edit-section-->
-							  
-							<div class="edit-user-section gray-bg">
-								<div class="row nomargin">
-									<div class="col-sm-12">
-										<button type="submit" class="btn btn-primary submit_btn">Save</button>
-									</div>                                 
-								</div>
-							</div>                        
-							<!-- Edit-section-->
-						</form>
+						$active = 1;
+						if($nextStep){
+							$active = $nextStep;
+						}
+						// unset($_SESSION);
+						// session_destroy();
+						$serviceData = $this->session->userdata('edit_service_data');
+						
+						// echo "<Pre>";
+						// // print_r($_SESSION);
+						// print_r($serviceData);
+						// echo "</Pre>";
+					?>
+						<ul id="myTabs" class="nav nav-tabs">
+							<li class="<?php echo ($active == 1) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step1">Step-1</a></li>
+							<li class="<?php echo ($active == 2) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step2">Step-2</a></li>
+							<li class="<?php echo ($active == 3) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step3">Step-3</a></li>
+							<li class="<?php echo ($active == 4) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step4">Step-4</a></li>
+							<li class="<?php echo ($active == 5) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step5">Step-5</a></li>
+							<li class="<?php echo ($active == 6) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step6">Step-6</a></li>
+						</ul>
+						<div class="tab-content">
+							<div id="step1" class="tab-pane fade <?php echo ($active == 1) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service1', ['serviceData' => $serviceData]); ?>
+							</div>
+							<div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service2', ['serviceData' => $serviceData]); ?>
+							</div>
+							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service3', ['serviceData' => $serviceData]); ?>
+							</div>
+							<div id="step4" class="tab-pane fade <?php echo ($active == 4) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service4', ['serviceData' => $serviceData]); ?>
+							</div>
+							<div id="step5" class="tab-pane fade <?php echo ($active == 5) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service5', ['serviceData' => $serviceData]); ?>
+							</div>
+							<div id="step6" class="tab-pane fade <?php echo ($active == 6) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service6'); ?>
+							</div>
+						</div>
+					</div>
 					</div>
 				</div>
 			</div>

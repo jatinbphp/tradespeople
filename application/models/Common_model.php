@@ -2070,8 +2070,6 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-
-
 	public function get_cheild($id)
 	{
 		$clields = $this->common_model->get_all_data('category', array('cat_parent' => $id), 'cat_id');
@@ -2156,6 +2154,22 @@ class Common_model extends CI_Model
 		$this->db->order_by("id", "asc");
 		$query = $this->db->get($table);
 		return $query->result_array();
+	}
+
+	public function getServiceFaqs($id)
+	{
+		$this->db->where('service_id', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get('service_faqs');
+		return $query->result_array();
+	}
+
+	public function getServiceAvailability($id)
+	{
+		$this->db->where('service_id', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get('service_availability');
+		return $query->row_array();
 	}
 
 	function get_all_local_category($table)

@@ -83,7 +83,7 @@
 						<div id="loader1" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 							<div class="file-upload-btn addWorkImage imgUp">
-								<img src="img/dImg.png" id="defaultImg">
+								<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
 								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
 								<input type="file" name="workImage" id="profile2">		
 							</div>
@@ -122,7 +122,7 @@
 						<div id="loader2" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
 							<div class="file-upload-btn addWorkDoc imgUp">
-								<img src="img/defaultDoc.png" id="defaultDoc">
+								<img src="<?php echo base_url()?>img/defaultDoc.png" id="defaultDoc">
 								<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
 								<input type="file" name="workDoc" id="profile3" accept="application/pdf">		
 							</div>
@@ -138,7 +138,7 @@
 											<div class="text-right">
 												<button type="button" class="btn btn-danger removeDoc" onclick="removeImage('<?php echo $id; ?>',2)"><i class="fa fa-trash"></i></button>
 											</div>
-											<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="PDF">
+											<img style="width: inherit; height: inherit;" src="<?php echo base_url()?>img/defaultDoc.png" alt="PDF">
 										</div>
 									</div>
 								</div>
