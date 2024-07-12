@@ -1836,31 +1836,25 @@ function send_review_invitation(id){
         return new Date(formattedDate);
     });
     }
-    console.log(dateObjects);
-
     if($('#datepicker').length){
       var today = new Date();
 
       if(dateObjects.length > 0){
         $('#datepicker').multiDatesPicker({
-          minDate: 0, // Ensure today's date can be selected
+          //minDate: 0, // Ensure today's date can be selected
           addDates: dateObjects,
           onSelect: function(dateText, inst) {
               var selectedDates = $('#datepicker').multiDatesPicker('getDates');
               $('#selectedDates').val(selectedDates.join(','));
-              console.log('edit');
-              console.log(selectedDates);
               updateAvailabilityMessage();
           }
         });
       } else {
         $('#datepicker').multiDatesPicker({
-          minDate: 0, // Ensure today's date can be selected
+          //minDate: 0, // Ensure today's date can be selected
           onSelect: function(dateText, inst) {
               var selectedDates = $('#datepicker').multiDatesPicker('getDates');
               $('#selectedDates').val(selectedDates.join(','));
-              console.log('adddd');
-              console.log(selectedDates);
               updateAvailabilityMessage();
           }
         });
@@ -1886,7 +1880,7 @@ function send_review_invitation(id){
 
       var selectedDates = $('#datepicker').multiDatesPicker('getDates');
       if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
-          selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected
+         //selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected
       }
       $('#selectedDates').val(selectedDates.join(','));
       updateAvailabilityMessage();  
