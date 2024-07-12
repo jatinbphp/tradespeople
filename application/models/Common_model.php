@@ -3110,21 +3110,25 @@ class Common_model extends CI_Model
 		    if (in_array($mimeType, $imageMimeTypes)) {
 		        // It's an image
 		        $mediaTag = '<img src="' . base_url() . $image . '" alt="service" style="width: 65px;" />';
+		        $type = 'image';
 		    } elseif (in_array($mimeType, $videoMimeTypes)) {
 		        // It's a video
-		        $mediaTag = '<video width="100" height="62" controls>
+		        $mediaTag = '<video width="100" height="62" controls autoplay>
 		                        <source src="' . base_url() . $image . '" type="' . $mimeType . '">
 		                        Your browser does not support the video tag.
 		                     </video>';
+		        $type = 'video';
 		    } else {
 		        // It's neither an image nor a video
 		        $mediaTag = '<img src="' . base_url('img/default-image.jpg') . '" alt="service" style="width: 65px;" />';
+		        $type = 'image';
 		    }
 		} else {
 		    // File does not exist, show default image
 		    $mediaTag = '<img src="' . base_url('img/default-image.jpg') . '" alt="service" style="width: 65px;" />';
+		    $type = 'image';
 		}
 
-		echo $mediaTag;
+		echo json_encode(['file_type' => $type,'mediaTag' => $mediaTag]);
 	}
 }

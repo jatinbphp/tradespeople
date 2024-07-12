@@ -133,13 +133,10 @@
 					$('#'+sectionId+'_div').removeClass('hidden');
 					$('#'+sectionId).empty().html(data);
 					<?php if(isset($serviceData['plugins']) && $serviceData['plugins']): ?>
-						console.log(111);
 						if(plugin == 1){
-						console.log(222);
 							var pluginData = "<?php echo $serviceData['plugins'] ?? ''; ?>";
 							if (pluginData) {
 								var pluginArray = pluginData.split(',');
-								console.log(pluginArray);
 								$('.plugin').val(pluginArray);
 							}
 							$('.plugin').trigger('change');

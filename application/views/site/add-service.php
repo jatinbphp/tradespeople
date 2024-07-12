@@ -35,6 +35,14 @@
 
 	#serviceImage{display: none;}
 	.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-color:#F1F2F6;background-size:cover;background-repeat:no-repeat;display:inline-block;box-shadow:0 -3px 6px 2px rgba(0,0,0,0.2);display:flex;align-content:center;justify-content:center;align-items:center}
+	.videoPreviewPlus{width: fit-content;
+    padding: 5px;
+    border: 1px solid #b0c0d3;
+    border-radius: 10px;display: inline-block;}
+    .videoPreviewPlus video {
+    	width: 100%;
+    	float: left;
+    }
 	.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
 	.imgUp{margin-bottom:15px}
 	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
@@ -132,23 +140,40 @@
 
 	function seepreview(){
 	  var fileUploads = $("#profile")[0];
+	  var file = fileUploads.files[0];
 	  var reader = new FileReader();
+	  var fileType = file.type.split('/')[0];
+
 	  reader.readAsDataURL(fileUploads.files[0]);
 	  reader.onload = function (e) {
-	    var image = new Image();
-	    image.src = e.target.result;
-	    image.onload = function () {
-	      var height = this.height;
-	      var width = this.width;
-		  var html = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="padding-left:30px">'+
-							'<div class="boxImage imgUp">'+
-								'<div class="imagePreviewPlus">'+
-									'<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
-								'</div>'+
-							'</div>'+
-						'</div>';
-			$('#imgpreview').html('').html(html);
-	    }
+	    if (fileType === 'image') {
+            var image = new Image();
+            image.src = e.target.result;
+            image.onload = function () {
+                var height = this.height;
+                var width = this.width;
+                var html = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="padding-left:30px">'+
+                                '<div class="boxImage imgUp">'+
+                                    '<div class="imagePreviewPlus">'+
+                                        '<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>';
+                $('#imgpreview').html('').html(html);
+            };
+        } else if (fileType === 'video') {
+            var html = '<div class="col-md-4 col-sm-6 col-xs-12" style="padding-left:30px">'+
+                            '<div class="videoPreviewPlus">'+
+                                '<video controls autoplay>'+
+                                    '<source src="'+e.target.result+'" type="'+file.type+'">'+
+                                    'Your browser does not support the video tag.'+
+                                '</video>'+
+                            '</div>'+
+                        '</div>';
+            $('#imgpreview').html('').html(html);
+        } else {
+            alert("Unsupported file type!");
+        }
 	  }     
 	}
 

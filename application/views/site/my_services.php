@@ -54,7 +54,6 @@
                                             <table id="boottable" class="table table-bordered table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th style="display: none;"></th>
                                                         <th>
                                                             <input type="checkbox" name="selectAll" id="ckbCheckAll">
                                                         </th>                     
@@ -68,34 +67,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach ($my_services as $key => $list) { ?>
-                                                        <tr>
-                                                            <td style="display: none;"><?php  echo $key+1; ?></td>
-                                                            <td>
-                                                                <input type="checkbox" name="serviceIds[]" value="<?php echo $list['id']; ?>" class="checkBoxClass" id="service_<?php echo $list['id']; ?>">
-                                                            </td>
-                                                            <td>
-                                                                <?php 
-                                                                    echo $list['status'] == 1 ? 'Active' : 'Inactive';
-                                                                ?>
-                                                            </td>
-                                                            <td>
-                                                                <?php 
-                                                                    $CI =& get_instance();
-                                                                    $CI->load->model('Common_model');
-                                                                    $img = 'img/services/' . $list['image'];
-                                                                    echo $CI->Common_model->checkFile($img);
-                                                                ?>
-                                                            </td>
-                                                            <td><?php echo $list['service_name']; ?></td> 
-                                                            <td><?php echo date('d/m/Y h:i:s', strtotime($list['created_at'])); ?></td>
-                                                            <td><?php echo '£'.number_format($list['price'],2); ?></td>                   
-                                                            <td>
-                                                                <a class="btn btn-warning btn-sm" href="<?= base_url('edit-service/'.$list['id']); ?>">Edit</a>
-                                                                 <a class="btn btn-danger btn-sm" href="<?= base_url('delete-service/'.$list['id']); ?>" onclick="confirm('Are you sure want to delete this service?')">Delete</a>
-                                                            </td>
-                                                        </tr>                                  
-                                                    <?php } ?>
+                                                    
                                                 </tbody>
                                             </table>
                                         <?php }else{ ?>
@@ -119,12 +91,48 @@
 <script>
 $(function () {
     var table = $("#boottable").DataTable({
-      stateSave: true,
+        stateSave: true,
         "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-        "pageLength": 25
-    });
-    $(".DataTable").DataTable({
-      stateSave: true
+        "pageLength": 25,
+        "ajax": {
+            "url": site_url + 'users/getAllServices',
+            "type": "GET",
+            "dataSrc": "data"
+        },
+        "columns": [
+            { "data": "id", "render": function(data, type, row) {
+                return '<input type="checkbox" name="serviceIds[]" value="'+data+'" class="checkBoxClass" id="service_'+data+'">';
+            }},
+            { "data": "status", "render": function(data, type, row) {
+                return data == 1 ? 'Active' : 'Inactive';
+            }},
+            { 
+                "data": null,
+                "render": function(data, type, row) {
+                    if (row.image) {
+                        // Check if the image is actually a video by checking the file extension
+                        if (row.image.endsWith('.mp4')) {
+                            return '<video width="100" controls autoplay><source src="'+site_url+'img/services/'+row.image+'" type="video/mp4">Your browser does not support the video tag.</video>';
+                        } else {
+                            return '<img src="'+site_url+'img/services/'+row.image+'" alt="Service Image" width="50">';
+                        }
+                    } else {
+                        return '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+                    }
+                }
+            },
+            { "data": "service_name" },
+            { "data": "created_at", "render": function(data, type, row) {
+                return new Date(data).toLocaleDateString() + ' ' + new Date(data).toLocaleTimeString();
+            }},
+            { "data": "price", "render": function(data, type, row) {
+                return '£' + parseFloat(data).toFixed(2);
+            }},
+            { "data": "id", "render": function(data, type, row) {
+                return '<a class="btn btn-warning btn-sm" href="'+site_url+'edit-service/'+data+'">Edit</a>' +
+                       ' <a class="btn btn-danger btn-sm" href="'+site_url+'delete-service/'+data+'" onclick="return confirm(\'Are you sure want to delete this service?\')">Delete</a>';
+            }}
+        ]
     });
 
     $('#action').on('change', function(){
@@ -140,39 +148,39 @@ $(function () {
                 return false;
             }
 
-            console.log(selectedValues);
-            
             $.ajax({
-                url:site_url+'users/deleteAllServices',
-                type:"POST",
-                data:{'servicesIds':selectedValues},
-                success:function(data){
-                    if(data == 0){
+                url: site_url + 'users/deleteAllServices',
+                type: "POST",
+                data: {'servicesIds': selectedValues},
+                dataType: 'json',
+                success: function(data){
+                    if(data.status == 'success'){
+                        table.ajax.reload(null, false);  // Reload DataTable without resetting the pagination
+                        alert('Selected services are deleted successfully.');
+                    } else {
                         alert('Please select at least one service');
-                    }else{
-                        table.ajax.reload(null, false);
                     }
+                     $('#action').val('');
                 }
             });
         }
     });
+
+    // Handle the "Select All" checkbox functionality
+    $('#ckbCheckAll').on('change', function(){
+        $('.checkBoxClass').prop('checked', $(this).prop('checked'));
+        var chkLength = $(".checkBoxClass:checked").length;
+        $('#defaultOption').text('Action on '+chkLength+' selected');
+    });
+
+    $(document).on('change', '.checkBoxClass', function() {
+        if($(".checkBoxClass").length == $(".checkBoxClass:checked").length) { 
+            $("#ckbCheckAll").prop("checked", true);        
+        }else {
+            $("#ckbCheckAll").prop("checked", false);        
+        }
+        var chkLength = $(".checkBoxClass:checked").length;
+        $('#defaultOption').text('Action on '+chkLength+' selected');
+    });
 });
-
-$("#ckbCheckAll").click(function () {
-    $(".checkBoxClass").prop('checked', $(this).prop('checked'));
-    var chkLength = $(".checkBoxClass:checked").length;
-    $('#defaultOption').text('Action on '+chkLength+' selected');
-});
-
-$('.checkBoxClass').click(function(){
-    if($(".checkBoxClass").length == $(".checkBoxClass:checked").length) { 
-        $("#ckbCheckAll").prop("checked", true);        
-    }else {
-        $("#ckbCheckAll").prop("checked", false);        
-    }
-    var chkLength = $(".checkBoxClass:checked").length;
-    $('#defaultOption').text('Action on '+chkLength+' selected');
-});
-
-
 </script>

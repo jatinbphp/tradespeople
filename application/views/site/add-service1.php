@@ -29,7 +29,7 @@
                             <option value="">Select Location</option>
                             <?php $selected = $serviceData['location'] ?? '' ?>
                             <?php foreach ($cities as $city) { ?>
-                                <option <?php echo (($selected == $city['city']) ? 'selected' : '') ?> value="<?php echo $city['city']; ?>">
+                                <option <?php echo $selected == $city['city'] ? 'selected' : ''; ?> value="<?php echo $city['city']; ?>">
                                     <?php echo $city['city']; ?>
                                 </option>
                             <?php } ?>
@@ -75,19 +75,39 @@
                 </div>
             </div>
         </div>
+        
         <div class="row" id="imgpreview">
             <?php $image_path = FCPATH . 'img/services/' . ($serviceData['image'] ?? ''); ?>
-            <?php if(file_exists($image_path) && $serviceData['image']): ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style='padding-left:30px'>
-                    <div class="boxImage imgUp">
-                        <div class="imagePreviewPlus">
-                            <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$serviceData['image']; ?>" alt="Image">
+            <?php if (file_exists($image_path) && $serviceData['image']): ?>
+                <?php
+                $mime_type = get_mime_by_extension($image_path);
+                $is_image = strpos($mime_type, 'image') !== false;
+                $is_video = strpos($mime_type, 'video') !== false;
+                ?>
+                <?php if ($is_image): ?>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style='padding-left:30px'>
+                        <div class="boxImage imgUp">
+                            <div class="imagePreviewPlus">
+                                <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" alt="Image">
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endif ?>
-        </div>								
-    </div>                        
+                <?php elseif ($is_video): ?>
+                    <div class="col-md-4 col-sm-6 col-xs-12" style='padding-left:30px'>
+                        <div class="imgUp">
+                            <div class="videoPreviewPlus">
+                                <video controls autoplay>
+                                    <source src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" type="<?php echo $mime_type; ?>">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+
     <div class="edit-user-section gray-bg">
         <div class="row nomargin">
             <div class="col-sm-12">

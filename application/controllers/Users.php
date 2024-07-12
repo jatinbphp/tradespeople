@@ -2251,6 +2251,28 @@ public function exists_refferals() {
 		}	
 	}
 
+	public function getAllServices() {
+    if($this->session->userdata('user_id')) {
+        $services = $this->common_model->get_my_service('my_services', $this->session->userdata('user_id'));
+        $data = [];
+
+        foreach($services as $service) {        	 
+          $data[] = [
+              'id' => $service['id'],
+              'status' => $service['status'],
+              'image' => $service['image'],
+              'service_name' => $service['service_name'],
+              'created_at' => $service['created_at'],
+              'price' => $service['price']
+          ];
+        }
+
+        echo json_encode(['data' => $data]);
+    } else {
+        echo json_encode(['data' => []]);
+    }
+	}
+
 	public function addServices(){
 		if($this->session->userdata('user_id')) {
 			$data['cities'] = $this->search_model->getJobCities();
@@ -2508,6 +2530,7 @@ public function exists_refferals() {
 			if(!$serviceData){
 				return ;
 			}
+
 			$this->setEditServiceData($serviceData);
 			$data['category'] = $this->common_model->get_parent_category('category');
 			$data['cities'] = $this->search_model->getJobCities();
@@ -2582,7 +2605,7 @@ public function exists_refferals() {
 		$insert['status'] = $this->input->post('status');
 		$insert['location'] = $this->input->post('location');
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
-		
+
 		$this->common_model->update('my_services', ['id'=>$id], $insert);
 		$this->session->set_flashdata('success','Service details updated succesfully.');
 		$this->session->set_userdata('update_next_step',2);
@@ -2845,9 +2868,9 @@ public function exists_refferals() {
 					$this->common_model->delete(['service_id'=>$id], 'service_rating');	
 				}
 			}
-			echo 1;
+			echo json_encode(['status' => 'success']);
 		}else{
-			echo 0;
+			echo json_encode(['status' => 'error', 'message' => 'No services selected']);
 		}
 	}		
 }	
