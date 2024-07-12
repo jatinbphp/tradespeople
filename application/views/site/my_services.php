@@ -14,6 +14,14 @@
                 	<?php include 'include/sidebar.php'; ?>
                 </div>
             	<div class="col-sm-9">
+                    <?php if($this->session->flashdata('error')): ?>
+                        <div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
+                        <?php unset($_SESSION['error']) ?>
+                    <?php endif; ?>
+                    <?php if($this->session->flashdata('success')): ?>
+                        <p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
+                        <?php unset($_SESSION['success']) ?>
+                    <?php endif; ?>
                     <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
                     <div class="mjq-sh">
                         <h2>

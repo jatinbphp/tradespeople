@@ -1,6 +1,5 @@
 <form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
-		<div class="msg"><?= $this->session->flashdata('msg');?></div>
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="form-group">
