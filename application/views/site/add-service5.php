@@ -15,25 +15,27 @@
 				<span>Add questions & answers for your Buyers.</span>
 				<div id="faq-div" style="margin-top:10px">
 						<?php if(isset($serviceData['faqs']) && $serviceData['faqs']): ?>
+							<?php $i= 1;?>
 							<?php foreach($serviceData['faqs'] as $key => $faq): ?>
-								<div class="row" id="faq<?php echo $key; ?>" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">
+								<div class="row" id="faq<?php echo $i; ?>" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">
 									<div class="col-md-12" style="margin-top:10px;">
 										<div class="form-group">
-											<label class="control-label" for="" style="width:100%">Question <?php echo $key + 1; ?> <span class="btn btn-sm btn-danger pull-right removeFaqs" data-id="<?php echo $key; ?>"><i class="fa fa-trash"></i></span></label>
+											<label class="control-label" for="" style="width:100%">Question <?php echo $i; ?> <span class="btn btn-sm btn-danger pull-right removeFaqs" data-id="<?php echo $i; ?>"><i class="fa fa-trash"></i></span></label>
 											<div>
-												<textarea class="form-control input-md" name="faq[<?php echo $key; ?>][question]" id="question<?php echo $key; ?>" placeholder="Question" rows="3" required><?php echo $faq['question'] ?? '' ?></textarea>
+												<textarea class="form-control input-md" name="faq[<?php echo $i; ?>][question]" id="question<?php echo $i; ?>" placeholder="Question" rows="3" required><?php echo $faq['question'] ?? '' ?></textarea>
 											</div>
 										</div>
 									</div>
 									<div class="col-md-12">
 										<div class="form-group">
-											<label class="control-label" for="">Answer <?php echo $key + 1; ?></label>
+											<label class="control-label" for="">Answer <?php echo $i; ?></label>
 											<div class="">
-												<textarea class="form-control input-md" name="faq[<?php echo $key; ?>][answer]" id="answer<?php echo $key; ?>" placeholder="Answer" rows="3" required><?php echo $faq['answer'] ?? '' ?></textarea>
+												<textarea class="form-control input-md" name="faq[<?php echo $i; ?>][answer]" id="answer<?php echo $i; ?>" placeholder="Answer" rows="3" required><?php echo $faq['answer'] ?? '' ?></textarea>
 											</div>
 										</div>
 									</div>
 								</div>
+								<?php $i++; ?>
 							<?php endforeach ?>
 						<?php endif; ?>
 				</div>
@@ -54,7 +56,7 @@
 </form>
 
 <script>
-	var totalFaqs = 0;
+	var totalFaqs =  <?php echo ($i ?? 0); ?>;
 	$('.addFaqs').on('click', function(){
 		totalFaqs++;
 		var html = '<div class="row" id="faq'+totalFaqs+'" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">'+
@@ -77,6 +79,7 @@
 				'</div>';
 
 		$('#faq-div').append(html);
+		updateFaqIndices();
 	});	
 
 
@@ -86,5 +89,17 @@
 		console.log(fId);
 		$('#faq'+fId).remove();
 		totalFaqs--;
+		updateFaqIndices();
 	});
+
+	function updateFaqIndices() {
+        $('#faq-div .row').each(function(index) {
+            let newIndex = index + 1;
+            $(this).attr('data-index', newIndex);
+            $(this).find('label.control-label').first().html(`Question ${newIndex} <span class="btn btn-sm btn-danger pull-right removeFaqs" data-id="${newIndex}"><i class="fa fa-trash"></i></span>`);
+            $(this).find('textarea[name^="faq"]').first().attr('name', `faq[${newIndex}][question]`);
+            $(this).find('textarea[name^="faq"]').last().attr('name', `faq[${newIndex}][answer]`);
+            $(this).find('label.control-label').last().text(`Answer ${newIndex}`);
+        });
+    }
 </script>

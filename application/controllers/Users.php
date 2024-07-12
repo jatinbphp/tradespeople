@@ -2468,17 +2468,12 @@ public function exists_refferals() {
 
 	public function storeServices5($value=''){
 		$faqs = $this->input->post('faq', []);
-		$serviceData = $this->session->userdata('service_data');
-		if(isset($serviceData['faqs']) && $serviceData['faqs']){
-			$oldFaqs = $serviceData['faqs'];
-			$allFaqs = array_merge($oldFaqs, $faqs);
-		}else{
-			$allFaqs = $faqs;
-		}
-		$this->setServiceData(['faqs' => $allFaqs]);
+		$latestServiceId = $this->session->userdata('latest_service');
+		$this->common_model->delete(['service_id'=>$latestServiceId],'service_faqs');
+		$this->setServiceData(['faqs' => $faqs]);
 		if(!empty($faqs) && count($faqs) > 0){
 			foreach ($faqs as $key => $list) {
-				$insert['service_id'] = $this->session->userdata('latest_service');
+				$insert['service_id'] = $latestServiceId;
 				$insert['question'] = $list['question'];
 				$insert['answer'] = $list['answer'];
 				$run = $this->common_model->insert('service_faqs', $insert);
@@ -2708,13 +2703,14 @@ public function exists_refferals() {
 			redirect(base_url());
 			return;
 		}
+		$this->common_model->delete(['service_id'=>$id],'service_faqs');
 		$faqs = $this->input->post('faq', []);
 		if(!empty($faqs) && count($faqs) > 0){
 			foreach ($faqs as $key => $list) {
-				$insert['service_id'] = $this->session->userdata('latest_service');
+				$insert['service_id'] = $id;
 				$insert['question'] = $list['question'];
 				$insert['answer'] = $list['answer'];
-				$this->common_model->update('service_faqs',array('id'=>$id),$insert);		
+				$this->common_model->insert('service_faqs',$insert);		
 			}
 		}
 		$this->session->set_userdata('update_next_step',6);
