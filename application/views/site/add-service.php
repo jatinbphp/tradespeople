@@ -43,27 +43,35 @@
 </style>
 <div class="acount-page membership-page">
 	<div class="container">
+		<?php if($this->session->flashdata('error')): ?>
+			<div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
+			<?php unset($_SESSION['error']) ?>
+		<?php endif; ?>
+		<?php if($this->session->flashdata('success')): ?>
+			<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
+			<?php unset($_SESSION['success']) ?>
+		<?php endif; ?>
 		<div class="user-setting">
 			<div class="row">
 				<div class="col-sm-3">
 					<?php include 'include/sidebar.php'; ?>
 				</div>
 				<div class="col-sm-9">
+					<?php if($this->session->flashdata('error')): ?>
+						<div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
+						<?php unset($_SESSION['error']) ?>
+					<?php endif; ?>
+					<?php if($this->session->flashdata('success')): ?>
+						<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
+						<?php unset($_SESSION['success']) ?>
+					<?php endif; ?>
 					<?php
 						$nextStep = $this->session->userdata('next_step');
-
 						$active = 1;
 						if($nextStep){
 							$active = $nextStep;
 						}
-						// unset($_SESSION);
-						// session_destroy();
 						$serviceData = $this->session->userdata('service_data');
-						
-						// echo "<Pre>";
-						// // print_r($_SESSION);
-						//print_r($serviceData);
-						// echo "</Pre>";
 					?>
 					<div class="user-right-side">
 						<h1>Add Service</h1>
@@ -92,7 +100,7 @@
 								<?php $this->load->view('site/add-service5', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices5']); ?>
 							</div>
 							<div id="step6" class="tab-pane fade <?php echo ($active == 6) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices6']); ?>
+								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices6', 'type' => 'add']); ?>
 							</div>
 						</div>
 					</div>

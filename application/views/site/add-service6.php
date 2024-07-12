@@ -1,6 +1,7 @@
 <style>
 	.addFaqs{cursor: pointer;}
 </style>
+<?php echo "<pre>"; print_r($serviceData); echo "</pre>"; ?>
 <form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
@@ -88,15 +89,15 @@
 				<div class="row">											
 					<div class="col-md-12" id="notAvailableOption">
 						<div class="form-check" style="margin: 0;">
-							<input class="form-check-input group-checkbox" type="checkbox" name="not_available_days" value="saturday_only" id="saturdayOnly" style="margin-right:10px;">
+							<input class="form-check-input group-checkbox" <?php echo (isset($serviceData['service_availiblity']['not_available_days']) && $serviceData['service_availiblity']['not_available_days'] == 'saturday_only') ? 'checked' : '' ?> type="checkbox" name="not_available_days" value="saturday_only" id="saturdayOnly" style="margin-right:10px;">
 							<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Saturdays Only</label>
 						</div>
 						<div class="form-check" style="margin: 0;">
-							<input class="form-check-input group-checkbox" type="checkbox" name="not_available_days" value="sunday_only" id="sundayOnly" style="margin-right:10px;">
+							<input class="form-check-input group-checkbox" <?php echo (isset($serviceData['service_availiblity']['not_available_days']) && $serviceData['service_availiblity']['not_available_days'] == 'sunday_only') ? 'checked' : '' ?> type="checkbox" name="not_available_days" value="sunday_only" id="sundayOnly" style="margin-right:10px;">
 							<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Sundays Only</label>
 						</div>
 						<div class="form-check" style="margin: 0;">
-							<input class="form-check-input group-checkbox" type="checkbox" name="not_available_days" value="saturday_and_sunday" id="saturdayAndsunday" style="margin-right:10px;">
+							<input class="form-check-input group-checkbox" <?php echo (isset($serviceData['service_availiblity']['not_available_days']) && $serviceData['service_availiblity']['not_available_days'] == 'saturday_and_sunday') ? 'checked' : '' ?> type="checkbox" name="not_available_days" value="saturday_and_sunday" id="saturdayAndsunday" style="margin-right:10px;">
 							<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Saturdays And Sundays</label>
 						</div>
 					</div>
@@ -120,6 +121,9 @@
 	<?php if(isset($serviceData['service_availiblity']['selected_dates']) && $serviceData['service_availiblity']['selected_dates']): ?>
 		<?php $datesArray = explode(',', $serviceData['service_availiblity']['selected_dates']); ?>
 	<?php endif; ?>
+	<?php if(isset($type) && $type == 'add'): ?>
+		serviceOperationType = 'add';	
+	<?php endif; ?>
 	selectedDate = '<?php echo json_encode($datesArray); ?>';
 	$(document).ready(function() {
         $('.weekends-checkbox').on('change', function() {
@@ -135,8 +139,16 @@
         $('.group-checkbox').on('change', function() {
             $('.group-checkbox').not(this).prop('checked', false);
         });
-		$('#timeSlot').trigger('change');
-		$('.weekends-checkbox').trigger('change');
+		<?php if(isset($serviceData['service_availiblity']) && $serviceData['service_availiblity'] && $type != 'add'): ?>
+			$('#timeSlot').trigger('change');
+		<?php endif; ?>
+		<?php if(isset($serviceData['service_availiblity']['weekend_available']) && $serviceData['service_availiblity']['weekend_available'] == 'yes' && $type != 'add'): ?>
+			$('#weekendYes').trigger('change');
+		<?php endif; ?>
+
+		<?php if(isset($serviceData['service_availiblity']['weekend_available']) && $serviceData['service_availiblity']['weekend_available'] == 'no' && $type != 'add'): ?>
+			$('#weekendNo').trigger('change');
+		<?php endif; ?>
     });
 	$('#timeSlot').on('change', function() {
         updateAvailabilityMessage(); // Call formatSentence when time slot changes

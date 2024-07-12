@@ -1828,27 +1828,43 @@ function send_review_invitation(id){
       "July", "August", "September", "October", "November", "December"
   ];
   $(document).ready(function() {
-    console.log(selectedDate);
-    console.log(typeof selectedDate);
-    var dateObjects = JSON.parse(selectedDate).map(function(dateString) {
+    var dateObjects  = [];
+    if(selectedDate){
+      dateObjects = JSON.parse(selectedDate).map(function(dateString) {
         var parts = dateString.split('/');
         var formattedDate = parts[2] + '-' + parts[0].padStart(2, '0') + '-' + parts[1].padStart(2, '0');
         return new Date(formattedDate);
     });
+    }
+    console.log(dateObjects);
 
     if($('#datepicker').length){
       var today = new Date();
-      var tomorrow = (new Date()).setDate(today.getDate()+1);
-      console.log([today, tomorrow]);
-      $('#datepicker').multiDatesPicker({
+
+      if(dateObjects.length > 0){
+        $('#datepicker').multiDatesPicker({
           minDate: 0, // Ensure today's date can be selected
           addDates: dateObjects,
           onSelect: function(dateText, inst) {
               var selectedDates = $('#datepicker').multiDatesPicker('getDates');
               $('#selectedDates').val(selectedDates.join(','));
+              console.log('edit');
+              console.log(selectedDates);
               updateAvailabilityMessage();
           }
-      });
+        });
+      } else {
+        $('#datepicker').multiDatesPicker({
+          minDate: 0, // Ensure today's date can be selected
+          onSelect: function(dateText, inst) {
+              var selectedDates = $('#datepicker').multiDatesPicker('getDates');
+              $('#selectedDates').val(selectedDates.join(','));
+              console.log('adddd');
+              console.log(selectedDates);
+              updateAvailabilityMessage();
+          }
+        });
+      }
 
       $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
 
@@ -1875,8 +1891,18 @@ function send_review_invitation(id){
       $('#selectedDates').val(selectedDates.join(','));
       updateAvailabilityMessage();  
     }
-    $('#yesCheckbox').trigger('change');
-    $('#noCheckbox').trigger('change');
+
+    <?php $serviceData = $this->session->userdata('edit_service_data'); ?>
+    <?php if(isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'no'): ?>
+      if(serviceOperationType == 'edit'){
+        $('#noCheckbox').trigger('change');
+      }
+    <?php endif; ?>
+    <?php if(isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'yes'): ?>
+      if(serviceOperationType == 'edit'){
+        $('#yesCheckbox').trigger('change');
+      }
+    <?php endif; ?>
   });
 
   $('.slider-for').slick({

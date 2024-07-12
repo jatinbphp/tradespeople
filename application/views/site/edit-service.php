@@ -49,24 +49,25 @@
 					<?php include 'include/sidebar.php'; ?>
 				</div>
 				<div class="col-sm-9">
+					<?php if($this->session->flashdata('error')): ?>
+						<div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
+						<?php unset($_SESSION['error']) ?>
+					<?php endif; ?>
+					<?php if($this->session->flashdata('success')): ?>
+						<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
+						<?php unset($_SESSION['success']) ?>
+					<?php endif; ?>
 					<div class="user-right-side">
 						<h1>Edit Service</h1> 
 						<?php
-						$nextStep = $this->session->userdata('update_next_step');
+							$nextStep = $this->session->userdata('update_next_step');
 
-						$active = 1;
-						if($nextStep){
-							$active = $nextStep;
-						}
-						// unset($_SESSION);
-						// session_destroy();
-						$serviceData = $this->session->userdata('edit_service_data');
-						
-						// echo "<Pre>";
-						// // print_r($_SESSION);
-						// print_r($serviceData);
-						// echo "</Pre>";
-					?>
+							$active = 1;
+							if($nextStep){
+								$active = $nextStep;
+							}
+							$serviceData = $this->session->userdata('edit_service_data');
+						?>
 						<ul id="myTabs" class="nav nav-tabs">
 							<li class="<?php echo ($active == 1) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step1">Service Details</a></li>
 							<li class="<?php echo ($active == 2) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step2">Categroy</a></li>
@@ -95,7 +96,6 @@
 								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices6/{$id}"]); ?>
 							</div>
 						</div>
-					</div>
 					</div>
 				</div>
 			</div>
