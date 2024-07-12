@@ -1,7 +1,6 @@
 <style>
 	.addFaqs{cursor: pointer;}
 </style>
-<?php echo "<pre>"; print_r($serviceData); echo "</pre>"; ?>
 <form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
