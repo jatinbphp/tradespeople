@@ -2515,7 +2515,7 @@ public function exists_refferals() {
 			$faqs = $this->common_model->getServiceFaqs($id);
 			$serviceAvailiblity = $this->common_model->getServiceAvailability($id);
 			$this->setEditServiceData(['faqs' => $faqs, 'service_availiblity' => $serviceAvailiblity]);
-			$service_images=$this->common_model->get_service_image('service_images',$id);
+			$service_images=$this->common_model->getAllTypeServiceImage('service_images',$id);
 
 			foreach($service_images as $imageData){
 				$image = $imageData['image'] ?? '';
@@ -2733,10 +2733,22 @@ public function exists_refferals() {
 
 	public function removeServiceImage(){
 		$user_id = $this->session->userdata('user_id');
-		$serviceImages = $this->common_model->GetSingleData('service_images',['id'=>$this->input->post('imgId')]);
+		$imageId = $this->input->post('imgId');
+		$serviceImages = $this->common_model->GetSingleData('service_images',['id'=>$imageId]);
 		if(!empty($serviceImages)){
 			unlink('img/services/'.$serviceImages['image']);
 			$this->db->where('id',$this->input->post('imgId'))->delete('service_images');
+			$serviceData = $this->session->userdata('service_data');
+
+			if(isset($serviceData['multi_files'][$imageId])){
+				unset($serviceData['multi_files'][$imageId]);
+			}
+
+			if(isset($serviceData['multi_images'][$imageId])){
+				unset($serviceData['multi_images'][$imageId]);
+			}
+
+			$this->setServiceData($serviceData);
 		}
 		exit;
 	}

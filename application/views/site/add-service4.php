@@ -332,7 +332,7 @@
 						'<div class="boxImage imgUp">'+
 						'<div class="imagePreviewPlus">'+
 						'<div class="text-right"><button type="button" class="btn btn-danger removeDoc" onclick="removeImage('+response.id+',2)"><i class="fa fa-trash"></i></button></div>'+
-						'<img style="width: inherit; height: inherit;" src="img/defaultDoc.png" alt="'+response.id+'">'+
+						'<img style="width: inherit; height: inherit;" src="<?php echo site_url('img/defaultDoc.png'); ?>" alt="'+response.id+'">'
 						'</div></div></div>';
 					$('#previousDoc').append(portElement);
 					$('#loader2').hide();

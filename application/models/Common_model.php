@@ -1920,6 +1920,16 @@ class Common_model extends CI_Model
 		$result = $query->result_array();
 		return $result;
 	}
+
+	public function getAllTypeServiceImage($table, $id)
+	{
+		$result = array();
+		$sql = "SELECT * from $table where service_id=$id order by id desc";
+		$query = $this->db->query($sql);
+		$result = $query->result_array();
+		return $result;
+	}
+
 	public function make_all_image($mainImg, $sliderImgs)
 	{
 		$slider = '';
