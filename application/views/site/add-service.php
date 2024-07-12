@@ -43,14 +43,6 @@
 </style>
 <div class="acount-page membership-page">
 	<div class="container">
-		<?php if($this->session->flashdata('error')): ?>
-			<div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
-			<?php unset($_SESSION['error']) ?>
-		<?php endif; ?>
-		<?php if($this->session->flashdata('success')): ?>
-			<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
-			<?php unset($_SESSION['success']) ?>
-		<?php endif; ?>
 		<div class="user-setting">
 			<div class="row">
 				<div class="col-sm-3">

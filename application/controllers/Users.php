@@ -2312,7 +2312,7 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
-		$this->form_validation->set_rules('price','Price','required');
+		$this->form_validation->set_rules('price','Price','required|numeric');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2552,7 +2552,7 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
-		$this->form_validation->set_rules('price','Price','required');
+		$this->form_validation->set_rules('price','Price','required|numeric');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
