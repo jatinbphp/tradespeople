@@ -138,33 +138,42 @@
 					<div class="member-summary">
 						<div class="summary member-summary-section">
 							<div class="member-image-container">
-								<img class="img-border-round member-image" src="https://dw3i9sxi97owk.cloudfront.net/uploads/thumbs/03ce687db333b4fdb14992e6c2d0df77_150x150.jpg" alt="Ripon K.">
+								<?php 
+									if(isset($service_user['profile']) && !empty($service_user['profile'])){
+										$uprofileImg = base_url('img/profile/'.$service_user['profile']);
+									}else{
+										$uprofileImg = base_url('img/default-img.png');
+									}
+									$suserName = ($service_user['f_name'] ?? '').' '.($service_user['l_name'] ??  '');
+								?>
+								<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
 							</div>
 							<div class="member-information-container">
 								<div class="member-name-container crop">
 									<h5>
-										<a class="crop member-short-name" rel="nofollow" title="Ripon K." href="https://www.peopleperhour.com/freelancer/marketing-seo/ripon-kumar-seo-link-building-google-places-vnanjq?ref=provider">Ripon K.</a>
+										<a class="crop member-short-name" rel="nofollow" title="Ripon K." href="<?php echo base_url('profile/'.$service_user['id']); ?>">
+											<?php echo $suserName;?>
+										</a>
 									</h5>
-									<div class="member-job-title crop">seo,link Building,google places,Citations,back links,Website Traffic,social media,social bookmarks,local directory,twitter followers,youtube views,logo design,graphics design</div>
+									<div class="member-job-title crop">
+										<?php echo $service_user['trading_name'];?>
+									</div>
 								</div>
 							</div>
-							<div class="cert-container text-right">
+							<!-- <div class="cert-container text-right">
 								<span class="cert cert-img"></span>
-							</div>
+							</div> -->
 						</div>
 						<div class=" about member-summary-section clearfix">
 							<div class="about-container js-about-container">
-								<p>More than 5 years experience in SEO services.Completed 840+ projects with different buyers.Using White Hat SEO Technique. NO Automate 100% Manual Submission. Safe with Google Hummingbird,...<a class="about-read-more js-open-about-dialog-trigger" href="#">Read more</a>
-									<span style="display: none;" class="js-about-full-text">More than 5 years experience in SEO services.Completed 840+ projects with different buyers.Using White Hat SEO Technique. NO Automate 100% Manual Submission. Safe with Google Hummingbird, Penguin &amp; Panda update 2.1. If you guys looking for a Quality Link building,Citations,local seo,local citations,social media services,website traffic,PBN Post,Guest Post,Video submission etc. then try us.<br>
-										<br>
-									► Results driven and Our Goal is providing Top Level Service to every customer, making sure we carefully check every order before delivery. Any questions you may have, you can write us directly through peopleperhour. We will respond within a few hours or sooner. Buy with confidence. Enjoy your visit and thank you for visiting our peopleperhour profile!</span>
+								<p><?php echo $service_user['about_business'];?></span>
 								</p>
 							</div>
 						</div>
 						<div class=" location member-summary-section clearfix">
 							<div class="location-container crop">
-								<i class="fpph-location"></i>
-							Bangladesh</div>
+								<i class="fa fa-map-marker"></i>
+							<?php echo $service_user['city'];?></div>
 						</div>
 						<div class=" contact member-summary-section clearfix">
 							<a class="btn btn-warning contact-button" rel="nofollow" href="/marketing/member/contact?id=490975&amp;job=H71678">Contact</a>
@@ -175,7 +184,7 @@
 
 				<div class="rating">
 					<div class="rate">
-						<span>4.9</span>
+						<span><?php echo $service_user['average_rate']; ?></span>
 						<input type="radio" id="star5" name="rate" value="5" />
 						<label for="star5" title="text">5 stars</label>
 						<input type="radio" id="star4" name="rate" value="4" />
@@ -262,99 +271,73 @@
 				</div>
 			<?php endif; ?>
 
-			<div class="row">
-				<div class="col-sm-8">
-					<div class="portfolio-presence">
-						<div class="presence-header">
-							<a href="#">My portfolio</a>
-							<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16ZM6.667 6.222c0-.228.075-.59.277-.87C7.112 5.12 7.4 4.89 8 4.89c.734 0 1.116.388 1.245.777.136.41.02.867-.405 1.15-.701.468-1.218.92-1.49 1.556-.24.56-.24 1.175-.239 1.752v.098H8.89c0-.728.015-.964.095-1.15.06-.142.21-.356.842-.777a2.751 2.751 0 0 0 1.106-3.19C10.558 3.978 9.488 3.111 8 3.111c-1.179 0-2.001.511-2.5 1.203a3.37 3.37 0 0 0-.611 1.908h1.778Zm2.222 6.667V11.11H7.11v1.778H8.89Z"></path></svg>
-							<span class="new">NEW</span>
-						</div>
+			<?php if(!empty($user_profile)): ?>
+				<div class="row">
+					<div class="col-sm-8">
+						<div class="portfolio-presence">
+							<div class="presence-header">
+								<a href="#">My portfolio</a>
+								<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16ZM6.667 6.222c0-.228.075-.59.277-.87C7.112 5.12 7.4 4.89 8 4.89c.734 0 1.116.388 1.245.777.136.41.02.867-.405 1.15-.701.468-1.218.92-1.49 1.556-.24.56-.24 1.175-.239 1.752v.098H8.89c0-.728.015-.964.095-1.15.06-.142.21-.356.842-.777a2.751 2.751 0 0 0 1.106-3.19C10.558 3.978 9.488 3.111 8 3.111c-1.179 0-2.001.511-2.5 1.203a3.37 3.37 0 0 0-.611 1.908h1.778Zm2.222 6.667V11.11H7.11v1.778H8.89Z"></path></svg>
+								<span class="new">NEW</span>
+							</div>
 
-						<ul class="project-grid grid-5">
-							<li class="project-photo photo-0">
-								<div class="project-img hide-on-error responsive-wrapper">
-									<img src="https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_portfolio_project_grid/v1/attachments/project_item/attachment/3f10e207a5e37f06393c99cf376f3919-1662737725876/screencapture-monicaallen-new-landing-page-2022-09-05-15_50_13.png">
-								</div>
-								<div class="project-title-wrapper responsive-wrapper">
-									<span class="project-title">Wix website design</span>
-								</div>
-							</li>
-							<li class="project-photo photo-1">
-								<div class="project-img hide-on-error responsive-wrapper">
-									<img src="https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_portfolio_project_grid/v1/attachments/project_item/attachment/182ca86e49187a20778658e2ed06abc4-1662737834878/screencapture-exchain-ca-2022-09-04-22_11_27.png">
-								</div>
-								<div class="project-title-wrapper responsive-wrapper">
-									<span class="project-title">Exchain</span>
-								</div>
-							</li>
-							<li class="project-photo photo-2">
-								<div class="project-img hide-on-error responsive-wrapper">
-									<img src="https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_portfolio_project_grid/v1/attachments/project_item/attachment/e19f5b1af107137c8c93cf226e5994db-1662738006470/screencapture-piletest-new-landing-page-2022-08-30-14_12_42.png">
-								</div>
-								<div class="project-title-wrapper responsive-wrapper">
-									<span class="project-title">Piletest Landing Page</span>
-								</div>
-							</li>
-							<li class="project-photo photo-3">
-								<div class="project-img hide-on-error responsive-wrapper">
-									<img src="https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_portfolio_project_grid/v1/attachments/project_item/attachment/075a5a8452bf666c5e9a0963fe8c3bad-1662738317418/screencapture-revape-ca-2022-09-09-16_42_09.png">
-								</div>
-								<div class="project-title-wrapper responsive-wrapper">
-									<span class="project-title">Revape</span>
-								</div>
-							</li>
-							<li class="project-photo photo-4">
-								<div class="project-img hide-on-error responsive-wrapper">
-									<img src="https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_portfolio_project_grid/v1/attachments/project_item/attachment/cc01a201977c285f21e2430c1258100f-1662738386958/screencapture-gshredsupplements-gshred-fat-burner-2022-09-09-16_45_36.png">
-								</div>
-								<div class="project-title-wrapper responsive-wrapper">
-									<span class="project-title">Gshred</span>
-								</div>
-							</li>
-						</ul>
+							<ul class="project-grid grid-5">
+								<?php foreach($user_profile as $key => $pImg): ?>
+									<li class="project-photo photo-<?php echo $key; ?>">
+										<div class="project-img hide-on-error responsive-wrapper">
+											<img src="<?php echo base_url('img/profile/'.$pImg['port_image']); ?>">
+										</div>
+										<?php if(!empty($pImg['port_title'])): ?>
+											<div class="project-title-wrapper responsive-wrapper">
+												<span class="project-title"><?php echo $pImg['port_title']; ?></span>
+											</div>
+										<?php endif; ?>	
+									</li>
+								<?php endforeach;?>								
+							</ul>
+						</div>
 					</div>
 				</div>
-			</div>
+			<?php endif;?>
+
+			<?php if(!empty($service_rating)): ?>
 			<div class="row client-reviews">
 				<div class="col-sm-8">
 					<h2 class="title">Reviews</h2>
 					<ul>
-						<li>
-							<div class="profile-img">
-								<img src="https://dw3i9sxi97owk.cloudfront.net/uploads/thumbs/03ce687db333b4fdb14992e6c2d0df77_150x150.jpg" alt="Ripon K." />
-							</div>
-							<div class="review-right">
-								<div class="review-name"><h4>Bayley Robertson</h4><span>3 years ago</span></div>
-								<div class="review-star">
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
+						<?php foreach($service_rating as $rate): ?>
+							<li>
+								<div class="profile-img">
+									<?php 
+										if(isset($rate['rate_by_profile']) && !empty($rate['rate_by_profile'])){
+											$profileImg = base_url('img/profile/'.$rate['rate_by_profile']);
+										}else{
+											$profileImg = base_url('img/default-img.png');
+										}
+										$userName = ($rate['rate_by_fname'] ?? '').' '.($rate['rate_by_lname'] ??  '');
+									?>
+									<img src="<?php echo $profileImg; ?>" alt="<?php echo $userName; ?>" />
 								</div>
-								<div class="review-text"><p>Excellent service! 100% recommended</p></div>
-							</div>
-						</li>
-						<li>
-							<div class="profile-img">
-								<img src="https://dw3i9sxi97owk.cloudfront.net/uploads/thumbs/03ce687db333b4fdb14992e6c2d0df77_150x150.jpg" alt="Ripon K." />
-							</div>
-							<div class="review-right">
-								<div class="review-name"><h4>Bayley Robertson</h4><span>3 years ago</span></div>
-								<div class="review-star">
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
-									<i class="fas fa-star" aria-hidden="true"></i>
+								<div class="review-right">
+									<div class="review-name">
+										<h4><?php echo $userName; ?></h4>
+										<span><?php echo time_ago($rate['created_at']); ?></span>
+									</div>
+									<div class="review-star">
+										<?php
+											for($i=1; $i<=$rate['rating']; $i++){
+												echo '<i class="fa fa-star" aria-hidden="true"></i>';
+											}
+										?>										
+									</div>
+									<div class="review-text"><p><?php echo $rate['review']; ?></p></div>
 								</div>
-								<div class="review-text"><p>Excellent service! 100% recommended</p></div>
-							</div>
-						</li>
+							</li>
+						<?php endforeach; ?>						
 					</ul>
 				</div>
 			</div>
+			<?php endif;?>
 
 			<div class="row compare-packages">
 				<div class="col-sm-8">

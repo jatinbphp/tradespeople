@@ -2742,8 +2742,18 @@ class Common_model extends CI_Model
 
 		$query = $this->db->get();
 		return $query->result_array();
-
 	}
+
+	public function getRatingsWithUsers($service_id) {
+        $this->db->select('service_rating.*, users.f_name as rate_by_fname, users.l_name as rate_by_lname, users.profile as rate_by_profile, users2.f_name as rate_to_fname, users2.l_name as rate_to_lname,, users2.profile as rate_to_profile');
+
+        $this->db->from('service_rating');
+        $this->db->where('service_rating.service_id', $service_id);
+        $this->db->join('users', 'service_rating.rate_by = users.id', 'left');
+        $this->db->join('users as users2', 'service_rating.rate_to = users2.id', 'left');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
 	function get_chat_list($id)
 	{
