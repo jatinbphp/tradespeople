@@ -324,6 +324,9 @@ $route['Admin/tradesman-sharable']  = 'Admin/Admin/tradesman_sharable';
 $route['Admin/tradesman-setting']   = 'Admin/Admin/tradesman_setting';
 $route['Admin/tradesman-invertees'] = 'Admin/Admin/invertees';
 
+//Coupon Management
+$route['Admin/coupon-management']  = 'Admin/Coupons/index';
+
 // $route['Admin/edit-post']='Admin/User_Posts';
 $route['edit-marketer/(:num)']  = 'Admin/Admin/edit_marketer/$1';
 $route['view-referrals/(:num)'] = 'Admin/Admin/view_referrals/$1';

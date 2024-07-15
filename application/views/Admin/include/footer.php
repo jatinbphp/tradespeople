@@ -128,5 +128,8 @@ $('ul.treeview-menu a').filter(function() {
     return this.href == url;
 }).parentsUntil(".sidebar-menu > .treeview-menu").siblings().removeClass('active menu-open').end().addClass('active menu-open');
 </script>
+<?php  
+    unset($_SESSION['msg']);
+?>
 </body>
 </html>

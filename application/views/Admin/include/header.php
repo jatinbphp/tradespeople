@@ -193,6 +193,14 @@
           </li>
 					<?php }?>
 
+          <?php if (in_array(21, $my_access)) {?>
+					<li class="DashboardManage">
+            <a href="<?php echo base_url(); ?>Admin/coupon-management">
+              <i class="fa fa-gift"></i> <span>Coupon Management</span>
+            </a>
+          </li>
+					<?php }?>
+
 					<?php if (in_array(5, $my_access)) {
                         ?>
 
