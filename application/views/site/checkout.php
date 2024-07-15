@@ -19,7 +19,7 @@
 									</svg>New Card</label>
 									<input id="paypal" name="payment-method" type="radio">
 								</div>
-								<p><b>PeoplePeHour accepts all Visa, MasterCard and Maestro cards.</b></p>
+								<p><b>Tradespeople Hub accepts all Visa, MasterCard and Maestro cards.</b></p>
 							</div>
 						</div>
 					</div>
@@ -101,8 +101,10 @@
 						<div class="summary-box-heding">
 							<h4>summary</h4>
 							<div>
-								<span>$55.05</span>
-								<span>$60.00</span>
+								<span id="original_price">
+									<?php echo '£'.number_format($totalPrice,2); ?>
+								</span>
+								<span id='discounted_price' style="display:none"></span>
 							</div>
 						</div>
 
@@ -113,14 +115,36 @@
 							</a>
 						</div>
 						<ul>
-							<li><p>Unit price</p> <b>$50.00</b></li>
-							<li><p>Items total</p> <b>$50.00</b></li>
-							<li><p>Service free <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
-							<b class="price"><span class="line-through">$5.60</span><span>$50.00</span></b></li>
+							<li>
+								<p>Unit price</p> 
+								<b><?php echo '£'.number_format($service_details['price'],2); ?></b>
+							</li>
+							<?php if(!empty($ex_services) && count($ex_services) > 0): ?>
+								<li>
+									<b>Extra Services</b> 
+								</li>
+								<?php foreach($ex_services as $exs):?>
+									<li>
+										<p><?php echo $exs['ex_service_name']; ?></p> 
+										<b><?php echo '£'.number_format($exs['price'],2); ?></b>
+									</li>
+								<?php endforeach; ?>
+							<?php endif; ?>
+							<li>
+								<p>Service fee <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
+								<b class="price">
+									<span id="serviceFee"><?php echo '£'.number_format($service_fee,2)?></span>
+								</b>
+							</li>
 							<li><p>Discount</p><b>-</b></li>
 							<li><b>Promo codes</b></li>
-							<li><input class="form-control input-lg" name="promo codes" id="expiry" type="text" required="" placeholder="Enter code"> <button class="btn">APPLY</button></li>
-							<li><p>Total</p><b>$55.05</b></li>
+							<li>
+								<input class="form-control input-lg" name="promo codes" id="expiry" type="text" required="" placeholder="Enter code">
+								<button class="btn">APPLY</button></li>
+							<li>
+								<p>Total</p>
+								<b id="totalPrice"><?php echo '£'.number_format($totalPrice,2); ?></b>
+							</li>
 						</ul>
 					</div>
 

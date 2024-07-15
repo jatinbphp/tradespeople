@@ -2899,7 +2899,7 @@ public function exists_refferals() {
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'No services selected']);
 		}
-	}		
+	}
 }	
 
 

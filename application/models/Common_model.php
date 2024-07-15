@@ -1950,6 +1950,13 @@ class Common_model extends CI_Model
 		}
 		return $slider;
 	}
+
+	public function get_extra_service($table, $ids, $sId)
+	{
+		$query = $this->db->query("SELECT * FROM $table WHERE id IN ($ids) and service_id = $sId");
+		return $query->result_array();
+	}	
+
 	public function getAdminRow($table)
 	{
 		$query = $this->db->query("select * from $table where status=1");

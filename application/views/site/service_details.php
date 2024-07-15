@@ -55,8 +55,10 @@
 										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
 										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
 									</ul>
-									<form>
-										<input class="btn btn-warning btn-lg" type="submit" value="Order (<?php echo '£'.number_format($service_details['price'],2); ?>)">
+									<form action="<?= site_url().'checkout/serviceCheckout'; ?>" method="post">
+										<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
+										<input type="hidden" name="selected_exsIds" id="selected_exsIds">
+										<input class="btn btn-warning btn-lg" type="submit" id="orderBtn" value="Order (<?php echo '£'.number_format($service_details['price'],2); ?>)">
 									</form>
 								</div>
 							</div>
@@ -217,7 +219,7 @@
 								<div class="checkbox col-xs-7 col-sm-9">
 									<div class="form-check">
 										<div class="check-box">
-											<input class="checkbox-effect" id="business_<?php echo $exs['id']?>" type="checkbox" value="<?php echo $exs['id']?>" name="extra_services[]">
+											<input class="checkbox-effect" data-price="<?php echo $exs['price']?>" data-id="<?php echo $exs['id']?>" id="business_<?php echo $exs['id']?>" type="checkbox" value="<?php echo $exs['id']?>" name="extra_services[]">
 											<label for="business_<?php echo $exs['id']?>">
 												<div>
 													<h6><?php echo $exs['ex_service_name']; ?></h6>
@@ -462,4 +464,26 @@
       updateAvailabilityMessage();  
   }    
 });
+
+let totalPrice = 0;
+
+$('.checkbox-effect').change(function() {
+  updateTotalPrice();    
+});
+
+function updateTotalPrice() {
+  totalPrice = 0;
+  let selectedIds = [];
+  var mainPrice = '<?php echo number_format($service_details['price'],2); ?>';
+  $('.checkbox-effect:checked').each(function() {
+  	var price = $(this).attr('data-price');
+  	totalPrice += parseFloat(price);
+  	selectedIds.push($(this).data('id'));
+  });
+  var newPrice = parseFloat(mainPrice) + parseFloat(totalPrice); 
+  var priceText = 'Order (£'+newPrice.toFixed(2)+')';
+  $('#orderBtn').val(priceText);
+  $('#selected_exsIds').val(selectedIds.join(','));
+}
+
 </script>
