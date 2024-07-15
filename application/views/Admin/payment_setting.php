@@ -253,22 +253,29 @@ if(!in_array(12,$my_access)) { redirect('Admin_dashboard'); }
 				</div>
 			</div>
 
-      <div class="col-md-12">
+      	<div class="col-sm-6">
+			<div class="form-group">
+				<label for="payment_method">Payment Method:</label>
 				<div class="form-group">
-					<label for="payment_method">Payment Method:</label>
-					<?php echo $setting[0]['payment_method']; ?>
-					<div class="form-group">
-						<div class="form-check">
-							<input class="form-check-input" type="radio" name="payment_method" value="1" <?php echo $setting[0]['payment_method'] == 1 ? "checked" : "" ; ?> >
-							<label class="form-check-label">Enable</label>
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="payment_method" value="1" <?php echo $setting[0]['payment_method'] == 1 ? "checked" : "" ; ?> >
+						<label class="form-check-label">Enable</label>
 
-							<input class="form-check-input" type="radio" name="payment_method" value="0" <?php echo $setting[0]['payment_method'] == 0 ? "checked" : "" ; ?>>
-							<label class="form-check-label">Disable</label>
-						</div>
+						<input class="form-check-input" type="radio" name="payment_method" value="0" <?php echo $setting[0]['payment_method'] == 0 ? "checked" : "" ; ?>>
+						<label class="form-check-label">Disable</label>
 					</div>
 				</div>
 			</div>
-
+		</div>
+		<div class="col-sm-6">
+        	<div class="form-group">
+        	<label for="service_fees">Service Fees:</label>
+				<div class="input-group">
+					<span class="input-group-addon"><i class="fa fa-gbp"></i></span>
+					<input type="number" class="form-control" name="service_fees" value="<?php echo $setting[0]['service_fees']; ?>" placeholder="Enter service fee">
+				</div>
+        	</div>
+      	</div>
       <div class="col-sm-12">
         <button type="submit" class="btn btn-primary pull-right">Update</button>
       </div>

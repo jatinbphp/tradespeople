@@ -2509,6 +2509,7 @@ class Admin extends CI_Controller
             $update['bank_name']                 = $this->input->post('bank_name');
             $update['search_api_key']            = $this->input->post('search_api_key');
             $update['payment_method']            = $this->input->post('payment_method');
+            $update['service_fees']              = $this->input->post('service_fees');
 
             $id     = $this->input->post('admin_id');
             $result = $this->Common_model->update('admin', ['id' => $id], $update);
