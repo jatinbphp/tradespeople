@@ -29,7 +29,12 @@ class Checkout extends CI_Controller
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 		$data['service_fee'] = $setting['service_fees'];
 		$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
-		$data['ex_services'] = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $sId);
+		if(!empty($exsId)){
+			$data['ex_services'] = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $sId);	
+		}else{
+			$data['ex_services'] = [];
+		}
+		
 		if(!empty($data['ex_services']) && count($data['ex_services']) > 0){
 			$prices = array_column($data['ex_services'], 'price');
 			$totalPrice = array_sum($prices);	
