@@ -23,6 +23,22 @@ class Coupons extends CI_Controller {
 	}
 	
 	public function add_coupon(){
+
+		$this->form_validation->set_rules('discount_type','Discount Type','required');
+		$this->form_validation->set_rules('discount','Discount','required|numeric');
+		$this->form_validation->set_rules('is_limited','Is Limited','required');
+		$this->form_validation->set_rules('status','Status','required');
+		$this->form_validation->set_rules('code','Code','required');
+
+		if($this->input->post('is_limited') == 'yes'){
+			$this->form_validation->set_rules('limited_user','Limited User','required|numeric');
+		}
+				
+		if ($this->form_validation->run()==false) {
+            $this->session->set_flashdata('msg','<div class="alert alert-error">'.validation_errors().'</div>');
+		    redirect('Admin/coupon-management');
+		}
+
         $discountType = $this->input->post('discount_type');
         $discount     = $this->input->post('discount');
 
@@ -54,6 +70,21 @@ class Coupons extends CI_Controller {
         if(!$id){
     		$this->session->set_flashdata('msg','<div class="alert alert-success">Something went wrong.</div>');
         }
+
+		$this->form_validation->set_rules('discount_type','Discount Type','required');
+		$this->form_validation->set_rules('discount','Discount','required|numeric');
+		$this->form_validation->set_rules('is_limited','Is Limited','required');
+		$this->form_validation->set_rules('status','Status','required');
+		$this->form_validation->set_rules('code','Code','required');
+
+		if($this->input->post('is_limited') == 'yes'){
+			$this->form_validation->set_rules('limited_user','Limited User','required|numeric');
+		}
+
+		if ($this->form_validation->run()==false) {
+            $this->session->set_flashdata('msg','<div class="alert alert-error">'.validation_errors().'</div>');
+		    redirect('Admin/coupon-management');
+		}
 
         $discountType = $this->input->post('discount_type');
         $discount     = $this->input->post('discount');
