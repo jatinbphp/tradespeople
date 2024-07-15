@@ -45,7 +45,7 @@ class Home extends CI_Controller
   	$pageData = [];
     $pageData['customer_rev'] = $this->common_model->get_customer_reviews();
     $pageData['all_services']=$this->common_model->get_all_service('my_services',8);
-    $pageData['all_categoty']=$this->common_model->get_parent_category('category',8);
+    $pageData['all_categoty']=$this->common_model->get_parent_category('category',0);
     // echo '<pre>';
     // print_r($pageData);
     // exit;
@@ -2373,6 +2373,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
 		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
+		$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
 		$data['service_rating'] = $this->common_model->getRatingsWithUsers($sId);
 		$data['service_user'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
 		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);

@@ -2186,6 +2186,14 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
+	public function getTradesExService($id)
+	{
+		$this->db->where('service_id', $id);
+		$this->db->order_by("id", "asc");
+		$query = $this->db->get('tradesman_extra_service');
+		return $query->result_array();
+	}
+
 	public function getServiceFaqs($id)
 	{
 		$this->db->where('service_id', $id);

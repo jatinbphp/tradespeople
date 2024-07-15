@@ -146,23 +146,23 @@
 
 <?php 
 	if(!empty($all_categoty)){
-?>		
+?>
 		<div class="category-list mt30">
 			<div class="container">
-				<ul>
+				<div class="category-list-slider">
 <?php					
 		foreach($all_categoty as $cat){
 ?>
-		<li>
+
 			<a href="<?php echo base_url().'category/'.$cat['slug']; ?>">
 				<img src="<?php echo base_url('img/category_logo.svg') ?>" alt="category" loading="lazy">
 				<p><?php echo $cat['cat_name']; ?></p>
 			</a>
-		</li>
+
 <?php
 		}
 ?>
-			</ul>
+			</div>
 		</div>
 	</div>
 <?php		

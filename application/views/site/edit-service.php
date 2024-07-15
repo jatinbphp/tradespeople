@@ -126,8 +126,7 @@
 		// };
 
 		// reader.readAsDataURL(file);
-	});
-
+	});	
 </script>
 <script>
   	init_tinymce();

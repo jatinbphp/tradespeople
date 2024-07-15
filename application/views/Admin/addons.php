@@ -16,8 +16,7 @@ if(!in_array(4,$my_access)) { redirect('Admin_dashboard'); }
   </section>
   <section class="content">   
     <div class="row">
-
-      <div class="col-xs-12">
+    	<div class="col-xs-12">
         <div class="box">
 
           <div class="div-action pull pull-right" style="padding-bottom:20px;">

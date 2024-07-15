@@ -116,6 +116,21 @@
 	});
 </script>
 <script>
+	document.addEventListener('DOMContentLoaded', (event) => {
+        const video = document.getElementById('hoverVideo');
+
+        video.addEventListener('mouseenter', () => {
+            console.log('Mouse entered');
+            video.play();
+        });
+
+        video.addEventListener('mouseleave', () => {
+            console.log('Mouse left');
+            video.pause();
+        });
+    });
+    
+
   	init_tinymce();
   	function init_tinymce(){
 	    tinymce.init({

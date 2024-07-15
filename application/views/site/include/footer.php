@@ -1925,7 +1925,23 @@ function send_review_invitation(id){
     slidesToScroll: 1,
     centerMode: false,
     variableWidth: true,
+
   });
+
+  
+    $('.category-list-slider').slick({
+    dots: false,
+    infinite: true,
+    arrows: true,
+    speed: 300,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: false,
+    variableWidth: true,
+    adaptiveHeight: false,
+
+  });
+
 
   $('#positive_keywords').tagsinput({
       maxTags: 5
@@ -2015,4 +2031,54 @@ function send_review_invitation(id){
       $('#notAvailablMsg').show().html(sentence); // Update the availability text  
     }    
   }
+  
+  let clip = document.querySelector(".serviceVideo") 
+  clip.addEventListener("mouseover", function (e) { 
+      clip.play(); 
+  }) 
+
+  clip.addEventListener("mouseout", function (e) { 
+      clip.pause(); 
+  })
+
+
+  const bar = document.getElementById('bar'),
+      video = document.getElementsByTagName('video')[0],
+      btn = document.getElementById('play-control-btn'),
+      totalLength = bar.getTotalLength();
+let   playing = true;
+
+const playVideo = () => {
+  playing = true;
+  btn.classList.add("playing");
+  video.play();
+}
+
+const pauseVideo = () => {
+  playing = false;
+  btn.classList.remove("playing");
+  video.pause();
+}
+
+bar.setAttribute('stroke-dasharray', totalLength);
+bar.setAttribute('stroke-dashoffset', totalLength);
+
+video.addEventListener("timeupdate", () => {
+  const currentTime = video.currentTime,
+        duration = video.duration,
+        calc = totalLength - ( currentTime / duration * totalLength );
+
+  bar.setAttribute('stroke-dashoffset', calc);
+});
+
+video.addEventListener("ended", () => {
+  pauseVideo();
+  video.currentTime = 0;
+});
+
+video.addEventListener("mouseover", () => playing ? pauseVideo() : playVideo());
+
+
+
+
 </script>
