@@ -55,7 +55,7 @@
 										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
 										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
 									</ul>
-									<form action="<?= site_url().'checkout/serviceCheckout'; ?>" method="post">
+									<form action="" method="post" id="serviceOrder">
 										<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
 										<input type="hidden" name="selected_exsIds" id="selected_exsIds">
 										<input class="btn btn-warning btn-lg" type="submit" id="orderBtn" value="Order (<?php echo '£'.number_format($service_details['price'],2); ?>)">
@@ -425,36 +425,36 @@
 		</div>
 		<?php include ("include/footer.php") ?>
 
-		<script type="text/javascript">
-			$(document).ready(function() {
-				if($('#datepicker').length){
-					var today = new Date();
-					$('#datepicker').multiDatesPicker({
-          minDate: 0, // Ensure today's date can be selected
-          onSelect: function(dateText, inst) {
-          	var selectedDates = $('#datepicker').multiDatesPicker('getDates');
-          	$('#selectedDates').val(selectedDates.join(','));
-              //updateAvailabilityMessage();
-          }
-      });
+<script type="text/javascript">
+	$(document).ready(function() {
+		if($('#datepicker').length){
+			var today = new Date();
+			$('#datepicker').multiDatesPicker({
+          		minDate: 0, // Ensure today's date can be selected
+          		onSelect: function(dateText, inst) {
+	          		var selectedDates = $('#datepicker').multiDatesPicker('getDates');
+	          		$('#selectedDates').val(selectedDates.join(','));
+	              	//updateAvailabilityMessage();
+	          	}
+      		});
 
-      $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
+	      $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
 
-      $('#yesCheckbox').on('change', function() {
-      	if ($(this).is(':checked')) {
-      		$('#noCheckbox').prop('checked', false);
-      		$('#datepicker').datepicker("option", "disabled", true);
-      		$('#datePickerDiv').hide();
-      	}
-      });
+	      $('#yesCheckbox').on('change', function() {
+	      	if ($(this).is(':checked')) {
+	      		$('#noCheckbox').prop('checked', false);
+	      		$('#datepicker').datepicker("option", "disabled", true);
+	      		$('#datePickerDiv').hide();
+	      	}
+	      });
 
-      $('#noCheckbox').on('change', function() {
-      	if ($(this).is(':checked')) {
-      		$('#yesCheckbox').prop('checked', false);
-      		$('#datepicker').datepicker("option", "disabled", false);
-      		$('#datePickerDiv').show();
-      	}
-      });
+	      $('#noCheckbox').on('change', function() {
+	      	if ($(this).is(':checked')) {
+	      		$('#yesCheckbox').prop('checked', false);
+	      		$('#datepicker').datepicker("option", "disabled", false);
+	      		$('#datePickerDiv').show();
+	      	}
+	      });
 
       var selectedDates = $('#datepicker').multiDatesPicker('getDates');
       if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
@@ -485,5 +485,33 @@ function updateTotalPrice() {
   $('#orderBtn').val(priceText);
   $('#selected_exsIds').val(selectedIds.join(','));
 }
+
+$("#serviceOrder").submit(function(){
+    $.ajax({
+        url: "<?= site_url().'checkout/addToCart'; ?>", 
+        data: $("#serviceOrder").serialize(), 
+        type: "POST", 
+        dataType: 'json',
+        success: function (data) {
+        	if(data.status == 1){
+        		window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
+        	}else if(data.status == 2){
+        		swal({
+		            title: "Login Required!",
+		            text: "If you want to order the please login first!",
+		            type: "warning"
+		        }, function() {
+		            window.location.href = '<?php echo base_url().'login'; ?>';
+		        });        		
+        	}else{
+        		alert('Something is wrong. Please try again!!!');
+        	}            
+        },
+        error:function(e){
+            console.log(JSON.stringify(e));
+        }
+    }); 
+    return false;
+});
 
 </script>

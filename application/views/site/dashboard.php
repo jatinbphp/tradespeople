@@ -168,34 +168,39 @@
 				<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
 				<?php } ?>
        
-				<div class="verification-checklist">
+				<div class="verification-checklist key-metrics mb-5">
 					<ul class="list">
 						<li>
 							<div class="title">Sale</div>
 							<div class="sub-title">
-								<i class="fa fa-gbp"></i>0.00
+								<i class="fa fa-gbp"></i> 
+								<?php echo number_format($total_sale['total_net_price'],2)?>
 							</div>
 						</li>
 
 						<li>
 							<div class="title">Open Orders</div>
 							<div class="sub-title">
-								0
+								<i class="fa fa-cart-plus"></i>
+								<?php echo $total_open_order['total_orders']; ?>
 							</div>
 						</li>
 
 						<li>
 							<div class="title">Buyer Messages</div>
 							<div class="sub-title">
+								<i class="fa fa-comment"></i>
 								0
 							</div>
 						</li>
 						<li>
 							<div class="title">Total Balance</div>
 							<div class="sub-title">
-								<i class="fa fa-gbp"></i>0.00
+								<i class="fa fa-gbp"></i>
+								<?php echo number_format($user_profile['u_wallet'],2)?>
 							</div>
 						</li>
+
 						<div class="modal fade popup" id="address_verify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 							<div class="modal-dialog" role="document">
 								<div class="modal-content">
@@ -561,25 +566,22 @@
 				</table>
 			</div>
 				<?php if($ks==0) { ?>
-				<div class="verify-page">
+				<div class="verify-page mb-5">
 					<div style="background-color:#fff;padding: 10px;" class="">
 						<p>No jobs found.</p>
 					</div>
 				</div>
-				<br>
-				<br>
+				
 				<script>
 					$('.trade-recent-job-tbl').remove();
 				</script>
 				<?php } ?>
 				<?php } else { ?>
-				<div class="verify-page">
+				<div class="verify-page mb-5">
 					<div  style="background-color:#fff;padding: 10px;" class="">
 						<p>No jobs found.</p>
 					</div>
-				</div>
-				<br>
-				<br>
+				</div>				
 				
         <?php  } ?>
 
@@ -594,13 +596,120 @@
 					<h2><strong>Active Orders</strong> </h2>
 				</div> 
 
-				<div class="row" id="OrderList">
+				<div class="row mb-5" id="OrderList">
 					<div class="col-sm-12">
-						<div class="row">
-							<div class="col-sm-4">
-								
+						<?php if(!empty($all_active_order) && count($all_active_order)): ?>
+							<div class="row">
+								<?php foreach($all_active_order as $order):?>
+									<div class="col-sm-6" id="activeOrder<?php echo $order['id']; ?>">
+										<div class="member-summary mjq-sh">
+											<div class="summary member-summary-section">
+												<div class="member-image-container">
+													 <?php $image_path = FCPATH . 'img/profile/' . ($order['profile'] ?? ''); ?>
+            										<?php if (file_exists($image_path) && $order['profile']): ?>
+														<img src="<?php echo base_url('img/profile/') . $order['profile']; ?>" class="img-border-round member-image">
+													<?php else: ?>
+														<img src="<?php echo base_url('img/default-img.png'); ?>" class="img-border-round member-image">
+													<?php endif; ?>
+												</div>
+												<div class="member-information-container">
+													<div class="member-name-container crop">
+														<h4 class="m-0 pb-1">
+															<?php echo $order['f_name'].' '.$order['l_name']; ?>
+														</h5>
+														<div class="member-job-title crop text-muted">
+															<?php echo $order['service_name']; ?>
+														</div>
+														<h3 class="mt0">
+															<?php echo '£'.number_format($order['total_price'] - $order['service_fee'],2); ?>
+														</h3>
+													</div>
+												</div>							
+											</div>
+											<div class="summary member-summary-section">
+												<div class="member-information-container date-submit-order">
+													<div>
+													<div class="member-job-title crop">
+														<i class="fa fa-calendar"></i>
+														<?php 
+															$date = new DateTime($order['created_at']);
+															echo $date->format('F j, Y');
+														?>
+													</div>
+													<div class="member-job-title crop text-muted">
+														<!-- <?php 
+															$CI = &get_instance();
+															$CI->load->model('Common_model');
+															echo $CI->Common_model->changeDateFormat($order['created_at']);
+														?> -->
+														3 days to submit
+														
+													</div>
+													</div>
+													<button type="button" class="btn btn-warning submitProject" data-pid="<?php echo $order['id']; ?>">
+															<i class="fa fa-upload"></i>
+															Submit Order
+														</button>													
+												</div>
+											</div>						
+										</div>
+									</div>
+								<?php endforeach; ?>	
 							</div>
-						</div>
+						<?php else: ?>
+							<div class="verify-page mb-5">
+								<div  style="background-color:#fff;padding: 10px;" class="">
+									<p>No active order found.</p>
+								</div>
+							</div>
+						<?php endif; ?>	
+					</div>
+				</div>
+
+				<div class="mjq-sh">
+					<h2><strong>Recently Vied Services</strong> </h2>
+				</div>
+
+				<div class="row mb-5" id="recentlyView">
+					<div class="col-sm-12">
+						<?php if(!empty($recently_viewed) && count($recently_viewed)): ?>
+							<div class="row">
+								<?php foreach($recently_viewed as $list):?>
+									<div class="col-sm-4 recently-view">
+										<div class="tradespeople-box bg-white p-3">
+											<div class="tradespeople-box-img radius-none">
+												<a href="<?php echo base_url().'edit-service/'.$list['id']?>">
+													<img src="<?php echo  base_url().'img/services/'.$list['image']; ?>">
+												</a>
+											</div>
+											<div class="tradespeople-box-desc mb-0">
+												<a href="<?php echo base_url().'edit-service/'.$list['id']?>" style="height: fit-content;">
+													<p class="mb-0">
+														<?php
+														$totalChr = strlen($list['service_name']);
+														if($totalChr > 60 ){
+															echo substr($list['service_name'], 0, 60).'...';		
+														}else{
+															echo $list['service_name'];
+														}
+														?>
+														<b class="pull-right pr-1">
+															<?php echo '£'.$list['price']; ?>	
+														</b>
+													</p>
+												</a>
+											</div>											
+										</div>									
+									</div>
+								<?php endforeach; ?>	
+							</div>
+						<?php else: ?>
+							<div class="verify-page mb-5">
+								<div  style="background-color:#fff;padding: 10px;" class="">
+									<p>No active order found.</p>
+								</div>
+							</div>
+						<?php endif; ?>	
 					</div>
 				</div>
 				
@@ -1231,5 +1340,63 @@ th, td {
 		//   }
 		  
 		// }
- });
+	});
+
+    $('.submitProject').on('click', function(){
+    	var orderId = $(this).attr('data-pid');
+
+    	swal({
+		    title: "Submit Order",
+		    text: "Are you sure you want to submit this order?",
+		    type: "warning",
+		    showCancelButton: true,
+		    confirmButtonText: 'Yes, Submit',
+		    cancelButtonText: 'Cancel'
+		}, function(isConfirm) {
+		    if (isConfirm) {
+		        orderSubmit(orderId);
+		    } else {
+		        swal({
+		            title: "Error",
+		            text: "Order is not submitted.",
+		            type: "error"
+		        });
+		    }
+		});
+    });
+
+	function orderSubmit(orderId){
+		$.ajax({
+            url: '<?= site_url().'users/submitProject'; ?>',
+            type: 'POST',
+            data: {
+                orderId: orderId
+            },
+            dataType: 'json',
+            success: function(response) {
+            	if(response.status == 'success'){
+                    swal({
+                        title: "Success",
+                        text: "Order has been submitted.",
+                        type: "success"
+                    },function() {
+                        $('#activeOrder'+orderId).remove();
+                    });
+                } else {
+                    swal({
+                        title: "Error",
+                        text: "Order is not submitted.",
+                        type: "error"
+                    });
+                }                   
+            },
+            error: function(xhr, status, error) {
+                swal({
+                    title: "Error",
+                    text: "There was an error submitting your order: " + error,
+                    type: "error"
+                });
+            }
+        });
+	}
 </script>

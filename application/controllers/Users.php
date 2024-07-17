@@ -333,15 +333,16 @@ class Users extends CI_Controller
 				exit();
 			}
 			
-		  	$user_id = $this->session->userdata('user_id');
-		  	$data['category']=$this->common_model->get_all_category('category');
-		  	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
-		  	$data['user_profile']=$user_profile;
-		  	$category = $user_profile['category'];			
+	  	$user_id = $this->session->userdata('user_id');
+	  	$data['category']=$this->common_model->get_all_category('category');
+	  	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
+	  	$data['user_profile']=$user_profile;
+
+	  	$category = $user_profile['category'];			
 			$postal_code1 = $data['user_profile']['postal_code'];
 			$postal_code2 = str_replace(" ","",$postal_code1);
 				
-		  	if($category) {
+		  if($category) {
 					
 				$get_commision=$this->common_model->get_commision(); 
 				$closed_date=$get_commision[0]['closed_date'];
@@ -368,25 +369,30 @@ class Users extends CI_Controller
 				if($run->num_rows() > 0){  
 					$bids = $run->result_array(); 
 				}
-				//echo '<pre>'; print_r($bids); echo '</pre>';
+					//echo '<pre>'; print_r($bids); echo '</pre>';
 		    	//$data['bids']=$this->common_model->get_all_data('tbl_jobs',$where,'c_date','desc',15);
-		    	$data['bids']=$bids;
-					
-		    	$data['bidsss']=$this->common_model->get_user_jobs_bycatid1('tbl_jobs',$category);
-		    	$data['work_progress']=$this->common_model->get_trades_working_progress('tbl_jobpost_bids',$user_id); 
-		    	$data['complete']=$this->common_model->get_complete_job_byid('tbl_jobs',$category);
-		    	$data['dispute_miles']=$this->common_model->get_tradesdispute_milestones(); 
-		  	}    
+	    	$data['bids']=$bids;
+				
+	    	$data['bidsss']=$this->common_model->get_user_jobs_bycatid1('tbl_jobs',$category);
+	    	$data['work_progress']=$this->common_model->get_trades_working_progress('tbl_jobpost_bids',$user_id); 
+	    	$data['complete']=$this->common_model->get_complete_job_byid('tbl_jobs',$category);
+	    	$data['dispute_miles']=$this->common_model->get_tradesdispute_milestones(); 
+		  }    
    
-      		$data['progress']=$this->get_progress_data();
-      		$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
-      		//$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
-      		$data['trade_news']=$this->common_model->get_notification_trades('notification',$this->session->userdata('user_id'));     
-       		// $data['referrals_earn_list'] = $this->db->get('referrals_earn_list')->result();	
-       		$data['setting']=$this->common_model->get_all_data('admin');	
-      		$this->load->view('site/dashboard',$data);
-    	}
+  		$data['progress']=$this->get_progress_data();
+  		$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
+  		//$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
+  		$data['trade_news']=$this->common_model->get_notification_trades('notification',$this->session->userdata('user_id'));     
+   		// $data['referrals_earn_list'] = $this->db->get('referrals_earn_list')->result();	
+   		$data['setting']=$this->common_model->get_all_data('admin');
+   		$data['total_sale'] = $this->common_model->get_total_sale($user_id);
+   		$data['total_open_order'] = $this->common_model->get_total_open_order($user_id);
+   		$data['all_active_order'] = $this->common_model->getActiveOrder('service_order',$user_id,6);
+   		$data['recently_viewed'] = $this->common_model->recentlyViewedService($sId);
+
+  		$this->load->view('site/dashboard',$data);
   	}
+	}
 	
 	public function affiliate_dashboard(){
     
@@ -2252,25 +2258,57 @@ public function exists_refferals() {
 	}
 
 	public function getAllServices() {
-    if($this->session->userdata('user_id')) {
-        $services = $this->common_model->get_my_service('my_services', $this->session->userdata('user_id'));
-        $data = [];
+	    if($this->session->userdata('user_id')) {
+	        $services = $this->common_model->get_my_service('my_services', $this->session->userdata('user_id'));
+	        $data = [];
 
-        foreach($services as $service) {        	 
-          $data[] = [
-              'id' => $service['id'],
-              'status' => $service['status'],
-              'image' => $service['image'],
-              'service_name' => $service['service_name'],
-              'created_at' => $service['created_at'],
-              'price' => $service['price']
-          ];
-        }
+	        foreach($services as $service) {        	 
+	          $data[] = [
+	              'id' => $service['id'],
+	              'status' => $service['status'],
+	              'image' => $service['image'],
+	              'service_name' => $service['service_name'],
+	              'created_at' => $service['created_at'],
+	              'price' => $service['price']
+	          ];
+	        }
 
-        echo json_encode(['data' => $data]);
-    } else {
-        echo json_encode(['data' => []]);
-    }
+	        echo json_encode(['data' => $data]);
+	    } else {
+	        echo json_encode(['data' => []]);
+	    }
+	}
+
+	public function my_orders(){
+		if($this->session->userdata('user_id')) {
+			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),0);
+			$data['totalStatusOrder'] = $this->common_model->getTotalStatusOrder($this->session->userdata('user_id'));
+			$this->load->view('site/my_orders',$data);
+		} else {
+			redirect('login');
+		}	
+	}
+
+	public function getAllOrders() {
+	    if($this->session->userdata('user_id')) {
+	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'));
+	        $data = [];
+
+	        foreach($orders as $order) {
+	        	$date = new DateTime($order['created_at']);
+
+	          	$data[] = [
+		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'] ,'service_name'=>$order['service_name']),
+		            'created_at' => $date->format('F j, Y'),
+		            'total_price' => '£'.number_format($order['total_price'],2),
+		            'status' => ucfirst($order['status'])
+	          	];
+	        }
+
+	        echo json_encode(['data' => $data]);
+	    } else {
+	        echo json_encode(['data' => []]);
+	    }
 	}
 
 	public function addServices(){
@@ -2422,6 +2460,10 @@ public function exists_refferals() {
 		if ($step3 !== null) {
 		  $insert = array_merge($insert, $step3);
 		}
+
+		echo '<pre>';
+		print_r($insert);
+		exit;
 
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
@@ -2663,7 +2705,6 @@ public function exists_refferals() {
 		$newExS = $this->input->post('newExS', []);
 		$this->setEditServiceData(['newExService' => $newExS]);
 		$serviceData = $this->session->userdata('edit_service_data');
-
 		$this->session->set_flashdata('success','Extra Service details updated succesfully.');
 		$this->session->set_userdata('update_next_step',4);
 		redirect("edit-service/{$id}");		
@@ -2900,7 +2941,16 @@ public function exists_refferals() {
 			echo json_encode(['status' => 'error', 'message' => 'No services selected']);
 		}
 	}
-}	
 
-
-
+	public function submitProject(){
+		$oId = $this->input->post('orderId');
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		if(!empty($serviceOrder)){
+			$input['status'] = 'completed';
+			$this->common_model->update('service_order',array('id'=>$oId),$input);
+			echo json_encode(['status' => 'success', 'message' => 'Order Submited']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Order Not Submitted']);
+		}
+	}
+}

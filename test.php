@@ -193,7 +193,7 @@ $intent = \Stripe\SetupIntent::create([
 <!-- placeholder for Elements -->
 <form id="setup-form" data-secret="<?= $intent->client_secret ?>">
   <div id="card-element"></div>
-  <button id="card-button">
+  <button type="button" id="card-button">
     Save Card
   </button>
 </form>
@@ -226,9 +226,11 @@ cardButton.addEventListener('click', function(ev) {
   ).then(function(result) {
     if (result.error) {
 			console.log(result);
+			return false;
       // Display error.message in your UI.
     } else {
 			console.log(result);
+			return false;
       // The setup has succeeded. Display a success message.
     }
   });

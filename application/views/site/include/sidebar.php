@@ -115,7 +115,7 @@ $settings = $this->common_model->get_all_data('admin');
                    
 							<p><a href="<?php echo base_url('my-services'); ?>"> <span><i class="fa fa-gear" aria-hidden="true"></i></span> Manage Service</a></p>
                       
-							<p><a href="#"> <span><i class="fa fa-cart-plus" aria-hidden="true"></i></span> Orders</a></p>
+							<p><a href="<?php echo base_url('my-orders'); ?>"> <span><i class="fa fa-cart-plus" aria-hidden="true"></i></span> Orders</a></p>
 									
 						</div>
 					</div>

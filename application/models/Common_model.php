@@ -3146,4 +3146,131 @@ class Common_model extends CI_Model
 
 		echo json_encode(['file_type' => $type,'mediaTag' => $mediaTag]);
 	}
+
+	public function get_total_sale($user_id){
+		$query = $this->db->query("
+	        SELECT
+	            SUM(so.total_price - so.service_fee) AS total_net_price
+	        FROM
+	            service_order so
+	        JOIN
+	            my_services s ON so.service_id = s.id
+	        WHERE
+	            s.user_id = $user_id");
+
+    	return $query->row_array();
+	}
+
+	public function get_total_open_order($user_id){
+		$query = $this->db->query("
+        SELECT
+            COUNT(*) AS total_orders
+        FROM
+            service_order so
+        JOIN
+            my_services s ON so.service_id = s.id
+        WHERE
+            s.user_id = $user_id
+            AND so.status IN ('placed', 'pending')");
+
+    	return $query->row_array();
+	}
+
+	public function getActiveOrder($table, $user_id, $limit=0){
+		if($limit != 0){
+			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name
+                           FROM $table so
+                           LEFT JOIN users u ON so.user_id = u.id
+                           LEFT JOIN my_services ms ON ms.id = so.service_id
+                           WHERE so.status IN ('placed', 'pending') AND ms.user_id = $user_id
+                           ORDER BY so.id DESC
+                           LIMIT 500");		
+		}else{
+			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name
+                           FROM $table so
+                           LEFT JOIN users u ON so.user_id = u.id
+                           LEFT JOIN my_services ms ON ms.id = so.service_id
+                           WHERE so.status IN ('placed', 'pending') AND ms.user_id = $user_id
+                           ORDER BY so.id DESC
+                           LIMIT $limit");	
+		}
+		return $query->result_array();
+	}
+
+	public function getAllOrder($table, $user_id, $limit=0){
+		if($limit != 0){
+			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
+               	FROM $table so
+               	LEFT JOIN users u ON so.user_id = u.id
+               	LEFT JOIN my_services ms ON ms.id = so.service_id
+               	WHERE ms.user_id = $user_id
+               	ORDER BY so.id DESC
+               	LIMIT $limit");		
+		}else{
+			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
+               	FROM $table so
+               	LEFT JOIN users u ON so.user_id = u.id
+               	LEFT JOIN my_services ms ON ms.id = so.service_id
+               	WHERE ms.user_id = $user_id
+               	ORDER BY so.id DESC
+               	LIMIT 500");	
+		}
+		return $query->result_array();
+	}
+
+	public function getTotalStatusOrder($user_id){
+		$query = $this->db->query("
+			    SELECT
+			    	COUNT(*) AS total_orders,
+			        SUM(CASE WHEN so.status IN ('placed', 'pending') THEN 1 ELSE 0 END) AS total_pending,
+			        SUM(CASE WHEN so.status = 'complete' THEN 1 ELSE 0 END) AS total_complete,
+			        SUM(CASE WHEN so.status = 'cancel' THEN 1 ELSE 0 END) AS total_cancel
+			    FROM
+			        service_order so
+			    JOIN
+			        my_services s ON so.service_id = s.id
+			    WHERE
+			        s.user_id = $user_id");
+
+			return $query->row_array();
+	}
+
+	public function changeDateFormat($targetDateString){
+		$now = time();
+		$targetDate = strtotime($targetDateString);
+		$differenceInSeconds = $targetDate - $now;
+
+		// Calculate years, days, hours, minutes
+		$years = floor($differenceInSeconds / (365 * 24 * 60 * 60));
+		$days = floor(($differenceInSeconds % (365 * 24 * 60 * 60)) / (24 * 60 * 60));
+		$hours = floor(($differenceInSeconds % (24 * 60 * 60)) / (60 * 60));
+		$minutes = floor(($differenceInSeconds % (60 * 60)) / 60);
+
+		// Construct the readable string
+		if ($years > 0) {
+		    $remainingTime = "$years years, $days days to submit";
+		} elseif ($days > 0) {
+		    $remainingTime = "$days days, $hours hours to submit";
+		} elseif ($hours > 0) {
+		    $remainingTime = "$hours hours, $minutes minutes to submit";
+		} elseif ($minutes > 0) {
+		    $remainingTime = "$minutes minutes to submit";
+		} else {
+		    $remainingTime = "Less than a minute to submit";
+		}
+
+		echo $remainingTime;
+	}
+
+	public function recentlyViewedService($service_id){
+		$this->db->select('ms.*');
+		$this->db->from('my_services ms');
+		$this->db->join('recently_viewed_service rvs', 'ms.id = rvs.service_id', 'LEFT');
+		$this->db->where('DATE(rvs.created_at)', 'CURDATE()', false);
+		$this->db->order_by('rvs.id', 'DESC');
+		$this->db->limit(6);
+		$query = $this->db->get();
+
+		return $query->result_array();
+	}
 }

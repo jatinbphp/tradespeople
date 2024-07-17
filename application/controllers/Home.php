@@ -2370,6 +2370,16 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['service_details'] = $this->common_model->GetSingleData('my_services',['slug'=>$slug]);
 		$sId = $data['service_details']['id'];
 		$uId = $data['service_details']['user_id'];
+
+		$ip_address = $this->input->ip_address();
+		$existViewed = $this->common_model->GetSingleData('recently_viewed_service',['ip_address'=>$ip_address,'service_id'=>$sId]);
+
+		if(empty($existViewed)){
+			$insert['ip_address'] = $ip_address;
+			$insert['service_id'] = $sId;
+			$this->common_model->insert('recently_viewed_service', $insert);		
+		}
+
 		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
 		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
