@@ -9930,3 +9930,209 @@ button.switch-month:hover {
 .text-white {
     color: #fff;
 }
+.btn-outline-warning {
+    border-color: #fe8a0f;
+    background: transparent;
+}
+.btn-outline-warning:hover {
+    background: #fe8a0f;
+    color: #fff;
+}
+.great-offer-btn {
+    padding: 5px 14px 10px 14px;
+    background: #ececec;
+}
+.great-offer-btn .btn {
+    padding: 6px 20px;
+}
+.live-chat .chat {
+    position: relative;
+}
+.great-offer-chat {
+    padding: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.great-offer-chat-heding {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+.great-offer-chat-heding h5 {
+    margin: 0;
+    padding: 0;
+    font-weight: 700;
+    color: #fe8a0f;
+}
+.great-offer-chat-heding .close {
+    color: #fe8a0f;
+    opacity: 1;
+}
+
+.great-offer-chat-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 34px;
+}
+.great-offer-chat-footer .back {
+    color: #fe8a0f;
+}
+.great-offer-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.great-offer-list li {
+     border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 6px; 
+}
+.great-offer-list li:hover {
+    border: 1px solid #fe8a0f;
+}
+.great-offer-list li + li {
+    margin-top: 10px;
+}
+.great-offer-list li .box {
+    display: flex;
+    gap: 10px;
+}
+.great-offer-list li .box .img img {
+    max-width: 60px;
+    min-width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.great-offer-list li h3 {
+    color: #464c5b;
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+.great-offer-list li p {
+    color: #999;
+    margin: 0;
+}
+.great-offer-chat-middle {
+    padding-bottom: 10px;
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.great-offer-chat-middle::-webkit-scrollbar {
+  width: 4px;
+}
+
+.great-offer-chat-middle::-webkit-scrollbar-track {
+  background: white;
+}
+
+.great-offer-chat-middle::-webkit-scrollbar-thumb {
+  background: lightgray;
+  border-radius: 4px;
+}
+
+.great-offer-chat-middle:hover::-webkit-scrollbar-thumb {
+  background: gray;
+}
+
+.great-offer-chat-middle::-webkit-scrollbar-thumb:hover {
+  background: black;
+}
+
+
+.great-offer-singal h4 {
+    color: #464c5b;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 15px; 
+}
+.package-img img {
+    width: 150px;
+    border-radius: 10px;
+    margin: 15px 0;
+    height: 100px;
+    object-fit: cover;
+}
+.great-offer-singal textarea {
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+.great-offer-singal .select-price-box {
+    display: grid;
+    gap:10px;
+    grid-template-columns: 1fr 1fr 1fr;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+.great-offer-singal .form-control {
+    border: 1px solid #ccc;
+    padding-left: 5px;
+}
+.great-offer-singal .select-price-box .form-group {
+    margin: 0;
+}
+.great-offer-singal .form-check label {
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+}
+.great-offer-singal .form-check .checkbox-effect:not(:checked) + label:after, 
+.great-offer-singal .form-check .checkbox-effect:checked + label:after {
+    top: -2px;
+    left: 5px;
+    font-size: 10px;
+    height: 20px;
+}
+.great-offer-singal .form-check .checkbox-effect:not(:checked) + label:before, 
+.great-offer-singal .form-check .checkbox-effect:checked + label:before {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-right: 5px;
+}
+.great-offer-singal .form-check label:hover {
+    background-color: transparent;
+}
+.great-offer-singal .check-list {
+    margin: 0 0 15px 0;
+    padding: 0;
+    list-style: none;
+}
+.great-offer-singal .check-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+ border-top: 1px solid #ddd;
+    padding-top: 12px;
+    margin-top: 10px;
+    margin-left: -14px;
+    margin-right: -14px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+.great-offer-singal .check-list li .form-check {
+    margin: 0
+}
+.great-offer-singal .check-list li .form-group {
+    margin-bottom: 0;
+}
+.great-offer-singal .check-list li h3 {
+    margin: 0px 0 3px 0;
+    font-weight: bold;
+    font-size: 14px;
+}

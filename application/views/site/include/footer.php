@@ -86,8 +86,227 @@
 
       </form>
     </div>
+    <div class="great-offer-chat" id="great-offer1">
+      <div class="great-offer-chat-heding">
+        <h5>Select a Gig</h5><a href="#" class="close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </a>
+      </div>
+      <div class="great-offer-chat-middle">
+          <ul class="great-offer-list">
+            <li>
+              <a href="#">
+                <div class="box">
+                <div class="img">
+                  <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
+                </div>
+                <div class="des">
+                <h3>Imagine having all kinds It also shows the commitment</h3>
+              </div>
+            </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <div class="box">
+                <div class="img">
+                  <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
+                </div>
+                <div class="des">
+                <h3>Imagine having all kinds It also shows the commitment</h3>
+              </div>
+            </div>
+              </a>
+            </li>
+          </ul>
+
+      </div>
+    </div>
+
+    <div class="great-offer-chat" id="great-offer2">
+      <div class="great-offer-chat-heding">
+        <h5>Select a Gig</h5><a href="#" class="close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </a>
+      </div>
+      <div class="great-offer-chat-middle">
+        <p class="text-muted">Our project milestones protect your interest and that of your committed homeowner. </p>
+          <ul class="great-offer-list">
+            <li>
+              <a href="#">
+                <div class="box">
+                <div class="img">
+                  <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
+                </div>
+                <div class="des">
+                <h3>Imagine having all kinds</h3>
+                <p>It also shows the commitment</p>
+              </div>
+            </div>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <div class="box">
+                <div class="img">
+                  <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
+                </div>
+                <div class="des">
+                <h3>Imagine having all kinds</h3>
+                <p>It also shows the commitment</p>
+              </div>
+            </div>
+              </a>
+            </li>
+          </ul>
+
+      </div>
+      <div class="great-offer-chat-footer">
+         <a href="#" class="back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
+          </svg> 
+          <span>Back</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="great-offer-chat" id="great-offer3">
+      <div class="great-offer-chat-heding">
+        <h5>Create a single payment offer</h5><a href="#" class="close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </a>
+      </div>
+      <div class="great-offer-chat-middle">
+        <div class="great-offer-singal">
+          <h4>radespeoplehub checks the job for authenticity</h4>
+          <button type="submit" class="btn btn-outline-warning">Select A Package</button>
+          <div class="package-img">
+            <img src="http://localhost/tradespeople/img/team3.png" alt="" />
+          </div>
+          <textarea class="form-control" rows="4" name="message" placeholder="Project detail..." required=""></textarea>
+
+          <p>Visit our tradesmen <a href="#">help centre</a></p>
+          <p>please send us a message.</p>
+
+          <div class="select-price-box">
+            <div class="form-group">
+              <label class="control-label"> Last name </label>
+              <select required="" class="form-control">
+                  <option value="">Select</option>
+                  <option value="1">Tradesman</option>
+                  <option value="2">Homeowner</option>
+                </select>
+            </div>
+            <div class="form-group">
+              <label class="control-label">Delivery</label>
+              <select required="" class="form-control">
+                  <option value="">1 Day</option>
+                  <option value="1">2 Day</option>
+                  <option value="2">3 Day</option>
+                </select>
+            </div>
+            <div class="form-group">
+              <label class="control-label">Price</label>
+              <input type="text" class="form-control" name="price" placeholder="$00000" required="">
+            </div>
+          </div>
+
+          <ul class="check-list">
+            <li>
+              <div class="form-check">
+              <div class="check-box">
+              <input class="checkbox-effect" id="time" type="checkbox" value="time" name="time">
+              <label for="time">Offer expiration time</label>
+            </div>
+          </div>
+          <div class="form-group">
+              <select required="" class="form-control">
+                  <option value="">1 Day</option>
+                  <option value="1">2 Day</option>
+                  <option value="2">3 Day</option>
+                </select>
+            </div>
+        </li>
+        <li><h3>Offer includes</h3></li>
+        <li>
+              <div class="form-check">
+              <div class="check-box">
+              <input class="checkbox-effect" id="Words" type="checkbox" value="Words" name="Words">
+              <label for="Words">Words included</label>
+            </div>
+          </div>
+        </li>
+        <li>
+              <div class="form-check">
+              <div class="check-box">
+              <input class="checkbox-effect" id="Split" type="checkbox" value="Split" name="Split">
+              <label for="Split">Split files up to 5 files</label>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+        </div>
+      </div>
+      <div class="great-offer-chat-footer">
+         <a href="#" class="back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
+          </svg> 
+          <span>Back</span>
+        </a>
+         <button type="submit" class="btn btn-warning">Sand Offer</button>
+      </div>
+    </div>
+
+    <div class="great-offer-btn">
+      <button type="submit" class="btn btn-warning">Great Offer</button>
+     
+    </div>
+
   </div>  
 </div>
+<script type="text/javascript">
+  /* */
+$(".great-offer-chat ").hide();
+
+$(".great-offer-chat-heding .close").click(function() {
+    $(".great-offer-chat").hide();
+ });  
+
+$(".great-offer-btn button").click(function() {
+      $("#great-offer1").show();
+  });
+$("#great-offer1 .great-offer-list li").click(function() {
+    $("#great-offer2").show();
+    $("#great-offer1").hide();
+ }); 
+
+$("#great-offer2 .great-offer-list li").click(function() {
+    $("#great-offer3").show();
+    $("#great-offer2").hide();
+ }); 
+
+$("#great-offer2 .back").click(function() {
+    $("#great-offer2").hide();
+    $("#great-offer1").show();
+}); 
+
+$("#great-offer3 .back").click(function() {
+  $("#great-offer3").hide();
+    $("#great-offer2").show();
+}); 
+
+
+</script>
+
 <?php
 $this->db->query("set sql_mode = ''");
 $user_id = $this->session->userdata('user_id');
@@ -2077,8 +2296,6 @@ video.addEventListener("ended", () => {
 });
 
 video.addEventListener("mouseover", () => playing ? pauseVideo() : playVideo());
-
-
 
 
 </script>
