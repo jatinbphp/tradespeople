@@ -1,4 +1,7 @@
 <?php include ("include/header.php") ?>
+<div class="loader-bg hide" id='loader'>
+	<span class="loader"></span>
+</div>
 <div class="checkout-page">
 	<div class="container">
 		<div class="row checkout-form">
@@ -19,81 +22,107 @@
 					</div>
 				<?php endif; ?>
 
+				<div class="col-sm-12">
+                    <div class="form-group">
+                        <span id='formErrors' class='text-danger'></span>
+                    </div>
+                </div>
+
 				<div class="col-sm-8">
 					<h2 class="title">Select your payment method</h2>
 					<div class="row">
-							<div class="col-sm-12">
-								<div class="form__radio">
-									<label for="stripe"><svg class="icon">
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-											<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
-											<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-											<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-											<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-										</svg>
-									</svg>New Card</label>
-									<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
-								</div>
-								<!-- <p><b>Tradespeople Hub accepts all Visa, MasterCard and Maestro cards.</b></p> -->
+						<div class="col-sm-12">
+							<div class="form__radio">
+								<label for="stripe"><svg class="icon">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+										<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
+										<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+										<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+										<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+									</svg>
+								</svg>New Card</label>
+								<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
 							</div>
-							<div class="col-sm-12">
-								<div class="form__radio">
-									<label for="wallet"><svg class="icon">
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-											<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
-											<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-											<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-											<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-										</svg>
-									</svg>Wallet</label>
-									<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
-								</div>
-								<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
-							</div>
+							<!-- <p><b>Tradespeople Hub accepts all Visa, MasterCard and Maestro cards.</b></p> -->
 						</div>
+						<div class="col-sm-12">
+							<div class="form__radio">
+								<label for="wallet"><svg class="icon">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+										<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
+										<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+										<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+										<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+									</svg>
+								</svg>Wallet</label>
+								<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
+							</div>
+							<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
+						</div>
+					</div>
 					<div id="card-detail" style="display:none; margin-bottom: 15px;">
 						<div class="form-group">
 							<div class="row">
 								<div class="col-sm-12">
+                                    <div class="form-group">
+                                        <span id='StripePaymentErrors' class='text-danger'></span>
+                                    </div>
+                                </div>
+
+								<div class="col-sm-12">
 									<label class="control-label">Card number</label>
-									<input type="text" class="form-control input-lg" minlength="16" maxlength="16" id="card" name="card" placeholder="0000 0000 0000 0000">
+									<!-- <input type="text" class="form-control input-lg" minlength="16" maxlength="16" id="card-number-element" name="card" placeholder="0000 0000 0000 0000"> -->
+									<div class='form-control input-lg ' id="card-number-element"></div>
+									<span class='incomplete_number text-danger error-card'></span>
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<div class="row">
 								<div class="col-sm-12">
 									<label class="control-label">Name on card</label>
 									<input type="text" name="name" class="form-control input-lg" placeholder="Name on card">
 								</div>
 							</div>
-						</div>
+						</div> -->
 						<div class="form-group">
 							<div class="row">
-								<div class="col-sm-6">
+								<div class="col-sm-4">
 									<label class="control-label">Expiry date</label>
-									<input class="form-control input-lg" name="expiry" id="expiry" type="text" placeholder="MM/YY">
+									<!-- <input class="form-control input-lg" name="expiry" id="expiry" type="text" placeholder="MM/YY"> -->
+									<div class='form-control input-lg' id="card-expiry-element"></div>
+                                    <span class='incomplete_expiry invalid_expiry_year_past text-danger error-card'></span>
 								</div>
-								<div class="col-sm-6">
+								<div class="col-sm-4">
 									<label class="control-label">CVV <i class="fa fa-info-circle" aria-hidden="true"></i></label>
-									<input type="text" class="form-control input-lg" minlength="3" maxlength="4" id="cvc" name="cvc" placeholder="123">
+									<!-- <input type="text" class="form-control input-lg" minlength="3" maxlength="4" id="cvc" name="cvc" placeholder="123"> -->
+									<div class='form-control input-lg' id="card-cvc-element"></div>
+                                    <span class='incomplete_cvc text-danger error-card'></span>
 								</div>
+								<div class="col-sm-4">
+                                    <div class="form-group">
+                                    	<label class="control-label">Postal Code</label>
+                                        <div class='form-control input-lg' id="postal-code-element"></div>
+                                        <span class='incomplete_zip text-danger error-card'></span>
+                                    </div>
+                                </div>
 							</div>
 						</div>
-					</div>
-					<!-- <div class="form-group">
-						<div class="row">
-							<div class="col-sm-12">
-								<div class="form-check">
-									<div class="check-box">
-										<input class="checkbox-effect" id="Save-Card" type="checkbox" value="Save-Card" name="Save-Card"/>
-										<label for="Save-Card">Save Card</label>
+						<?php if($this->session->userdata('user_id')):?>
+							<div class="form-group">
+								<div class="row">
+									<div class="col-sm-12">
+										<div class="form-check">
+											<div class="check-box">
+												<input class="checkbox-effect" id="Save_Card" type="checkbox" value="Save-Card" name="save_card"/>
+												<label for="Save_Card">Save Card</label>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div> -->
-					
+						<?php endif; ?>
+					</div>											
 				</div>
 				<div class="col-sm-4">
 					<div class="card-summary">
@@ -196,6 +225,10 @@
 	</div>
 </div>
 
+<?php
+  	require_once('application/libraries/stripe-php-7.49.0/init.php');
+?>
+<script src="https://js.stripe.com/v3/"></script>
 <script>
 	$(document).ready(function() {
 	    $('input[type=radio][name=payment_method]').change(function() {
@@ -283,17 +316,250 @@
 	});
 
 	$('#checkoutBtn').on('click', function(){
-		swal({
-            title: "Confirm Order",
-            text: "Are you sure you want to place this order?",
-            type: "warning",
-            showCancelButton: true,
-	        confirmButtonText: 'Place Order',
-	        cancelButtonText: 'Cancel'
-        }, function() {
-        	$('#checkoutBtn').disabled = true;
-            $('#checkoutForm').submit();
-        });
+		$('#checkoutBtn').disabled = true;
+        var pMethod = $('input[name="payment_method"]:checked').val();
+        if(pMethod != undefined){
+        	$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
+        	$('#formErrors').closest('.col-sm-12').removeClass('mb-4');
+            $('#formErrors').fadeOut();
+
+        	swal({
+	            title: "Confirm Order",
+	            text: "Are you sure you want to place this order?",
+	            type: "warning",
+	            showCancelButton: true,
+		        confirmButtonText: 'Place Order',
+		        cancelButtonText: 'Cancel'
+	        }, function() {
+	    		if (pMethod == 'wallet') {
+	    			var promo_code = $('#promo_code').val();
+		           	$('#loader').removeClass('hide');
+
+	    			$.ajax({
+		                url: '<?= site_url().'checkout/placeOrder'; ?>',
+		                type: 'POST',
+		                data: {'payment_method':pMethod, 'promo_code':promo_code},
+		                dataType: 'json',		                
+		                success: function(result) {
+		                	$('#loader').addClass('hide');
+		                	if(result.status == 0){
+		                		swal({
+					            	title: "Error",
+						            text: result.message,
+						            type: "error"
+						        });	
+		                	}else if(result.status == 2){
+		                		swal({
+						            title: "Login Required!",
+						            text: "If you want to order the please login first!",
+						            type: "warning"
+						        }, function() {
+						            window.location.href = '<?php echo base_url().'login'; ?>';
+						        });	
+		                	}else{
+								swal({
+						            title: "Success",
+						            text: result.message,
+						            type: "success"
+						        }, function() {
+						        	window.location.href = '<?php echo base_url(""); ?>';
+						        });
+		                	}		                    
+		                },
+		                error: function(xhr, status, error) {
+		                    // Handle error
+		                }
+		            });
+		        }
+		        else{
+		            var savedCard = $('input[name="save_card"]:checked').val();
+		            if(savedCard != undefined && savedCard != 0){
+	                    payWithOldCard();
+	                } else {
+	                    payWithStripe();
+	                }
+		        } 	
+	        });
+        }else{
+    		$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
+    		$('#formErrors').closest('.col-sm-12').addClass('mb-4');
+            $('#formErrors').fadeIn();
+            return false;
+    	}
 	});
+
+	/*Strope Code Start*/
+
+	var stripePublishableKey = '<?php echo $this->config->item('stripe_key');?>';
+    var stripe = Stripe(stripePublishableKey);
+    var elements = stripe.elements();
+    var style = {
+        base: {
+            color: "#000000",
+            fontSize: '18px',		   
+            "::placeholder": {
+                color: "#aab7c4"
+            }
+        },
+        invalid: {
+            color: "#fa755a",
+            iconColor: "#fa755a"
+        },
+    };
+
+    var cardNumber = elements.create('cardNumber', {
+        style: style,
+        showIcon: true,
+        iconStyle : 'solid',
+        placeholder : 'Ex. 0000 0000 0000 0000'
+    });
+    cardNumber.mount('#card-number-element');
+
+    var cardExpiry = elements.create('cardExpiry', {
+        style: style
+    });
+    cardExpiry.mount('#card-expiry-element');
+
+    var cardCvc = elements.create('cardCvc', {
+        style: style
+    });
+    cardCvc.mount('#card-cvc-element');
+
+    var postalCode = elements.create('postalCode', {
+        style: style
+    });
+    postalCode.mount('#postal-code-element');
+
+    // Handle real-time validation errors from the card Elements.
+    [cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
+       element.on('change', function(event) {
+            if (event.error) {
+                $('#StripePaymentErrors').text(event.error.message).parent('div').addClass('alert alert-danger');
+                $('#StripePaymentErrors').fadeIn();
+            } else {
+                $('#StripePaymentErrors').text('').parent('div').removeClass('alert alert-danger');
+                $('#StripePaymentErrors').fadeOut();
+            }
+        });
+    });
+
+    async function payWithStripe() {
+        $('#loader').removeClass('hide');
+
+        var {token, error} = await stripe.createToken(cardNumber);
+
+        if (error) {
+            $('#loader').addClass('hide');
+            var code = error.code ? error.code : '';
+            var message = error.message ? error.message : '';
+            if(code && message){
+                $('#StripePaymentErrors').text(message);
+                $('#StripePaymentErrors').fadeIn();
+                $('.error-card').text('');
+                $('.'+code).text(message);
+            }
+            return;
+        }
+
+        stripe.createPaymentMethod({
+            type: 'card',
+            card: cardNumber,
+        }).then(stripePaymentMethodHandler);
+    }
+
+    function payWithOldCard() {
+        var intentId = $('input[name="saved_card"]:checked').val();
+        $("#stripe-payment-success-3ds").modal('show');
+        var firstName = $('#first_name_0').val();
+        var lastName = $('#last_name_0').val();
+        var email = $('#email').val();
+        var userName = firstName + ' ' + lastName;
+        var address = $('#address_line1_0').val();
+        var country = $('#country_0').val();
+        var state = $('#state_0').val();
+        var city = $('#city_0').val();
+        var pincode = $('#pincode_0').val();
+        var saveCard = $('#saveForLater').is(':checked');
+        var addressId = $('.addresses-radio:checked').val();
+
+        var tockenName = getTockenName();
+        var tockenValue = getTockenValue();
+        var dataObj = {
+            payment_method_id: intentId,
+            userName: userName,
+            email: email,
+            address: address,
+            country: country,
+            state: state,
+            city: city,
+            pincode: pincode,
+            addressId: addressId,
+            saveCard: saveCard,
+        };
+        dataObj[tockenName] = tockenValue;
+
+        $.ajax({
+            url: baseUrl + '/payment/process-payment',
+            type: 'POST',
+            dataType: 'json',
+            data: dataObj,
+            success: function(result) {
+                handleServerResponse(result);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+            }
+        }).always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+            updateCsrfToken();
+        });
+    }
+
+    function stripePaymentMethodHandler(result) {
+        $('#loader').addClass('hide');
+        if (result.error) {
+            // Show error in payment form
+            $('#StripePaymentErrors').text(result.error.message);
+            $('#StripePaymentErrors').fadeIn();
+            $("#stripe-payment-success-3ds").modal('hide');
+        } else {
+            $("#stripe-payment-success-3ds").modal('show');
+            var promo_code = $('#promo_code').val();
+            var saveCard = $('#Save_Card').is(':checked');;
+            
+            var dataObj = {
+                payment_method_id: result.paymentMethod.id,
+                promo_code: promo_code,
+                saveCard: saveCard,
+            };
+
+            var pMethod = $('input[name="payment_method"]:checked').val();
+
+            $.ajax({
+                url: '<?= site_url().'checkout/placeOrder'; ?>',
+                type: 'POST',
+                 data: {'payment_method':pMethod, 'payment_method_id': payment_method_id, 'promo_code':promo_code, 'saveCard': saveCard},
+                dataType: 'json',                
+                success: function(result) {
+                	if(result.status == 2){
+                		swal({
+				            title: "Login Required!",
+				            text: "If you want to order the please login first!",
+				            type: "warning"
+				        }, function() {
+				            window.location.href = '<?php echo base_url().'login'; ?>';
+				        });	
+                	}else{
+                		handleServerResponse(result);	
+                	}
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                }
+            });
+        }
+    }
+
+	/*Strope Code End*/
+
 </script>
 <?php include ("include/footer.php") ?>

@@ -38,7 +38,7 @@ class Checkout extends CI_Controller
 		$newCart = $this->common_model->insert('cart', $insert);
 
 		if($newCart){
-			$this->session->set_userdata('latest_catId',$newCart);
+			$this->session->set_userdata('latest_cartId',$newCart);
 			$json['status'] = 1;
 		} else {
 			$json['status'] = 0;
@@ -53,10 +53,10 @@ class Checkout extends CI_Controller
 
 		$this->session->set_userdata('previous_url', current_url());
 
-		$latestCartId = $this->session->userdata('latest_catId');
+		$latestCartId = $this->session->userdata('latest_cartId');
 		$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
 
-		$sId = $cartData['service_id'];
+		$sId = $service_id;
 		$prices = 0;
 		$totalPrice = 0;
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
@@ -79,12 +79,18 @@ class Checkout extends CI_Controller
 	}
 
 	public function checkPromoCode(){
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}		
+
 		$total_amount = 0;
 		$totalPrice = 0;
 		$discount = 0;
 		$discounted_amount = 0;
 
-		$latestCartId = $this->session->userdata('latest_catId');
+		$latestCartId = $this->session->userdata('latest_cartId');
 		$pcode = $this->input->post('promo_code');
 		$promo_code = $this->common_model->get_single_data('promo_code',array('code'=>$pcode,'status'=>'active'));
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
@@ -96,10 +102,10 @@ class Checkout extends CI_Controller
 			exit;
 		}else{
 			$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
-			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$cartData['service_id']));
+			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 			$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
 			if(!empty($exsId)){
-				$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $cartData['service_id']);	
+				$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $service_id);	
 				if(!empty($ex_services) && count($ex_services) > 0){
 					foreach($ex_services as $list){
 						$extraService .= $list['id'].'-'.$list['price'].',';
@@ -147,24 +153,33 @@ class Checkout extends CI_Controller
 			redirect('dashboard');
 		}
 
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}
+
 		$this->form_validation->set_rules('payment_method','Payment Method','required');
 				
 		if ($this->form_validation->run()==false) {
-			$this->session->set_flashdata('error',validation_errors());
-			redirect('serviceCheckout');
+			$data['status'] = 0;
+			$data['message'] = 'Please select payment method';
+			echo json_encode($data);
+			exit;
 		}
 
 		$previous_url = $this->session->userdata('previous_url');
 		$uId = $this->session->userdata('user_id');
-		$users=$this->common_model->get_single_data('users',array('id'=>$uId));
-		$latestCartId = $this->session->userdata('latest_catId');
+		$latestCartId = $this->session->userdata('latest_cartId');
 		$pcode = $this->input->post('promo_code');
 		$payment_method = $this->input->post('payment_method');
 
+		$users=$this->common_model->get_single_data('users',array('id'=>$uId));
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 		$promo_code = $this->common_model->get_single_data('promo_code',array('code'=>$pcode,'status'=>'active'));
 		$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
-		$service_details = $this->common_model->get_single_data('my_services', array('id'=>$cartData['service_id']));
+		$service_id = $cartData['service_id'];
+		$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
 		$extraService = '';
@@ -175,7 +190,7 @@ class Checkout extends CI_Controller
 		$is_proceed = 0;
 
 		if(!empty($exsId)){
-			$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $cartData['service_id']);	
+			$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $service_id);	
 
 			if(!empty($ex_services) && count($ex_services) > 0){
 				foreach($ex_services as $list){
@@ -186,49 +201,134 @@ class Checkout extends CI_Controller
 			}
 		}
 		$total_amount = $totalPrice + $service_details['price'];
+		$discounted_amount = $total_amount;
 		$is_allowed = 0;
 
-		if(!empty($promo_code)){
-			if($promo_code['is_limited'] == 'yes'){
-				$is_allowed = $promo_code['limited_user'] > $promo_code['exceeded_limit'] ? 1 : 0;
+		if(!empty($pcode)){
+			if(!empty($promo_code)){
+				if($promo_code['is_limited'] == 'yes'){
+					$is_allowed = $promo_code['limited_user'] > $promo_code['exceeded_limit'] ? 1 : 0;
+
+					if($is_allowed == 1){
+						$input['exceeded_limit'] = $promo_code['exceeded_limit'] + 1;
+						$this->common_model->update('promo_code',array('id'=>$promo_code['id']),$input);
+					}
+				}else{
+					$is_allowed = 1;
+				}
 
 				if($is_allowed == 1){
-					$input['exceeded_limit'] = $promo_code['exceeded_limit'] + 1;
-					$this->common_model->update('promo_code',array('id'=>$promo_code['id']),$input);
+					if($promo_code['discount_type'] == 'flat'){
+						$discount = $promo_code['discount'];				
+					}else{
+						$discount = ($total_amount * $promo_code['discount']) / 100;
+					}
+					$discounted_amount = $total_amount - $discount;	
 				}
 			}else{
-				$is_allowed = 1;
+				$data['status'] = 0;
+				$data['message'] = 'Invalid Promo Code';
+				echo json_encode($data);
+				exit;
 			}
-
-			if($is_allowed == 1){
-				if($promo_code['discount_type'] == 'flat'){
-					$discount = $promo_code['discount'];				
-				}else{
-					$discount = ($total_amount * $promo_code['discount']) / 100;
-				}
-				$discounted_amount = $total_amount - $discount;	
-			}
-		}else{
-			$discounted_amount = $total_amount;
 		}
 
-		if($payment_method == 'wallet'){
-			if($discounted_amount > $users['u_wallet']) {
-				$this->session->set_flashdata('error','Insufficient amount in your wallet please recharge you wallet.');
+		$mainPrice = $discounted_amount + $setting['service_fees'];
 
-				redirect('serviceCheckout');
+		if($payment_method == 'wallet'){
+			if($mainPrice > $users['u_wallet']) {
+				$data['status'] = 0;
+				$data['message'] = 'Insufficient amount in your wallet please recharge you wallet';
+				echo json_encode($data);
+				exit;
 			} else {
 				$transactionid = md5(rand(1000,999).time());
 				$is_proceed = 1;
 			}	
 		}else{
 			//stripe code
+
+			echo '<pre>';
+			print_r($_POST);
+			exit;
+
+			require_once('application/libraries/stripe-php-7.49.0/init.php');
+			header('Content-Type: application/json');
+
+			$payment_method_id = $this->input->post('payment_method_id');
+	        $stripeSecretKey = $this->config->item('stripe_secret');
+	        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+	        $userName =  $users['f_name'] ?? '' .' '. $users['l_name'] ?? '' ;
+	        $userEmail = $users['email'] ?? '';
+
+	        if(isset($userData['stripe_customer_id']) && $userData['stripe_customer_id']){
+            	$stripeCustomerId = $userData['stripe_customer_id'];
+	        } else {
+	            // Add customer to stripe
+	            try {  
+	                $customer = \Stripe\Customer::create([ 
+	                    'name' => $userName, 
+	                    'email' => $userEmail
+	                ]); 
+	            }catch(Exception $e) {  
+	                $api_error = $e->getMessage();  
+	            }
+	            if(empty($api_error) && $customer){
+	                $stripeCustomerId = $customer->id;
+	                $input['stripe_customer_id'] = $customer->id;
+	                $this->common_model->update('users',array('id'=>$users['id']),$input);
+
+	            }else{
+	                http_response_code(500);
+	                echo json_encode(['error' => $api_error]);
+	            }
+	        }
+
+	        $intent = null;
+        	try {
+	            if (isset($payment_method_id) && $mainPrice) {
+	                $amount = ($mainPrice * 100);
+
+	                $isAddNewCard = $this->getAllowToAddNewCard($json_obj, $stripeCustomerId);
+	                if($isAddNewCard){
+	                    $paymentMethod = \Stripe\PaymentMethod::retrieve($json_obj->payment_method_id);
+	                    $paymentMethod->attach(['customer' => $stripeCustomerId]);
+	                }
+
+	                # Create the PaymentIntent
+	                $intent = \Stripe\PaymentIntent::create([
+	                    'payment_method' => $json_obj->payment_method_id,
+	                    'amount' => $amount,
+	                    'description' => 'Ecommerce user purchase Product.',
+	                    'currency' => 'usd',
+	                    'confirm' => true,
+	                    'customer' => $stripeCustomerId,
+	                    'automatic_payment_methods' => [
+	                        'enabled' => true,
+	                        'allow_redirects' => 'never',
+	                    ]
+	                ]);
+	            }
+	            if (isset($json_obj->payment_intent_id)) {
+	                $intent = \Stripe\PaymentIntent::retrieve(
+	                    $json_obj->payment_intent_id
+	                );
+	            }
+	            $this->generateResponse($intent);
+	        } catch (\Stripe\Exception\ApiErrorException $e) {
+	            # Display error on client
+	            addPaymentLog("Error: ");
+	            addPaymentLog($e->getMessage());
+	            echo json_encode([
+	                'error' => $e->getMessage(),
+	            ]);
+	        }
 		}
 
 		if($is_proceed == 1){
-			$mainPrice = $discounted_amount + $setting['service_fees'];
 			$insert['user_id'] = $uId;
-			$insert['service_id'] = $cartData['service_id'];
+			$insert['service_id'] = $service_id;
 			$insert['ex_services'] = rtrim($extraService,',');
 			$insert['price'] = $service_details['price'];
 			$insert['service_fee'] = $setting['service_fees'];
@@ -249,7 +349,7 @@ class Checkout extends CI_Controller
 				$update12['spend_amount']=$users['spend_amount']+$mainPrice;						
 				$this->common_model->update('users',array('id'=>$uId),$update12);
 									
-				$tr_message='£'.$mainPrice.'  has been debited to your wallet for ordering a service <a href="'.site_url().'service/'.$cartData['service_id'].'">'.$service_details['service_name'].'.</a>';
+				$tr_message='£'.$mainPrice.'  has been debited to your wallet for ordering a service <a href="'.site_url().'service/'.$service_id.'">'.$service_details['service_name'].'.</a>';
 					
 				$data1 = array(
 					'tr_userid'=>$users['id'], 
@@ -264,36 +364,70 @@ class Checkout extends CI_Controller
 				$this->common_model->insert('transactions',$data1);
 
 				/*Homeowner Email Code*/
-				$has_email_noti1 = $this->common_model->check_email_notification($users['id']);
-				if($has_email_noti1){
+				$homeOwner = $this->common_model->check_email_notification($users['id']);
+				if($homeOwner){
 					$subject = "Order Payment Made for “".$service_details['service_name']."”";				
 					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Order Payment Made Successfully!</p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Hi '.$has_email_noti1['f_name'].'!</p>';
+					$html .= '<p style="margin:0;padding:10px 0px">Hi '.$homeOwner['f_name'].'!</p>';
 					$html .= '<p style="margin:0;padding:10px 0px">'.$get_users['f_name'].' '.$get_users['l_name'].' has made a milestone payment for the job “'.$post_title.'.” </p>';
 					$html .= '<p style="margin:0;padding:10px 0px">Service payment amount:  £'.$mainPrice.'</p>';					
 					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
 					
-					$sent = $this->common_model->send_mail($has_email_noti1['email'],$subject,$html);
+					$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
 				}
 
 				/*Tradesman Email Code*/
-				$has_email_noti = $this->common_model->check_email_notification($service_details['user_id']);
-				if($has_email_noti){
+				$tradesMan = $this->common_model->check_email_notification($service_details['user_id']);
+				if($tradesMan){
 					$subject = "Your Service Payment created successfully: “".$service_details['service_name']."”"; 
 					$html = '<p style="margin:0;padding:10px 0px">Service Payment Made Successfully!</p>';
-					$html = '<p style="margin:0;padding:10px 0px">Hi ' . $has_email_noti['f_name'] .',</p>';		
-					$html .= '<p style="margin:0;padding:10px 0px">Your service payment to '.$has_email_noti1['trading_name'].' created successfully.</p>';
+					$html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesMan['f_name'] .',</p>';		
+					$html .= '<p style="margin:0;padding:10px 0px">Your service payment to '.$tradesMan1['trading_name'].' created successfully.</p>';
 					$html .= '<p style="margin:0;padding:10px 0px">Service title: '.$service_details['service_name'].'</p>';
 					$html .= '<p style="margin:0;padding:10px 0px">Service Amount: £'.$discounted_amount.'</p>';
-					$this->common_model->send_mail($has_email_noti['email'],$subject,$html);
+					$this->common_model->send_mail($tradesMan['email'],$subject,$html);
 				}
 				
 				$this->common_model->delete(['id'=>$latestCartId],'cart');
 
-				redirect('thakyou');
+				$data['status'] = 1;
+				$data['message'] = 'Your order placed succesfully';
+				echo json_encode($data);
+				exit;
 			}
 		}
-	}	
+	}
+
+	public function getAllowToAddNewCard($json_obj, $customerId) {
+        $saveForLater = isset($json_obj->saveCard) ? $json_obj->saveCard : false;
+        if(!$saveForLater || $saveForLater == 'false'){
+            return false;
+        }
+        $paymentId = $json_obj->payment_method_id;
+        require_once('./vendor/stripe/stripe-php/init.php');
+        $stripeSecretKey = $this->Settings_model->getStripeSecretKey();
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+        $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentId);
+
+        if(empty($paymentMethod) || !isset($paymentMethod['card'])){
+            return false;
+        }
+
+        $currentCardNumber = $paymentMethod['card']['last4'] ?? 0;
+        
+        if(!$currentCardNumber){
+            return false;
+        }
+
+        $existingCards = $this->existingCardData($customerId);
+
+        if(in_array($currentCardNumber, $existingCards)){
+            return false;
+        }
+
+        return true;
+    }
 
 	public function thankyou(){
 		$this->load->view('site/thankyou');

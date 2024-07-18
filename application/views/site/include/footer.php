@@ -73,17 +73,10 @@
       <form id="send_msg" method="post" onsubmit="return send_msg();" class="fixed_1_bbb">
         <input name="rid" id="rid-footer" type="hidden" value="0">
         <input name="post_id" id="post_id-footer" type="hidden" value="0">
-        
-                    
-        <input name="type" id="type" type="hidden" value="<?=$this->session->userdata('type'); ?>">
-                   
-                   
+        <input name="type" id="type" type="hidden" value="<?=$this->session->userdata('type'); ?>">         
         <input type="text" placeholder="Type your message…" name="ch_msg" id="ch_msg" autofocus required="">
-      
         <input type="hidden"  name="check" id="check" autofocus>
-                   
         <button type="submit" id="btnbtn" class="btn btn_theme"><i class="fa fa-paper-plane"></i></button>
-
       </form>
     </div>
   </div>  
@@ -1651,9 +1644,6 @@ function requestPermission() {
     }
 
   });
-  
- 
-
 }
 
 function updateDeviceId(device_id){
@@ -1668,7 +1658,7 @@ function updateDeviceId(device_id){
         console.log('device_id updated',data)
        }
     });
-<?php } ?>
+  <?php } ?>
 }
 
 //requestPermission();
@@ -1753,66 +1743,65 @@ function updateDeviceId(device_id){
 </div>
 
 <script>
-function get_home_email_by_job_id(id){
-  if(id){
+  function get_home_email_by_job_id(id){
+    if(id){
+      $.ajax({
+        type:'post',
+        url:site_url+'users/get_home_email_by_job_id',
+        data:{id:id},
+        dataType:'json',
+        success:function(res){
+          if(res.status==1){
+            $('#review_id').val(res.userid);
+            $('#Review_l_name').val(res.l_name);
+            $('#Review_f_name').val(res.f_name);
+            $('#review_email').val(res.email);
+            $('.invite-email-div').hide();
+          } else {
+            $('#review_id').val(0);
+            $('.invite-email-div').show();
+          }
+        }
+      });
+    } else {
+      $('#Review_l_name').val('');
+      $('#Review_f_name').val('');
+      $('#review_email').val('');
+      $('#review_id').val(0);
+      $('.invite-email-div').show();
+    }
+    return false;
+  }
+  function send_review_invitation(id){
     $.ajax({
       type:'post',
-      url:site_url+'users/get_home_email_by_job_id',
-      data:{id:id},
+      url:site_url+'users/send_review_invitation/',
+      data:$('#send_review_invitation').serialize(),
       dataType:'json',
+      beforeSend:function(){
+        $('.err-Rev').html('');
+        $('.btn-invitation').prop('disabled',true);
+        $('.btn-invitation').html('<i class="fa fa-spin fa-spinner"></i>');
+      },
       success:function(res){
+        $('.err-Rev').html(res.msg);
+        $('.btn-invitation').prop('disabled',false);
+        $('.btn-invitation').html('Send invitation');
         if(res.status==1){
-          $('#review_id').val(res.userid);
-          $('#Review_l_name').val(res.l_name);
-          $('#Review_f_name').val(res.f_name);
-          $('#review_email').val(res.email);
-          $('.invite-email-div').hide();
-        } else {
-          $('#review_id').val(0);
-          $('.invite-email-div').show();
+          setTimeout(function(){
+            document.getElementById("review_job").selectedIndex = "0";
+            $('.err-Rev').html('');
+            $('#review_email').val('');
+            $('#review_id').val('');
+            $('#invite_review').modal('hide');
+            $('.invite-email-div').show();
+          },3000);
         }
       }
     });
-  } else {
-    $('#Review_l_name').val('');
-    $('#Review_f_name').val('');
-    $('#review_email').val('');
-    $('#review_id').val(0);
-    $('.invite-email-div').show();
+    return false;
   }
-  return false;
-}
-function send_review_invitation(id){
-  $.ajax({
-    type:'post',
-    url:site_url+'users/send_review_invitation/',
-    data:$('#send_review_invitation').serialize(),
-    dataType:'json',
-    beforeSend:function(){
-      $('.err-Rev').html('');
-      $('.btn-invitation').prop('disabled',true);
-      $('.btn-invitation').html('<i class="fa fa-spin fa-spinner"></i>');
-    },
-    success:function(res){
-      $('.err-Rev').html(res.msg);
-      $('.btn-invitation').prop('disabled',false);
-      $('.btn-invitation').html('Send invitation');
-      if(res.status==1){
-        setTimeout(function(){
-          document.getElementById("review_job").selectedIndex = "0";
-          $('.err-Rev').html('');
-          $('#review_email').val('');
-          $('#review_id').val('');
-          $('#invite_review').modal('hide');
-          $('.invite-email-div').show();
-        },3000);
-      }
-    }
-  });
-  return false;
-}
 </script>
-
 
 <?php } ?>
 
@@ -2046,39 +2035,36 @@ function send_review_invitation(id){
       video = document.getElementsByTagName('video')[0],
       btn = document.getElementById('play-control-btn'),
       totalLength = bar.getTotalLength();
-let   playing = true;
+  let   playing = true;
 
-const playVideo = () => {
-  playing = true;
-  btn.classList.add("playing");
-  video.play();
-}
+  const playVideo = () => {
+    playing = true;
+    btn.classList.add("playing");
+    video.play();
+  }
 
-const pauseVideo = () => {
-  playing = false;
-  btn.classList.remove("playing");
-  video.pause();
-}
+  const pauseVideo = () => {
+    playing = false;
+    btn.classList.remove("playing");
+    video.pause();
+  }
 
-bar.setAttribute('stroke-dasharray', totalLength);
-bar.setAttribute('stroke-dashoffset', totalLength);
+  bar.setAttribute('stroke-dasharray', totalLength);
+  bar.setAttribute('stroke-dashoffset', totalLength);
 
-video.addEventListener("timeupdate", () => {
-  const currentTime = video.currentTime,
-        duration = video.duration,
-        calc = totalLength - ( currentTime / duration * totalLength );
+  video.addEventListener("timeupdate", () => {
+    const currentTime = video.currentTime,
+          duration = video.duration,
+          calc = totalLength - ( currentTime / duration * totalLength );
 
-  bar.setAttribute('stroke-dashoffset', calc);
-});
+    bar.setAttribute('stroke-dashoffset', calc);
+  });
 
-video.addEventListener("ended", () => {
-  pauseVideo();
-  video.currentTime = 0;
-});
+  video.addEventListener("ended", () => {
+    pauseVideo();
+    video.currentTime = 0;
+  });
 
-video.addEventListener("mouseover", () => playing ? pauseVideo() : playVideo());
-
-
-
+  video.addEventListener("mouseover", () => playing ? pauseVideo() : playVideo());
 
 </script>

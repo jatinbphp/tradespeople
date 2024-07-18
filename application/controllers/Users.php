@@ -388,7 +388,7 @@ class Users extends CI_Controller
    		$data['total_sale'] = $this->common_model->get_total_sale($user_id);
    		$data['total_open_order'] = $this->common_model->get_total_open_order($user_id);
    		$data['all_active_order'] = $this->common_model->getActiveOrder('service_order',$user_id,6);
-   		$data['recently_viewed'] = $this->common_model->recentlyViewedService($sId);
+   		$data['recently_viewed'] = $this->common_model->recentlyViewedService($user_id);
 
   		$this->load->view('site/dashboard',$data);
   	}

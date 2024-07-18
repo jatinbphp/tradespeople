@@ -357,7 +357,7 @@
 						</div>
 
 						<?php if($setting[0]['payment_method'] == 1){?>
-							<li>
+							<!--<li>
 								<div class="title">Payment method</div>
 								<?php
 								$Payment_method = $this->common_model->GetColumnName('billing_details',array('user_id'=>$user_data['id']),array('is_payment_verify'));
@@ -368,7 +368,7 @@
 									<i class="fa fa-times" aria-hidden="true"></i>
 									<div class="sub-title"><a href="<?php echo base_url('billing-info/?verify=1'); ?>">Payment Method</a></div>
 								<?php } ?>
-							</li>
+							</li>-->
 						<?php }?>
 						
 					</ul>

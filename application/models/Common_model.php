@@ -3262,12 +3262,14 @@ class Common_model extends CI_Model
 		echo $remainingTime;
 	}
 
-	public function recentlyViewedService($service_id){
+	public function recentlyViewedService($user_id){
 		$this->db->select('ms.*');
 		$this->db->from('my_services ms');
 		$this->db->join('recently_viewed_service rvs', 'ms.id = rvs.service_id', 'LEFT');
 		$this->db->where('DATE(rvs.created_at)', 'CURDATE()', false);
+		$this->db->where('ms.user_id',$user_id);
 		$this->db->order_by('rvs.id', 'DESC');
+		$this->db->group_by('ms.id');
 		$this->db->limit(6);
 		$query = $this->db->get();
 
