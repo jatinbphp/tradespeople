@@ -32,6 +32,24 @@
 					<h2 class="title">Select your payment method</h2>
 					<div class="row">
 						<div class="col-sm-12">
+							<!-- <?php if(isset($userCardData) && count($userCardData)): ?>
+                                    <?php $i=1; ?>
+                                    <?php foreach($userCardData as $key => $data): ?>
+                                    	<div class="user-card-box">
+                                        <div>
+                                            <input id="card_<?php echo $key; ?>" class='user-card' <?php echo ($i == 1) ? 'checked' : '' ?> type="radio" name="saved_card" value="<?php echo $key; ?>">
+                                            <label class="article-lable" for="card_<?php echo $key; ?>"><h5><?php echo ($data['brand'] ?? '').' - '. ($data['last4'] ?? ''); ?></h5></label>
+                                        </div>
+                                        <?php $i++; ?>
+                                    <?php endforeach; ?>
+                                    <div>
+                                        <input id="card_0" class='user-card' <?php echo ($i == 1) ? 'checked' : '' ?> type="radio" name="saved_card" value="0">
+                                        <label class="article-lable" for="card_0"><h5>Add New</h5></label>
+                                    </div>
+                                </div>
+                            <?php endif; ?> -->
+
+
 							<div class="form__radio">
 								<label for="stripe"><svg class="icon">
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
@@ -206,9 +224,13 @@
 									<?php 
 										$mainTotalPrice = $totalPrice + $service_fee;
 									?>
-									<b id="totalPrice"><?php echo '£'.number_format($mainTotalPrice,2); ?></b>
+									<b id="totalPrice">
+										<?php echo '£'.number_format($mainTotalPrice,2); ?>
+									</b>	
 								</li>
 							</ul>
+							
+							<input type="hidden" name="pay_intent" id="pay_intent">
 
 							<div class="form-group" style="margin-top:15px;">
 								<div class="row">
@@ -225,6 +247,17 @@
 	</div>
 </div>
 
+<div class="modal fade" id="stripe-payment-success-3ds" role="dialog" aria-labelledby="stripe-payment-success-3ds" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="payment-process-content loader-spinner">Loading...</div>
+                <h3 class="payment-process-content">Please wait! while we verify your payment.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
   	require_once('application/libraries/stripe-php-7.49.0/init.php');
 ?>
@@ -239,327 +272,414 @@
 	            $('#card-detail').hide();            
 	        }
 	    });
-	});
 
-	$('#codeApply').on('click', function(){
-		var promo_code= $('#promo_code').val();
-
-		$.ajax({
-	        url: "<?= site_url().'checkout/checkPromoCode'; ?>", 
-	        type: "POST", 
-	        data: {"promo_code":promo_code},
-	        dataType: 'json',
-	        success: function (data) {
-	        	console.log(data);
-	        	if(data.status == 1){
-	        		swal({
-			            title: "Promo Code Applied",
-			            text: data.message,
-			            type: "success"
-			        }, function() {
-			        	$('#discountVal').text('£'+data.discount);
-	        			$('#totalPrice').text('£'+data.discounted_amount);
-			            $('#promo_code').prop('readonly', true);
-			            $('#codeApply').addClass('hide');
-			            $('#codeRemove').removeClass('hide');			            
-			        });
-
-	        		// $('#pcodeErrMsg').remove();
-	        		// $('#discountMsg').html(data.message);
-	        		// $('#discountMsgDiv').show();
-	        		
-	        	}else{
-	        		swal({
+	    $('#codeApply').on('click', function(){
+			var promo_code= $('#promo_code').val();
+			$.ajax({
+		        url: "<?= site_url().'checkout/checkPromoCode'; ?>", 
+		        type: "POST", 
+		        data: {"promo_code":promo_code},
+		        dataType: 'json',
+		        success: function (data) {
+		        	if(data.status == 1){
+		        		swal({
+				            title: "Promo Code Applied",
+				            text: data.message,
+				            type: "success"
+				        }, function() {
+				        	$('#discountVal').text('£'+data.discount);
+		        			$('#totalPrice').text('£'+data.discounted_amount);
+				            $('#promo_code').prop('readonly', true);
+				            $('#codeApply').addClass('hide');
+				            $('#codeRemove').removeClass('hide');			            
+				        });	        		
+		        	}else{
+		        		swal({
+				            title: "Error",
+				            text: "Invalid Promocode",
+				            type: "error"
+				        }, function() {
+				            $('#promo_code').val('');
+				            $('#discountVal').text('-');
+		        			$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
+				        });
+		        	}            
+		        },
+		        error:function(e){
+		            swal({
 			            title: "Error",
-			            text: "Invalid Promocode",
+			            text: "Somethig is wrong. Try again!!!",
 			            type: "error"
 			        }, function() {
 			            $('#promo_code').val('');
-			            $('#discountVal').text('-');
-	        			$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
 			        });
+		        }
+		    }); 
+		});
 
-	        		// $('#pcodeErrMsg').remove();
-	        		// $('#discountMsg').text('');
-	        		// $('#discountMsgDiv').hide();
-	        		// $('#promoCodeLi').after('<li id="pcodeErrMsg" class="text-danger">'+data.message+'</li>');
-	        	}            
-	        },
-	        error:function(e){
-	            swal({
-		            title: "Error",
-		            text: "Somethig is wrong. Try again!!!",
-		            type: "error"
-		        }, function() {
-		            $('#promo_code').val('');
-		        });
-	        }
-	    }); 
-	});
-
-	$('#codeRemove').on('click', function(){
-		swal({
-            title: "Confirm?",
-            text: "Are you sure you want to remove this promo code?",
-            type: "warning",
-            showCancelButton: true,
-	        confirmButtonText: 'Yes',
-	        cancelButtonText: 'Cancel'
-        }, function() {
-            $('#promo_code').val('');
-            $('#discountVal').text('-');
-			$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
-			$('#promo_code').prop('readonly', false);
-            $('#codeApply').removeClass('hide');
-            $('#codeRemove').addClass('hide');
-        });
-	});
-
-	$('#checkoutBtn').on('click', function(){
-		$('#checkoutBtn').disabled = true;
-        var pMethod = $('input[name="payment_method"]:checked').val();
-        if(pMethod != undefined){
-        	$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
-        	$('#formErrors').closest('.col-sm-12').removeClass('mb-4');
-            $('#formErrors').fadeOut();
-
-        	swal({
-	            title: "Confirm Order",
-	            text: "Are you sure you want to place this order?",
+		$('#codeRemove').on('click', function(){
+			swal({
+	            title: "Confirm?",
+	            text: "Are you sure you want to remove this promo code?",
 	            type: "warning",
 	            showCancelButton: true,
-		        confirmButtonText: 'Place Order',
+		        confirmButtonText: 'Yes',
 		        cancelButtonText: 'Cancel'
 	        }, function() {
-	    		if (pMethod == 'wallet') {
-	    			var promo_code = $('#promo_code').val();
-		           	$('#loader').removeClass('hide');
-
-	    			$.ajax({
-		                url: '<?= site_url().'checkout/placeOrder'; ?>',
-		                type: 'POST',
-		                data: {'payment_method':pMethod, 'promo_code':promo_code},
-		                dataType: 'json',		                
-		                success: function(result) {
-		                	$('#loader').addClass('hide');
-		                	if(result.status == 0){
-		                		swal({
-					            	title: "Error",
-						            text: result.message,
-						            type: "error"
-						        });	
-		                	}else if(result.status == 2){
-		                		swal({
-						            title: "Login Required!",
-						            text: "If you want to order the please login first!",
-						            type: "warning"
-						        }, function() {
-						            window.location.href = '<?php echo base_url().'login'; ?>';
-						        });	
-		                	}else{
-								swal({
-						            title: "Success",
-						            text: result.message,
-						            type: "success"
-						        }, function() {
-						        	window.location.href = '<?php echo base_url(""); ?>';
-						        });
-		                	}		                    
-		                },
-		                error: function(xhr, status, error) {
-		                    // Handle error
-		                }
-		            });
-		        }
-		        else{
-		            var savedCard = $('input[name="save_card"]:checked').val();
-		            if(savedCard != undefined && savedCard != 0){
-	                    payWithOldCard();
-	                } else {
-	                    payWithStripe();
-	                }
-		        } 	
+	            $('#promo_code').val('');
+	            $('#discountVal').text('-');
+				$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
+				$('#promo_code').prop('readonly', false);
+	            $('#codeApply').removeClass('hide');
+	            $('#codeRemove').addClass('hide');
 	        });
-        }else{
-    		$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
-    		$('#formErrors').closest('.col-sm-12').addClass('mb-4');
-            $('#formErrors').fadeIn();
-            return false;
-    	}
-	});
+		});
 
-	/*Strope Code Start*/
+		$('#checkoutBtn').on('click', function(){
+			$('#checkoutBtn').disabled = true;
+	        var pMethod = $('input[name="payment_method"]:checked').val();
+	        
+	        if(pMethod != undefined){
+	        	$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
+	        	$('#formErrors').closest('.col-sm-12').removeClass('mb-4');
+	            $('#formErrors').fadeOut();
 
-	var stripePublishableKey = '<?php echo $this->config->item('stripe_key');?>';
-    var stripe = Stripe(stripePublishableKey);
-    var elements = stripe.elements();
-    var style = {
-        base: {
-            color: "#000000",
-            fontSize: '18px',		   
-            "::placeholder": {
-                color: "#aab7c4"
-            }
-        },
-        invalid: {
-            color: "#fa755a",
-            iconColor: "#fa755a"
-        },
-    };
+	        	swal({
+		            title: "Confirm Order",
+		            text: "Are you sure you want to place this order?",
+		            type: "warning",
+		            showCancelButton: true,
+			        confirmButtonText: 'Place Order',
+			        cancelButtonText: 'Cancel'
+		        }, function() {
+		    		if (pMethod == 'wallet') {
+		    			var promo_code = $('#promo_code').val();
+			           	$('#loader').removeClass('hide');
 
-    var cardNumber = elements.create('cardNumber', {
-        style: style,
-        showIcon: true,
-        iconStyle : 'solid',
-        placeholder : 'Ex. 0000 0000 0000 0000'
-    });
-    cardNumber.mount('#card-number-element');
+		    			$.ajax({
+			                url: '<?= site_url().'checkout/placeOrder'; ?>',
+			                type: 'POST',
+			                data: {'payment_method':pMethod, 'promo_code':promo_code},
+			                dataType: 'json',		                
+			                success: function(result) {
+			                	$('#loader').addClass('hide');
+			                	if(result.status == 0){
+			                		swal({
+						            	title: "Error",
+							            text: result.message,
+							            type: "error"
+							        });	
+			                	}else if(result.status == 2){
+			                		swal({
+							            title: "Login Required!",
+							            text: "If you want to order the please login first!",
+							            type: "warning"
+							        }, function() {
+							            window.location.href = '<?php echo base_url().'login'; ?>';
+							        });	
+			                	}else{
+									swal({
+							            title: "Success",
+							            text: result.message,
+							            type: "success"
+							        }, function() {
+							        	window.location.href = '<?php echo base_url(""); ?>';
+							        });
+			                	}		                    
+			                },
+			                error: function(xhr, status, error) {
+			                    // Handle error
+			                }
+			            });
+			        }
+			        else{
+			            var savedCard = $('input[name="saved_card"]:checked').val();
+			            if(savedCard != undefined && savedCard != 0){
+		                    payWithOldCard();
+		                } else {
+		                    payWithStripe();
+		                }
+			        } 	
+		        });
+	        }else{
+	    		$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
+	    		$('#formErrors').closest('.col-sm-12').addClass('mb-4');
+	            $('#formErrors').fadeIn();
+	            return false;
+	    	}
+		});
 
-    var cardExpiry = elements.create('cardExpiry', {
-        style: style
-    });
-    cardExpiry.mount('#card-expiry-element');
+		/*Strope Code Start*/
 
-    var cardCvc = elements.create('cardCvc', {
-        style: style
-    });
-    cardCvc.mount('#card-cvc-element');
+		var stripePublishableKey = '<?php echo $this->config->item('stripe_key');?>';
+	    var stripe = Stripe(stripePublishableKey);
+	    var elements = stripe.elements();
+	    var style = {
+	        base: {
+	            color: "#000000",
+	            fontSize: '18px',		   
+	            "::placeholder": {
+	                color: "#aab7c4"
+	            }
+	        },
+	        invalid: {
+	            color: "#fa755a",
+	            iconColor: "#fa755a"
+	        },
+	    };
 
-    var postalCode = elements.create('postalCode', {
-        style: style
-    });
-    postalCode.mount('#postal-code-element');
+	    var cardNumber = elements.create('cardNumber', {
+	        style: style,
+	        showIcon: true,
+	        iconStyle : 'solid',
+	        placeholder : 'Ex. 0000 0000 0000 0000'
+	    });
+	    cardNumber.mount('#card-number-element');
 
-    // Handle real-time validation errors from the card Elements.
-    [cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
-       element.on('change', function(event) {
-            if (event.error) {
-                $('#StripePaymentErrors').text(event.error.message).parent('div').addClass('alert alert-danger');
-                $('#StripePaymentErrors').fadeIn();
-            } else {
-                $('#StripePaymentErrors').text('').parent('div').removeClass('alert alert-danger');
-                $('#StripePaymentErrors').fadeOut();
-            }
-        });
-    });
+	    var cardExpiry = elements.create('cardExpiry', {
+	        style: style
+	    });
+	    cardExpiry.mount('#card-expiry-element');
 
-    async function payWithStripe() {
-        $('#loader').removeClass('hide');
+	    var cardCvc = elements.create('cardCvc', {
+	        style: style
+	    });
+	    cardCvc.mount('#card-cvc-element');
 
-        var {token, error} = await stripe.createToken(cardNumber);
+	    var postalCode = elements.create('postalCode', {
+	        style: style
+	    });
+	    postalCode.mount('#postal-code-element');
 
-        if (error) {
-            $('#loader').addClass('hide');
-            var code = error.code ? error.code : '';
-            var message = error.message ? error.message : '';
-            if(code && message){
-                $('#StripePaymentErrors').text(message);
-                $('#StripePaymentErrors').fadeIn();
-                $('.error-card').text('');
-                $('.'+code).text(message);
-            }
-            return;
-        }
+	    // Handle real-time validation errors from the card Elements.
+	    [cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
+	       element.on('change', function(event) {
+	            if (event.error) {
+	                $('#StripePaymentErrors').text(event.error.message).parent('div').addClass('alert alert-danger');
+	                $('#StripePaymentErrors').fadeIn();
+	            } else {
+	                $('#StripePaymentErrors').text('').parent('div').removeClass('alert alert-danger');
+	                $('#StripePaymentErrors').fadeOut();
+	            }
+	        });
+	    });
 
-        stripe.createPaymentMethod({
-            type: 'card',
-            card: cardNumber,
-        }).then(stripePaymentMethodHandler);
-    }
+	    async function payWithStripe() {
+	        $('#loader').removeClass('hide');
 
-    function payWithOldCard() {
-        var intentId = $('input[name="saved_card"]:checked').val();
-        $("#stripe-payment-success-3ds").modal('show');
-        var firstName = $('#first_name_0').val();
-        var lastName = $('#last_name_0').val();
-        var email = $('#email').val();
-        var userName = firstName + ' ' + lastName;
-        var address = $('#address_line1_0').val();
-        var country = $('#country_0').val();
-        var state = $('#state_0').val();
-        var city = $('#city_0').val();
-        var pincode = $('#pincode_0').val();
-        var saveCard = $('#saveForLater').is(':checked');
-        var addressId = $('.addresses-radio:checked').val();
+	        // console.log(cardNumber);
 
-        var tockenName = getTockenName();
-        var tockenValue = getTockenValue();
-        var dataObj = {
-            payment_method_id: intentId,
-            userName: userName,
-            email: email,
-            address: address,
-            country: country,
-            state: state,
-            city: city,
-            pincode: pincode,
-            addressId: addressId,
-            saveCard: saveCard,
-        };
-        dataObj[tockenName] = tockenValue;
+	        var {token, error} = await stripe.createToken(cardNumber);
 
-        $.ajax({
-            url: baseUrl + '/payment/process-payment',
-            type: 'POST',
-            dataType: 'json',
-            data: dataObj,
-            success: function(result) {
-                handleServerResponse(result);
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-            }
-        }).always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-            updateCsrfToken();
-        });
-    }
+	        if (error) {
+	            $('#loader').addClass('hide');
+	            var code = error.code ? error.code : '';
+	            var message = error.message ? error.message : '';
+	            if(code && message){
+	                $('#StripePaymentErrors').text(message);
+	                $('#StripePaymentErrors').fadeIn();
+	                $('.error-card').text('');
+	                $('.'+code).text(message);
+	            }
+	            return;
+	        }
 
-    function stripePaymentMethodHandler(result) {
-        $('#loader').addClass('hide');
-        if (result.error) {
-            // Show error in payment form
-            $('#StripePaymentErrors').text(result.error.message);
-            $('#StripePaymentErrors').fadeIn();
-            $("#stripe-payment-success-3ds").modal('hide');
-        } else {
-            $("#stripe-payment-success-3ds").modal('show');
-            var promo_code = $('#promo_code').val();
-            var saveCard = $('#Save_Card').is(':checked');;
-            
+	        stripe.createPaymentMethod({
+	            type: 'card',
+	            card: cardNumber,
+	        }).then(stripePaymentMethodHandler);
+	    }
+
+	    function payWithOldCard() {
+	    	$('#loader').removeClass('hide');
+
+	        var intentId = $('input[name="saved_card"]:checked').val();
+	        var saveCard = $('#Save_Card').is(':checked');;
+	        $("#stripe-payment-success-3ds").modal('show');
+	        
+	        var pMethod = $('input[name="payment_method"]:checked').val();
+            var price = $('#totalPrice').text().trim();
+            var mainPrice = price.replace("£", "");
+
             var dataObj = {
-                payment_method_id: result.paymentMethod.id,
+                payment_method: pMethod,
+                payment_method_id: intentId,
                 promo_code: promo_code,
                 saveCard: saveCard,
+                mainPrice: mainPrice,
             };
 
-            var pMethod = $('input[name="payment_method"]:checked').val();
+	        $.ajax({
+	            url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
+	            type: 'POST',
+	            dataType: 'json',
+	            data: dataObj,
+	            success: function(result) {
+	                handleServerResponse(result);
+	            },
+	            error: function(xhr, status, error) {
+	                // Handle error
+	            }
+	        }).always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+	            updateCsrfToken();
+	        });
+	    }
 
-            $.ajax({
-                url: '<?= site_url().'checkout/placeOrder'; ?>',
-                type: 'POST',
-                 data: {'payment_method':pMethod, 'payment_method_id': payment_method_id, 'promo_code':promo_code, 'saveCard': saveCard},
-                dataType: 'json',                
-                success: function(result) {
-                	if(result.status == 2){
-                		swal({
+	    function stripePaymentMethodHandler(result) {
+	        $('#loader').addClass('hide');
+	        if (result.error) {
+	            // Show error in payment form
+	            $('#StripePaymentErrors').text(result.error.message);
+	            $('#StripePaymentErrors').fadeIn();
+	            $("#stripe-payment-success-3ds").modal('hide');
+	        } else {
+	            $("#stripe-payment-success-3ds").modal('show');
+	            var promo_code = $('#promo_code').val();
+	            var saveCard = $('#Save_Card').is(':checked');;
+	            
+	            var dataObj = {
+	                payment_method_id: result.paymentMethod.id,
+	                promo_code: promo_code,
+	                saveCard: saveCard,
+	            };
+
+	            var pMethod = $('input[name="payment_method"]:checked').val();
+	            var price = $('#totalPrice').text().trim();
+	            var mainPrice = price.replace("£", "");
+
+	            var dataObj = {
+	                payment_method_id: result.paymentMethod.id,
+	                payment_method: pMethod,
+	                promo_code: promo_code,
+	                saveCard: saveCard,
+	                mainPrice: mainPrice,
+	            };
+
+	            $.ajax({
+	                url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
+	                type: 'POST',
+	                data: dataObj,
+	                dataType: 'json',                
+	                success: function(result) {
+	                	if(result.status == 2){
+	                		swal({
+					            title: "Login Required!",
+					            text: "If you want to order the please login first!",
+					            type: "warning"
+					        }, function() {
+					            window.location.href = '<?php echo base_url().'login'; ?>';
+					        });	
+	                	}else{
+	                		handleServerResponse(result);	
+	                	}
+	                },
+	                error: function(xhr, status, error) {
+	                    // Handle error
+	                }
+	            });
+	        }
+	    }
+
+	    function handleServerResponse(response) {
+	        if (response.error) {
+	            $("#stripe-payment-success-3ds").modal('hide');
+	            swal("Error", response.error, "error");
+	            $("#pay_intent").val('');
+	            // Show error from server on payment form
+	        } else if (response.requires_action) {
+	            stripe.confirmCardPayment(
+	                response.payment_intent_client_secret
+	            ).then(handleStripeJsResult);
+	        } else {
+	            // Show success message
+	            $("#stripe-payment-success-3ds").modal('show');
+	            payment_intent_ID = response.intent;
+	            $("#pay_intent").val(payment_intent_ID);
+	            $("#stripe-payment-success-3ds").modal('hide');
+	            submitForm();
+	        }
+	    }
+
+	    function handleStripeJsResult(result) {
+	        //console.log(result);
+	        if (result.error) {
+	            $("#stripe-payment-success-3ds").modal('hide');
+	            swal("Error", result.error.message, "error");
+	        } else {
+	        	payment_intent_ID = result.paymentIntent.id;
+		        var pMethod = $('input[name="payment_method"]:checked').val();
+	            var price = $('#totalPrice').text().trim();
+	            var mainPrice = price.replace("£", "");
+
+	            var dataObj = {
+	                payment_intent_id: result.paymentIntent.id,
+	                payment_method: pMethod,
+	                promo_code: promo_code,
+	                saveCard: saveCard,
+	                mainPrice: mainPrice,
+	            };
+
+	            $.ajax({
+	                url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
+	                type: 'POST',
+	                dataType: 'json',
+	                data: dataObj,
+	                success: function(confirmResult) {
+	                    handleServerResponse(confirmResult);
+	                },
+	                error: function(xhr, status, error) {
+	                    // Handle the error if needed
+	                    console.error('AJAX request failed:', status, error);
+	                }
+	            });
+	        }
+	    }
+
+	    function submitForm(){
+	        $('#loader').removeClass('hide');
+	        formData = $("#checkoutForm").serialize();
+
+	        $.ajax({
+	            url: '<?= site_url().'checkout/placeOrder'; ?>',
+	            type: 'POST',
+	            data: formData,
+	            dataType: 'json',		                
+	            success: function(result) {
+	            	$('#loader').addClass('hide');
+	            	if(result.status == 0){
+	            		swal({
+			            	title: "Error",
+				            text: result.message,
+				            type: "error"
+				        });	
+	            	}else if(result.status == 2){
+	            		swal({
 				            title: "Login Required!",
 				            text: "If you want to order the please login first!",
 				            type: "warning"
 				        }, function() {
 				            window.location.href = '<?php echo base_url().'login'; ?>';
 				        });	
-                	}else{
-                		handleServerResponse(result);	
-                	}
-                },
-                error: function(xhr, status, error) {
-                    // Handle error
-                }
-            });
-        }
-    }
+	            	}else{
+						swal({
+				            title: "Success",
+				            text: result.message,
+				            type: "success"
+				        }, function() {
+				        	window.location.href = '<?php echo base_url(""); ?>';
+				        });
+	            	}		                    
+	            },
+	            error: function(xhr, status, error) {
+	                // Handle error
+	            }
+	        });
+	    }
 
-	/*Strope Code End*/
+		/*Strope Code End*/
+	});
+
+
 
 </script>
 <?php include ("include/footer.php") ?>

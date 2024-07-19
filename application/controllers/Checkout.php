@@ -51,12 +51,20 @@ class Checkout extends CI_Controller
 			redirect('dashboard');
 		}
 
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}
+
+		$uId = $this->session->userdata('user_id');
+
 		$this->session->set_userdata('previous_url', current_url());
 
 		$latestCartId = $this->session->userdata('latest_cartId');
 		$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
 
-		$sId = $service_id;
+		$sId = $cartData['service_id'];
 		$prices = 0;
 		$totalPrice = 0;
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
@@ -73,8 +81,11 @@ class Checkout extends CI_Controller
 			$prices = array_column($data['ex_services'], 'price');
 			$totalPrice = array_sum($prices);	
 		}
+
 		$data['exIds'] = $exsId;
 		$data['totalPrice'] = $totalPrice + $data['service_details']['price'];
+		$data['userCardData'] = $this->getCardData($uId);
+
 		$this->load->view('site/checkout',$data);
 	}
 
@@ -93,8 +104,7 @@ class Checkout extends CI_Controller
 		$latestCartId = $this->session->userdata('latest_cartId');
 		$pcode = $this->input->post('promo_code');
 		$promo_code = $this->common_model->get_single_data('promo_code',array('code'=>$pcode,'status'=>'active'));
-		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
-
+		
 		if(empty($promo_code)){
 			$data['status'] = 0;
 			$data['message'] = 'Invalid Promo Code';
@@ -102,6 +112,7 @@ class Checkout extends CI_Controller
 			exit;
 		}else{
 			$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
+			$service_id = $cartData['service_id'];
 			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 			$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
 			if(!empty($exsId)){
@@ -116,36 +127,40 @@ class Checkout extends CI_Controller
 			}
 			$total_amount = $totalPrice + $service_details['price'];
 
-			if($promo_code['is_limited'] == 'yes'){
-				$is_allowed = $promo_code['limited_user'] > $promo_code['exceeded_limit'] ? 1 : 0;
-			}else{
-				$is_allowed = 1;
-			}
+			$result = $this->getDiscount($promo_code, $total_amount, 0);
 
-			if($is_allowed == 1){
-				if($promo_code['discount_type'] == 'flat'){
-					$discount = $promo_code['discount'];
-					$msg = ' Enjoy £'.$discount.' on your order!';
-					$msg = 'Enjoy a discount of £'.$discount.' on your order!';
-				}else{
-					$discount = ($total_amount * $promo_code['discount']) / 100;
-					$msg = 'Enjoy a discount of '.$promo_code['discount'].'% on your order!';
-				}
-				$discounted_amount = $total_amount - $discount;
-
-				$data['status'] = 1;
-				$data['message'] = $msg;
-				$data['discount'] = number_format($discount,2);
-				$data['discounted_amount'] = number_format(($discounted_amount+ $setting['service_fees']),2);
-				echo json_encode($data);
-				exit;
-			}else{
-				$data['status'] = 0;
-				$data['message'] = 'Invalid Promo Code';
-				echo json_encode($data);
-				exit;
-			}
+			echo json_encode($result);
+			exit;
 		}		
+	}
+
+	public function getDiscount($promo_code, $total_amount, $serviceFee=0){
+		if($promo_code['is_limited'] == 'yes'){
+			$is_allowed = $promo_code['limited_user'] > $promo_code['exceeded_limit'] ? 1 : 0;
+		}else{
+			$is_allowed = 1;
+		}
+
+		if($is_allowed == 1){
+			if($promo_code['discount_type'] == 'flat'){
+				$discount = $promo_code['discount'];
+				$msg = ' Enjoy £'.$discount.' on your order!';
+				$msg = 'Enjoy a discount of £'.$discount.' on your order!';
+			}else{
+				$discount = ($total_amount * $promo_code['discount']) / 100;
+				$msg = 'Enjoy a discount of '.$promo_code['discount'].'% on your order!';
+			}
+			$discounted_amount = $total_amount - $discount;
+
+			$data['status'] = 1;
+			$data['message'] = $msg;
+			$data['discount'] = number_format($discount,2);
+			$data['discounted_amount'] = number_format(($discounted_amount + $serviceFee),2);
+		}else{
+			$data['status'] = 0;
+			$data['message'] = 'Invalid Promo Code';			
+		}
+		return $data;
 	}
 
 	public function placeOrder(){
@@ -205,30 +220,13 @@ class Checkout extends CI_Controller
 		$is_allowed = 0;
 
 		if(!empty($pcode)){
-			if(!empty($promo_code)){
-				if($promo_code['is_limited'] == 'yes'){
-					$is_allowed = $promo_code['limited_user'] > $promo_code['exceeded_limit'] ? 1 : 0;
+			$result = $this->getDiscount($promo_code, $total_amount, $setting['service_fees']);
 
-					if($is_allowed == 1){
-						$input['exceeded_limit'] = $promo_code['exceeded_limit'] + 1;
-						$this->common_model->update('promo_code',array('id'=>$promo_code['id']),$input);
-					}
-				}else{
-					$is_allowed = 1;
-				}
-
-				if($is_allowed == 1){
-					if($promo_code['discount_type'] == 'flat'){
-						$discount = $promo_code['discount'];				
-					}else{
-						$discount = ($total_amount * $promo_code['discount']) / 100;
-					}
-					$discounted_amount = $total_amount - $discount;	
-				}
+			if($result['status'] == 1){
+				$discount = $result['discount'];
+				$discounted_amount = $result['discounted_amount'];
 			}else{
-				$data['status'] = 0;
-				$data['message'] = 'Invalid Promo Code';
-				echo json_encode($data);
+				echo json_encode($result);
 				exit;
 			}
 		}
@@ -246,84 +244,7 @@ class Checkout extends CI_Controller
 				$is_proceed = 1;
 			}	
 		}else{
-			//stripe code
-
-			echo '<pre>';
-			print_r($_POST);
-			exit;
-
-			require_once('application/libraries/stripe-php-7.49.0/init.php');
-			header('Content-Type: application/json');
-
-			$payment_method_id = $this->input->post('payment_method_id');
-	        $stripeSecretKey = $this->config->item('stripe_secret');
-	        \Stripe\Stripe::setApiKey($stripeSecretKey);
-
-	        $userName =  $users['f_name'] ?? '' .' '. $users['l_name'] ?? '' ;
-	        $userEmail = $users['email'] ?? '';
-
-	        if(isset($userData['stripe_customer_id']) && $userData['stripe_customer_id']){
-            	$stripeCustomerId = $userData['stripe_customer_id'];
-	        } else {
-	            // Add customer to stripe
-	            try {  
-	                $customer = \Stripe\Customer::create([ 
-	                    'name' => $userName, 
-	                    'email' => $userEmail
-	                ]); 
-	            }catch(Exception $e) {  
-	                $api_error = $e->getMessage();  
-	            }
-	            if(empty($api_error) && $customer){
-	                $stripeCustomerId = $customer->id;
-	                $input['stripe_customer_id'] = $customer->id;
-	                $this->common_model->update('users',array('id'=>$users['id']),$input);
-
-	            }else{
-	                http_response_code(500);
-	                echo json_encode(['error' => $api_error]);
-	            }
-	        }
-
-	        $intent = null;
-        	try {
-	            if (isset($payment_method_id) && $mainPrice) {
-	                $amount = ($mainPrice * 100);
-
-	                $isAddNewCard = $this->getAllowToAddNewCard($json_obj, $stripeCustomerId);
-	                if($isAddNewCard){
-	                    $paymentMethod = \Stripe\PaymentMethod::retrieve($json_obj->payment_method_id);
-	                    $paymentMethod->attach(['customer' => $stripeCustomerId]);
-	                }
-
-	                # Create the PaymentIntent
-	                $intent = \Stripe\PaymentIntent::create([
-	                    'payment_method' => $json_obj->payment_method_id,
-	                    'amount' => $amount,
-	                    'description' => 'Ecommerce user purchase Product.',
-	                    'currency' => 'usd',
-	                    'confirm' => true,
-	                    'customer' => $stripeCustomerId,
-	                    'automatic_payment_methods' => [
-	                        'enabled' => true,
-	                        'allow_redirects' => 'never',
-	                    ]
-	                ]);
-	            }
-	            if (isset($json_obj->payment_intent_id)) {
-	                $intent = \Stripe\PaymentIntent::retrieve(
-	                    $json_obj->payment_intent_id
-	                );
-	            }
-	            $this->generateResponse($intent);
-	        } catch (\Stripe\Exception\ApiErrorException $e) {
-	            # Display error on client
-	            addPaymentLog("Error: ");
-	            addPaymentLog($e->getMessage());
-	            echo json_encode([
-	                'error' => $e->getMessage(),
-	            ]);
-	        }
+			$is_proceed = 1;
 		}
 
 		if($is_proceed == 1){
@@ -337,8 +258,9 @@ class Checkout extends CI_Controller
 			$insert['discount'] = $discount;
 			$insert['total_price'] = $mainPrice;
 			$insert['payment_method'] = $payment_method;
-			$insert['payment_status'] = $payment_method == 'wallet' ? 'paid' : 'pending';
-			$insert['transaction_id'] = $transactionid;
+			$insert['payment_status'] = 'paid';
+			$insert['transaction_id'] = $transactionid ?? '';
+			$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';
 			$insert['status'] = 'placed';
 			$newOrder = $this->common_model->insert('service_order', $insert);
 
@@ -394,8 +316,101 @@ class Checkout extends CI_Controller
 				$data['message'] = 'Your order placed succesfully';
 				echo json_encode($data);
 				exit;
+			}else{
+				$data['status'] = 0;
+				$data['message'] = 'Something is wrong. Your order is not placed';
+				echo json_encode($data);
+				exit;
 			}
 		}
+	}
+
+	public function placeOrderWithStripe($value=''){
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}
+
+		//stripe code
+		require_once('application/libraries/stripe-php-7.49.0/init.php');
+		header('Content-Type: application/json');
+
+		$uId = $this->session->userdata('user_id');
+		$users=$this->common_model->get_single_data('users',array('id'=>$uId));
+
+		$json_obj = (object) $this->input->post();
+
+		$mainPrice = $this->input->post('mainPrice');
+		$payment_method_id = $this->input->post('payment_method_id');
+        $stripeSecretKey = $this->config->item('stripe_secret');
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+        $userName =  $users['f_name'] ?? '' .' '. $users['l_name'] ?? '' ;
+        $userEmail = $users['email'] ?? '';
+
+        if(isset($userData['stripe_customer_id']) && $userData['stripe_customer_id']){
+        	$stripeCustomerId = $userData['stripe_customer_id'];
+        } else {
+            // Add customer to stripe
+            try {  
+                $customer = \Stripe\Customer::create([ 
+                    'name' => $userName, 
+                    'email' => $userEmail
+                ]); 
+            }catch(Exception $e) {  
+                $api_error = $e->getMessage();  
+            }
+
+            if(empty($api_error) && $customer){
+                $stripeCustomerId = $customer->id;
+                $input['stripe_customer_id'] = $customer->id;
+                $this->common_model->update('users',array('id'=>$users['id']),$input);
+
+            }else{
+                http_response_code(500);
+                echo json_encode(['error' => $api_error]);
+            }
+        }
+
+        $intent = null;
+    	try {
+            if (isset($payment_method_id) && $mainPrice) {
+                $amount = ($mainPrice * 100);
+
+                $isAddNewCard = $this->getAllowToAddNewCard($json_obj, $stripeCustomerId);
+
+                if($isAddNewCard){
+                    $paymentMethod = \Stripe\PaymentMethod::retrieve($payment_method_id);
+                    $paymentMethod->attach(['customer' => $stripeCustomerId]);
+                }
+
+                # Create the PaymentIntent
+                $intent = \Stripe\PaymentIntent::create([
+                    'payment_method' => $payment_method_id,
+                    'amount' => $amount,
+                    'description' => 'Service purchase from Tradespeople Hub',
+                    'currency' => 'usd',
+                    'confirm' => true,
+                    'customer' => $stripeCustomerId,
+                    'automatic_payment_methods' => [
+                        'enabled' => true,
+                        'allow_redirects' => 'never',
+                    ]
+                ]);
+            }
+            if (isset($json_obj->payment_intent_id)) {
+                $intent = \Stripe\PaymentIntent::retrieve(
+                    $json_obj->payment_intent_id
+                );
+            }
+            $this->generateResponse($intent);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            # Display error on client
+            echo json_encode([
+                'error' => $e->getMessage(),
+            ]);
+        }
 	}
 
 	public function getAllowToAddNewCard($json_obj, $customerId) {
@@ -404,11 +419,16 @@ class Checkout extends CI_Controller
             return false;
         }
         $paymentId = $json_obj->payment_method_id;
-        require_once('./vendor/stripe/stripe-php/init.php');
-        $stripeSecretKey = $this->Settings_model->getStripeSecretKey();
+
+       
+
+        require_once('application/libraries/stripe-php-7.49.0/init.php');
+        $stripeSecretKey = $this->config->item('stripe_secret');
         \Stripe\Stripe::setApiKey($stripeSecretKey);
 
         $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentId);
+
+
 
         if(empty($paymentMethod) || !isset($paymentMethod['card'])){
             return false;
@@ -429,7 +449,107 @@ class Checkout extends CI_Controller
         return true;
     }
 
+    public function generateResponse($intent)
+    {
+        # Note that if your API version is before 2019-02-11, 'requires_action'
+        # appears as 'requires_source_action'.
+        if ($intent->status == 'requires_action' &&
+            $intent->next_action->type == 'use_stripe_sdk') {
+            # Tell the client to handle the action
+            echo json_encode([
+                'requires_action' => true,
+                'payment_intent_client_secret' => $intent->client_secret,
+            ]);
+        } else if ($intent->status == 'requires_capture') {
+            # The payment didn’t complated yed need to capture letter with intent id!
+            # Handle post-payment fulfillment
+            echo json_encode([
+                "success" => true,
+                "intent" => $intent->id
+            ]);
+        } else if ($intent->status == 'succeeded') {
+            # The payment didn’t need any additional actions and completed!
+            # Handle post-payment fulfillment
+            echo json_encode([
+                "success" => true,
+                "intent" => $intent->id
+            ]);
+        } else {
+            # Invalid status
+            http_response_code(500);
+            echo json_encode(['error' => 'Invalid PaymentIntent status','instent_status'=> $intent->status]);
+        }
+    }
+
 	public function thankyou(){
 		$this->load->view('site/thankyou');
 	}
+
+	public function getCardData($userId) {
+        if(!$userId){
+            return [];
+        }
+        $userData = $this->common_model->get_single_data('users',array('id'=>$userId));
+        $customerId = $userData['stripe_customer_id'] ?? '';
+        if(!$customerId){
+            return [];
+        }
+        require_once('application/libraries/stripe-php-7.49.0/init.php');
+        $stripeSecretKey = $this->config->item('stripe_secret');
+        $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+        $paymentMethods = $stripe->paymentMethods->all([
+            'customer' => $customerId,
+            'type' => 'card',
+        ]);
+
+        if(empty($paymentMethods)){
+            return [];
+        }
+
+        $cardData = [];
+
+        foreach ($paymentMethods as $payment) {
+            $paymentId = $payment['id'] ?? 0;
+            if(!$paymentId){
+                continue;
+            }
+            
+            $brand = $payment['card']['brand'] ?? '';
+            $last4 = $payment['card']['last4'] ?? '';
+
+            $cardData[$paymentId]['brand'] = ucfirst($brand);
+            $cardData[$paymentId]['last4'] = $last4;
+        }
+        
+        return $cardData;
+    }
+
+    public function existingCardData($customerId) {
+        require_once('application/libraries/stripe-php-7.49.0/init.php');
+        $stripeSecretKey = $this->config->item('stripe_secret');
+        $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+        $allPayments = $stripe->paymentMethods->all([
+            'customer' => $customerId,
+            'type' => 'card',
+        ]);
+
+        if(empty($allPayments)){
+            return [];
+        }
+
+        $cardNumbers = [];
+
+        foreach ($allPayments as $cardData) {
+            $cardData = $cardData['card'] ?? [];
+            if(!count($cardData)){
+                continue;
+            }
+
+            $cardNumbers[] = $cardData['last4'];
+        }
+
+        return $cardNumbers;
+    }
 }

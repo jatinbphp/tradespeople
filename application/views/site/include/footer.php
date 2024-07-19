@@ -2241,13 +2241,13 @@ function updateDeviceId(device_id){
   }
   
   let clip = document.querySelector(".serviceVideo") 
-  clip.addEventListener("mouseover", function (e) { 
-      clip.play(); 
-  }) 
+  // clip.addEventListener("mouseover", function (e) { 
+  //     clip.play(); 
+  // }) 
 
-  clip.addEventListener("mouseout", function (e) { 
-      clip.pause(); 
-  })
+  // clip.addEventListener("mouseout", function (e) { 
+  //     clip.pause(); 
+  // })
 
 
   const bar = document.getElementById('bar'),
