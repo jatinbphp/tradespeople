@@ -10001,6 +10001,7 @@ button.switch-month:hover {
     position: relative;
 }
 .great-offer-chat {
+    width: 100%;
     padding: 14px;
     border-radius: 10px;
     overflow: hidden;

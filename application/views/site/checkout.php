@@ -32,22 +32,21 @@
 					<h2 class="title">Select your payment method</h2>
 					<div class="row">
 						<div class="col-sm-12">
-							<!-- <?php if(isset($userCardData) && count($userCardData)): ?>
+							<?php if(isset($userCardData) && count($userCardData)): ?>
+								<h4>Your Saved Card</h4>
                                     <?php $i=1; ?>
+                                    <div class="user-card-box">
                                     <?php foreach($userCardData as $key => $data): ?>
-                                    	<div class="user-card-box">
+                                    	
                                         <div>
-                                            <input id="card_<?php echo $key; ?>" class='user-card' <?php echo ($i == 1) ? 'checked' : '' ?> type="radio" name="saved_card" value="<?php echo $key; ?>">
+                                            <input id="card_<?php echo $key; ?>" class='user-card' type="radio" name="payment_method" value="<?php echo $key; ?>">
                                             <label class="article-lable" for="card_<?php echo $key; ?>"><h5><?php echo ($data['brand'] ?? '').' - '. ($data['last4'] ?? ''); ?></h5></label>
                                         </div>
+                                        
                                         <?php $i++; ?>
-                                    <?php endforeach; ?>
-                                    <div>
-                                        <input id="card_0" class='user-card' <?php echo ($i == 1) ? 'checked' : '' ?> type="radio" name="saved_card" value="0">
-                                        <label class="article-lable" for="card_0"><h5>Add New</h5></label>
-                                    </div>
+                                    <?php endforeach; ?>                                   
                                 </div>
-                            <?php endif; ?> -->
+                            <?php endif; ?>
 
 
 							<div class="form__radio">
@@ -393,12 +392,11 @@
 			            });
 			        }
 			        else{
-			            var savedCard = $('input[name="saved_card"]:checked').val();
-			            if(savedCard != undefined && savedCard != 0){
-		                    payWithOldCard();
-		                } else {
-		                    payWithStripe();
-		                }
+			        	if(pMethod == 'card'){
+			        		payWithStripe();
+			        	}else{
+			        		payWithOldCard();
+			        	}			        	
 			        } 	
 		        });
 	        }else{
@@ -491,23 +489,21 @@
 	    }
 
 	    function payWithOldCard() {
-	    	$('#loader').removeClass('hide');
-
-	        var intentId = $('input[name="saved_card"]:checked').val();
-	        var saveCard = $('#Save_Card').is(':checked');;
-	        $("#stripe-payment-success-3ds").modal('show');
-	        
-	        var pMethod = $('input[name="payment_method"]:checked').val();
-            var price = $('#totalPrice').text().trim();
+	    	var intentId = $('input[name="payment_method"]:checked').val();
+	        var saveCard = $('#Save_Card').is(':checked');
+	        var promo_code = $('#promo_code').val();
+	        var price = $('#totalPrice').text().trim();
             var mainPrice = price.replace("£", "");
 
             var dataObj = {
-                payment_method: pMethod,
+                payment_method: 'card',
                 payment_method_id: intentId,
                 promo_code: promo_code,
                 saveCard: saveCard,
                 mainPrice: mainPrice,
             };
+
+            $("#stripe-payment-success-3ds").modal('show');
 
 	        $.ajax({
 	            url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
@@ -518,10 +514,11 @@
 	                handleServerResponse(result);
 	            },
 	            error: function(xhr, status, error) {
+	            	console.log(xhr);
+	            	console.log(status);
+	            	console.log(error);
 	                // Handle error
 	            }
-	        }).always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-	            updateCsrfToken();
 	        });
 	    }
 
@@ -535,7 +532,7 @@
 	        } else {
 	            $("#stripe-payment-success-3ds").modal('show');
 	            var promo_code = $('#promo_code').val();
-	            var saveCard = $('#Save_Card').is(':checked');;
+	            var saveCard = $('#Save_Card').is(':checked');
 	            
 	            var dataObj = {
 	                payment_method_id: result.paymentMethod.id,
@@ -581,7 +578,7 @@
 	    }
 
 	    function handleServerResponse(response) {
-	        if (response.error) {
+	    	if (response.error) {
 	            $("#stripe-payment-success-3ds").modal('hide');
 	            swal("Error", response.error, "error");
 	            $("#pay_intent").val('');
@@ -608,8 +605,10 @@
 	        } else {
 	        	payment_intent_ID = result.paymentIntent.id;
 		        var pMethod = $('input[name="payment_method"]:checked').val();
+		        var promo_code = $('#promo_code').val();
 	            var price = $('#totalPrice').text().trim();
 	            var mainPrice = price.replace("£", "");
+	            var saveCard = $('#Save_Card').is(':checked');
 
 	            var dataObj = {
 	                payment_intent_id: result.paymentIntent.id,
@@ -636,7 +635,7 @@
 	    }
 
 	    function submitForm(){
-	        $('#loader').removeClass('hide');
+	    	$('#loader').removeClass('hide');
 	        formData = $("#checkoutForm").serialize();
 
 	        $.ajax({

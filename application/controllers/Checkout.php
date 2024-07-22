@@ -341,16 +341,14 @@ class Checkout extends CI_Controller
 
 		$json_obj = (object) $this->input->post();
 
-		$mainPrice = $this->input->post('mainPrice');
-		$payment_method_id = $this->input->post('payment_method_id');
         $stripeSecretKey = $this->config->item('stripe_secret');
         \Stripe\Stripe::setApiKey($stripeSecretKey);
 
         $userName =  $users['f_name'] ?? '' .' '. $users['l_name'] ?? '' ;
         $userEmail = $users['email'] ?? '';
 
-        if(isset($userData['stripe_customer_id']) && $userData['stripe_customer_id']){
-        	$stripeCustomerId = $userData['stripe_customer_id'];
+        if(isset($users['stripe_customer_id']) && $users['stripe_customer_id']){
+        	$stripeCustomerId = $users['stripe_customer_id'];
         } else {
             // Add customer to stripe
             try {  
@@ -375,19 +373,19 @@ class Checkout extends CI_Controller
 
         $intent = null;
     	try {
-            if (isset($payment_method_id) && $mainPrice) {
-                $amount = ($mainPrice * 100);
+            if (isset($json_obj->payment_method_id) && $json_obj->mainPrice) {
+                $amount = ($json_obj->mainPrice * 100);
 
                 $isAddNewCard = $this->getAllowToAddNewCard($json_obj, $stripeCustomerId);
 
                 if($isAddNewCard){
-                    $paymentMethod = \Stripe\PaymentMethod::retrieve($payment_method_id);
+                    $paymentMethod = \Stripe\PaymentMethod::retrieve($json_obj->payment_method_id);
                     $paymentMethod->attach(['customer' => $stripeCustomerId]);
                 }
 
                 # Create the PaymentIntent
                 $intent = \Stripe\PaymentIntent::create([
-                    'payment_method' => $payment_method_id,
+                    'payment_method' => $json_obj->payment_method_id,
                     'amount' => $amount,
                     'description' => 'Service purchase from Tradespeople Hub',
                     'currency' => 'usd',
@@ -418,17 +416,13 @@ class Checkout extends CI_Controller
         if(!$saveForLater || $saveForLater == 'false'){
             return false;
         }
-        $paymentId = $json_obj->payment_method_id;
-
-       
+        $paymentId = $json_obj->payment_method_id;       
 
         require_once('application/libraries/stripe-php-7.49.0/init.php');
         $stripeSecretKey = $this->config->item('stripe_secret');
         \Stripe\Stripe::setApiKey($stripeSecretKey);
 
         $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentId);
-
-
 
         if(empty($paymentMethod) || !isset($paymentMethod['card'])){
             return false;

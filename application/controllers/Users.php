@@ -595,8 +595,10 @@ class Users extends CI_Controller
 		} else {
 			$json['status']=0;
 		}
+		$json['status']=0;
 		echo json_encode($json);
 	}
+
 	public function my_account() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -2844,7 +2846,7 @@ public function exists_refferals() {
 		exit;
 	}
 
-	public function deleteServices($id=""){		
+	public function deleteServices($id=""){
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$id]);
 		if(!empty($service)){
 			unlink('img/services/'.$service['image']);
@@ -2905,7 +2907,6 @@ public function exists_refferals() {
 		$this->session->set_userdata('edit_service_data', $allData);
 	}
 
-
 	public function reserServiceTabData() {
 		$this->session->unset_userdata('service_data');
 		$this->session->unset_userdata('next_step');
@@ -2952,5 +2953,134 @@ public function exists_refferals() {
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Order Not Submitted']);
 		}
+	}
+
+	public function getServiceList(){
+		$uId = $this->input->post('tradesMan');
+		$services = $this->common_model->get_my_service('my_services', $uId);
+		if(!empty($services)){
+			echo json_encode(array('status'=>1, 'services'=>$services));
+			exit;
+		}else{
+			echo json_encode(array('status'=>0));
+			exit;
+		}
+	}
+
+	public function getServiceDetail(){
+		$sId = $this->input->post('sId');
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
+		if(!empty($service)){
+			$exServices = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
+
+			echo json_encode(array('status'=>1,'service'=>$service, 'exServices'=>$exServices));
+			exit;
+		}
+		if(!empty($service)){
+			echo json_encode(array('status'=>0));
+			exit;
+		}
+	}
+
+	public function sendCustomOffer(){
+	    $userid = $this->session->userdata('user_id');
+	    $service_id = $this->input->post('chatServiceId');
+	    $receiver = $this->input->post('chatUserId');
+	    $paymentType = $this->input->post('paymentType');
+	    $description = $this->input->post('description');
+	    $is_expiry = $this->input->post('is_expiry') ? 1 : 0; 
+	    $offer_expiry_day = $this->input->post('offer_expiry_day');
+	    $delivery_days = $this->input->post('delivery_days');
+	    $price = $this->input->post('price');
+	    $included_offer = $this->input->post('ex_service') ? implode(',', $this->input->post('ex_service')) : '';
+
+	    // Preparing data for insertion
+	    $insert = [
+	        'offer_by' => $userid,
+	        'receiver' => $receiver,
+	        'service_id' => $service_id,
+	        'payment_type' => $paymentType,
+	        'description' => $description,
+	        'is_expiry' => $is_expiry,
+	        'offer_expiry_day' => $offer_expiry_day,
+	        'delivery_days' => $delivery_days,
+	        'price' => $price,
+	        'included_offer' => $included_offer
+	    ];
+
+	    // Inserting data into the service_custom_offer table
+	    $run = $this->common_model->insert('service_custom_offer', $insert);
+
+	    if ($run) {
+	        $get_users = $this->common_model->get_single_data('users', ['id' => $userid]);
+	        $check_last = $this->common_model->GetColumnName('chat', ["post_id" => $service_id, "type" => 'service', "receiver_id" => $receiver], ['create_time'], null, 'id');
+	        
+	        if ($check_last == false) {                
+	            $has_email_noti = $this->common_model->check_email_notification($receiver);
+	                        
+	            if ($has_email_noti) {
+	                $user_namess = $get_users['f_name'];
+	                $subject = "New Messages from " . $user_namess;
+	                $msg = "You have received a new message"; // Add this line for the $msg variable
+
+	                if ($has_email_noti['type'] == 1) {
+	                    $html = '<p style="margin:0;padding:10px 0px">' . $msg . '</p>
+	                             <div style="text-align:center">
+	                             <a href="' . $link . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Messages & Reply now</a></div>
+	                             <br><p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
+	                } else {
+	                    $user_namess = $get_users['trading_name'];
+	                    $subject = "New Messages from " . $user_namess;
+	                    $html = '<p style="margin:0;padding:10px 0px">' . $msg . '</p>
+	                             <br><div style="text-align:center">
+	                             <a href="' . $link . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Messages & Reply now</a></div>
+	                             <br><p style="margin:0;padding:10px 0px">Visit our Homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
+	                }                
+
+	                try {
+	                    $sent = $this->common_model->send_mail($has_email_noti['email'], $subject, $html, null, $user_namess . ' via Tradespeoplehub');
+	                    
+	                    // Log successful email sending
+	                    $file = 'logFile.txt';
+	                    $handle = fopen($file, 'a');
+	                    $data = date('Y-m-d h:i:s') . '-----' . $has_email_noti['email'] . "\n";
+	                    if (fwrite($handle, $data) === false) {
+	                        die('Could not write to file');
+	                    }
+	                    fclose($handle);
+	                } catch (Exception $e) {
+	                    // Log email sending error
+	                    $file = 'errorLogFile.txt';
+	                    $handle = fopen($file, 'a');
+	                    $data = date('Y-m-d h:i:s') . '-----' . "Error In send chat msg===>" . $e->getMessage();
+	                    if (fwrite($handle, $data) === false) {
+	                        die('Could not write to file');
+	                    }
+	                    fclose($handle);
+	                }
+	            }
+	        }
+
+	        // Preparing data for chat insertion
+	        $insert1 = [
+	            'post_id' => $service_id,
+	            'type' => 'service',
+	            'offer_id' => $run,
+	            'sender_id' => $userid,
+	            'receiver_id' => $receiver,
+	            'mgs' => 'You are receive a new service offer',
+	            'is_read' => 0,
+	            'create_time' => date('Y-m-d H:i:s')
+	        ];
+	        
+	        // Inserting data into the chat table
+	        $chatInsert = $this->common_model->insert('chat', $insert1);
+	        
+	        echo json_encode(['status' => 1]);
+	        exit;
+	    } else {
+	        echo json_encode(['status' => 0]);
+	        exit;
+	    }
 	}
 }

@@ -81,76 +81,51 @@
     </div>
     <div class="great-offer-chat" id="great-offer1">
       <div class="great-offer-chat-heding">
-        <h5>Select a Gig</h5><a href="#" class="close">
+        <h5>Select a Service</h5><a href="#" class="close">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
             <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
           </svg>
         </a>
       </div>
       <div class="great-offer-chat-middle">
-          <ul class="great-offer-list">
-            <li>
-              <a href="#">
-                <div class="box">
-                <div class="img">
-                  <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
-                </div>
-                <div class="des">
-                <h3>Imagine having all kinds It also shows the commitment</h3>
-              </div>
-            </div>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <div class="box">
-                <div class="img">
-                  <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
-                </div>
-                <div class="des">
-                <h3>Imagine having all kinds It also shows the commitment</h3>
-              </div>
-            </div>
-              </a>
-            </li>
+          <ul class="great-offer-list" id="chatServiceList">
           </ul>
-
       </div>
     </div>
 
     <div class="great-offer-chat" id="great-offer2">
       <div class="great-offer-chat-heding">
-        <h5>Select a Gig</h5><a href="#" class="close">
+        <h5>How would you liketo get paid?</h5><a href="#" class="close">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
             <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
           </svg>
         </a>
       </div>
       <div class="great-offer-chat-middle">
-        <p class="text-muted">Our project milestones protect your interest and that of your committed homeowner. </p>
+        <p class="text-muted">Get paid in full once the project is completed or break into a  small chunks called milestone to get paid as you go?</p>
           <ul class="great-offer-list">
-            <li>
+            <li onclick="nextStep2(1)">
               <a href="#">
                 <div class="box">
                 <div class="img">
                   <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
                 </div>
                 <div class="des">
-                <h3>Imagine having all kinds</h3>
-                <p>It also shows the commitment</p>
+                <h3>Single Payment</h3>
+                <p class="text-muted">Receive one payment for the entire project once completed</p>
               </div>
             </div>
               </a>
             </li>
-            <li>
+            <li onclick="nextStep2(2)">
               <a href="#">
                 <div class="box">
                 <div class="img">
                   <img src="http://localhost/tradespeople/img/Contractor-Banner.jpg" alt="" />
                 </div>
                 <div class="des">
-                <h3>Imagine having all kinds</h3>
-                <p>It also shows the commitment</p>
+                <h3>Milestone</h3>
+                <p class="text-muted">Work in gradual steps and get paid for each completed milestone.</p>
               </div>
             </div>
               </a>
@@ -169,118 +144,320 @@
     </div>
 
     <div class="great-offer-chat" id="great-offer3">
-      <div class="great-offer-chat-heding">
-        <h5>Create a single payment offer</h5><a href="#" class="close">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-          </svg>
-        </a>
-      </div>
-      <div class="great-offer-chat-middle">
-        <div class="great-offer-singal">
-          <h4>radespeoplehub checks the job for authenticity</h4>
-          <button type="submit" class="btn btn-outline-warning">Select A Package</button>
-          <div class="package-img">
-            <img src="http://localhost/tradespeople/img/team3.png" alt="" />
-          </div>
-          <textarea class="form-control" rows="4" name="message" placeholder="Project detail..." required=""></textarea>
-
-          <p>Visit our tradesmen <a href="#">help centre</a></p>
-          <p>please send us a message.</p>
-
-          <div class="select-price-box">
-            <div class="form-group">
-              <label class="control-label"> Last name </label>
-              <select required="" class="form-control">
-                  <option value="">Select</option>
-                  <option value="1">Tradesman</option>
-                  <option value="2">Homeowner</option>
-                </select>
-            </div>
-            <div class="form-group">
-              <label class="control-label">Delivery</label>
-              <select required="" class="form-control">
-                  <option value="">1 Day</option>
-                  <option value="1">2 Day</option>
-                  <option value="2">3 Day</option>
-                </select>
-            </div>
-            <div class="form-group">
-              <label class="control-label">Price</label>
-              <input type="text" class="form-control" name="price" placeholder="$00000" required="">
-            </div>
-          </div>
-
-          <ul class="check-list">
-            <li>
-              <div class="form-check">
-              <div class="check-box">
-              <input class="checkbox-effect" id="time" type="checkbox" value="time" name="time">
-              <label for="time">Offer expiration time</label>
-            </div>
-          </div>
-          <div class="form-group">
-              <select required="" class="form-control">
-                  <option value="">1 Day</option>
-                  <option value="1">2 Day</option>
-                  <option value="2">3 Day</option>
-                </select>
-            </div>
-        </li>
-        <li><h3>Offer includes</h3></li>
-        <li>
-              <div class="form-check">
-              <div class="check-box">
-              <input class="checkbox-effect" id="Words" type="checkbox" value="Words" name="Words">
-              <label for="Words">Words included</label>
-            </div>
-          </div>
-        </li>
-        <li>
-              <div class="form-check">
-              <div class="check-box">
-              <input class="checkbox-effect" id="Split" type="checkbox" value="Split" name="Split">
-              <label for="Split">Split files up to 5 files</label>
-            </div>
-          </div>
-        </li>
-      </ul>
-
+      <form method="post" id="customOfferForm" style="background:none!important; padding: 0;">
+        <input type="hidden" name="chatUserId" id="chatUserId"> 
+        <input type="hidden" name="chatServiceId" id="chatServiceId"> 
+        <input type="hidden" name="paymentType" id="paymentType"> 
+        <div class="great-offer-chat-heding">
+          <h5>Create a single payment offer</h5><a href="#" class="close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+            </svg>
+          </a>
         </div>
-      </div>
-      <div class="great-offer-chat-footer">
-         <a href="#" class="back">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
-          </svg> 
-          <span>Back</span>
-        </a>
-         <button type="submit" class="btn btn-warning">Sand Offer</button>
-      </div>
+        <div class="great-offer-chat-middle">
+          <div class="great-offer-singal">
+            <h4 id="chatServiceTitle">Tradespeoplehub checks the service for authenticity</h4>
+            <!-- <button type="submit" class="btn btn-outline-warning">Select A Package</button> -->
+            <div class="package-img" id="chatServiceImage">
+              <img src="http://localhost/tradespeople/img/team3.png" alt="" />
+            </div>
+            <label class="control-label">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="4" name="description" required placeholder="Offer Description..."></textarea>
+
+            <p>Visit our tradesmen <a href="#">help centre</a></p>
+            <p>please send us a message.</p>
+
+            <div class="select-price-box">
+              <div class="form-group">
+                <label class="control-label"> Revision</label>
+                <select class="form-control">
+                  <option value="">Select</option>                 
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Delivery <span class="text-danger">*</span></label>
+                <select name="delivery_days" class="form-control" required>
+                  <?php
+                    for($j=1; $j<=10;$j++){
+                      echo '<option value="'.$j.'">'.$j.' Day</option>';
+                    }
+                  ?>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Price <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="price" placeholder="0.00" required>
+              </div>
+            </div>
+
+            <ul class="check-list">
+              <li>
+                <div class="form-check">
+                  <div class="check-box">
+                    <input class="checkbox-effect" id="is_expiry" type="checkbox" name="is_expiry">
+                    <label for="is_expiry">Offer expiration time</label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <select disabled name="offer_expiry_day" id="offer_expiry_day" class="form-control">
+                    <?php
+                      for($i=1; $i<=10;$i++){
+                        echo '<option value="'.$i.'">'.$i.' Day</option>';
+                      }
+                    ?>
+                  </select>
+                </div>
+              </li>
+              <li class="hide" id="exOfferTitle"><h3>Offer includes</h3></li>
+            </ul>
+          </div>
+        </div>
+        <div class="great-offer-chat-footer">
+           <a href="#" class="back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
+            </svg> 
+            <span>Back</span>
+          </a>
+           <button type="button" class="btn btn-warning" id="sendOfferBtn">Sand Offer</button>
+        </div>
+      </form>
     </div>
 
-    <div class="great-offer-btn">
-      <button type="submit" class="btn btn-warning">Great Offer</button>
-     
-    </div>
-
+    <?php if($this->session->userdata('type') == 1): ?>
+      <div class="great-offer-btn">
+        <button type="submit" id="startCustomOffer" class="btn btn-warning">Custom Offer</button>     
+      </div>
+    <?php endif; ?>  
   </div>  
 </div>
 <script type="text/javascript">
   /* */
-$(".great-offer-chat ").hide();
+$(".great-offer-chat").hide();
 
 $(".great-offer-chat-heding .close").click(function() {
-    $(".great-offer-chat").hide();
- });  
+  $(".great-offer-chat").hide();
+});  
 
-$(".great-offer-btn button").click(function() {
-      $("#great-offer1").show();
+$("#startCustomOffer").click(function() {
+  var tradesMan = <?php echo $this->session->userdata('user_id'); ?>;
+  var chatUserId = $('#rid-footer').val();
+  $('#chatUserId').val(chatUserId);
+  $.ajax({
+      url: '<?= site_url().'users/getServiceList'; ?>',
+      type: 'POST',
+      dataType: 'json',
+      data: {'tradesMan': tradesMan},
+      success: function(result) {
+        if(result.status ==1){
+          var services = result.services;
+
+          services.forEach(function(service) {
+            if (service.image) {
+                var imagePath = `img/services/${service.image}`;
+                if (service.image.endsWith('.mp4')) {
+                    var serviceFile = '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+                } else {
+                    var serviceFile = '<img src="'+site_url+'img/services/'+service.image+'" alt="Service Image" width="50">';
+                }
+            } else {
+                var serviceFile = '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+            }
+
+            var serviceHtml = `<li onclick="nextStep(${service.id})">
+              <a href="#">
+                <div class="box">
+                  <div class="img">
+                    ${serviceFile}
+                  </div>
+                  <div class="des">
+                    <h3>${service.service_name}</h3>
+                  </div>
+                </div>
+              </a>
+            </li>`;
+            $('#chatServiceList').html(serviceHtml);
+          });
+        }else{
+          var serviceHtml = `<li>
+              <a href="#">
+                <div class="box">
+                  <div class="des">
+                    <h3>Service not found</h3>
+                  </div>
+                </div>
+              </a>
+            </li>`;
+          $('#chatServiceList').html(serviceHtml);
+        }
+        $("#great-offer1").show();          
+      },
+      error: function(xhr, status, error) {
+          console.error('AJAX request failed:', status, error);
+      }
+  });      
+});
+
+$('#is_expiry').change(function() {
+    if ($(this).is(':checked')) {
+        $('#offer_expiry_day').prop('disabled', false);
+    } else {
+        $('#offer_expiry_day').prop('disabled', true);
+    }
+});
+
+function nextStep(sId){
+  $('#chatServiceId').val(sId);
+  $("#great-offer2").show();
+  $("#great-offer1").hide();
+}
+
+function nextStep2(method){
+  $('#paymentType').val(method);
+
+  var sId = $('#chatServiceId').val();
+
+  $.ajax({
+    url: '<?= site_url().'users/getServiceDetail'; ?>',
+    type: 'POST',
+    dataType: 'json',
+    data: {'sId': sId},
+    success: function(result) {
+      if(result.status ==1){
+        var service = result.service;
+          if (service.image) {
+            var imagePath = `img/services/${service.image}`;
+            if (service.image.endsWith('.mp4')) {
+                var serviceFile = '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+            } else {
+                var serviceFile = '<img src="'+site_url+'img/services/'+service.image+'" alt="Service Image" width="50">';
+            }
+          } else {
+              var serviceFile = '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+          }
+
+        $('#chatServiceTitle').text(service.service_name);
+        $('#chatServiceImage').html(serviceFile);
+
+        var exService = result.exServices;
+
+        console.log(exService.length);
+
+        if(exService.length > 0){
+          $('#exOfferTitle').removeClass('hide');
+          exService.forEach(function(exS) {
+            var exServiceHtml = ` <li class="exServiceList">
+                  <div class="form-check">
+                  <div class="check-box">
+                  <input class="checkbox-effect" id="${exS.ex_service_name}" type="checkbox" value="${exS.id}" name="ex_service[]">
+                  <label for="${exS.ex_service_name}">${exS.ex_service_name}</label>
+                </div>
+              </div>
+            </li>`;
+            $('#exOfferTitle').after(exServiceHtml);
+          });
+        }else{
+          $('#exOfferTitle').addClass('hide');
+          $('.exServiceList').remove();
+        }
+
+      }else{
+        $('#great-offer3').html('Service not found');
+      }      
+    },
+    error: function(xhr, status, error) {
+        console.error('AJAX request failed:', status, error);
+    }
   });
-$("#great-offer1 .great-offer-list li").click(function() {
-    $("#great-offer2").show();
-    $("#great-offer1").hide();
- }); 
+  $("#great-offer2").hide();
+}
+
+$('#sendOfferBtn').on('click', function(){
+  $('#sendOfferBtn').disabled = true;
+
+  let isValid = true;
+  let emptyFields = [];
+  $('#customOfferForm textarea[required]').each(function() {
+    if ($(this).val() === '') {
+      isValid = false;
+      emptyFields.push($(this).attr('name')); // Collect the name of the empty field
+    }
+  });
+
+  $('#customOfferForm input[required]').each(function() {
+    if ($(this).val() === '') {
+      isValid = false;
+      emptyFields.push($(this).attr('name'));
+      // return false; // Break out of the loop
+    }
+  });
+
+  if (!isValid) {
+    let fieldNames = emptyFields.join(', ');
+    swal({
+      title: "Error",
+      text: "Please fill out the following required fields: " + fieldNames,
+      icon: "error",
+      button: "OK"
+    });
+  } else {
+    swal({
+      title: "Send Offer",
+      text: "Are you sure you want to send custom offer?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: 'Send Offer',
+      cancelButtonText: 'Cancel'
+    }, function() {
+      var formData = $('#customOfferForm').serialize();
+
+      $.ajax({
+        url: '<?= site_url().'users/sendCustomOffer'; ?>',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',                   
+        success: function(result) {
+          if(result.status == 0){
+            swal({
+              title: "Error",
+              text: result.message,
+              type: "error"
+            }); 
+          }else if(result.status == 2){
+            swal({
+              title: "Login Required!",
+              text: "If you want to order the please login first!",
+              type: "warning"
+            }, function() {
+              window.location.href = '<?php echo base_url().'login'; ?>';
+            }); 
+          }else{
+            swal({
+              title: "Success",
+              text: result.message,
+              type: "success"
+            }, function() {
+                $(".great-offer-chat").hide();
+            });
+          }
+        },
+        error: function(xhr, status, error) {
+                // Handle error
+        }
+      }); 
+    });
+  }  
+});
+
+
+
+// $(".great-offer-list .serviceList").click(function() {
+//   var chatServiceId = $(this).attr('data-id');
+//   $('#chatServiceId').val(chatServiceId);
+//   $("#great-offer2").show();
+//   $("#great-offer1").hide();
+//  }); 
 
 $("#great-offer2 .great-offer-list li").click(function() {
     $("#great-offer3").show();
@@ -1022,10 +1199,6 @@ function pay_chat_first(id,post,comm) {
   </script>
 <?php } ?>
 
-
-
-
-
 <script>
 /*
 type = 1 deposite in wallet 
@@ -1042,8 +1215,7 @@ type = 10 ask admin to step in
 
 */
 var stripe = Stripe('<?php echo $this->config->item('stripe_key'); ?>');
-function show_lates_stripe_popup(amount,actual_amt,type,onSuccess=null,onError=null,onCancel=null){
-  
+function show_lates_stripe_popup(amount,actual_amt,type,onSuccess=null,onError=null,onCancel=null){  
   $('.latest-strip-deposit-amount').html(amount);
   
   $('#latest_stripe_modal').modal({
@@ -1051,13 +1223,8 @@ function show_lates_stripe_popup(amount,actual_amt,type,onSuccess=null,onError=n
     keyboard: false
   });
   
-  // $("#latest-stipe-submit").prop('disabled',true);
-
-  
-
-  
-  var statement_descriptor = 'Diposit in wallet';
-  
+  // $("#latest-stipe-submit").prop('disabled',true);  
+  var statement_descriptor = 'Diposit in wallet';  
   if(type==2){
     statement_descriptor = 'Subscription renewed';
   } else if(type==9){
@@ -1117,11 +1284,8 @@ function show_lates_stripe_popup(amount,actual_amt,type,onSuccess=null,onError=n
         console.log('payWithSaveCard');
         payWithSaveCard(actual_amt,type,paymentFrom,onSuccess,onError,onCancel);
       }
-      
-      
     });
   });
-  
 }
 var payWithCard = function(actual_amt,stripe, card, clientSecret, customerID,type,onSuccess=null,onError=null,onCancel=null,card_u_name) {
   loading(true);
@@ -1412,376 +1576,364 @@ var loading = function(isLoading) {
 <?php } ?>
 
 <script>
-function saveCards(customerID,payment_method,card_u_name){
-  $.ajax({
-    type:'post',
-    url:site_url+'wallet/saveCards',
-    dataType:'JSON',
-    data:{payment_method:payment_method,customerID:customerID,card_u_name:card_u_name},
-    success:function(res){
-      console.log(res);
-    }
-  });
-}
-var owl = $('.banner-slider');
-owl.owlCarousel({
-  margin: 10,
-  autoplay:true,
-  autoplayTimeout:5000,
-  responsive: {
-    1000: {
-      items: 1
-    },
-    0: {
-      items: 1
-    }
+  function saveCards(customerID,payment_method,card_u_name){
+    $.ajax({
+      type:'post',
+      url:site_url+'wallet/saveCards',
+      dataType:'JSON',
+      data:{payment_method:payment_method,customerID:customerID,card_u_name:card_u_name},
+      success:function(res){
+        console.log(res);
+      }
+    });
   }
-})
-var owl = $('.testimonial-slider');
-owl.owlCarousel({
-  margin: 10,
-  loop: true,
-  responsive: {
-    1000: {
-      items: 1
-    },
-    0: {
-      items: 1
+  var owl = $('.banner-slider');
+  owl.owlCarousel({
+    margin: 10,
+    autoplay:true,
+    autoplayTimeout:5000,
+    responsive: {
+      1000: {
+        items: 1
+      },
+      0: {
+        items: 1
+      }
     }
-  }
-})
-
-$(function(){
-  $('input[type=radio][name=paymentFrom]').change(function() {
-    if (this.value == '0') {
-      $('#card-element').show();
-      $('#card_u_name_div').show();
-      $('#card_u_name').attr('required', 'required');
-    } else {
-      $('#card-element').hide();
-      $('#card_u_name_div').hide();
-      $('#card_u_name').removeAttr('required');
-      loading(false);
-
+  })
+  var owl = $('.testimonial-slider');
+  owl.owlCarousel({
+    margin: 10,
+    loop: true,
+    responsive: {
+      1000: {
+        items: 1
+      },
+      0: {
+        items: 1
+      }
     }
-    $('#latest-stripe-card-error').html('');
-  });
-})
+  })
+
+  $(function(){
+    $('input[type=radio][name=paymentFrom]').change(function() {
+      if (this.value == '0') {
+        $('#card-element').show();
+        $('#card_u_name_div').show();
+        $('#card_u_name').attr('required', 'required');
+      } else {
+        $('#card-element').hide();
+        $('#card_u_name_div').hide();
+        $('#card_u_name').removeAttr('required');
+        loading(false);
+
+      }
+      $('#latest-stripe-card-error').html('');
+    });
+  })
 </script>
 
-
-
 <script>
+  $(document).ready(function(){
+    //$('[data-toggle="tooltip"]').tooltip();
+    (function() {
+      $('.live-chat header').on('click', function() {
+        $(this).next('.chat').slideToggle(300, 'swing');
+      });
+      
+      $('.live-chat1 header').on('click', function() {
+        $(this).next('.chat1').slideToggle(300, 'swing');
+      });
 
-$(document).ready(function(){
-  
-  
-    
-  
-  //$('[data-toggle="tooltip"]').tooltip();
-  (function() {
-    $('.live-chat header').on('click', function() {
-      $(this).next('.chat').slideToggle(300, 'swing');
-    });
-    
-    $('.live-chat1 header').on('click', function() {
-      $(this).next('.chat1').slideToggle(300, 'swing');
-    });
+      $('.chat-close').on('click', function(e) {
+        e.preventDefault();
+        $(this).closest('.live-chat').fadeOut(300);
+        $('#rid-footer').val(0);
+        $('#post_id-footer').val(0);
+      });
 
-    $('.chat-close').on('click', function(e) {
-      e.preventDefault();
-      $(this).closest('.live-chat').fadeOut(300);
-      $('#rid-footer').val(0);
-      $('#post_id-footer').val(0);
-    });
+      /*$('.open-chat').on('click', function() {
+        $('.live-chat').toggle();
+      });*/
 
-    /*$('.open-chat').on('click', function() {
-      $('.live-chat').toggle();
-    });*/
+    })();
+  });
 
-  })();
-});
+  function showdiv(){
+     $('#chat_user').show();    
+  }
 
-function showdiv()
-{
-   $('#chat_user').show();
-  
-}
-function get_chat_onclick(id,post_id){
-  if(id && post_id){
-    
-    $('#rid-footer').val(id);
-    $('#post_id-footer').val(post_id);
-    
+  function get_chat_onclick(id,post_id){
+    if(id && post_id){
+      
+      $('#rid-footer').val(id);
+      $('#post_id-footer').val(post_id);
+      
+      $.ajax({
+        type:'POST',
+        url:site_url+'chat/get_chats',
+        data:{id:id,post:post_id},
+        dataType:'JSON',
+        success:function(resp) {
+          if(resp.status==1) {
+            $('#rid-footer').val(id);
+            $('#userdetail').html(resp.userdetail);
+            var oldscrollHeight = $("#usermsg").prop("scrollHeight");         
+            $('.user_chat').html(resp.data);  
+            var newscrollHeight = $("#usermsg").prop("scrollHeight");
+            if (newscrollHeight > oldscrollHeight) {
+              $("#usermsg").animate({
+                scrollTop: newscrollHeight
+              }, 'normal');
+            }
+          } else {
+            $('#userdetail').html(resp.userdetail);
+            $('.user_chat').html(resp.data); 
+          }
+        }
+      });
+    }
+    return false;
+  }
+
+  function get_chat_history_interwal(){
+    var id = $('#rid-footer').val();
+    var post_id = $('#post_id-footer').val();
+    if(id && post_id && id > 0 && post_id > 0)
+    {
+      get_chat_onclick(id,post_id);
+    }
+  }
+
+  function send_msg(){
+    var post = $('#post_id-footer').val();
     $.ajax({
       type:'POST',
-      url:site_url+'chat/get_chats',
-      data:{id:id,post:post_id},
+       url:site_url+'chat/send_msg',
+      data:$('#send_msg').serialize(),
       dataType:'JSON',
-      success:function(resp) {
-        if(resp.status==1) {
-          $('#rid-footer').val(id);
-          $('#userdetail').html(resp.userdetail);
-          var oldscrollHeight = $("#usermsg").prop("scrollHeight");         
-          $('.user_chat').html(resp.data);  
-          var newscrollHeight = $("#usermsg").prop("scrollHeight");
-          if (newscrollHeight > oldscrollHeight) {
-            $("#usermsg").animate({
-              scrollTop: newscrollHeight
-            }, 'normal');
+      success:function(resp)
+      {
+        if(resp.status==1)
+        {
+          $('#ch_msg').val('');
+        }
+      }
+    });
+    return false;
+  }
+
+  function get_unread_msg_count(post_id, rid){
+    $.ajax({
+      type:'POST',
+      url:site_url+'chat/get_unread_msg_count',
+      data:{post:post_id,rid:rid},
+      dataType:'JSON',
+      success:function(resp)
+      {
+        if(resp.status==1)
+        {
+          $('.count_un_msg'+rid).html('('+resp.count+')');
+          get_chat_onclick(rid,post_id);
+          //showdiv();
+        }
+        else
+        {
+          $('.count_un_msg'+rid).html('');
+        }
+      }
+    });
+    return false;
+  }
+
+  function user_list_refresher(){
+    $.ajax({
+      type:'POST',
+      url:site_url+'chat/user_list_refresher',
+      dataType:'JSON',
+      success:function(resp)
+      {
+        if(resp.status==1)
+        {
+          $('#get_chat_list').html(resp.list);
+          $('.footer_total_count').html('('+resp.count+')');
+          
+          if(resp.count > 0){
+            $('.red-dot-foot').show();
+          } else {
+            $('.red-dot-foot').hide();
           }
-        } else {
-          $('#userdetail').html(resp.userdetail);
-          $('.user_chat').html(resp.data); 
+          //showdiv();
         }
       }
     });
   }
-  return false;
-
-}
-function get_chat_history_interwal()
-{
-  var id = $('#rid-footer').val();
-  var post_id = $('#post_id-footer').val();
-  if(id && post_id && id > 0 && post_id > 0)
-  {
-    get_chat_onclick(id,post_id);
-  }
-}
-function send_msg()
-{
-  var post = $('#post_id-footer').val();
-  $.ajax({
-    type:'POST',
-     url:site_url+'chat/send_msg',
-    data:$('#send_msg').serialize(),
-    dataType:'JSON',
-    success:function(resp)
-    {
-      if(resp.status==1)
-      {
-        $('#ch_msg').val('');
-      }
-    }
-  });
-  return false;
-}
-function get_unread_msg_count(post_id, rid)
-{
-  
-  $.ajax({
-    type:'POST',
-   url:site_url+'chat/get_unread_msg_count',
-    data:{post:post_id,rid:rid},
-    dataType:'JSON',
-    success:function(resp)
-    {
-      if(resp.status==1)
-      {
-        $('.count_un_msg'+rid).html('('+resp.count+')');
-        get_chat_onclick(rid,post_id);
-        //showdiv();
-      }
-      else
-      {
-        $('.count_un_msg'+rid).html('');
-      }
-    }
-  });
-  return false;
-}
-function user_list_refresher(){
-  $.ajax({
-    type:'POST',
-    url:site_url+'chat/user_list_refresher',
-    dataType:'JSON',
-    success:function(resp)
-    {
-      if(resp.status==1)
-      {
-        $('#get_chat_list').html(resp.list);
-        $('.footer_total_count').html('('+resp.count+')');
-        
-        if(resp.count > 0){
-          $('.red-dot-foot').show();
-        } else {
-          $('.red-dot-foot').hide();
-        }
-        //showdiv();
-      }
-    }
-  });
-}
-setInterval(function(){ get_chat_history_interwal(); }, 5000);
-setInterval(function(){ user_list_refresher(); }, 5000);
-
-
+  setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
-$(document).ready(function(){
-  var user = accessCookie("testCookie");
-  if (user!="") {
-    $(".cookies").hide();
-  } else {
-    $(".cookies").show();
-  }
-});
+  $(document).ready(function(){
+    var user = accessCookie("testCookie");
+    if (user!="") {
+      $(".cookies").hide();
+    } else {
+      $(".cookies").show();
+    }
+  });
 </script>
 <script type="text/javascript">
-function createCookie(cookieName,cookieValue,daysToExpire) {
-  var date = new Date();
-  date.setTime(date.getTime()+(daysToExpire*24*60*60*1000));
-  document.cookie = cookieName + "=" + cookieValue + "; expires=" + date.toGMTString();
-}
+  function createCookie(cookieName,cookieValue,daysToExpire) {
+    var date = new Date();
+    date.setTime(date.getTime()+(daysToExpire*24*60*60*1000));
+    document.cookie = cookieName + "=" + cookieValue + "; expires=" + date.toGMTString();
+  }
 
-function accessCookie(cookieName) {
-  var name = cookieName + "=";
-  var allCookieArray = document.cookie.split(';');
-  for(var i=0; i<allCookieArray.length; i++){
-    var temp = allCookieArray[i].trim();
-    if (temp.indexOf(name)==0)
-    return temp.substring(name.length,temp.length);
-  }
-  return "";
-}
-  
-function checkCookie() {
-  var user = accessCookie("testCookie");
-  if (user!="") {
-    $(".cookies").hide();
-  } else {
-    user = "p";
-    num = 7;
-    if (user!="" && user!=null) {
-      createCookie("testCookie", user, num);
-      $(".cookies").hide();
+  function accessCookie(cookieName) {
+    var name = cookieName + "=";
+    var allCookieArray = document.cookie.split(';');
+    for(var i=0; i<allCookieArray.length; i++){
+      var temp = allCookieArray[i].trim();
+      if (temp.indexOf(name)==0)
+      return temp.substring(name.length,temp.length);
     }
+    return "";
   }
-}
     
+  function checkCookie() {
+    var user = accessCookie("testCookie");
+    if (user!="") {
+      $(".cookies").hide();
+    } else {
+      user = "p";
+      num = 7;
+      if (user!="" && user!=null) {
+        createCookie("testCookie", user, num);
+        $(".cookies").hide();
+      }
+    }
+  }    
 </script>
 <style>
-.cookies {
-    position: fixed;
-    bottom: 0px;
-    right: 0px;
-    width:100%;
-    background: rgba(00,00,00,0.8);
-    color: #fff;
-    padding: 15px;
-  z-index:9999;
-}
-.cookies-text {
-  padding-right: 80px;
-  position: relative;
-}
-.cookies-close {
-  background: #207cdf;
-  border-radius: 5px;
-  display: inline-block;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 6px 18px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-.footer .panel {
-  background-color: transparent;
-}
-.footer .panel.panel-default::before {
-  background-color: transparent;
-  width: 0;
-  height: 0;
-}
-.footer .panel .nav-tabs {
-  border: 0;
-}
-.footer .nav>li {
-  margin-right: 10px;
-}
-.footer .nav>li:last-child {
-  margin-right:0px;
-}
-.footer .panel-default>.panel-heading {
-    color: #ffffff;
-    background-color: transparent;
-    border-color: transparent;
-    padding: 0;
-    border: 0;
-}
-.footer .nav-tabs>li>a {
-    margin-right: 0;
-    line-height: normal;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
-}
-.footer .nav-tabs>li.active>a, .footer .nav-tabs>li.active>a:hover, .footer .nav-tabs>li.active>a:focus, 
-.footer .nav>li>a:hover, .footer .nav>li>a:focus {
-  color: #ffffff;
-  border: 0;
-  background-color: #3d78cb;
-  border-color: transparent;
-}
-.footer .nav a img {
-    max-width: 100%;
-    width: 100px;
-    height: auto;
-    object-fit: contain;
-}
-.footer .tab-content>.tab-pane {
-  margin-top: 10px;
-}
-.footer .tab-content ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-  display: flex;
-  flex-flow: column;
-}
-.footer .tab-content ul li, 
-.footer .tab-content ul li a {
-  color: #ffffff;
-}
-.footer .foot-menu .nav.ftr {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-.footer .foot-menu .nav.ftr li a {
-    width: fit-content;
-    padding: 0;
-}
-.footer .foot-menu .nav.ftr li .dropdown-menu>li>a {
-    width: 100%;
-    padding: 3px 20px;
-}
-.footer .foot-menu .nav.ftr .dropdown.open>a {
-  background-color: transparent;
-}
-.footer .foot-menu .nav.ftr .dropdown.open>a:hover, 
-.footer .foot-menu .nav.ftr .dropdown.open>a:focus {
-  background-color: #3d78cb;
-}
-.footer .foot-menu .nav.ftr .dropdown:hover>.dropdown-menu {
-    display: none;
-}
-.footer .foot-menu .nav.ftr .dropdown.open>.dropdown-menu {
-    display: block !important;
-}
-@media only screen and (max-width: 767px) {
-  .footer .panel .nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .cookies {
+      position: fixed;
+      bottom: 0px;
+      right: 0px;
+      width:100%;
+      background: rgba(00,00,00,0.8);
+      color: #fff;
+      padding: 15px;
+    z-index:9999;
   }
-  .footer .foot-menu .nav.ftr {justify-content: center;}
-  .footer .foot-menu .nav.ftr .dropdown>.dropdown-menu {padding: 5px 0;position: absolute;}
-}
+  .cookies-text {
+    padding-right: 80px;
+    position: relative;
+  }
+  .cookies-close {
+    background: #207cdf;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 6px 18px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .footer .panel {
+    background-color: transparent;
+  }
+  .footer .panel.panel-default::before {
+    background-color: transparent;
+    width: 0;
+    height: 0;
+  }
+  .footer .panel .nav-tabs {
+    border: 0;
+  }
+  .footer .nav>li {
+    margin-right: 10px;
+  }
+  .footer .nav>li:last-child {
+    margin-right:0px;
+  }
+  .footer .panel-default>.panel-heading {
+      color: #ffffff;
+      background-color: transparent;
+      border-color: transparent;
+      padding: 0;
+      border: 0;
+  }
+  .footer .nav-tabs>li>a {
+      margin-right: 0;
+      line-height: normal;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+  }
+  .footer .nav-tabs>li.active>a, .footer .nav-tabs>li.active>a:hover, .footer .nav-tabs>li.active>a:focus, 
+  .footer .nav>li>a:hover, .footer .nav>li>a:focus {
+    color: #ffffff;
+    border: 0;
+    background-color: #3d78cb;
+    border-color: transparent;
+  }
+  .footer .nav a img {
+      max-width: 100%;
+      width: 100px;
+      height: auto;
+      object-fit: contain;
+  }
+  .footer .tab-content>.tab-pane {
+    margin-top: 10px;
+  }
+  .footer .tab-content ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    display: flex;
+    flex-flow: column;
+  }
+  .footer .tab-content ul li, 
+  .footer .tab-content ul li a {
+    color: #ffffff;
+  }
+  .footer .foot-menu .nav.ftr {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+  }
+  .footer .foot-menu .nav.ftr li a {
+      width: fit-content;
+      padding: 0;
+  }
+  .footer .foot-menu .nav.ftr li .dropdown-menu>li>a {
+      width: 100%;
+      padding: 3px 20px;
+  }
+  .footer .foot-menu .nav.ftr .dropdown.open>a {
+    background-color: transparent;
+  }
+  .footer .foot-menu .nav.ftr .dropdown.open>a:hover, 
+  .footer .foot-menu .nav.ftr .dropdown.open>a:focus {
+    background-color: #3d78cb;
+  }
+  .footer .foot-menu .nav.ftr .dropdown:hover>.dropdown-menu {
+      display: none;
+  }
+  .footer .foot-menu .nav.ftr .dropdown.open>.dropdown-menu {
+      display: block !important;
+  }
+  @media only screen and (max-width: 767px) {
+    .footer .panel .nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .footer .foot-menu .nav.ftr {justify-content: center;}
+    .footer .foot-menu .nav.ftr .dropdown>.dropdown-menu {padding: 5px 0;position: absolute;}
+  }
 </style>
 <div class="cookies" id="cheack_float" style="display:none;">
   <div class="cookies-inner">
@@ -1823,66 +1975,62 @@ $(document).ready(function(){
 </body>
 </html>
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+  import { getMessaging, getToken , onMessage  } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+  const firebaseConfig = {
+      apiKey: "AIzaSyCf2hxRR5qvaAocU1foSeyCT0Wb_JDbbCk",
+      authDomain: "tradespeoplehub-f4fbf.firebaseapp.com",
+      projectId: "tradespeoplehub-f4fbf",
+      storageBucket: "tradespeoplehub-f4fbf.appspot.com",
+      messagingSenderId: "132127313614",
+      appId: "1:132127313614:web:d4183282a65df1746b8a9f",
+      measurementId: "G-Y9PYEX7SB9"
+  };
+  const app = initializeApp(firebaseConfig);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
-import { getMessaging, getToken , onMessage  } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
-const firebaseConfig = {
-    apiKey: "AIzaSyCf2hxRR5qvaAocU1foSeyCT0Wb_JDbbCk",
-    authDomain: "tradespeoplehub-f4fbf.firebaseapp.com",
-    projectId: "tradespeoplehub-f4fbf",
-    storageBucket: "tradespeoplehub-f4fbf.appspot.com",
-    messagingSenderId: "132127313614",
-    appId: "1:132127313614:web:d4183282a65df1746b8a9f",
-    measurementId: "G-Y9PYEX7SB9"
-};
-const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+  function requestPermission() {
+      console.log("Requesting permission...");  
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+            console.log("Notification permission granted.");      
+            getToken(messaging, {
+              vapidKey:
+                  "BAoOqRYuEpTb7kxPPvuI4pMJ8azN_avfQAUGqFZd537JAdGvqlqs-0eRHNAgbYNMhWzDPkiPVhZliYvF8b_ZgoQ",
+            }).then((currentToken) => {
+            if (currentToken) {
+                console.log("currentToken: ", currentToken);
+                var device_id = currentToken;
+                updateDeviceId(currentToken);
+                localStorage.setItem("device_id",currentToken);
+              //$('body').html(currentToken)
+          } else {
+            console.log("Can not get token");
+          }
+        });
+      } else {
+        console.log("Do not have permission!");
+      }
 
-const messaging = getMessaging(app);
-function requestPermission() {
-    console.log("Requesting permission...");  
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-          console.log("Notification permission granted.");      
-          getToken(messaging, {
-            vapidKey:
-                "BAoOqRYuEpTb7kxPPvuI4pMJ8azN_avfQAUGqFZd537JAdGvqlqs-0eRHNAgbYNMhWzDPkiPVhZliYvF8b_ZgoQ",
-          }).then((currentToken) => {
-          if (currentToken) {
-              console.log("currentToken: ", currentToken);
-              var device_id = currentToken;
-              updateDeviceId(currentToken);
-              localStorage.setItem("device_id",currentToken);
-            //$('body').html(currentToken)
-        } else {
-          console.log("Can not get token");
-        }
-      });
-    } else {
-      console.log("Do not have permission!");
-    }
-
-  });
-}
-
-function updateDeviceId(device_id){
-  //alert(device_id);
-  <?php if($this->session->userdata('user_id')) { ?>
-  $.ajax({
-       url: '<?= base_url('home/update_device_id') ?>',
-       type: 'post',
-       data: {'device_id' : device_id},
-       dataType: 'json',
-       success: function (data) {
-        console.log('device_id updated',data)
-       }
     });
-  <?php } ?>
-}
+  }
 
-//requestPermission();
-
-
+  function updateDeviceId(device_id){
+    //alert(device_id);
+    <?php if($this->session->userdata('user_id')) { ?>
+    $.ajax({
+         url: '<?= base_url('home/update_device_id') ?>',
+         type: 'post',
+         data: {'device_id' : device_id},
+         dataType: 'json',
+         success: function (data) {
+          console.log('device_id updated',data)
+         }
+      });
+    <?php } ?>
+  }
+  //requestPermission();
 </script>
 
 <?php if($this->session->userdata('type')==1){ ?>

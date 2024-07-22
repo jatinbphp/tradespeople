@@ -619,7 +619,7 @@ class Chat extends CI_Controller
     	}else{
       		$insertn['nt_message']= $get_users['f_name'].' '.$get_users['l_name'].' has sent you a message. <a href="'.site_url().'proposals/?post_id='.$post_id.'&chat='.$userid.'">View & Reply!</a>';
       		$notArr['message'] = $get_users['f_name'].' '.$get_users['l_name'].' has sent you a message.';
-    }
+    	}
 		
 		
 
