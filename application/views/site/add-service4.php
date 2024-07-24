@@ -87,7 +87,7 @@
 						Get noticed by the right buyer with visual examples of your services.
 					</span>
 
-					<div class="row loader">
+					<div class="row">
 						<div id="loader1" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 							<div class="file-upload-btn addWorkImage imgUp">
@@ -126,7 +126,7 @@
 						Show some of the best work you created in a document (PDFs only)
 					</span>
 
-					<div class="row loader">
+					<div class="row ">
 						<div id="loader2" class="loader_ajax_small"></div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
 							<div class="file-upload-btn addWorkDoc imgUp">

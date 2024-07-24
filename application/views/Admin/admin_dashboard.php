@@ -375,6 +375,47 @@
         </div>
       <?php } ?>
 
+      <?php
+          if (in_array(10, $my_access)) {
+          ?>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>           
+            <div class="info-box-content">
+              <?php
+              $totalService = $this->db->select(['id'])->from('my_services')->count_all_results();
+              ?>
+              <span class="info-box-text">Service Listing</span>
+              <span class="info-box-number"><?=$totalService;?> </span>
+            </div>
+          </div>
+        </div>
+      <?php
+          }
+      ?>
+
+      <?php
+          if (in_array(1, $my_access)) {
+          ?>
+          <div class="col-md-4 col-sm-6 col-xs-12">
+              <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="fa fa-shopping-cart"></i></span>
+                <div class="info-box-content">
+                  <?php
+                      $serviceOrders = $this->db->select('*')->from('service_order')->count_all_results();
+                      ?>
+                  <span class="info-box-text">Orders</span></span>
+                  <span class="info-box-number"><?=$serviceOrders;?></span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
+
+          </div>
+      <?php
+          }
+      ?>
+
     </div>
   </section>
 </div>

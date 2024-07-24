@@ -2282,9 +2282,11 @@ public function exists_refferals() {
 	}
 
 	public function my_orders(){
+		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
 		if($this->session->userdata('user_id')) {
-			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),0);
+			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),$status,0);
 			$data['totalStatusOrder'] = $this->common_model->getTotalStatusOrder($this->session->userdata('user_id'));
+			$data['statusArr'] = ['placed', 'completed', 'cancelled', 'all'];
 			$this->load->view('site/my_orders',$data);
 		} else {
 			redirect('login');
@@ -2292,9 +2294,11 @@ public function exists_refferals() {
 	}
 
 	public function getAllOrders() {
+		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
 	    if($this->session->userdata('user_id')) {
-	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'));
+	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'), $status);
 	        $data = [];
+
 
 	        foreach($orders as $order) {
 	        	$date = new DateTime($order['created_at']);

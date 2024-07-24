@@ -33,30 +33,16 @@
                             <div class="dashboard-white"> 
                                 <div class="verification-checklist order-metrics mb-5">
                                     <ul class="list">
-                                        <li>
-                                            Placed 
-                                            <span class="bg-gray">
-                                                <?php echo $totalStatusOrder['total_pending']; ?>
-                                            </span>
-                                        </li>
-                                        <li>
-                                            Completed 
-                                            <span class="bg-gray">
-                                                <?php echo $totalStatusOrder['total_complete']; ?>
-                                            </span>
-                                        </li>
-                                        <li>
-                                            Cancelled 
-                                            <span class="bg-gray">
-                                                <?php echo $totalStatusOrder['total_cancel']; ?>
-                                            </span>
-                                        </li>
-                                        <li>
-                                            All 
-                                            <span class="bg-green">
-                                                <?php echo $totalStatusOrder['total_orders']; ?>
-                                            </span>
-                                        </li>
+                                        <?php foreach($statusArr as $list): ?>
+                                            <li>
+                                                <a href="<?php echo base_url().'my-orders?status='.$list; ?>">
+                                                    <?php echo ucfirst($list); ?> 
+                                                    <span class="<?php echo $list == $_GET['status'] ? 'bg-green text-white' : 'bg-gray'; ?>">
+                                                        <?php echo $totalStatusOrder['total_'.$list]; ?>
+                                                    </span>
+                                                </a>
+                                            </li>                                            
+                                        <?php endforeach; ?>
                                     </ul>                                    
                                 </div> 
                                 <div class="row dashboard-profile dhash-news">
@@ -95,12 +81,20 @@
 <?php include 'include/footer.php'; ?>
 <script>
 $(function () {
+    <?php
+        if(isset($_GET['status']) && !empty($_GET['status'])){
+            $order_url = 'users/getAllOrders?status='.$_GET['status'];
+        }else{
+            $order_url = 'users/getAllOrders';
+        }
+    ?>
+
     var table = $("#boottable").DataTable({
         stateSave: true,
         "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
         "pageLength": 25,
         "ajax": {
-            "url": site_url + 'users/getAllOrders',
+            "url": site_url + '<?php echo $order_url; ?>',
             "type": "GET",
             "dataSrc": "data"
         },

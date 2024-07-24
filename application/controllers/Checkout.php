@@ -248,6 +248,9 @@ class Checkout extends CI_Controller
 		}
 
 		if($is_proceed == 1){
+
+			$pmtype = !in_array($payment_method, ['card','wallet']) ? 'card' : $payment_method;
+
 			$insert['user_id'] = $uId;
 			$insert['service_id'] = $service_id;
 			$insert['ex_services'] = rtrim($extraService,',');
@@ -257,7 +260,7 @@ class Checkout extends CI_Controller
 			$insert['discount_type'] = $promo_code['discount_type'];
 			$insert['discount'] = $discount;
 			$insert['total_price'] = $mainPrice;
-			$insert['payment_method'] = $payment_method;
+			$insert['payment_method'] = $pmtype; 
 			$insert['payment_status'] = 'paid';
 			$insert['transaction_id'] = $transactionid ?? '';
 			$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';

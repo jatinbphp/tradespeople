@@ -593,6 +593,22 @@
             </li>
           <?php }?>
 
+          <?php if (in_array(22, $my_access)) {?>
+          <li class="DashboardManage">
+            <a href="<?php echo base_url(); ?>services">
+              <i class="fa fa-tasks"></i> <span>Services</span>
+            </a>
+          </li>
+          <?php }?>
+
+          <?php if (in_array(23, $my_access)) {?>
+            <li class="DashboardManage">
+              <a href="<?php echo base_url(); ?>service-orders">
+                <i class="fa fa-shopping-cart"></i> <span>Service Orders</span>
+              </a>
+            </li>
+          <?php }?>
+
          <!--  <li class="us_er3">
             <a href="#">
               <i class="fa fa-pie-chart"></i> <span>Referral</span>

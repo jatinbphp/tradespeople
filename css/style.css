@@ -8505,7 +8505,7 @@ ul.nav.login.d-lg-none {
     align-items: flex-start;
 }
 .category-list .category-list-slider a:before {
-    background: radial-gradient(63.44% 63.44% at 50% 50%, #c2ffe2 0, #fff 100%), #fff;
+    background: radial-gradient(63.44% 63.44% at 50% 50%, #3d78cb5c 0, #fff 100%), #fff;
     border-radius: 16px;
     bottom: 0;
     content: "";

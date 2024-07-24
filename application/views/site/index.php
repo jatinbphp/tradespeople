@@ -140,15 +140,16 @@
 				<?php } ?>
 			</div>
 		</div>
-	</div>
+	</div>	
 <?php endif; ?>
-<hr class="my0">
+
 
 <?php 
 	if(!empty($all_categoty)){
 ?>
-		<div class="category-list mt30">
+		<div class="category-list how-need pb-5">
 			<div class="container">
+					<h1 class="head-home text-center">Categories</h1>
 				<div class="category-list-slider">
 <?php					
 		foreach($all_categoty as $cat){
@@ -164,7 +165,7 @@
 ?>
 			</div>
 		</div>
-	</div>
+	</div>	
 <?php		
 	}
 ?>

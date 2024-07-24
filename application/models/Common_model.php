@@ -1915,7 +1915,19 @@ class Common_model extends CI_Model
 	public function get_service_image($table, $id)
 	{
 		$result = array();
-		$sql = "SELECT * from $table where service_id=$id AND type=1 order by id desc";
+		$sql = "SELECT * from $table where service_id=$id order by id desc";
+		$query = $this->db->query($sql);
+		$result = $query->result_array();
+		return $result;
+	}
+
+	public function get_service_files($table, $id, $type)
+	{
+		$id = intval($id);
+    	$type = $this->db->escape($type); 
+
+		$result = array();
+		$sql = "SELECT * from $table where service_id=$id AND type=$type order by id desc";
 		$query = $this->db->query($sql);
 		$result = $query->result_array();
 		return $result;
@@ -3197,13 +3209,18 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getAllOrder($table, $user_id, $limit=0){
+	public function getAllOrder($table, $user_id, $status='', $limit=0){
+		$statusWhere = '';
+		if(!empty($status) && $status != 'all'){
+			$statusWhere = 'AND so.status = "'.$status.'"';
+		}
+
 		if($limit != 0){
 			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
                	FROM $table so
                	LEFT JOIN users u ON so.user_id = u.id
                	LEFT JOIN my_services ms ON ms.id = so.service_id
-               	WHERE ms.user_id = $user_id
+               	WHERE ms.user_id = $user_id $statusWhere
                	ORDER BY so.id DESC
                	LIMIT $limit");		
 		}else{
@@ -3211,20 +3228,30 @@ class Common_model extends CI_Model
                	FROM $table so
                	LEFT JOIN users u ON so.user_id = u.id
                	LEFT JOIN my_services ms ON ms.id = so.service_id
-               	WHERE ms.user_id = $user_id
+               	WHERE ms.user_id = $user_id $statusWhere
                	ORDER BY so.id DESC
                	LIMIT 500");	
 		}
 		return $query->result_array();
 	}
 
+	public function getAllOrderForAdmin($table){
+		$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
+               	FROM $table so
+               	LEFT JOIN users u ON so.user_id = u.id
+               	LEFT JOIN my_services ms ON ms.id = so.service_id
+               	ORDER BY so.id DESC
+               	LIMIT 500");
+		return $query->result_array();
+	}
+
 	public function getTotalStatusOrder($user_id){
 		$query = $this->db->query("
 			    SELECT
-			    	COUNT(*) AS total_orders,
-			        SUM(CASE WHEN so.status IN ('placed', 'pending') THEN 1 ELSE 0 END) AS total_pending,
-			        SUM(CASE WHEN so.status = 'complete' THEN 1 ELSE 0 END) AS total_complete,
-			        SUM(CASE WHEN so.status = 'cancel' THEN 1 ELSE 0 END) AS total_cancel
+			    	COUNT(*) AS total_all,
+			        SUM(CASE WHEN so.status IN ('placed', 'pending') THEN 1 ELSE 0 END) AS total_placed,
+			        SUM(CASE WHEN so.status = 'complete' THEN 1 ELSE 0 END) AS total_completed,
+			        SUM(CASE WHEN so.status = 'cancel' THEN 1 ELSE 0 END) AS total_cancelled
 			    FROM
 			        service_order so
 			    JOIN

@@ -3034,4 +3034,31 @@ class Admin extends CI_Controller
             echo 'Something is wrong!!!';
         }
     }
+
+    public function service_list(){
+        $result['service_list'] = $this->Common_model->get_all_service('my_services',0);
+        $this->load->view('Admin/service_list', $result);
+    }
+
+    public function getServiceDetails(){
+        $sId = $this->input->post('id');
+        $data['service_details'] = $this->Common_model->GetSingleData('my_services',['id'=>$sId]);
+        $uId = $data['service_details']['user_id'];
+        $data['service_images']=$this->Common_model->get_service_files('service_images',$sId,'image');
+        $data['service_docs']=$this->Common_model->get_service_files('service_images',$sId, 'file');
+        $data['service_availability'] = $this->Common_model->GetSingleData('service_availability',['service_id'=>$sId]);
+        $data['service_faqs'] = $this->Common_model->get_all_data('service_faqs',['service_id'=>$sId]);
+        $data['extra_services'] = $this->Common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
+        $data['service_rating'] = $this->Common_model->getRatingsWithUsers($sId);
+        $data['service_user'] = $this->Common_model->GetSingleData('users',['id'=>$uId]);
+        $data['user_profile'] = $this->Common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
+
+        $serviceDetailsView = $this->load->view('Admin/serviceDetails', $data);
+        return $serviceDetailsView;        
+    }
+
+    public function service_orders(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order');
+        $this->load->view('Admin/service_order_list', $result);
+    }
 }
