@@ -766,7 +766,7 @@ class Common_model extends CI_Model
 		}
 	}
 
-	public function get_all_data($table, $id = null, $ob = null, $obc = 'desc', $limit = null)
+	public function get_all_data($table, $id = null, $ob = null, $obc = 'desc', $limit = null, $select = null)
 	{
 		if ($id) {
 			$this->db->where($id);
@@ -776,6 +776,9 @@ class Common_model extends CI_Model
 		}
 		if ($limit) {
 			$this->db->limit($limit);
+		}
+		if ($select) {
+			$this->db->select($select);
 		}
 		$query = $this->db->get($table);
 
@@ -2758,7 +2761,7 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getServiceByCategoriesId($categoryId, $step)
+	public function getServiceByCategoriesId($categoryId, $step, $sIds='')
 	{
 		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
 		$this->db->from('my_services ms');
@@ -2772,7 +2775,12 @@ class Common_model extends CI_Model
 			$this->db->where('ms.sub_category', $categoryId);
 		}else{
 			$this->db->where('ms.service_type', $categoryId);
+		}	
+
+		if(!empty($sIds)){
+			$this->db->where_in('ms.id', $sIds);
 		}		
+
 		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');
 		$this->db->order_by('average_rating', 'DESC');
 		$this->db->limit(500);

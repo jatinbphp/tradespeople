@@ -252,8 +252,8 @@
                 <tr>
                   <td><span class="text-bold">Answer:</span><br><?php echo $faq['answer'];?></td>
                 </tr>
-              </table>
-            </div>
+              </table>            
+            </tr>
         <?php endforeach;?> 
       <?php else:?>  
         <tr>
@@ -281,6 +281,4 @@
     var activeButton = document.querySelector('button[onclick="openServiceTab(\'' + tabName + '\')"]');
     activeButton.classList.add('btn-primary');
   }
-
-  
 </script>

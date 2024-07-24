@@ -2371,6 +2371,8 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$sId = $data['service_details']['id'];
 		$uId = $data['service_details']['user_id'];
 
+		$category = $data['service_details']['category'];
+
 		$ip_address = $this->input->ip_address();
 		$existViewed = $this->common_model->GetSingleData('recently_viewed_service',['ip_address'=>$ip_address,'service_id'=>$sId]);
 
@@ -2379,6 +2381,29 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 			$insert['service_id'] = $sId;
 			$this->common_model->insert('recently_viewed_service', $insert);		
 		}
+
+		$recentlyViews = $this->common_model->get_all_data('recently_viewed_service', array('ip_address' => $ip_address,'service_id !='=>$sId),array(),array(), array(),'service_id');
+
+		$exIds = [0];
+
+		if(!empty($recentlyViews)){
+			foreach($recentlyViews as $rview){
+				$exIds[] = $rview['service_id'];
+			}
+		}
+
+		$peopleViews = $this->common_model->get_all_data('recently_viewed_service', array('ip_address !=' => $ip_address),array(),array(), array(),'service_id');
+
+		$exPids = [0];
+
+		if(!empty($peopleViews)){
+			foreach($peopleViews as $rview){
+				$exPids[] = $rview['service_id'];
+			}
+		}
+
+		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exIds);
+		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exPids);
 
 		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
@@ -2404,11 +2429,33 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 			$step = 3;
 		}
 
-		// echo $step;exit;
+		$ip_address = $this->input->ip_address();
+
+		$recentlyViews = $this->common_model->get_all_data('recently_viewed_service', array('ip_address' => $ip_address),array(),array(), array(),'service_id');
+
+		$exIds = [];
+
+		if(!empty($recentlyViews)){
+			foreach($recentlyViews as $rview){
+				$exIds[] = $rview['service_id'];
+			}
+		}
+
+		$peopleViews = $this->common_model->get_all_data('recently_viewed_service', array('ip_address !=' => $ip_address),array(),array(), array(),'service_id');
+
+		$exPids = [0];
+
+		if(!empty($peopleViews)){
+			foreach($peopleViews as $rview){
+				$exPids[] = $rview['service_id'];
+			}
+		}
 
 		$data['breadcrumb'] = $this->common_model->get_breadcrumb(($category['cat_id'] ?? 0));
 		$data['category_details'] = $category;
 		$data['services']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0),$step);
+		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0),$step,$exIds);
+		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category['cat_id'] ?? 0),$step,$exPids);
 		$data['step'] = $step;
 
 		$data['categories_data']=$this->getHirarchicalCategoryData();
