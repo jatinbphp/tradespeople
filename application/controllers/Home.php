@@ -2367,9 +2367,16 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	}
 
 	public function serviceDetail($slug=""){
-		$data['service_details'] = $this->common_model->GetSingleData('my_services',['slug'=>$slug]);
+		$data['service_details'] = $this->common_model->get_service_details('my_services',$slug);
+		$data['is_detail'] = 1;
+		if($data['service_details']['status'] != 'active'){
+			redirect('/');
+		}
+
 		$sId = $data['service_details']['id'];
 		$uId = $data['service_details']['user_id'];
+
+		$sDetails = $this->common_model->get_service_details('my_services',$sId);
 
 		$category = $data['service_details']['category'];
 
@@ -2402,6 +2409,8 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 			}
 		}
 
+		
+
 		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exIds);
 		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exPids);
 
@@ -2409,10 +2418,19 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
 		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
 		$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
-		$data['service_rating'] = $this->common_model->getRatingsWithUsers($sId);
+		$data['service_rating'] = $this->common_model->getRatingsWithUsers($sId,3);
 		$data['service_user'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
 		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
+		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
 		$this->load->view('site/service_details',$data);
+	}
+
+	public function loadMoreReviews() {
+    $service_id = $this->input->post('service_id');
+    $limit = $this->input->post('limit');
+    $offset = $this->input->post('offset');
+    $reviews = $this->common_model->getRatingsWithUsers($service_id, $limit, $offset);
+    echo json_encode($reviews);
 	}
 
 	public function categoryDetail($slug='', $slug2='', $slug3=''){

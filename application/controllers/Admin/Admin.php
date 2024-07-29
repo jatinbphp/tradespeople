@@ -3036,7 +3036,7 @@ class Admin extends CI_Controller
     }
 
     public function service_list(){
-        $result['service_list'] = $this->Common_model->get_all_service('my_services',0);
+        $result['service_list'] = $this->Common_model->get_all_service_for_admin('my_services',0);
         $this->load->view('Admin/service_list', $result);
     }
 

@@ -80,6 +80,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<th>Location</th>
 										<th>Price</th>
 										<th>Created At</th>
+										<th>Status</th>
 										<th>Action</th>
 									</tr>
 								</thead>
@@ -93,6 +94,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<td><?php echo $lists['location']; ?></td>
 										<td><?php echo '£'.number_format($lists['price'],2); ?></td>
 										<td><?php echo $lists['created_at']; ?></td>
+										<td><?php echo ucwords(str_replace('_',' ',$lists['status'])); ?></td>
 										<td>
 											<button type="button" class="btn btn-sm btn-primary serviceDetails" data-id="<?php echo $lists['id']; ?>" data-name="<?php echo $lists['service_name']; ?>"><i class="fa fa-eye"></i></button>
 										</td>				

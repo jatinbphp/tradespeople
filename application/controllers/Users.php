@@ -635,7 +635,10 @@ class Users extends CI_Controller
   public function profile($id){
     $pagedata['user_profile']=$this->common_model->get_single_data('users',array('id'=>$id));
     if(empty($pagedata['user_profile'])) redirect ('find-tradesmen');
-   
+    $pagedata['my_services']=$this->common_model->get_my_service('my_services',$id);
+
+    
+
     $pagedata['publications']=$this->common_model->get_education('user_publication',$id);
     $pagedata['portfolio']=$this->common_model->get_education('user_portfolio',$id);
     $pagedata['category']=$this->common_model->GetAllData('category');
@@ -2323,6 +2326,7 @@ public function exists_refferals() {
 			$data['category']=$this->common_model->get_parent_category('category');
 			$sesData = $this->session->userdata('store_service2');
 			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$sesData['category']);
+			$data['price_per_type'] = ["Hour","Service","Meter","Square Meter","Kilogram","Mile","Consultation"];
       		$this->load->view('site/add-service',$data);
     	} 
 	}
@@ -2380,6 +2384,7 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('price','Price','required|numeric');
+		$this->form_validation->set_rules('delivery_in_days','Delivery in days','required|numeric');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2403,9 +2408,11 @@ public function exists_refferals() {
 		$insert['description'] = trim($this->input->post('description'));
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
 		$insert['location'] = trim($this->input->post('location'));
+		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
 		$insert['price'] = trim($this->input->post('price'));
 		$insert['image'] = $newImg;
-		$insert['status'] = 0;
+		$insert['status'] = 'approval_pending';
+		$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
 
 		$this->session->set_userdata('store_service1',$insert);
 		$this->session->set_userdata('next_step',2);
@@ -2466,10 +2473,6 @@ public function exists_refferals() {
 		if ($step3 !== null) {
 		  $insert = array_merge($insert, $step3);
 		}
-
-		echo '<pre>';
-		print_r($insert);
-		exit;
 
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
@@ -2561,9 +2564,6 @@ public function exists_refferals() {
 		$run = $this->common_model->insert('service_availability', $insert);
 	
 		if($run){
-			$input['status'] = 1;
-			$run = $this->common_model->update('my_services',array('id'=>$this->session->userdata('latest_service')),$input);	
-
 			$this->session->unset_userdata('store_service1');
 			$this->session->unset_userdata('store_service2');
 			$this->session->unset_userdata('store_service3');
@@ -2618,6 +2618,7 @@ public function exists_refferals() {
 				}
 			}
 			$data['id'] = $id;
+			$data['price_per_type'] = ["Hour","Service","Meter","Square Meter","Kilogram","Mile","Consultation"];
 			$this->load->view('site/edit-service',$data);
     	} 
 	}
@@ -2631,6 +2632,7 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('price','Price','required|numeric');
+		$this->form_validation->set_rules('delivery_in_days','Delivery in days','required|numeric');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2656,10 +2658,12 @@ public function exists_refferals() {
 		$insert['service_name'] = $this->input->post('service_name');
 		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 		$insert['description'] = trim($this->input->post('description'));
+		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
 		$insert['price'] = $this->input->post('price');
 		$insert['status'] = $this->input->post('status');
 		$insert['location'] = $this->input->post('location');
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
+		$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
 
 		$this->common_model->update('my_services', ['id'=>$id], $insert);
 		$this->session->set_flashdata('success','Service details updated succesfully.');
@@ -2818,8 +2822,6 @@ public function exists_refferals() {
 		$this->common_model->update('service_availability',array('id'=>$id),$insert);
 	
 		if($id){
-			$input['status'] = 1;
-			$run = $this->common_model->update('my_services',array('id'=>$id),$input);	
 			$this->session->set_flashdata('success','Your service has been updated successfully.');
 		} else {
 			$this->session->set_flashdata('error','Something is wrong.');
@@ -3085,6 +3087,100 @@ public function exists_refferals() {
 	    } else {
 	        echo json_encode(['status' => 0]);
 	        exit;
+	    }
+	}
+
+	public function sendInquiry(){
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}
+    	$userid = $this->session->userdata('user_id');
+	    $sId = $this->input->post('serviceId');
+	    $message = $this->input->post('message');
+	    $service = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
+	    if(!empty($service)){
+	    	$receiver = $service['user_id'];
+	    	$msg = str_replace('Request', 'Are you available', $message);
+			$insert1 = [
+	            'post_id' => $sId,
+	            'type' => 'service',
+	            'sender_id' => $userid,
+	            'receiver_id' => $receiver,
+	            'mgs' => $msg,
+	            'is_read' => 0,
+	            'create_time' => date('Y-m-d H:i:s')
+	        ];
+	        
+	        // Inserting data into the chat table
+	        $chatInsert = $this->common_model->insert('chat', $insert1);
+
+	        if($chatInsert){
+	        	$get_users = $this->common_model->get_single_data('users', ['id' => $userid]);
+		        $check_last = $this->common_model->GetColumnName('chat', ["post_id" => $service_id, "type" => 'service', "receiver_id" => $receiver], ['create_time'], null, 'id');
+		        
+		        if ($check_last == false) {
+		            $has_email_noti = $this->common_model->check_email_notification($receiver);
+		                        
+		            if ($has_email_noti) {
+		                $user_namess = $get_users['f_name'];
+		                $subject = "New Messages from " . $user_namess;
+		                $msg = "You have received a new message"; // Add this line for the $msg variable
+
+		                if ($has_email_noti['type'] == 1) {
+		                    $html = '<p style="margin:0;padding:10px 0px">' . $msg . '</p>
+		                             <div style="text-align:center">
+		                             <a href="' . $link . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Messages & Reply now</a></div>
+		                             <br><p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
+		                } else {
+		                    $user_namess = $get_users['trading_name'];
+		                    $subject = "New Messages from " . $user_namess;
+		                    $html = '<p style="margin:0;padding:10px 0px">' . $msg . '</p>
+		                             <br><div style="text-align:center">
+		                             <a href="' . $link . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Messages & Reply now</a></div>
+		                             <br><p style="margin:0;padding:10px 0px">Visit our Homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
+		                }                
+
+		                try {
+		                    $sent = $this->common_model->send_mail($has_email_noti['email'], $subject, $html, null, $user_namess . ' via Tradespeoplehub');
+		                    
+		                    // Log successful email sending
+		                    $file = 'logFile.txt';
+		                    $handle = fopen($file, 'a');
+		                    $data = date('Y-m-d h:i:s') . '-----' . $has_email_noti['email'] . "\n";
+		                    if (fwrite($handle, $data) === false) {
+		                        die('Could not write to file');
+		                    }
+		                    fclose($handle);
+		                } catch (Exception $e) {
+		                    // Log email sending error
+		                    $file = 'errorLogFile.txt';
+		                    $handle = fopen($file, 'a');
+		                    $data = date('Y-m-d h:i:s') . '-----' . "Error In send chat msg===>" . $e->getMessage();
+		                    if (fwrite($handle, $data) === false) {
+		                        die('Could not write to file');
+		                    }
+		                    fclose($handle);
+		                }
+		            }
+		        }
+
+		        $json['status'] = 1;
+		    	$json['message'] = 'Inquiry send successfully';
+	      		echo json_encode($json);
+	      		exit;
+	        }else{
+	        	$json['status'] = 1;
+		    	$json['message'] = 'Something is wrong';
+	      		echo json_encode($json);
+	      		exit;
+	        }
+	    }else{
+	    	$json['status'] = 0;
+	    	$json['message'] = 'Service not found';
+      		echo json_encode($json);
+      		exit;
 	    }
 	}
 }

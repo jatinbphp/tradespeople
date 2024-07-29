@@ -5068,7 +5068,6 @@ margin: 5px 0;
     background-image: none;
 }
 
-
 .tradespeople-box {
     margin-bottom: 30px;
 }
@@ -5080,6 +5079,12 @@ margin: 5px 0;
     border: 1px solid #e4e5e7;
 }
 .tradespeople-box-img img {
+    width: 100%;
+    height: 185px;
+    object-fit: cover;
+}
+
+.tradespeople-box-img video {
     width: 100%;
     height: 185px;
     object-fit: cover;
@@ -5512,7 +5517,7 @@ width: 100%;
     width: 100%;
 }
 .faq-accordion {
-    padding: 50px 0;
+    padding: 30px 0;
 }
 .faq-accordion.help-center .panel-title a {
     background: #fff !important;
@@ -5522,7 +5527,7 @@ width: 100%;
 
 
 .portfolio-presence {
-    padding-bottom: 50px;
+    padding-bottom: 30px;
 }
 .presence-header {
     align-items: center;
@@ -9428,11 +9433,11 @@ width: 15%;
 transition: color .2s; }
 
 button.switch-month:hover {
-  color: #1089ff; }
+  color: #1089ff; 
+}
 
-  <<<<<<< HEAD
-  .client-reviews {
-    padding-bottom: 50px; 
+.client-reviews {
+    padding-bottom: 30px; 
 }
 .client-reviews ul {
     margin: 30px 0 0 0;
@@ -9465,6 +9470,7 @@ button.switch-month:hover {
 }
 .client-reviews ul li .review-star {
     color: #f9d71c;
+    gap: 2px;
 }
 .client-reviews ul li .review-name {
     display: flex;
@@ -9554,11 +9560,14 @@ button.switch-month:hover {
 }
 
 .compare-packages {
-    padding-bottom: 50px;
+    padding-bottom: 30px;
 }
 .compare-packages h2.title {
     margin-bottom: 30px;
 }
+
+
+
 .gig-page-packages-table tr.description td, 
 .gig-page-packages-table tr.package-type .package-type-price {
     padding-left: 16px;
@@ -10313,4 +10322,117 @@ button.switch-month:hover {
     margin: 0;
     width: 22px;
     height: 22px;
+}
+
+.btn-group, .btn-group-vertical {
+    position: relative;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    vertical-align: middle;
+}
+.btn-group>.btn-group:not(:first-child)>.btn, .btn-group>.btn:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 10rem;
+    padding: .5rem .5rem;
+    margin: .125rem 0 0;
+    font-size: 1.5rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: .25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+}
+
+.action {
+    border: 1px solid rgba(0, 0, 0, .15)!important;
+    border-radius: .25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: .25rem 1rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.dropdown-icon::after {
+    margin-left: 0;
+}
+
+.btn-group .dropdown-toggle::after {
+    display: inline-block;
+    vertical-align: .255em;
+    content: "";
+    border-top: .4em solid;
+    border-right: .4em solid transparent;
+    border-bottom: 0;
+    border-left: .4em solid transparent;
+}
+.star-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.star-total div {
+    display: flex;
+    align-items: center;
+}
+.star-total .review-text {
+    padding-left: 10px;
+}
+.star-total span {
+    font-weight: 600;
+}
+.profile-service-list .profile-img img{
+    border-radius: 0!important;
+}
+.profileServiceVideo{
+    width: 150px;
+}
+
+.profile-service-list ul li .profile-img {
+    width: 150px!important;
+    min-width: 150px;
+    overflow: hidden;
+    margin-right: 30px;
+}
+
+.profile-service-list ul li .profile-img img {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    max-height: 180px!important;
+    max-width: 180px!important;
+    border-radius: 50%;
 }

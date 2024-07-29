@@ -2718,10 +2718,12 @@ class Common_model extends CI_Model
 	{
 		//$query = $this->db->query("SELECT * FROM $table where user_id=$userid order by id desc limit 500");
 
-		$query = $this->db->query("SELECT ms.*, c.cat_name
+		$query = $this->db->query("SELECT ms.*, c.cat_name, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
                            LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.user_id = $userid
+                           GROUP BY ms.id
                            ORDER BY ms.id DESC 
                            LIMIT 500");
 
@@ -2729,19 +2731,13 @@ class Common_model extends CI_Model
 	}
 	function get_all_service($table, $limit)
 	{
-
-		/*
-		$query = $this->db->query("SELECT AVG(rt_rate)as avg FROM `rating_table` where rt_rateTo=$bid_by");
-		*/
-
-
 		if($limit == 0){
 			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
                            LEFT JOIN category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
-                           WHERE ms.status = 1
+                           WHERE ms.status = 'active'
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
                            LIMIT 500");	
@@ -2751,13 +2747,24 @@ class Common_model extends CI_Model
                            LEFT JOIN category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
-                           WHERE ms.status = 1
+                           WHERE ms.status = 'active'
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
                            LIMIT ".$limit);
 		}
-		
+		return $query->result_array();
+	}
 
+	function get_all_service_for_admin($table, $limit)
+	{
+		$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+                           FROM $table ms
+                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN users u ON ms.user_id = u.id
+                           LEFT JOIN service_rating srt ON ms.id = srt.service_id
+                           GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
+                           ORDER BY average_rating DESC 
+                           LIMIT 500");
 		return $query->result_array();
 	}
 
@@ -2768,7 +2775,7 @@ class Common_model extends CI_Model
 		$this->db->join('category c', 'ms.category = c.cat_id', 'left');
 		$this->db->join('users u', 'ms.user_id = u.id', 'left');
 		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
-		$this->db->where('ms.status', 1);
+		$this->db->where('ms.status', 'active');
 		if($step == 1){
 			$this->db->where('ms.category', $categoryId);
 		}elseif($step == 2){
@@ -2789,13 +2796,14 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getRatingsWithUsers($service_id) {
+	public function getRatingsWithUsers($service_id, $limit, $offset = 0) {
         $this->db->select('service_rating.*, users.f_name as rate_by_fname, users.l_name as rate_by_lname, users.profile as rate_by_profile, users2.f_name as rate_to_fname, users2.l_name as rate_to_lname,, users2.profile as rate_to_profile');
 
         $this->db->from('service_rating');
         $this->db->where('service_rating.service_id', $service_id);
         $this->db->join('users', 'service_rating.rate_by = users.id', 'left');
         $this->db->join('users as users2', 'service_rating.rate_to = users2.id', 'left');
+        $this->db->limit($limit, $offset);
         $query = $this->db->get();
         return $query->result_array();
     }
@@ -3309,5 +3317,26 @@ class Common_model extends CI_Model
 		$query = $this->db->get();
 
 		return $query->result_array();
+	}
+
+	public function get_service_details($table, $slug){
+		$query = $this->db->query("SELECT ms.*, 
+                                  c.cat_name, 
+                                  u.trading_name, 
+                                  u.profile, 
+                                  AVG(srt.rating) AS average_rating, 
+                                  COUNT(DISTINCT srt.id) AS total_reviews, 
+                                  (SELECT COUNT(*) FROM recently_viewed_service rvs WHERE rvs.service_id = ms.id) AS total_views,
+                                  (SELECT COUNT(*) FROM service_likes serl WHERE serl.service_id = ms.id) AS total_likes,
+                                  (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders
+                           FROM $table ms
+                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN users u ON ms.user_id = u.id
+                           LEFT JOIN service_rating srt ON ms.id = srt.service_id
+                           WHERE ms.slug = '$slug' AND ms.status = 'active'
+                           GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
+                           ORDER BY average_rating DESC");
+
+		return $query->row_array();
 	}
 }

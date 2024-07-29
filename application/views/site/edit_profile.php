@@ -349,7 +349,7 @@
 								<div class="edit-user-section">
 									<div class="col-md-12">
 										<h2>Add Previous Work Images</h2>
-										<div class="row loader">
+										<div class="row">
 											<div class="loader_ajax_small"></div>
 											<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageAdd">
 												<div class="addWorkImage imagePreviewPlus imgUp">

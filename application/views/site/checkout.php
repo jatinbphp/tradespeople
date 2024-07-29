@@ -190,8 +190,12 @@
 							</div>
 							<ul>
 								<li>
-									<p>Unit price</p> 
+									<p>Unit price (per <?php echo lcfirst($service_details['price_per_type']); ?>)</p> 
 									<b><?php echo '£'.number_format($service_details['price'],2); ?></b>
+								</li>
+								<li>
+									<p>No. of <?php echo lcfirst($service_details['price_per_type']); ?></p> 
+									<b><?php echo $serviceQty; ?></b>
 								</li>
 								<?php if(!empty($ex_services) && count($ex_services) > 0): ?>
 									<li>

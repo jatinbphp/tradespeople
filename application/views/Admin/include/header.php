@@ -593,10 +593,18 @@
             </li>
           <?php }?>
 
-          <?php if (in_array(22, $my_access)) {?>
+          <?php
+          if (in_array(22, $my_access)) {
+            $totalPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->count_all_results();
+          ?>
+
           <li class="DashboardManage">
-            <a href="<?php echo base_url(); ?>services">
-              <i class="fa fa-tasks"></i> <span>Services</span>
+            <a href="<?php echo base_url(); ?>all_services">
+              <i class="fa fa-tasks"></i> 
+              <span>
+                Services
+                <?php echo ($totalPendingService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalPendingService . '</span>' : ''; ?>
+              </span>
             </a>
           </li>
           <?php }?>

@@ -42,6 +42,25 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Price</label>
                     <div class="col-md-12">
+                        <label class="col-md-12 control-label pl-0" for="">How do you charge?</label>
+                        <select class="form-control input-md" name="price_per_type"  id="price_per_type">
+                            <option value="">Select Type</option>
+                            <?php if(!empty($price_per_type)):?>
+                                <?php foreach($price_per_type as $pType): ?>
+                                    <option value="<?php echo $pType; ?>" <?php echo $pType == $serviceData['price_per_type'] ? 'selected' : '' ; ?> ><?php echo $pType; ?></option>
+                                <?php endforeach;?>    
+                            <?php endif;?>                                
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <!-- Text input-->
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="col-md-12 control-label pl-0" id="priceLabel" for="">
+                            How much do you charge <?php echo isset($serviceData) ? lcfirst($serviceData['price_per_type']) : '' ?>?
+                        </label>
                         <input id="price" value="<?php echo $serviceData['price'] ?? '' ?>" name="price" placeholder="Price" class="form-control input-md" type="number" required>
                     </div>
                 </div>
@@ -57,7 +76,16 @@
                         <span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
                     </div>
                 </div>
-            </div>									
+            </div>
+            <div class="col-sm-12">
+                <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-12 control-label" for="">Delivery In Days</label>
+                    <div class="col-md-12">
+                        <input id="service" value="<?php echo $serviceData['delivery_in_days'] ?? '' ?>" name="delivery_in_days" placeholder="Delivery In Days" class="form-control input-md" type="number" min="1" required>
+                    </div>
+                </div>
+            </div>							
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -131,3 +159,10 @@
     </div>
 </div>                        
 </form>
+
+<script type="text/javascript">
+    $('#price_per_type').on('change', function(){
+        var priceType = $(this).val();
+        $('#priceLabel').text('How much do you charge per '+priceType.toLowerCase()+'?');
+    });
+</script>

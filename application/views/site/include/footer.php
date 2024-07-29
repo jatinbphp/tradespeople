@@ -1709,7 +1709,7 @@ var loading = function(isLoading) {
     var post = $('#post_id-footer').val();
     $.ajax({
       type:'POST',
-       url:site_url+'chat/send_msg',
+      url:site_url+'chat/send_msg',
       data:$('#send_msg').serialize(),
       dataType:'JSON',
       success:function(resp)
@@ -2216,7 +2216,9 @@ $(document).ready(function(){
         });
       }
 
-      $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
+      <?php if(!isset($is_detail)): ?>
+        $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
+      <?php endif; ?>
 
       $('#yesCheckbox').on('change', function() {
           if ($(this).is(':checked')) {
@@ -2349,7 +2351,12 @@ $(document).ready(function(){
         dateRanges.push(formatDateRange(start, end)); // Add the last range
         formattedDates.push(month + " " + dateRanges.join(", "));
       }
-      sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
+
+      <?php if(isset($is_detail)): ?>
+        sentence = "<span>Request for: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
+      <?php else: ?>
+        sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
+      <?php endif; ?>
     }
     return sentence;
   }
@@ -2382,7 +2389,7 @@ $(document).ready(function(){
     var selectedDates = $('#selectedDates').val().split(',');
     var timeSlot = $('#timeSlot').val();
     var sentence = formatSentence(selectedDates, timeSlot);
-    console.log('sentence====>'+sentence);
+    //console.log('sentence====>'+sentence);
     if(sentence != ""){
       $('#notAvailablMsg').show().html(sentence); // Update the availability text  
     }    

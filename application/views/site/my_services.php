@@ -129,8 +129,18 @@ $(function () {
                 return '£' + parseFloat(data).toFixed(2);
             }},
             { "data": "id", "render": function(data, type, row) {
-                return '<a class="btn btn-warning btn-sm" href="'+site_url+'edit-service/'+data+'">Edit</a>' +
-                       ' <a class="btn btn-danger btn-sm" href="'+site_url+'delete-service/'+data+'" onclick="return confirm(\'Are you sure want to delete this service?\')">Delete</a>';
+                // return '<a class="btn btn-warning btn-sm" href="'+site_url+'edit-service/'+data+'">Edit</a>' +
+                //        ' <a class="btn btn-danger btn-sm" href="'+site_url+'delete-service/'+data+'" onclick="return confirm(\'Are you sure want to delete this service?\')">Delete</a>';
+
+                return '<div class="btn-group">'+
+                            '<button type="button" class="btn btn-sm btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">'+
+                                '<span class="sr-only">Toggle Dropdown</span>'+
+                            '</button>'+
+                            '<div class="dropdown-menu action" role="menu" style="">'+
+                                '<a class="dropdown-item" href="'+site_url+'edit-service/'+data+'"><i class="fa fa-edit pr-3"></i>Edit</a>'+
+                                '<a class="dropdown-item" href="'+site_url+'delete-service/'+data+'" onclick="return confirm(\'Are you sure want to delete this service?\')"><i class="fa fa-trash pr-3"></i>Delete</a>'+
+                            '</div>'+
+                        '</div>';
             }}
         ]
     });

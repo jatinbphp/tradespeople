@@ -34,6 +34,7 @@ class Checkout extends CI_Controller
 
 		$insert['user_id'] = $uId;
 		$insert['service_id'] = $sId;
+		$insert['service_qty'] = $this->input->post('qty_of_type');
 		$insert['ex_service_ids'] = $this->input->post('selected_exsIds');
 		$newCart = $this->common_model->insert('cart', $insert);
 
@@ -68,6 +69,7 @@ class Checkout extends CI_Controller
 		$prices = 0;
 		$totalPrice = 0;
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
+		$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 		$data['service_fee'] = $setting['service_fees'];
 		$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
@@ -82,8 +84,11 @@ class Checkout extends CI_Controller
 			$totalPrice = array_sum($prices);	
 		}
 
+		$servicePrice = $data['service_details']['price'] * $serviceQty;
+
 		$data['exIds'] = $exsId;
-		$data['totalPrice'] = $totalPrice + $data['service_details']['price'];
+		$data['totalPrice'] = $totalPrice + $servicePrice;
+		$data['serviceQty'] = $serviceQty;
 		$data['userCardData'] = $this->getCardData($uId);
 
 		$this->load->view('site/checkout',$data);
@@ -115,6 +120,7 @@ class Checkout extends CI_Controller
 			$service_id = $cartData['service_id'];
 			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 			$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
+			$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
 			if(!empty($exsId)){
 				$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $service_id);	
 				if(!empty($ex_services) && count($ex_services) > 0){
@@ -125,7 +131,9 @@ class Checkout extends CI_Controller
 					$totalPrice = array_sum($prices);
 				}
 			}
-			$total_amount = $totalPrice + $service_details['price'];
+
+			$servicePrice = $service_details['price'] * $serviceQty;
+			$total_amount = $totalPrice + $servicePrice;
 
 			$result = $this->getDiscount($promo_code, $total_amount, 0);
 
@@ -197,6 +205,7 @@ class Checkout extends CI_Controller
 		$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
+		$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
 		$extraService = '';
 		$total_amount = 0;
 		$totalPrice = 0;
@@ -215,7 +224,8 @@ class Checkout extends CI_Controller
 				$totalPrice = array_sum($prices);
 			}
 		}
-		$total_amount = $totalPrice + $service_details['price'];
+		$servicePrice = $service_details['price'] * $serviceQty;
+		$total_amount = $totalPrice + $servicePrice;
 		$discounted_amount = $total_amount;
 		$is_allowed = 0;
 
@@ -255,6 +265,7 @@ class Checkout extends CI_Controller
 			$insert['service_id'] = $service_id;
 			$insert['ex_services'] = rtrim($extraService,',');
 			$insert['price'] = $service_details['price'];
+			$insert['service_qty'] = $serviceQty;
 			$insert['service_fee'] = $setting['service_fees'];
 			$insert['promo_code'] = $promo_code['code'];
 			$insert['discount_type'] = $promo_code['discount_type'];

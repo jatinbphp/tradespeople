@@ -187,9 +187,9 @@ class Direct_hire extends CI_Controller
 	{
 		$this->form_validation->set_rules('message', 'Message', 'required');
 		$this->form_validation->set_rules('hire_to', 'hire_to', 'required');
-		$this->form_validation->set_rules('main_cate', 'nain category', 'required');
-		$this->form_validation->set_rules('budget', 'budget', 'required');
-		$this->form_validation->set_rules('delivery_days', 'delivery day', 'required');
+		// $this->form_validation->set_rules('main_cate', 'main category', 'required');
+		// $this->form_validation->set_rules('budget', 'budget', 'required');
+		// $this->form_validation->set_rules('delivery_days', 'delivery day', 'required');
 
 		if ($this->form_validation->run()) {
 
@@ -234,15 +234,14 @@ class Direct_hire extends CI_Controller
 				$insert['city'] = $check_postcode['primary_care_trust'];
 				$insert['address'] = $check_postcode['address'];
 				$insert['country']  = $check_postcode['country'];
-
-
 				$insert['project_id'] = $project_id;
 				$insert['awarded_to'] = $hire_to;
 				$insert['direct_hired'] = 1;
+
 				$run = $this->common_model->insert('tbl_jobs', $insert);
 
 				if ($run) {
-					$insert2['bid_amount'] = $budget;
+					$insert2['bid_amount'] = !empty($budget) ? $budget : 0.00;
 					$insert2['delivery_days'] = $delivery_days;
 					$insert2['propose_description'] = $homeOwner['f_name'] . ' has direct hire to ' . $traders['f_name'] . ' ' . $traders['l_name'] . ' for this job.';
 					$insert2['bid_by'] = $hire_to;
@@ -266,10 +265,7 @@ class Direct_hire extends CI_Controller
 					$insertn['nt_create'] = date('Y-m-d H:i:s');
 					$insertn['nt_update'] = date('Y-m-d H:i:s');
 					$insertn['job_id'] = $run;
-					$this->common_model->insert('notification', $insertn);
-
-
-					
+					$this->common_model->insert('notification', $insertn);					
 
 					$notArr['title'] = 'Direct job offer';
 					$notArr['message'] = 'Congratulations! ' . $homeOwner['f_name'] . ' ' . $homeOwner['l_name'] . ' has offered you their job';
@@ -277,7 +273,6 @@ class Direct_hire extends CI_Controller
 					$notArr['user_id'] = $hire_to;
 					$notArr['behalf_of'] = $user_id;
 					$this->common_model->AndroidNotification($notArr);
-
 
 					$OneSignalNoti = [];
 					$OneSignalNoti['title'] = 'Direct job offer';
@@ -294,7 +289,6 @@ class Direct_hire extends CI_Controller
 					$OneSignalNoti['pushdata']['other_user_id'] = $hire_to;
 					$OneSignalNoti['pushdata']['user_id'] = $user_id;
 					$OneSignalNoti['pushdata']['action_id'] = $run; 
-
 
 					//print_r($OneSignalNoti);
 					$return = $this->common_model->OneSignalNotification($OneSignalNoti);
