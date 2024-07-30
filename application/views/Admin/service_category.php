@@ -12,9 +12,10 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 		</ol>
 	  
   </section>
-<section class="content-header text-right">
-    
-	  <a href="javascript:void(0);"   data-toggle="modal" data-target="#add_category" class="btn btn-success">Add Service Category</a> 
+	<section class="content-header text-right">
+	  <button type="button" data-toggle="modal" data-target="#add_category" class="btn btn-success">
+		  Add Service Category
+		</button> 
   </section>
 
   <section class="content">   
@@ -37,9 +38,8 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
                   
 									<th>S.No</th> 
 									<th>Category</th>
-									<th>Parent Category</th>
+									<th>Sub Category</th>
 									<th>Slug</th>
-									<th>Image</th>
 									<th>Action</th>
 								</tr>
               </thead>
@@ -48,9 +48,8 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
                   
 									<th>S.No</th> 
 									<th>Category</th>
-									<th>Parent Category</th>
+									<th>Sub Category</th>
 									<th>Slug</th>
-									<th>Image</th>
 									<th>Action</th>
 								</tr>
               </tfoot>
@@ -123,111 +122,101 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
               <h4 class="modal-title">Add Service Category</h4>
             </div>
             <div class="modal-body form_width100">
-						<div class="form-group">
-							<label for="email"> Select category:</label>
-							<select type="text" name="cat_parent" id="cat_parent"  class="form-control" onchange="InsertTitle(this,'','')" >
-								
-								<option value=''>Select</option>
-								
-								<?php
-								$newCategory = getParent(0, 'service_category');
-								
-								foreach($newCategory as $newCategoryKey => $newCategoryVal){
-								?>
-								
-								<optgroup label="<?php echo $newCategoryVal['cat_name']; ?>">
-									<option value="<?php echo $newCategoryVal['cat_id']; ?>"><?php echo $newCategoryVal['cat_name']; ?> (Main)</option>
+							<div class="form-group">
+								<label for="email"> Select category:</label>
+								<select type="text" name="category" id="category" class="form-control">
+									<option value=''>Select</option>								
 									<?php
-									if(!empty($newCategoryVal['child'])){
-										foreach($newCategoryVal['child'] as $childKey => $childVal){
-											?>
-											<option value="<?php echo $childVal['cat_id']; ?>"><?php echo $childVal['cat_name']; ?></option>
-											<?php
-										}
-										
-									}
+										$newCategory = getParent(0, 'category');								
+										foreach($parent_category as $key => $list){
 									?>
-									
-								</optgroup>
-									
-								<?php } ?>
-								
-								
-								<?php /*<option value=''>select</option>
-								<?php foreach($listing as $categorylistss){?>
-								<option value='<?php echo $categorylistss['cat_id'];?>'><?= (getCatName($categorylistss['cat_parent'])) ? getCatName($categorylistss['cat_parent'])['cat_name'].'-> ' : '' ?><?php echo $categorylistss['cat_name'];?></option>  ?>
+										<option value="<?php echo $list['cat_id']; ?>"><?php echo $list['cat_name']; ?></option>
+									<?php } ?>								
+								</select>
+							</div>
 
-								<?php } */ ?>
-							</select>
-						</div>
-			<div class="form-group">
-				<label for="email"> Category Name:</label>
-				<input type="text" name="cat_name" onkeyup="create_slug(0,this.value);" id="cat_name"  class="form-control" >
-			 </div>
-			 <div class="form-group">
-				<label for="cat_ques"> Category Question:</label>
-				<input type="text" name="cat_ques" value="What type of category_name job do you need?" id="cat_ques" class="form-control" >
-			 </div>
-			 <div class="form-group title_ft">
-				<label for="email"> Category title for find tradesmen page:</label>
-				<input type="text"  name="title_ft"  id="title_ft" class="form-control" >
-			 </div>
-			<div class="form-group">
-				<label for="email"> Slug:</label>
-				<input type="text" name="slug" id="slug0" class="form-control" required>
-				<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
-			 </div>
-			 	 <div class="form-group">
-				<label for="email"> Description:</label>
-				<textarea rows="5" placeholder="" name="cat_description" id="cat_description" class="form-control"></textarea>
-			 </div>
-			 	 <div class="form-group hide">
-				<label for="description0"> Description (For find job page):</label>
-				<textarea rows="5" placeholder="" name="description" id="description0" class="form-control"></textarea>
-			 </div>
-			 <div class="form-group">
-				<label for="email"> Meta Title:</label>
-				<input type="text" name="meta_title" id="meta_title" class="form-control" >
-			 </div>
-			 <div class="form-group">
-				<label for="email"> Meta Keywords:</label>
-				<input type="text" name="meta_key" id="meta_key" class="form-control" >
-			 </div>
-			 <div class="form-group">
-				<label for="email"> Meta Description:</label>
-				<textarea rows="5" placeholder="" name="meta_description" id="meta_description" class="form-control"></textarea>
-			 </div>
+							<div class="form-group">
+								<label for="email"> Select Sub Category:</label>
+								<select type="text" name="sub_category" id="sub_category" class="form-control">
+								</select>
+							</div>
 
-			 <div class="form-group">
-				<label for="email"> Footer Description:</label>
-				<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea"></textarea>
-			 </div>
+							<div class="form-group">
+								<label for="email"> Select Service Type:</label>
+								<select type="text" name="service_type[]" id="service_type" multiple class="form-control">
+								</select>
+							</div>
 
+							<div class="form-group">
+								<label for="" id="addAttribute"><i class="fa fa-plus"></i> Add Attributes:</label>							
+								<div id="attributeList">
+								</div>
+							</div>
 
-			 <div class="form-group hide">
-				<label for="email"> Meta Title (For find job page):</label>
-				<input type="text" name="meta_title2" id="meta_title2" class="form-control" >
-			 </div>
-			 <div class="form-group hide">
-				<label for="email"> Meta Keywords (For find job page):</label>
-				<input type="text" name="meta_key2" id="meta_key2" class="form-control" >
-			 </div>
-			 <div class="form-group hide">
-				<label for="email"> Meta Description (For find job page):</label>
-				<textarea rows="5" placeholder="" name="meta_description2" id="meta_description2" class="form-control"></textarea>
-			 </div>
-			 <div class="form-group">
-				<label for="email"> Thumbnail Image:</label>
-			<input type="file" name="cat_image" id="cat_image" class="form-control" accept="image/*">
-			 </div>
-             </div>
-               <div class="modal-footer">
-				<button type="submit" class="btn btn-info signup_btn" >Save</button>
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-               </div>
-			   </form>
+							<div class="form-group">
+								<label for="" id="addExService"><i class="fa fa-plus"></i> Add Extra Service:</label>
+								<div id="exServiceList">
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="email"> Slug:</label>
+								<input type="text" name="slug" id="slug0" class="form-control" required>
+								<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
+							</div>
+
+				 	 		<div class="form-group">
+								<label for="email"> Description:</label>
+								<textarea rows="5" placeholder="" name="cat_description" id="cat_description" class="form-control"></textarea>
+				 			</div>
+
+						 	<div class="form-group hide">
+								<label for="description0"> Description (For find job page):</label>
+								<textarea rows="5" placeholder="" name="description" id="description0" class="form-control"></textarea>
+						 	</div>
+
+						 	<div class="form-group">
+								<label for="email"> Meta Title:</label>
+								<input type="text" name="meta_title" id="meta_title" class="form-control" >
+						 	</div>
+
+				 			<div class="form-group">
+								<label for="email"> Meta Keywords:</label>
+								<input type="text" name="meta_key" id="meta_key" class="form-control" >
+				 			</div>
+
+						 	<div class="form-group">
+								<label for="email"> Meta Description:</label>
+								<textarea rows="5" placeholder="" name="meta_description" id="meta_description" class="form-control"></textarea>
+						 	</div>
+
+				 			<div class="form-group">
+								<label for="email"> Footer Description:</label>
+								<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea"></textarea>
+				 			</div>
+
+						 	<div class="form-group hide">
+								<label for="email"> Meta Title (For find job page):</label>
+								<input type="text" name="meta_title2" id="meta_title2" class="form-control" >
+						 	</div>
+
+						 	<div class="form-group hide">
+								<label for="email"> Meta Keywords (For find job page):</label>
+								<input type="text" name="meta_key2" id="meta_key2" class="form-control" >
+						 	</div>
+
+				 			<div class="form-group hide">
+								<label for="email"> Meta Description (For find job page):</label>
+								<textarea rows="5" placeholder="" name="meta_description2" id="meta_description2" class="form-control"></textarea>
+				 			</div>
+
+	          </div>
+            <div class="modal-footer">
+							<button type="submit" class="btn btn-info signup_btn" >Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
-			
+			   </form>
+            </div>			
          </div>
       </div>
    </div>
@@ -503,5 +492,99 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
       });
     }, 3000);
   };
+
+  $('#category').on('change', function(){
+  	var cat_id = $(this).val();
+  	$.ajax({
+  		url:site_url+'Admin/Admin/getSubCategory',
+			type:"POST",
+			data:{'cat_id':cat_id},
+			success:function(data){
+				if(data != ""){
+					$('#sub_category').empty().html(data);
+					$('#service_type').empty();
+				}else{
+					$('#sub_category').empty();
+					$('#service_type').empty();
+				}
+			}
+		});
+  });
+
+  $('#sub_category').on('change', function(){
+  	var cat_id = $(this).val();
+  	$.ajax({
+  		url:site_url+'Admin/Admin/getSubCategory',
+			type:"POST",
+			data:{'cat_id':cat_id},
+			success:function(data){
+				if(data != ""){
+					$('#service_type').empty().html(data);
+				}else{
+					$('#service_type').empty();
+				}
+			}
+		});
+  });
+
+  var totalAttribute = 1;
+  var totalExService = 1;
+
+  $('#addAttribute').on('click', function(){
+  	var style= '';
+  	if(totalAttribute > 1){
+  		style="margin-top:10px;";
+  	}
+  	var html = '<div id="attribute'+totalAttribute+'" style="'+style+'">'+
+										'<input type="text" name="attributes[]" placeholder="Enter attribute name" class="form-control" style="width: 92%; float: left;">'+
+										'<button class="btn btn-danger removeAttribute" data-id="'+totalAttribute+'" type="button" style="margin-left: 8px;">'+
+											'<i class="fa fa-trash"></i>'+
+										'</button>'+
+									'</div>';
+
+		$('#attributeList').append(html);
+		totalAttribute++;
+  });
+
+  $('#attributeList').on('click', '.removeAttribute', function (event) {
+  	event.preventDefault();
+  	var aId = $(this).data('id');
+  	$('#attribute'+aId).remove();
+  	totalAttribute--;
+  });
+
+  $('#addExService').on('click', function(){
+  	var style= '';
+  	if(totalExService > 1){
+  		style="margin-top:10px;";
+  	}
+  	var html = '<div class="row" id="exService'+totalExService+'" style="'+style+' margin-right:0">'+
+									'<div class="col-md-5">'+
+										'<input type="text" name="exService[name]['+totalExService+']" placeholder="Enter extra service name" class="form-control">'+
+									'</div>'+
+									'<div class="col-md-3">'+
+										'<input type="text" name="exService[price]['+totalExService+']" placeholder="Enter price" class="form-control">'+
+									'</div>'+
+									'<div class="col-md-3">'+
+										'<input type="number" min="0" name="exService[days]['+totalExService+']" placeholder="Enter days" class="form-control">'+
+									'</div>'+
+									'<div class="col-md-1" style="padding-left:0px;">'+
+  									'<button class="btn btn-danger removeExService" data-id="'+totalExService+'" type="button" style="margin-left: 8px;">'+
+											'<i class="fa fa-trash"></i>'+
+										'</button>'+
+									'</div>'+
+								'</div>';
+
+		$('#exServiceList').append(html);
+		totalExService++;
+  });
+
+  $('#exServiceList').on('click', '.removeExService', function (event) {
+  	event.preventDefault();
+  	var aId = $(this).data('id');
+  	$('#exService'+aId).remove();
+  	totalExService--;
+  });
+
 </script>	
 <?php include_once('include/footer.php'); ?>

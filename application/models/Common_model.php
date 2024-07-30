@@ -2176,7 +2176,9 @@ class Common_model extends CI_Model
 	function get_all_category($table)
 	{
 		$this->db->where('is_delete', 0);
-		$this->db->order_by("cat_parent", "asc");
+		if($table != 'service_category'){
+			$this->db->order_by("cat_parent", "asc");	
+		}		
 		$this->db->order_by("cat_id", "asc");
 		$query = $this->db->get($table);
 		return $query->result_array();

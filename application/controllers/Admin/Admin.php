@@ -3059,6 +3059,7 @@ class Admin extends CI_Controller
 
     public function service_category(){
         $result['listing'] = $this->Common_model->get_all_category('service_category');
+        $result['parent_category']=$this->Common_model->get_parent_category('category');
         $this->load->view('Admin/service_category', $result);        
     }
 
@@ -3067,44 +3068,38 @@ class Admin extends CI_Controller
         $this->load->model('ServiceCategory');
         $memData = $this->ServiceCategory->getRows($_POST);
 
-        $newCategory = getParent(0, 'service_category');
+        $newCategory = getParent(0, 'category');
 
         $i = $_POST['start'];
         foreach ($memData as $member) {
             $i++;
             $main_cate = '';
-            if ($member->cat_parent && !empty($member->cat_parent)) {
-                $get_cat = $this->Admin_model->get_parent_cates('service_category', $member->cat_parent);
+            if ($member->main_category && !empty($member->main_category)) {
+                $get_cat = $this->Admin_model->get_parent_cates('category', $member->main_category);
                 $main_cate = (count($get_cat)) ? $get_cat[0]['cat_name'] : '';
             }
 
-            $img = '';
-
-            if ($member->cat_image) {
-                $img = '<img id="image-id-' . $member->cat_id . '" src="' . base_url() . 'img/category/' . $member->cat_image . '" width="80px" height="80px">';
+            $sub_cate = '';
+            if ($member->sub_category && !empty($member->sub_category)) {
+                $get_cat = $this->Admin_model->get_parent_cates('category', $member->sub_category);
+                $sub_cate = (count($get_cat)) ? $get_cat[0]['cat_name'] : '';
             }
+            
+            // $action = '<a href="' . base_url($member->slug) . '" target="_blank" class="btn btn-warning btn-xs">View Category</a> ';
 
-            if ($member->show_at_job_search == 1) {
-                $show_at_job_search = '<div class="checkbox"><label><input onchange="show_at_job_search(this.value,' . $member->cat_id . ');" checked type="checkbox" id="show_at_job_search' . $member->cat_id . '" value="1"></label></div>';
-            } else {
-                $show_at_job_search = '<div class="checkbox"><label><input onchange="show_at_job_search(this.value,' . $member->cat_id . ');" type="checkbox" id="show_at_job_search' . $member->cat_id . '" value="1"></label></div>';
-            }
+            // $action .= '<a href="' . base_url() . 'child_category/' . $member->cat_id . '" class="btn btn-info btn-xs">Child Category</a> ';
 
-            $action = '<a href="' . base_url($member->slug) . '" target="_blank" class="btn btn-warning btn-xs">View Category</a> ';
+            // $action .= '<a href="javascript:void(0);"  onclick="myfunction()" data-toggle="modal" data-target="#edit_category' . $member->cat_id . '" class="btn btn-success btn-xs">Edit</a> ';
 
-            $action .= '<a href="' . base_url() . 'child_category/' . $member->cat_id . '" class="btn btn-info btn-xs">Child Category</a> ';
+            $action = '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/delete_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to delete this service category?\');">Delete</a> ';
 
-            $action .= '<a href="javascript:void(0);"  onclick="myfunction()" data-toggle="modal" data-target="#edit_category' . $member->cat_id . '" class="btn btn-success btn-xs">Edit</a> ';
+            // if ($member->is_activate == 1) {
+            //     $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/deactivate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to deactivate this service category?\');">Deactivate</a> ';
+            // } else {
+            //     $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/activate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to activate this service category?\');">Activate</a> ';
+            // }
 
-            $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/delete_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to delete this service category?\');">Delete</a> ';
-
-            if ($member->is_activate == 1) {
-                $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/deactivate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to deactivate this service category?\');">Deactivate</a> ';
-            } else {
-                $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/activate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to activate this service category?\');">Activate</a> ';
-            }
-
-            $action .= '<a href="javascript:void(0);" class="btn btn-warning btn-xs" style="margin-top:1px" onclick="openFAQModal('.$member->cat_id.')">FAQs</a> ';
+            // $action .= '<a href="javascript:void(0);" class="btn btn-warning btn-xs" style="margin-top:1px" onclick="openFAQModal('.$member->cat_id.')">FAQs</a> ';
 
             $action .= '<div class="modal fade in" id="edit_category' . $member->cat_id . '">
                         <div class="modal-body" >
@@ -3192,7 +3187,7 @@ class Admin extends CI_Controller
                        </div>
                     </div>';
 
-            $data[] = [$member->cat_id, $member->cat_name, $main_cate, $member->slug, $img, $action];
+            $data[] = [$member->cat_id, $main_cate, $sub_cate, $member->slug, $action];
         }
 
         $output = [
@@ -3209,63 +3204,63 @@ class Admin extends CI_Controller
     public function add_service_category(){
         $json['status'] = 0;
 
-        $this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[category.slug]', ['is_unique' => 'This slug already exist']);
-        $this->form_validation->set_rules('cat_name', 'Category Name', 'required');
+        $this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[category.slug]', ['is_unique' => 'This slug already exist']);        
         
         if ($this->form_validation->run() == false) {
             $json['msg'] = '<div class="alert alert-danger">' . validation_errors() . '</div>';
         } else {
-            $file_check = false;
             $fileError  = false;
-            if ($_FILES['cat_image']['name'] != '') {
-                $file_check              = true;
-                $config['upload_path']   = './img/category/';
-                $config['allowed_types'] = 'gif|jpg|png|jpeg';
-                $config['max_size']      = 50000;
-                $config['min_width']     = 1300;
-                $config['min_height']    = 400;
-                $config['remove_spaces'] = true;
-                $config['encrypt_name']  = true;
-                $this->load->library('upload', $config);
-
-                //$this->upload->do_upload('cat_image');
-                if ($this->upload->do_upload('cat_image')) {
-                    $data = $this->upload->data();
-                } else {
-                    $fileError = true;
-                }
-            }
-
+            
             if ($fileError) {
                 $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
                 $json['status'] = 2;
             } else {
-                $insert_arr = [
-                    'cat_name'           => $this->input->post('cat_name'),
-                    'find_job_title'     => $this->input->post('cat_name'),
-                    'cat_ques'           => $this->input->post('cat_ques'),
-                    'title_ft'           => ($this->input->post('title_ft')) ? $this->input->post('title_ft') : $this->input->post('cat_name'),
-                    'slug'               => $this->input->post('slug'),
-                    'cat_parent'         => $this->input->post('cat_parent'),
-                    'cat_create'         => date('Y-m-d h:i:s'),
-                    'cat_description'    => $this->input->post('cat_description'),
-                    'description'        => $this->input->post('description'),
-                    'meta_title'         => $this->input->post('meta_title'),
-                    'meta_key2'          => $this->input->post('meta_key2'),
-                    'meta_key'           => $this->input->post('meta_key'),
-                    'meta_description'   => $this->input->post('meta_description'),
-                    'meta_title2'        => $this->input->post('meta_title2'),
-                    'meta_description2'  => $this->input->post('meta_description2'),
-                    'footer_description' => $this->input->post('footer_description'),
-                    'is_activate'        => 1,
-                ];
+                $service_type = '';
 
-                if ($file_check) {
-                    $insert_arr['cat_image'] = $data['file_name'];
+                if(!empty($this->input->post('service_type'))){
+                    $service_type = implode(',', $this->input->post('service_type'));
                 }
+
+                $insert_arr = [
+                    'main_category' => $this->input->post('category'),
+                    'sub_category' => $this->input->post('sub_category'),
+                    'service_type' => $service_type,
+                    'slug' => $this->input->post('slug'),
+                    'cat_create' => date('Y-m-d h:i:s'),
+                    'cat_description' => $this->input->post('cat_description'),
+                    'meta_title' => $this->input->post('meta_title'),
+                    'meta_key' => $this->input->post('meta_key'),
+                    'meta_description' => $this->input->post('meta_description'),
+                    'footer_description' => $this->input->post('footer_description'),
+                    'is_activate' => 1,
+                ];
 
                 $result = $this->My_model->insert_entry('service_category', $insert_arr);
                 if ($result) {
+                    $attribute = $this->input->post('attributes');
+                    if(!empty($attribute)){
+                        foreach ($attribute as $key => $value) {
+                            $insert_attribute = [
+                                'service_cat_id' => $result,
+                                'attribute_name' => $value,
+                            ];
+                            $this->My_model->insert_entry('service_attribute', $insert_attribute);
+                        }
+                    }
+
+                    $exService = $this->input->post('exService');
+                    if(!empty($exService['name'])){
+                        foreach ($exService['name'] as $key => $value) {
+                            $insert_exService = [
+                                'category' => $result,
+                                'ex_service_name' => $value,
+                                'price' => $exService['price'][$key],
+                                'days' => $exService['days'][$key],
+                            ];
+                            $this->My_model->insert_entry('extra_service', $insert_exService);
+                        }
+                    }
+
                     $this->session->set_flashdata('success', 'Success! service category added successfully.');
                     $json['status'] = 1;
                 } else {
@@ -3377,5 +3372,18 @@ class Admin extends CI_Controller
         $this->My_model->update_entry('service_category', $update, ['cat_id' => $id]);
         $this->session->set_flashdata('success', 'Success! Service category activated successfully.');
         redirect('service_category');
+    }
+
+    public function getSubCategory(){
+        $id = $this->input->post('cat_id');
+        $subCategory=$this->Common_model->get_sub_category('category',$id);
+        $option = '';
+        if(!empty($subCategory)){
+            $option .= '<option value="">Please Select</option>';
+            foreach($subCategory as $sCat){
+                $option .= '<option value="'.$sCat['cat_id'].'">'.$sCat['cat_name'].'</option>';
+            }
+        }
+        echo $option;
     }
 }

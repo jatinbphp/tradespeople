@@ -7,9 +7,9 @@ class ServiceCategory extends CI_Model{
         // Set table name
         $this->table = 'service_category';
         // Set orderable column fields
-        $this->column_order = array(null, 'cat_name','cat_parent','cat_description','meta_title','meta_description');
+        $this->column_order = array(null, 'cat_description','meta_title','meta_description');
         // Set searchable column fields
-        $this->column_search = array('cat_name','cat_parent','cat_description','meta_title','meta_description');
+        $this->column_search = array('cat_description','meta_title','meta_description');
         // Set default order
         $this->order = array('cat_id' => 'asc');
     }
@@ -31,14 +31,8 @@ class ServiceCategory extends CI_Model{
      * Count all records
      */
     public function countAll($main=false){
-        $this->db->from($this->table);
-				
+        $this->db->from($this->table);				
 				$my_where['is_delete'] = 0;
-				
-				if($main){
-					$my_where['cat_parent'] = 0;
-				}
-				
         $this->db->where($my_where);
         return $this->db->count_all_results();
     }
@@ -62,10 +56,6 @@ class ServiceCategory extends CI_Model{
         $this->db->from($this->table);
 				
 				$my_where['is_delete'] = 0;
-				
-				if($main){
-					$my_where['cat_parent'] = 0;
-				}
 				
         $this->db->where($my_where);
 				
