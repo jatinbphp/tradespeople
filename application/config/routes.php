@@ -252,6 +252,7 @@ $route['Admin_dashboard']       = 'Admin/Admin/Admin_dashboard';
 $route['tradesmen_user']        = 'Admin/Admin/tradesmen_user';
 $route['tradesmen_user/(:any)']='Admin/Admin/tradesmen_user/$1';
 
+$route['service_category']        = 'Admin/Admin/service_category';
 $route['all_services']        = 'Admin/Admin/service_list';
 $route['service-orders']        = 'Admin/Admin/service_orders';
 

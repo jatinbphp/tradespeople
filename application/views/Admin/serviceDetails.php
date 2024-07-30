@@ -90,40 +90,37 @@
         <tr>
           <th>Image/Video</th>
           <td>
-            <?php 
-              if(!empty($service_details['image'])){
-                $image_path = FCPATH . 'img/services/' . ($service_details['image'] ?? '');
-              }
-              if(!empty($service_details['video'])){
-                $video_path = FCPATH . 'img/services/' . ($service_details['video'] ?? '');
-              }
-            ?>        
+            <?php $image_path = FCPATH . 'img/services/' . ($service_details['image'] ?? ''); ?>
             <?php if (file_exists($image_path) && $service_details['image']): ?>
-              <div class="row"> 
-                <div class="col-lg-4 col-xs-12" style='padding-left:30px'>
-                  <div class="boxImage imgUp">
-                      <div class="imagePreviewPlus">
-                          <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $service_details['image']; ?>" alt="Image">
-                      </div>
+              <?php
+                $mime_type = get_mime_by_extension($image_path);
+                $is_image = strpos($mime_type, 'image') !== false;
+                $is_video = strpos($mime_type, 'video') !== false;
+              ?>
+              <?php if ($is_image): ?>
+                <div class="row"> 
+                  <div class="col-lg-4 col-xs-12" style='padding-left:30px'>
+                    <div class="boxImage imgUp">
+                        <div class="imagePreviewPlus">
+                            <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $service_details['image']; ?>" alt="Image">
+                        </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <?php endif; ?>
-            <?php if (file_exists($video_path) && $service_details['video']): ?>
-              <div class="row"> 
-                <div class="col-md-4 col-xs-12" style='padding-left:30px'>
-                  <div class="imgUp">
-                      <div class="videoPreviewPlus">
-                          <video controls>
-                          src="<?php echo base_url('img/services/') . $service_details['video']; ?>" 
-                          type="<?php echo $mime_type; ?>" 
-                           loop 
-                          class="serviceVideo">
-                          </video>                            
-                      </div>
+              <?php elseif ($is_video): ?>
+                <div class="row"> 
+                  <div class="col-md-4 col-xs-12" style='padding-left:30px'>
+                    <div class="imgUp">
+                        <div class="videoPreviewPlus">
+                            <video controls
+                            src="<?php echo base_url('img/services/') . $service_details['image']; ?>" 
+                            type="<?php echo $mime_type; ?>" loop class="serviceVideo" style="width: 200px;">
+                            </video>                            
+                        </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              <?php endif; ?>
             <?php endif; ?>
           </td>
         </tr>

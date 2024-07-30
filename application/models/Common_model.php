@@ -2182,10 +2182,13 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function get_sub_category($table, $id)
+	public function get_sub_category($table, $id, $is_active = 0)
 	{
 		$this->db->where('is_delete', 0);
 		$this->db->where('cat_parent', $id);
+		if($is_active > 0){
+			$this->db->where('is_activate', 1);
+		}
 		$this->db->order_by("cat_id", "asc");
 		$this->db->select(['cat_id','cat_name','slug']);
 		$query = $this->db->get($table);
@@ -2241,10 +2244,13 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	function get_parent_category($table, $limit=0)
+	function get_parent_category($table, $limit=0, $is_active=0)
 	{
 		$this->db->where('is_delete', 0);
 		$this->db->where('cat_parent', 0);
+		if($is_active > 0){
+			$this->db->where('is_activate', 1);
+		}
 		$this->db->order_by("cat_id", "asc");
 		if($limit > 0){
 			$this->db->limit($limit);
@@ -2259,7 +2265,7 @@ class Common_model extends CI_Model
             return '';
         }
         
-        $category = $this->db->get_where('category', ['cat_id' => $categoryId])->row_array();
+        $category = $this->db->get_where('service_category', ['cat_id' => $categoryId])->row_array();
         
         if (!$category) {
             return '';
@@ -2273,24 +2279,24 @@ class Common_model extends CI_Model
         return $parentFullPath ? $parentFullPath . '-> ' . $category['cat_name'] : $category['cat_name'];
     }
 
-	public function getAllChiledCat($id)
+	public function getAllChiledCat($table = 'category', $id)
 	{
-		return $this->common_model->GetAllData('category', array('cat_parent' => $id, 'is_delete' => 0), 'cat_id');
+		return $this->common_model->GetAllData($table, array('cat_parent' => $id, 'is_delete' => 0), 'cat_id');
 	}
 
-	public function get_single_parent_category($parent_id) {
+	public function get_single_parent_category($table = 'category', $parent_id) {
 		 $this->db->select('cat_id, cat_name, cat_parent, slug');
-        $query = $this->db->get_where('category', array('cat_id' => $parent_id));
+        $query = $this->db->get_where($table, array('cat_id' => $parent_id));
         return $query->row_array();
     }
 
-	public function get_breadcrumb($category_id) {
+	public function get_breadcrumb($table = 'category', $category_id) {
         $breadcrumb = [];
-        $category = $this->common_model->GetSingleData('category',['cat_id'=>$category_id]);
+        $category = $this->common_model->GetSingleData($table,['cat_id'=>$category_id]);
 
         while ($category) {
             array_unshift($breadcrumb, $category);
-            $category = $this->get_single_parent_category($category['cat_parent']);
+            $category = $this->get_single_parent_category('service_category',$category['cat_parent']);
         }
 
         return $breadcrumb;
@@ -2720,7 +2726,7 @@ class Common_model extends CI_Model
 
 		$query = $this->db->query("SELECT ms.*, c.cat_name, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
-                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.user_id = $userid
                            GROUP BY ms.id
@@ -2734,7 +2740,7 @@ class Common_model extends CI_Model
 		if($limit == 0){
 			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
-                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.status = 'active'
@@ -2744,7 +2750,7 @@ class Common_model extends CI_Model
 		}else{
 			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
-                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.status = 'active'
@@ -2759,7 +2765,7 @@ class Common_model extends CI_Model
 	{
 		$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
-                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
@@ -2772,7 +2778,7 @@ class Common_model extends CI_Model
 	{
 		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
 		$this->db->from('my_services ms');
-		$this->db->join('category c', 'ms.category = c.cat_id', 'left');
+		$this->db->join('service_category c', 'ms.category = c.cat_id', 'left');
 		$this->db->join('users u', 'ms.user_id = u.id', 'left');
 		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
 		$this->db->where('ms.status', 'active');
@@ -2796,7 +2802,7 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getRatingsWithUsers($service_id, $limit, $offset = 0) {
+	public function getRatingsWithUsers($service_id, $limit=0, $offset = 0) {
         $this->db->select('service_rating.*, users.f_name as rate_by_fname, users.l_name as rate_by_lname, users.profile as rate_by_profile, users2.f_name as rate_to_fname, users2.l_name as rate_to_lname,, users2.profile as rate_to_profile');
 
         $this->db->from('service_rating');
@@ -3330,7 +3336,7 @@ class Common_model extends CI_Model
                                   (SELECT COUNT(*) FROM service_likes serl WHERE serl.service_id = ms.id) AS total_likes,
                                   (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders
                            FROM $table ms
-                           LEFT JOIN category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.slug = '$slug' AND ms.status = 'active'

@@ -598,15 +598,28 @@
             $totalPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->count_all_results();
           ?>
 
-          <li class="DashboardManage">
-            <a href="<?php echo base_url(); ?>all_services">
-              <i class="fa fa-tasks"></i> 
-              <span>
-                Services
-                <?php echo ($totalPendingService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalPendingService . '</span>' : ''; ?>
-              </span>
-            </a>
-          </li>
+            <li class="us_er3">
+              <a href="#">
+                <i class="fa fa-tasks"></i> 
+                <span>Service <?php echo ($totalPendingService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalPendingService . '</span>' : ''; ?></span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu">
+                <li>
+                  <a href="<?php echo base_url(); ?>service_category">
+                    <i class="fa fa-circle-o"></i>Service Category                     
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>all_services">
+                    <i class="fa fa-circle-o"></i>Service 
+                    <?php echo ($totalPendingService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalPendingService . '</span>' : ''; ?>
+                  </a>
+                </li>                
+              </ul>
+            </li>
           <?php }?>
 
           <?php if (in_array(23, $my_access)) {?>

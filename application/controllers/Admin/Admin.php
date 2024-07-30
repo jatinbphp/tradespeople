@@ -264,12 +264,6 @@ class Admin extends CI_Controller
 
             }
 
-            $action .= '<a href="javascript:void(0);" class="btn btn-warning btn-xs" style="margin-top:1px" onclick="openFAQModal('.$member->cat_id.')">FAQs</a> ';   
-
-            if($member->cat_parent == 0){
-                $action .= '<a href="javascript:void(0);" class="btn btn-primary btn-xs" style="margin-top:1px" onclick="openExServiceModal('.$member->cat_id.')">Extra Service</a> ';    
-            }            
-
             $action .= '
 <div class="modal fade in" id="edit_category' . $member->cat_id . '">
 	<div class="modal-body" >
@@ -874,6 +868,7 @@ class Admin extends CI_Controller
         }
         return redirect('category');
     }
+
     public function Blockuser1($uid, $status)
     {
         $userdata['status'] = $status;
@@ -3060,5 +3055,327 @@ class Admin extends CI_Controller
     public function service_orders(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order');
         $this->load->view('Admin/service_order_list', $result);
+    }
+
+    public function service_category(){
+        $result['listing'] = $this->Common_model->get_all_category('service_category');
+        $this->load->view('Admin/service_category', $result);        
+    }
+
+    public function getServiceCategoryLists(){
+        $data = $row = [];
+        $this->load->model('ServiceCategory');
+        $memData = $this->ServiceCategory->getRows($_POST);
+
+        $newCategory = getParent(0, 'service_category');
+
+        $i = $_POST['start'];
+        foreach ($memData as $member) {
+            $i++;
+            $main_cate = '';
+            if ($member->cat_parent && !empty($member->cat_parent)) {
+                $get_cat = $this->Admin_model->get_parent_cates('service_category', $member->cat_parent);
+                $main_cate = (count($get_cat)) ? $get_cat[0]['cat_name'] : '';
+            }
+
+            $img = '';
+
+            if ($member->cat_image) {
+                $img = '<img id="image-id-' . $member->cat_id . '" src="' . base_url() . 'img/category/' . $member->cat_image . '" width="80px" height="80px">';
+            }
+
+            if ($member->show_at_job_search == 1) {
+                $show_at_job_search = '<div class="checkbox"><label><input onchange="show_at_job_search(this.value,' . $member->cat_id . ');" checked type="checkbox" id="show_at_job_search' . $member->cat_id . '" value="1"></label></div>';
+            } else {
+                $show_at_job_search = '<div class="checkbox"><label><input onchange="show_at_job_search(this.value,' . $member->cat_id . ');" type="checkbox" id="show_at_job_search' . $member->cat_id . '" value="1"></label></div>';
+            }
+
+            $action = '<a href="' . base_url($member->slug) . '" target="_blank" class="btn btn-warning btn-xs">View Category</a> ';
+
+            $action .= '<a href="' . base_url() . 'child_category/' . $member->cat_id . '" class="btn btn-info btn-xs">Child Category</a> ';
+
+            $action .= '<a href="javascript:void(0);"  onclick="myfunction()" data-toggle="modal" data-target="#edit_category' . $member->cat_id . '" class="btn btn-success btn-xs">Edit</a> ';
+
+            $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/delete_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to delete this service category?\');">Delete</a> ';
+
+            if ($member->is_activate == 1) {
+                $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/deactivate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to deactivate this service category?\');">Deactivate</a> ';
+            } else {
+                $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/activate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to activate this service category?\');">Activate</a> ';
+            }
+
+            $action .= '<a href="javascript:void(0);" class="btn btn-warning btn-xs" style="margin-top:1px" onclick="openFAQModal('.$member->cat_id.')">FAQs</a> ';
+
+            $action .= '<div class="modal fade in" id="edit_category' . $member->cat_id . '">
+                        <div class="modal-body" >
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="editMsg_' . $member->cat_id . '">
+                                    <form onsubmit="return edit_category(' . $member->cat_id . ');" id="edit_category1' . $member->cat_id . '" method="post"  enctype="multipart/form-data">
+                                        <div class="modal-header">
+                                            <div class="editmsg' . $member->cat_id . '" id="editmsg' . $member->cat_id . '"></div>
+                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                             <h4 class="modal-title">Edit Service Category</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                <label for="email"> Select category:</label>
+                                                <select type="text" name="cat_parent1" id="cat_parent' . $member->cat_id . '"  class="form-control" onchange="InsertTitle(this ,\'title_ft' . $member->cat_id . '\',' . $member->cat_id . ')" >
+                                                    <option value="">select</option>';
+                                foreach ($newCategory as $newCategoryKey => $newCategoryVal) {
+                                    $newCategoryselected = ($newCategoryVal['cat_id'] == $member->cat_parent) ? 'selected' : '';
+                                    $action .= '<optgroup label="' . $newCategoryVal['cat_name'] . '">
+                                                        <option ' . $newCategoryselected . ' value="' . $newCategoryVal['cat_id'] . '">' . $newCategoryVal['cat_name'] . ' (Main)</option>';
+
+                                    if (!empty($newCategoryVal['child'])) {
+                                        foreach ($newCategoryVal['child'] as $childKey => $childVal) {
+
+                                            $childCategoryselected = ($childVal['cat_id'] == $member->cat_parent) ? 'selected' : '';
+
+                                            $action .= '<option ' . $childCategoryselected . ' value="' . $childVal['cat_id'] . '">' . $childVal['cat_name'] . '</option>';
+                                        }
+                                    }
+                                    $action .= '</optgroup>';
+                                }
+                                
+                                $action .= '</select>
+                                            </div>
+                                <div class="form-group">
+                                    <label for="email"> Category Name:</label>
+                                    <input type="text" name="cat_name1" onkeyup="changeQues(this , ' . $member->cat_id . '); create_slug(' . $member->cat_id . ',this.value);"  id="cat_name' . $member->cat_id . '"  value="' . $member->cat_name . '" required class="form-control" >
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="cat_ques' . $member->cat_id . '">  Category Question:</label>
+                                    <input type="text" name="cat_ques"  id="cat_ques' . $member->cat_id . '"  value="' . $member->cat_ques . '" class="form-control" >
+                                 </div>
+                                 <div class="form-group utitle_ft title_ft' . $member->cat_id . '" style="display:none">
+                                    <label for="email">  Category title for find tradesmen page:</label>
+                                    <input type="text" name="title_ft1"  id="title_ft' . $member->cat_id . '"  value="' . $member->title_ft . '"  class="form-control" >
+                                 </div>
+                                <div class="form-group">
+                                    <label for="email"> Slug:</label>
+                                    <input type="text" name="slug1" id="slug' . $member->cat_id . '"  value="' . $member->slug . '" required class="form-control" >
+                                    <p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="email"> Description:</label>
+                                    <textarea rows="5" placeholder="" name="cat_description1" id="cat_description' . $member->cat_id . '" class="form-control">' . $member->cat_description . '</textarea>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="email"> Meta Title:</label>
+                                    <input type="text" name="meta_title1" id="meta_title' . $member->cat_id . '" class="form-control" value="' . $member->meta_title . '">
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="email"> Meta Keywords:</label>
+                                    <input type="text" name="meta_key1" id="meta_key' . $member->cat_id . '" class="form-control" value="' . $member->meta_key . '">
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="email"> Meta Description:</label>
+                                    <textarea rows="5" placeholder="" name="meta_description1" id="meta_description' . $member->cat_id . '" class="form-control">' . $member->meta_description . '</textarea>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="email"> Footer Description:</label>
+                                    <textarea rows="5" placeholder="" name="footer_description" id="footer_description' . $member->cat_id . '" class="form-control textarea">' . $member->footer_description . '</textarea>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="email"> Thumbnail Image:</label>
+                                <input type="file" name="cat_image1" id="cat_image' . $member->cat_id . '" class="form-control">
+                                <input type="hidden" name="catimage" id="catimage' . $member->cat_id . '" value="' . $member->cat_image . '"></div>
+                                 </div>
+                                   <div class="modal-footer">
+                                    <button type="submit" class="btn btn-info edit_btn' . $member->cat_id . '" >Save</button>
+                                      <button type="button" class="btn btn-default signup_btn1" data-dismiss="modal">Close</button>
+                                   </div>
+                                   </form>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                    </div>';
+
+            $data[] = [$member->cat_id, $member->cat_name, $main_cate, $member->slug, $img, $action];
+        }
+
+        $output = [
+            "draw"            => $_POST['draw'],
+            "recordsTotal"    => $this->ServiceCategory->countAll(),
+            "recordsFiltered" => $this->ServiceCategory->countFiltered($_POST),
+            "data"            => $data,
+        ];
+
+        // Output to JSON format
+        echo json_encode($output);
+    }
+
+    public function add_service_category(){
+        $json['status'] = 0;
+
+        $this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[category.slug]', ['is_unique' => 'This slug already exist']);
+        $this->form_validation->set_rules('cat_name', 'Category Name', 'required');
+        
+        if ($this->form_validation->run() == false) {
+            $json['msg'] = '<div class="alert alert-danger">' . validation_errors() . '</div>';
+        } else {
+            $file_check = false;
+            $fileError  = false;
+            if ($_FILES['cat_image']['name'] != '') {
+                $file_check              = true;
+                $config['upload_path']   = './img/category/';
+                $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                $config['max_size']      = 50000;
+                $config['min_width']     = 1300;
+                $config['min_height']    = 400;
+                $config['remove_spaces'] = true;
+                $config['encrypt_name']  = true;
+                $this->load->library('upload', $config);
+
+                //$this->upload->do_upload('cat_image');
+                if ($this->upload->do_upload('cat_image')) {
+                    $data = $this->upload->data();
+                } else {
+                    $fileError = true;
+                }
+            }
+
+            if ($fileError) {
+                $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
+                $json['status'] = 2;
+            } else {
+                $insert_arr = [
+                    'cat_name'           => $this->input->post('cat_name'),
+                    'find_job_title'     => $this->input->post('cat_name'),
+                    'cat_ques'           => $this->input->post('cat_ques'),
+                    'title_ft'           => ($this->input->post('title_ft')) ? $this->input->post('title_ft') : $this->input->post('cat_name'),
+                    'slug'               => $this->input->post('slug'),
+                    'cat_parent'         => $this->input->post('cat_parent'),
+                    'cat_create'         => date('Y-m-d h:i:s'),
+                    'cat_description'    => $this->input->post('cat_description'),
+                    'description'        => $this->input->post('description'),
+                    'meta_title'         => $this->input->post('meta_title'),
+                    'meta_key2'          => $this->input->post('meta_key2'),
+                    'meta_key'           => $this->input->post('meta_key'),
+                    'meta_description'   => $this->input->post('meta_description'),
+                    'meta_title2'        => $this->input->post('meta_title2'),
+                    'meta_description2'  => $this->input->post('meta_description2'),
+                    'footer_description' => $this->input->post('footer_description'),
+                    'is_activate'        => 1,
+                ];
+
+                if ($file_check) {
+                    $insert_arr['cat_image'] = $data['file_name'];
+                }
+
+                $result = $this->My_model->insert_entry('service_category', $insert_arr);
+                if ($result) {
+                    $this->session->set_flashdata('success', 'Success! service category added successfully.');
+                    $json['status'] = 1;
+                } else {
+                    $json['msg'] = 'Error! something went wrong.';
+                    $this->session->set_flashdata('error', 'Error! something went wrong.');
+                }
+            }
+
+        }
+        echo json_encode($json);
+    }
+
+    public function update_service_category($id){
+        $json['status'] = 0;
+        $slug1 = $this->input->post('slug1');
+        $slug1 = url_title($slug1);
+
+        $categories = $this->Common_model->get_single_data('service_category', ['slug' => $slug1, 'cat_id != ' => $id]);
+
+        $this->form_validation->set_rules('slug1', 'Slug name', 'trim|required|alpha_dash');
+
+        if ($categories) {
+            $this->form_validation->set_rules('slug1', 'Slug name', 'trim|required|alpha_dash|is_unique[category.slug]', ['is_unique' => 'This slug already exist']);
+        }
+
+        if ($this->form_validation->run() == false) {
+            $json['msg'] = '<div class="alert alert-danger">' . validation_errors() . '</div>';
+        } else {
+            $file_check = false;
+            $fileError  = false;
+            if ($_FILES['cat_image1']['name'] != '') {
+                $file_check              = true;
+                $config['upload_path']   = './img/category/';
+                $config['allowed_types'] = 'gif|jpg|png|jpeg';
+                $config['max_size']      = 50000;
+                $config['min_width']     = 1300;
+                $config['min_height']    = 400;
+                $config['remove_spaces'] = true;
+                $config['encrypt_name']  = true;
+                $this->load->library('upload', $config);
+                $data = $this->upload->data();
+                if ($this->upload->do_upload('cat_image1')) {
+                    $data = $this->upload->data();
+                } else {
+                    $fileError = true;
+                }
+            }
+            if ($fileError) {
+                $json['status'] = 2;
+                $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
+                $this->session->set_flashdata('error', $this->upload->display_errors());
+            } else {
+                $update_array = [
+                    'cat_name'                  => $this->input->post('cat_name1'),
+                    'cat_ques'                  => $this->input->post('cat_ques'),
+                    'title_ft'                  => ($this->input->post('title_ft1') != '') ? $this->input->post('title_ft1') : $this->input->post('cat_name1'),
+                    'slug'                      => $slug1,
+                    'cat_parent'                => $this->input->post('cat_parent1'),
+                    'cat_update'                => date('Y-m-d h:i:s'),
+                    'cat_description'           => $this->input->post('cat_description1'),
+                    'meta_title'                => $this->input->post('meta_title1'),
+                    'meta_key'                  => $this->input->post('meta_key1'),
+                    'meta_description'          => $this->input->post('meta_description1'),
+                    'footer_description'        => $this->input->post('footer_description'),
+                    'child_footer_description1' => $this->input->post('child_footer_description1'),
+                ];
+                if ($file_check) {
+                    $update_array['cat_image'] = $data['file_name'];
+                }
+                $where_array = ['cat_id' => $id];
+                $result      = $this->My_model->update_entry('service_category', $update_array, $where_array);
+                if ($result) {
+                    $json['status'] = 1;
+                    $this->session->set_flashdata('success', 'Success! Service category updated successfully.');
+                } else {
+                    $json['status'] = 2;
+                    $this->session->set_flashdata('error', 'Some error occured.');
+                }
+            }
+        }
+        echo json_encode($json);
+    }
+
+    public function delete_service_category($id){
+        $session_user = $this->session->userdata('session_userId');
+        $update_array = [
+            'is_delete' => 1,
+            'slug'      => '',
+        ];
+        $where_array = ['cat_id' => $id];
+        $result = $this->My_model->update_entry('service_category', $update_array, $where_array);
+        if ($result) {
+            $this->session->set_flashdata('success', 'Success! Service category has been deleted Successfully.');
+        } else {
+            $this->session->set_flashdata('error', 'Error! Something went wrong, Try again.');
+        }
+        return redirect('service_category');
+    }
+
+    public function deactivate_service_category($id){
+        $update['is_activate'] = 0;
+        $this->My_model->update_entry('service_category', $update, ['cat_id' => $id]);
+        $this->session->set_flashdata('success', 'Success! Service category deactivated successfully.');
+        redirect('service_category');
+    }
+
+    public function activate_service_category($id){
+        $update['is_activate'] = 1;
+        $this->My_model->update_entry('service_category', $update, ['cat_id' => $id]);
+        $this->session->set_flashdata('success', 'Success! Service category activated successfully.');
+        redirect('service_category');
     }
 }

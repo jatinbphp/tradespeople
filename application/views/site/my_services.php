@@ -104,7 +104,7 @@ $(function () {
                 return '<input type="checkbox" name="serviceIds[]" value="'+data+'" class="checkBoxClass" id="service_'+data+'">';
             }},
             { "data": "status", "render": function(data, type, row) {
-                return data == 1 ? 'Active' : 'Inactive';
+                return data;
             }},
             { 
                 "data": null,

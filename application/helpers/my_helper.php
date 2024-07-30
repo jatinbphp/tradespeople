@@ -359,9 +359,9 @@ if (!function_exists('getRecordOnId'))
 
 if (!function_exists('getCatName'))
 {
-    function getCatName($id){
+    function getCatName($id, $table = 'category'){
         $CI =& get_instance();
-        $CI->db->from('category');
+        $CI->db->from($table);
         $CI->db->where('cat_id' , $id);
         $query = $CI->db->get();
         return $query->row_array();
@@ -389,10 +389,10 @@ if (!function_exists('GetUserUniqueId'))
 
 if (!function_exists('getParent'))
 {
-    function getParent($cat_parent=0){
+    function getParent($cat_parent=0, $table = 'category'){
         $CI =& get_instance();
         $CI->db->select('cat_id,cat_name,slug,cat_parent');
-        $CI->db->from('category');
+        $CI->db->from($table);
         $CI->db->where('cat_parent' , $cat_parent);
         $CI->db->where('is_delete' , 0);
         $query = $CI->db->get();
@@ -413,10 +413,10 @@ if (!function_exists('getParent'))
 
 if (!function_exists('getChild'))
 {
-    function getChild($cat_parent=0,$result = array()){
+    function getChild($cat_parent=0,$result = array(), $table = 'category'){
         $CI =& get_instance();
         $CI->db->select('cat_id,cat_name,slug,cat_parent');
-        $CI->db->from('category');
+        $CI->db->from($table);
         $CI->db->where('cat_parent' , $cat_parent);
         $CI->db->where('is_delete' , 0);
         $query = $CI->db->get();
@@ -435,10 +435,10 @@ if (!function_exists('getChild'))
 
 if (!function_exists('checkChild'))
 {
-    function checkChild($cat_parent=0){
+    function checkChild($cat_parent=0, $table = 'category'){
         $CI =& get_instance();
         $CI->db->select('count(cat_id) as total');
-        $CI->db->from('category');
+        $CI->db->from($table);
         $CI->db->where('cat_parent' , $cat_parent);
         $CI->db->where('is_delete' , 0);
         $query = $CI->db->get();

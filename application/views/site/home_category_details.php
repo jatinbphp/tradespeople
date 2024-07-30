@@ -80,7 +80,7 @@
 			<div class="popular-subcategories-slider">			
 				<?php foreach($first_chiled_categories as $category): ?>
 					<?php 
-                        $categoryUrl = $this->common_model->get_breadcrumb(($category['cat_id'] ?? 0));
+                        $categoryUrl = $this->common_model->get_breadcrumb('service_category',($category['cat_id'] ?? 0));
                         $breadurl = site_url('category');
                         foreach ($categoryUrl as $catUrl){
                         	$breadurl .= '/' . $catUrl['slug'];

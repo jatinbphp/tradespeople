@@ -2323,7 +2323,7 @@ public function exists_refferals() {
 	public function addServices(){
 		if($this->session->userdata('user_id')) {
 			$data['cities'] = $this->search_model->getJobCities();
-			$data['category']=$this->common_model->get_parent_category('category');
+			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
 			$sesData = $this->session->userdata('store_service2');
 			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$sesData['category']);
 			$data['price_per_type'] = ["Hour","Service","Meter","Square Meter","Kilogram","Mile","Consultation"];
@@ -2333,7 +2333,7 @@ public function exists_refferals() {
 
 	public function addServices2(){
 		if($this->session->userdata('store_service1')) {
-			$data['category']=$this->common_model->get_parent_category('category');
+			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
       		$this->load->view('site/add-service2',$data);
 		} else {
 			redirect('dashboard');
@@ -2344,12 +2344,7 @@ public function exists_refferals() {
 		if($this->session->userdata('store_service2')) {
 			$sesData = $this->session->userdata('store_service2');
 			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$sesData['category']);
-			$this->load->view('site/add-service3',$data);	
-			// if(!empty($data['ex_service'])){
-			// 	$this->load->view('site/add-service3',$data);	
-			// }else{
-			// 	$this->load->view('site/add-service4',$data);
-			// }      
+			$this->load->view('site/add-service3',$data);
 		} else {
 			redirect('dashboard');
 		}
@@ -2444,16 +2439,6 @@ public function exists_refferals() {
 		$this->session->set_userdata('next_step',3);
 		$this->session->set_flashdata('success',"Category details added successfully.");
 		redirect('add-service');
-
-		// $ex_service=$this->common_model->get_ex_service('extra_service',$insert['category']);
-		// if(!empty($ex_service)){
-		// 	$this->session->set_userdata('next_step',3);
-		// 	$this->session->set_flashdata('success',"Category details added successfully.");
-		// 	redirect('add-service');
-		// }
-		// $this->session->set_userdata('next_step',4);
-		// $this->session->set_flashdata('success',"Category details added successfully.");
-		// redirect('add-service');			
 	}
 
 	public function storeServices3($value=''){
@@ -2586,7 +2571,7 @@ public function exists_refferals() {
 			}
 
 			$this->setEditServiceData($serviceData);
-			$data['category'] = $this->common_model->get_parent_category('category');
+			$data['category'] = $this->common_model->get_parent_category('service_category',0,1);
 			$data['cities'] = $this->search_model->getJobCities();
 			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$serviceData['category']);
 			$trades_ex_service = $this->common_model->getTradesExService($id);
@@ -2660,7 +2645,6 @@ public function exists_refferals() {
 		$insert['description'] = trim($this->input->post('description'));
 		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
 		$insert['price'] = $this->input->post('price');
-		$insert['status'] = $this->input->post('status');
 		$insert['location'] = $this->input->post('location');
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
 		$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
@@ -2695,15 +2679,7 @@ public function exists_refferals() {
 		$this->common_model->update('my_services', ['id'=>$id], $insert);
 		$ex_service=$this->common_model->get_ex_service('extra_service',$insert['category']);
 		$this->session->set_userdata('update_next_step',3);
-		redirect("edit-service/{$id}");
-		// if(!empty($ex_service)){
-		// 	$this->session->set_flashdata('success','Category details updated succesfully.');
-		// 	$this->session->set_userdata('update_next_step',3);
-		// 	redirect("edit-service/{$id}");
-		// }
-		// $this->session->set_userdata('update_next_step',4);
-		// $this->session->set_flashdata('success','Category details updated succesfully.');
-		// redirect("edit-service/{$id}");			
+		redirect("edit-service/{$id}");					
 	}
 
 	public function updateServices3($id=''){
@@ -2876,7 +2852,7 @@ public function exists_refferals() {
 
 	public function getSubCategory(){
 		$id = $this->input->post('cat_id');
-		$subCategory=$this->common_model->get_sub_category('category',$id);
+		$subCategory=$this->common_model->get_sub_category('service_category',$id,1);
 		$option = '';
 		if(!empty($subCategory)){
 			$option .= '<option value="">Please Select</option>';
