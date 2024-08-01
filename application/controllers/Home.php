@@ -45,7 +45,7 @@ class Home extends CI_Controller
   	$pageData = [];
     $pageData['customer_rev'] = $this->common_model->get_customer_reviews();
     $pageData['all_services']=$this->common_model->get_all_service('my_services',8);
-    $pageData['all_categoty']=$this->common_model->get_service_main_category('service_category',0,1);
+    $pageData['all_categoty']=$this->common_model->get_parent_category('service_category',0,1);
 
     $this->load->view('site/index', $pageData);
   }
@@ -2418,6 +2418,19 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['service_user'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
 		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
 		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
+
+		$data['package_data'] = !empty($data['service_details']['package_data']) ? json_decode($data['service_details']['package_data']) : [];
+
+		$attributesArray = [];
+		foreach ($data['package_data'] as $value) {
+		    if (isset($value->attributes)) {
+		        $attributesArray = array_merge($attributesArray, $value->attributes);
+		    }
+		}
+		$attributesArray = array_unique($attributesArray);
+
+		$data['attributes'] = $this->common_model->getAttributes($attributesArray);
+
 		$this->load->view('site/service_details',$data);
 	}
 

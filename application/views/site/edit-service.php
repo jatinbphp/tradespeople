@@ -92,7 +92,7 @@
 							<div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service2', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices2/{$id}"]); ?>
 							</div>
-							<div id="step7" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
+							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices7/{$id}"]); ?>
 							</div>
 							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">

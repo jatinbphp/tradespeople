@@ -1,6 +1,6 @@
 <?php 
 include_once('include/header.php');
-if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
+if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 ?>
 
 <div class="content-wrapper">
@@ -13,7 +13,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 	  
   </section>
 	<section class="content-header text-right">
-	  <button type="button" onclick="openCategoryModel('add_category',0)" class="btn btn-success">
+	  <button type="button" onclick="openCategoryModel(0)" class="btn btn-success">
 		  Add Service Category
 		</button> 
   </section>
@@ -38,7 +38,6 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
                   
 									<th>S.No</th> 
 									<th>Category</th>
-									<th>Sub Category</th>
 									<th>Slug</th>
 									<th>Action</th>
 								</tr>
@@ -48,7 +47,6 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
                   
 									<th>S.No</th> 
 									<th>Category</th>
-									<th>Sub Category</th>
 									<th>Slug</th>
 									<th>Action</th>
 								</tr>
@@ -111,132 +109,34 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
   </div>
 </div>
 
-<div class="modal fade in" id="add_category">
- 	<div class="modal-body" id="msg">
-    <div class="modal-dialog">	 
-       <div class="modal-content">         	
-	  		<form method="post" id="add_category1" enctype="multipart/form-data">
-          <div class="modal-header">
-            <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">Add Service Category</h4>
-          </div>
-          <div class="modal-body form_width100">
-						<div class="form-group">
-							<label for="email"> Select category:</label>
-							<select name="category" id="category" class="form-control">
-								<option value=''>Select</option>								
-								<?php foreach($parent_category as $key => $list){ ?>
-									<option value="<?php echo $list['cat_id']; ?>"><?php echo $list['cat_name']; ?></option>
-								<?php } ?>								
-							</select>
-						</div>
+<div id="modal-div"></div>
 
-						<div class="form-group">
-							<label for="email"> Select Sub Category:</label>
-							<select type="text" name="sub_category" id="sub_category" class="form-control">
-							</select>
-						</div>
-
-						<div class="form-group">
-							<label for="email"> Select Service Type:</label>
-							<select type="text" name="service_type[]" id="service_type" multiple class="form-control">
-							</select>
-						</div>
-
-						<div class="form-group">
-							<label id="addAttribute0" onclick="addAttribute(0)" ><i class="fa fa-plus"></i> Add Attributes:</label>							
-							<div class="allAttributes" data-id="0" id="attributeList0">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label id="addExService"><i class="fa fa-plus"></i> Add Extra Service:</label>
-							<div id="exServiceList">
-							</div>
-						</div>
-						
-						<div class="form-group">
-							<label for="email"> Slug:</label>
-							<input type="text" name="slug" id="slug0" class="form-control" required>
-							<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
-						</div>
-
-			 	 		<div class="form-group">
-							<label for="email"> Description:</label>
-							<textarea rows="5" placeholder="" name="cat_description" id="cat_description" class="form-control"></textarea>
-			 			</div>
-
-					 	<div class="form-group hide">
-							<label for="description0"> Description (For find job page):</label>
-							<textarea rows="5" placeholder="" name="description" id="description0" class="form-control"></textarea>
-					 	</div>
-
-					 	<div class="form-group">
-							<label for="email"> Meta Title:</label>
-							<input type="text" name="meta_title" id="meta_title" class="form-control" >
-					 	</div>
-
-			 			<div class="form-group">
-							<label for="email"> Meta Keywords:</label>
-							<input type="text" name="meta_key" id="meta_key" class="form-control" >
-			 			</div>
-
-					 	<div class="form-group">
-							<label for="email"> Meta Description:</label>
-							<textarea rows="5" placeholder="" name="meta_description" id="meta_description" class="form-control"></textarea>
-					 	</div>
-
-			 			<div class="form-group">
-							<label for="email"> Footer Description:</label>
-							<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea"></textarea>
-			 			</div>
-
-					 	<div class="form-group hide">
-							<label for="email"> Meta Title (For find job page):</label>
-							<input type="text" name="meta_title2" id="meta_title2" class="form-control" >
-					 	</div>
-
-					 	<div class="form-group hide">
-							<label for="email"> Meta Keywords (For find job page):</label>
-							<input type="text" name="meta_key2" id="meta_key2" class="form-control" >
-					 	</div>
-
-			 			<div class="form-group hide">
-							<label for="email"> Meta Description (For find job page):</label>
-							<textarea rows="5" placeholder="" name="meta_description2" id="meta_description2" class="form-control"></textarea>
-			 			</div>
-
-          </div>
-          <div class="modal-footer">
-						<button type="submit" class="btn btn-info signup_btn" >Save</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-		   </form>
-          </div>			
-       </div>
-    </div>
- </div>
+<?php $this->load->view('Admin/service_category_modal', ['form' => $serviceData, 'url' => site_url()."users/updateServices2/{$id}"]); ?>
 
 <script src="https://cloud.tinymce.com/5/tinymce.min.js?apiKey=y8edi4divxwsplcdd28rzuyx245zbzdndm22yzhuaanemki5"></script>
 
 <script>
-	$("#add_category1").submit(function (event) {	
+	function submitServiceCategory(formType, catId){	
+		var formData = $('#service_category_form').serialize();
+		var formUrl = site_url+'Admin/Admin/add_service_category';
+
+		if(formType == 1){
+			formUrl = site_url+'Admin/Admin/update_service_category/'+catId;
+		}
+
 		$.ajax({
+			url:formUrl,
 			type:'POST',
-			url:site_url+'Admin/Admin/add_service_category',
-			 data: new FormData(this),
-			dataType: 'JSON',
-	        processData: false,
-	        contentType: false,
-	        cache: false,
+			data: formData,
+			cache: false,
 			beforeSend:function(){       
 				$('.signup_btn').html('<i class="fa fa-spin fa-spinner"></i> Processing...');
 				$('.signup_btn').prop('disabled',true);
 				$('.msg').html('');
 			},
 			success:function(resp){
-				if(resp.status==1){
+				var data = JSON.parse(resp);
+				if(data.status==1){
 					window.location.href = site_url+'service_category';
 				} else {
 	        window.location.href="#msg";
@@ -247,19 +147,33 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 			}
 		});
 		return false;
-	});
+	}
 
-	function create_slug(id,v){
+	function create_slug(id,v,eleId){
 		$.ajax({
 			type:'POST',
-			url:site_url+'Admin/slug/create_cate_slug/'+id,
+			url:site_url+'Admin/Admin/create_service_category_slug/'+id,
 			data:{title:v},
 			async:false,
 			success:function(res){
-				$('#slug'+id).val(res);
+				console.log(res);
+
+				$('#slug'+eleId).val(res);				
 			}
 		})
 	}
+
+	function create_slug2(id, v, callback) {
+    $.ajax({
+        type: 'POST',
+        url: site_url + 'Admin/Admin/create_service_category_slug/' + id,
+        data: { title: v },
+        async: false,
+        success: function(res) {
+            if (callback) callback(res);
+        }
+    });
+}
 
 	function show_at_job_search(status,id){
 		
@@ -334,7 +248,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 </script>
 
 <script>
-	function myfunction(eleId = '0', no){
+	function myfunction(no){
 		tinymce.init({
 			selector: '.textarea',
 			height:250,
@@ -350,14 +264,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 				});
 			}
 		});
-
-
-		var modalId = 'add_category';
-		if(eleId == 1){
-			var modalId = 'edit_category';
-		}
-
-		openCategoryModel(modalId,no);
+		openCategoryModel(no);
 	}
 </script>	
 
@@ -532,61 +439,79 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 		});
   });
 
-  var totalAttribute = 0;
-  var totalExService = 1;
+  var totalAttribute = $('.attributeList').length;
+  var totalExService = $('.exServiceList').length;
 
-  function openCategoryModel(eleId, no){
-  	if(eleId == 'edit_category'){
-			$('#edit_category'+no).modal('show');
-  	}else{
-  		$('#'+eleId).modal('show');	
-  	}  	
-  	totalAttribute = $('.attributeList'+no).length;  
+  function openCategoryModel(catId = 0){
+  	$.ajax({
+			url:site_url+'Admin/Admin/openModal',
+			type:'POST',
+			data:{'catId':catId},
+			success:function(response){
+				$('#modal-div').html(response.html);
+				$('#service_category_modal').modal('show');
+
+				$('#service_category_modal').on('shown.bs.modal', function() {
+            initializeTagsInput();
+        });
+			},
+	    error: function(xhr, status, error) {
+	        console.error('AJAX Error: ' + status, error);
+	    }
+		});
   }
 
-  function addAttribute(id){
+  function initializeTagsInput() {
+    $('#service_type_category').tagsinput({
+        minTags: 5
+    });
+
+    $('#service_type_category').on('beforeItemAdd', function(event) {
+        var tag = event.item;
+        console.log(tag);
+        var regex = /^[a-zA-Z0-9\s]+$/;
+        if (!regex.test(tag)) {
+            event.cancel = true; // Cancel adding the tag
+        }
+    });
+	}
+
+  function addAttribute(){
   	var style= '';
   	if(totalAttribute > 0){
   		style="margin-top:10px;";
   	}
-  	var html = '<div class="attributeList0" id="attribute_'+id+'_'+totalAttribute+'" style="'+style+'">'+
-										'<input type="text" name="attributes[]" placeholder="Enter attribute name" class="form-control" style="width: 92%; float: left;">'+
-										'<button class="btn btn-danger removeAttribute" onclick="removeAttribute(0,'+totalAttribute+')" data-id="'+totalAttribute+'" data-id="'+totalAttribute+'" type="button" style="margin-left: 8px;">'+
-											'<i class="fa fa-trash"></i>'+
-										'</button>'+
-									'</div>';
+  	var html = '<div class="attributeList" id="attribute_'+totalAttribute+'" style="'+style+'">'+
+									'<input type="text" name="attributes[]" placeholder="Enter attribute name" class="form-control" style="width: 92%; float: left;">'+
+									'<button class="btn btn-danger removeAttribute" data-id="'+totalAttribute+'" type="button" style="margin-left: 8px;">'+
+										'<i class="fa fa-trash"></i>'+
+									'</button>'+
+								'</div>';
 
-		$('#attributeList'+id).append(html);
+		$('#attributeList').append(html);
 		totalAttribute++;
-  };
+  }
 
-  $(document).ready(function(){ 
-    $('.allAttributes').on('click', '.removeAttribute', function() {
-    	  var containerId = $(this).closest('.allAttributes').attr('id');
-        var eleId = $(this).parent().attr('id').split('_')[1];
-        var no = $(this).data('id');
-        alert(eleId + '_' + no);
-        removeAttribute(containerId, eleId, no);
-    });
-
-    function removeAttribute(eleId, no){
-      alert(eleId + '_' + no);
-      $('#attribute_'+eleId+'_'+aId).remove();
-	  	if(totalAttribute > 0){
-	  		totalAttribute--;	
-	  	}else{
-	  		totalAttribute = $('.attributeList'+no).length;	  		
-	  	} 
-    }
+  $(document).on('click', '.removeAttribute', function() {
+    var id = $(this).data('id');
+    removeAttribute(id);
 	});
 
+  function removeAttribute(attId) {
+  	$('#attribute_'+attId).remove();
+  	if(totalAttribute > 0){
+  		totalAttribute--;	
+  	}else{
+  		totalAttribute = $('.attributeList').length;	  		
+  	}
+  }
 
-  $('#addExService').on('click', function(){
+  function addextraService(){	
   	var style= '';
-  	if(totalExService > 1){
+  	if(totalExService > 0){
   		style="margin-top:10px;";
   	}
-  	var html = '<div class="row" id="exService'+totalExService+'" style="'+style+' margin-right:0">'+
+  	var html = '<div class="row exServiceList" id="exService_'+totalExService+'" style="'+style+' margin-right:0">'+
 									'<div class="col-md-5">'+
 										'<input type="text" name="exService[name]['+totalExService+']" placeholder="Enter extra service name" class="form-control">'+
 									'</div>'+
@@ -605,18 +530,20 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 
 		$('#exServiceList').append(html);
 		totalExService++;
-  });
+  };
 
-  $('#exServiceList').on('click', '.removeExService', function (event) {
-  	event.preventDefault();
-  	var aId = $(this).data('id');
-  	$('#exService'+aId).remove();
-  	if(totalExService > 1){
-  		totalExService--;	
+  $(document).on('click', '.removeExService', function() {
+    var id = $(this).data('id');
+    removeExService(id);
+	});
+
+  function removeExService(attId) {
+  	$('#exService_'+attId).remove();
+  	if(totalAttribute > 0){
+  		totalAttribute--;	
   	}else{
-  		totalExService = 1;
-  	}  	
-  });
-
+  		totalAttribute = $('.exServiceList').length;	  		
+  	}
+  }
 </script>	
 <?php include_once('include/footer.php'); ?>

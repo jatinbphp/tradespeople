@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/dist/css/toastr.min.css">
   <link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/dist/css/skins/_all-skins.min.css">
   <link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/dist/css/multiselect.css">
-
+  <link href="<?php echo base_url().'css/bootstrap-tagsinput.css'; ?>" rel="stylesheet">
   <link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.css">
   <!--link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/dist/css/croppie.css" type="text/css" /-->
 
@@ -29,8 +29,9 @@
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="shortcut icon" href="img/favi.png">
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
 
@@ -40,6 +41,8 @@
   <script src="<?php echo base_url(); ?>asset/admin/bootstrap/js/bootstrap.min.js"></script>
   <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.min.js"></script>
+  <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js">  
+</script>
 
   <script>
   $(function(){

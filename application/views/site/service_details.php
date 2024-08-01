@@ -51,24 +51,38 @@
 								<p>
 									<?php echo $service_details['description']; ?>
 								</p>
-								<?php if(!empty($service_details['plugins'])): ?>
+
+								<?php if($service_details['package_type'] == 0):?>
 									<h2 class="title">What you get with this Offer</h2>
+									<?php 
+										$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+									?>
 									<div class="table-responsive">
 										<table class="table">
 											<tbody>
+												<?php if(!empty($attributes)): ?>
+													<?php foreach($attributes as $att):?>
+														<?php
+															$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';		
+														?>
+														<tr>
+															<td><?php echo $att['attribute_name']; ?></td>
+															<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
+														</tr>										
+													<?php endforeach; ?>	
+												<?php endif; ?>
+
+
 												<?php $plugins = explode(',', $service_details['plugins']); ?>
 												<?php foreach($plugins as $plugin): ?>
 													<?php
 													$pDetail = $this->common_model->GetSingleData('category',['cat_id'=>$plugin]); 											
 													?>
-													<tr>
-														<td><?php echo $pDetail['cat_name']; ?></td>
-														<td><i class="fa fa-check" aria-hidden="true"></i></td>
-													</tr>
+													
 												<?php endforeach; ?>
 											</tbody>
 										</table>
-									</div>
+									</div>									
 								<?php endif; ?>
 							</div>
 
@@ -197,96 +211,111 @@
 								</div>
 							<?php endif;?>
 
+							<?php if($service_details['package_type'] == 1):?>	
+								<div class="compare-packages">
+									<h2 class="title">Compare packages</h2>
+									<div class="gig-page-packages-table">
+										<table>
+											<tbody>
+												<tr class="package-type">
+													<th class="package-row-label">Package</th>
+													<th class="package-type-price">
+														<div class="price-wrapper">
+															<p class="price">
+																<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+															</p>
+														</div>
+														<b class="type">Basic</b>
+													</th>
+													<th class="package-type-price">
+														<div class="price-wrapper">
+															<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?></p>
+														</div>
+														<b class="type">Standard</b>
+													</th>
+													<th class="package-type-price">
+														<div class="price-wrapper">
+															<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?></p>
+														</div>
+														<b class="type">Premium</b>
+													</th>
+												</tr>
+												<tr class="delivery-time">
+													<td class="package-row-label">Delivery Time</td>
+													<td><?php echo $package_data->basic->days; ?> Days</td>
+													<td><?php echo $package_data->standard->days; ?> Days</td>
+													<td><?php echo $package_data->premium->days; ?> Days</td>
+												</tr>
+												<?php 
+													$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+													$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+													$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+												?>
+												<?php if(!empty($attributes)): ?>
+													<?php foreach($attributes as $att):?>
+														<?php 
 
-							<div class="compare-packages">
-								<h2 class="title">Compare packages</h2>
-								<div class="gig-page-packages-table">
-									<table>
-										<tbody>
-											<tr class="package-type">
-												<th class="package-row-label">Package</th>
-												<th class="package-type-price">
-													<div class="price-wrapper">
-														<p class="price">₹2,191</p>
-													</div>
-													<b class="type">Basic</b>
-													<b class="title">50 SEO Backlinks on Blogs</b>
-												</th>
-												<th class="package-type-price">
-													<div class="price-wrapper">
-														<p class="price">₹4,382</p>
-													</div>
-													<b class="type">Standard</b>
-													<b class="title">100 SEO Backlinks on Blogs</b>
-												</th>
-												<th class="package-type-price">
-													<div class="price-wrapper">
-														<p class="price">₹7,888</p>
-													</div>
-													<b class="type">Premium</b>
-													<b class="title">200 Backlinks on Blogs</b>
-												</th>
-											</tr>
-											<tr class="description">
-												<td class="package-row-label"></td>
-												<td>50 dofollow SEO Backlinks on SEO Blogs with DA 50+</td>
-												<td>100 dofollow SEO Backlinks on SEO Blogs with DA 50+ | BONUS 200 Tier 2 Links </td>
-												<td>200 dofollow SEO Backlinks on SEO Blogs with DA 50+ | BONUS 600 Tier 2 Links</td>
-											</tr>
-											<tr class="delivery-time">
-												<td class="package-row-label">Delivery Time</td>
-												<td>1-3 Days</td>
-												<td>1-5 Days</td>
-												<td>2-3 Months</td>
-											</tr>
-											<tr>
-												<td>Revisions</td>
-												<td>3</td>
-												<td>5</td>
-												<td>10</td>
-											</tr>
-											<tr>
-												<td>Source File</td>
-												<td><i class="fa fa-times" aria-hidden="true"></i></td>
-												<td><i class="fa fa-check" aria-hidden="true"></i></td>
-												<td><i class="fa fa-check" aria-hidden="true"></i></td>
-											</tr>
+														$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+														$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
+														$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
 
-											<tr class="select-package">
-												<td class="package-row-label">Total</td>
-												<td>
-													Order $5.00
-												</td>
-												<td>
-													Order $20.00
-												</td>
-												<td>
-													Order $30.00
-												</td>
-											</tr>
-										</tbody>
-									</table>
+														?>
+														<tr>
+															<td><?php echo $att['attribute_name']; ?></td>
+															<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
+															<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
+															<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
+														</tr>
+													<?php endforeach; ?>	
+												<?php endif; ?>
+												<tr class="select-package">
+													<td class="package-row-label">Total</td>
+													<td>
+														Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+													</td>
+													<td>
+														Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
+													</td>
+													<td>
+														Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 								</div>
-							</div>
-
-
-
+							<?php endif; ?>
 						</div>
-
 
 						<div class="col-sm-4">
 							<div class="sidebar-main" id="sidebar">
 								<div class="service-detail-sidebar">
 									<h2 class="title"><?php echo '£'.number_format($service_details['price'],2); ?></h2>
 									<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
-									<h4><i class="fa fa-clock-o" aria-hidden="true"></i> 7-day delivery</h4>				
-									<ul>
-										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
-										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
-										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
-										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
-										<li><i class="fa fa-check" aria-hidden="true"></i> Hand-picked freelancer</li>
-									</ul>
+
+									<?php if($service_details['package_type'] == 0):?>
+										<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
+										<ul>
+											<?php 
+												$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+												$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+												$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+											?>
+											<?php if(!empty($attributes)): ?>
+												<?php foreach($attributes as $att):?>
+													<?php
+														$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+														$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
+														$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
+													?>
+													<li>
+														<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> <?php echo $att['attribute_name']; ?>
+													</li>												
+												<?php endforeach; ?>	
+											<?php endif; ?>
+										</ul>
+									<?php endif; ?>										
+									
 									<form action="" method="post" id="serviceOrder" style="margin-top:0">
 										<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
 										<input type="hidden" name="selected_exsIds" id="selected_exsIds">
@@ -414,23 +443,18 @@
 											$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
 											$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
 											echo "<option value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
-
-										}?>
-									</select>
+											}?>
+										</select>
+									</div>
+									<div style="padding: 10px 0;">
+										<span>
+											Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+										</span>
+									</div>
+									<div id="notAvailablMsg" style="border-top:1px solid #b0c0d3; padding: 10px 0; display: none;">
+									</div>
+									<input class="btn btn-warning btn-lg col-md-12" type="button" id="openChat" value="Select & Continue">
 								</div>
-								<div style="padding: 10px 0;">
-									<span>
-										Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-									</span>
-								</div>
-								<div id="notAvailablMsg" style="border-top:1px solid #b0c0d3; padding: 10px 0; display: none;">
-								</div>
-								<input class="btn btn-warning btn-lg col-md-12" type="button" id="openChat" value="Select & Continue">
-							</div>
-
-
-
-
 							</div>
 						</div>
 					</div>
@@ -439,14 +463,12 @@
 		</div>
 	</div>
 
-
-
 	<?php if(!empty($browse_history)): ?>
-		<div class="container">
+		<div class="container" id="browseHistory">
 			<div class="row">
-				<h1 class="title text-center">
+				<h2 class="title">
 					Your Browsing History
-				</h1>
+				</h2>
 				<?php
 				$data['all_services'] = $browse_history;
 				$this->load->view('site/service_list',$data);
@@ -694,7 +716,7 @@
 	  var $window = $(window);  
 	  var $sidebar = $(".sidebar-main"); 
 	  var $sidebarHeight = $sidebar.innerHeight();   
-	  var $footerOffsetTop = $("#peopleHistory").offset().top; 
+	  var $footerOffsetTop = $("#browseHistory").offset().top; 
 	  var $sidebarOffset = $sidebar.offset();
 	  var $sidebarwidth = $("#sidebar").width();
 	  

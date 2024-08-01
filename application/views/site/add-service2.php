@@ -121,36 +121,36 @@
 		});
   	});
 
-	$('.serviceType').on('change', function(){
-  		var cat_id = $(this).val();
-  		var sectionId = $(this).attr('data-section');
-		$.ajax({
-			url:site_url+'users/getSubCategory',
-			type:"POST",
-			data:{'cat_id':cat_id,'type':3},
-			success:function(data){
-				if(data != ""){
-					$('#'+sectionId+'_div').removeClass('hidden');
-					$('#'+sectionId).empty().html(data);
-					<?php if(isset($serviceData['plugins']) && $serviceData['plugins']): ?>
-						if(plugin == 1){
-							var pluginData = "<?php echo $serviceData['plugins'] ?? ''; ?>";
-							if (pluginData) {
-								var pluginArray = pluginData.split(',');
-								$('.plugin').val(pluginArray);
-							}
-							$('.plugin').trigger('change');
-							plugin = 0;
-						} else {
-							plugin = 0;
-						}
-					<?php endif ?>
-				}else{
-					$('#'+sectionId+'_div').addClass('hidden');
-				}
-			}
-		});
-  	});
+	// $('.serviceType').on('change', function(){
+  	// 	var cat_id = $(this).val();
+  	// 	var sectionId = $(this).attr('data-section');
+	// 	$.ajax({
+	// 		url:site_url+'users/getSubCategory',
+	// 		type:"POST",
+	// 		data:{'cat_id':cat_id,'type':3},
+	// 		success:function(data){
+	// 			if(data != ""){
+	// 				$('#'+sectionId+'_div').removeClass('hidden');
+	// 				$('#'+sectionId).empty().html(data);
+	// 				<?php if(isset($serviceData['plugins']) && $serviceData['plugins']): ?>
+	// 					if(plugin == 1){
+	// 						var pluginData = "<?php echo $serviceData['plugins'] ?? ''; ?>";
+	// 						if (pluginData) {
+	// 							var pluginArray = pluginData.split(',');
+	// 							$('.plugin').val(pluginArray);
+	// 						}
+	// 						$('.plugin').trigger('change');
+	// 						plugin = 0;
+	// 					} else {
+	// 						plugin = 0;
+	// 					}
+	// 				<?php endif ?>
+	// 			}else{
+	// 				$('#'+sectionId+'_div').addClass('hidden');
+	// 			}
+	// 		}
+	// 	});
+  	// });
 
 	// $('.plugin').on('change', function(){
   	// 	var cat_id = $(this).val();

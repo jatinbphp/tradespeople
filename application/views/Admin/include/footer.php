@@ -8,9 +8,12 @@
 </div>
 <!-- textaria editer -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.7.13/tinymce.min.js"></script> -->
+
+
+
 <script type="text/javascript">
 function mark_read_in_admin(table,where){
-	$.ajax({
+	$.ajax({ 
 		type:"post",
 		url:'<?php echo site_url();?>Admin/Admin/mark_read_in_admin',
 		data:{'table':table,'where':where},
@@ -116,6 +119,21 @@ $(document).ready(function() {
         }
     });
 });
+
+function initializeTagsInput() {
+    $('#service_type_category').tagsinput({
+        minTags: 5
+    });
+
+    $('#service_type_category').on('beforeItemAdd', function(event) {
+        var tag = event.item;
+        var regex = /^[a-zA-Z0-9\s]+$/;
+        if (!regex.test(tag)) {
+            event.cancel = true; // Cancel adding the tag
+        }
+    });
+}
+
 </script>
 <script>
 var url = window.location;

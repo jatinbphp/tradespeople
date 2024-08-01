@@ -20,6 +20,7 @@ class ServiceCategory extends CI_Model{
      */
     public function getRows($postData,$main=false){
         $this->_get_datatables_query($postData,$main);
+        $this->db->where('cat_parent',0);
         if($postData['length'] != -1){
             $this->db->limit($postData['length'], $postData['start']);
         }

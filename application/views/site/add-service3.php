@@ -55,7 +55,7 @@
 						<?php endif; ?>
 						</div>
 
-						<span class="text-info addNewExService"><i class="fa fa-plus" style="font-size:12px;"></i> Add New Extra Service</span>
+						<!-- <span class="text-info addNewExService"><i class="fa fa-plus" style="font-size:12px;"></i> Add New Extra Service</span> -->
 					</div>
 				</div>
 			</div>														

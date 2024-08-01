@@ -17,29 +17,19 @@ class Slug extends CI_Controller {
 	}
 	
 	public function create_cate_slug($id=null){
-		$value = $this->input->post('title');
-		
-		$slug = url_title($value);
-		
+		$value = $this->input->post('title');		
+		$slug = url_title($value);		
 		$slugcheck = $this->Common_model->GetColumnName('category',array('cat_id != '=>$id,'cat_name'=>$value),array('slug') , false , 'cat_id' , 'desc');
-		
-		
 		if($slugcheck){
-
 			$slug_arr = explode('-',$slugcheck['slug']);
-			$end = end($slug_arr);
-			
+			$end = end($slug_arr);			
 			if(is_numeric($end)){
-				$end = $end+1;
-				
-				$slug = $slug.'-'.$end;
-				
-			} else {
-				
+				$end = $end+1;				
+				$slug = $slug.'-'.$end;				
+			} else {				
 				$slug = $slug.'-1';
-			}
-	
-	} 	
+			}	
+		} 	
 		//echo $this->db->last_query();
 		echo strtolower($slug);
 	}

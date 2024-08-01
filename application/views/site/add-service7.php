@@ -1,4 +1,5 @@
 <style>
+	.form-check-label{background: transparent!important;}
 	.switch {
 		position: relative;
 		display: inline-block;
@@ -83,13 +84,13 @@
 					<table class="table">
 						<thead>
 							<tr>
-								<th></th>
+								<!-- <th></th> -->
 								<th>BASIC</th>
 								<th class="multiplePackage">STANDARD</th>
 								<th class="multiplePackage">PREMIUM</th>
 							</tr>
 							<tbody>
-								<tr>
+								<!--<tr>
 									<td class="first-table-col"></td>
 									<td>
 										<textarea class="form-control input-md" rows="3" name="package[basic][name]" placeholder="Name your package"><?php echo isset($package_data) ? trim($package_data->basic->name) : '';?></textarea>
@@ -112,14 +113,54 @@
 									<td class="multiplePackage">
 										<textarea class="form-control input-md" rows="3" name="package[premium][description]" placeholder="Describe the details of your offering"><?php echo isset($package_data) ? trim($package_data->premium->description) : '';?></textarea>
 									</td>
-								</tr>
+								</tr>-->								
+								<?php 
+									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+									$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+								?>
+								<?php if(!empty($attributes)):?>
+									<?php foreach($attributes as $key => $value):?>
+										<?php 
+											$bchecked = !empty($basicAtt) && in_array($value['id'], $basicAtt) ? 'checked' : '';
+											$schecked = !empty($standardAtt) && in_array($value['id'], $standardAtt) ? 'checked' : '';
+											$pchecked = !empty($premiumAtt) && in_array($value['id'], $premiumAtt) ? 'checked' : '';
+										?>
+										<tr>
+											<td>
+												<div class="form-check" style="margin: 0;">
+													<input class="form-check-input" type="checkbox" name="package[basic][attributes][]" value="<?php echo $value['id']?>" id="attCheckBasic<?php echo $value['id']?>" <?php echo $bchecked; ?> style="margin-right:10px;">
+													<label class="form-check-label" for="attCheckBasic<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+														<?php echo $value['attribute_name']?>
+													</label>
+													
+												</div>
+											</td>
+											<td class="multiplePackage">
+												<div class="form-check" style="margin: 0;">
+													<input class="form-check-input" type="checkbox" name="package[standard][attributes][]" value="<?php echo $value['id']?>" id="attCheckStandard<?php echo $value['id']?>" <?php echo $schecked; ?> style="margin-right:10px;">
+													<label class="form-check-label" for="attCheckStandard<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+														<?php echo $value['attribute_name']?>
+													</label>
+												</div>
+											</td>
+											<td class="multiplePackage">
+												<div class="form-check" style="margin: 0;">
+													<input class="form-check-input" type="checkbox" name="package[premium][attributes][]" value="<?php echo $value['id']?>" id="attCheckPremium<?php echo $value['id']?>" <?php echo $pchecked; ?> style="margin-right:10px;">
+													<label class="form-check-label" for="attCheckPremium<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+														<?php echo $value['attribute_name']?>
+													</label>
+												</div>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								<?php endif;?>	
 								<tr>
 									<?php 
 										$basicDays = isset($package_data) ? $package_data->basic->days : [];
 										$standardDays = isset($package_data) ? $package_data->standard->days : [];
 										$premiumDays = isset($package_data) ? $package_data->premium->days : [];
 									?>
-									<td></td>
 									<td>
 										<select name="package[basic][days]" class="form-control">
 											<option value="">Delivery Days</option>
@@ -145,47 +186,17 @@
 										</select>
 									</td>
 								</tr>
-								<?php 
-									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-									$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-								?>
-								<?php if(!empty($attributes)):?>
-									<?php foreach($attributes as $key => $value):?>
-										<?php 
-											$bchecked = !empty($basicAtt) && in_array($value['id'], $basicAtt) ? 'checked' : '';
-											$schecked = !empty($standardAtt) && in_array($value['id'], $standardAtt) ? 'checked' : '';
-											$pchecked = !empty($premiumAtt) && in_array($value['id'], $premiumAtt) ? 'checked' : '';
-										?>
-										<tr>
-											<td><?php echo $value['attribute_name']?></td>
-											<td>
-												<div class="form-check" style="margin: 0;">
-													<input class="form-check-input" type="checkbox" name="package[basic][attributes][]" value="<?php echo $value['id']?>" id="noCheckbox" <?php echo $bchecked; ?> style="margin-right:10px;">
-												</div>
-											</td>
-											<td class="multiplePackage">
-												<div class="form-check" style="margin: 0;">
-													<input class="form-check-input" type="checkbox" name="package[standard][attributes][]" value="<?php echo $value['id']?>" id="noCheckbox" <?php echo $schecked; ?> style="margin-right:10px;">
-												</div>
-											</td>
-											<td class="multiplePackage">
-												<div class="form-check" style="margin: 0;">
-													<input class="form-check-input" type="checkbox" name="package[premium][attributes][]" value="<?php echo $value['id']?>" id="noCheckbox" <?php echo $pchecked; ?> style="margin-right:10px;">
-												</div>
-											</td>
-										</tr>
-									<?php endforeach; ?>
-								<?php endif;?>	
 								<tr>
-									<td><b>Total Price</b></td>
 									<td>
+										<b>Price <?php echo !empty($service_category['price_type']) ? '/'.$service_category['price_type'] : ''; ?></b>
 										<input name="package[basic][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->basic->price) : '';?>">
 									</td>
 									<td class="multiplePackage">
+										<b>Price <?php echo !empty($service_category['price_type']) ? '/'.$service_category['price_type'] : ''; ?></b>
 										<input name="package[standard][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->standard->price) : '';?>">
 									</td>
 									<td class="multiplePackage">
+										<b>Price <?php echo !empty($service_category['price_type']) ? '/'.$service_category['price_type'] : ''; ?></b>
 										<input name="package[premium][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->premium->price) : '';?>">
 									</td>
 								</tr>

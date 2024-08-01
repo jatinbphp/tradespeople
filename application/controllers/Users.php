@@ -2604,7 +2604,7 @@ public function exists_refferals() {
 			}
 
 			$this->setEditServiceData($serviceData);
-			$data['category'] = $this->common_model->get_service_main_category('service_category',0,1);
+			$data['category'] = $this->common_model->get_parent_category('service_category',0,1);
 			$data['cities'] = $this->search_model->getJobCities();			
 			$trades_ex_service = $this->common_model->getTradesExService($id);
 			$faqs = $this->common_model->getServiceFaqs($id);
@@ -2637,7 +2637,7 @@ public function exists_refferals() {
 			$data['id'] = $id;
 			$data['price_per_type'] = ["Hour","Service","Meter","Square Meter","Kilogram","Mile","Consultation"];
 
-			$service_category = $this->common_model->GetSingleData('service_category',['main_category'=>$serviceData['category'], 'sub_category'=>$serviceData['sub_category']]);
+			$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$serviceData['category']]);
 
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
 
@@ -2646,6 +2646,8 @@ public function exists_refferals() {
 			$serviceData1 = $this->session->userdata('edit_service_data');
 
 			$data['package_data'] = !empty($serviceData['package_data']) ? json_decode($serviceData['package_data']) : [];
+
+			$data['service_category'] = $service_category;
 
 			$this->load->view('site/edit-service',$data);
     	} 
@@ -2932,7 +2934,7 @@ public function exists_refferals() {
 
 	public function getSubCategory(){
 		$id = $this->input->post('cat_id');
-		$subCategory=$this->common_model->get_service_sub_category($id);
+		$subCategory=$this->common_model->get_sub_category('service_category',$id);
 		$option = '';
 		if(!empty($subCategory)){
 			$option .= '<option value="">Please Select</option>';
