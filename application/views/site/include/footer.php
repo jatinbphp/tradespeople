@@ -2220,22 +2220,6 @@ $(document).ready(function(){
         $('#datepicker').datepicker("option", "disabled", true); // Disable datepicker by default
       <?php endif; ?>
 
-      $('#yesCheckbox').on('change', function() {
-          if ($(this).is(':checked')) {
-              $('#noCheckbox').prop('checked', false);
-              $('#datepicker').datepicker("option", "disabled", true);
-              $('#datePickerDiv').hide();
-          }
-      });
-
-      $('#noCheckbox').on('change', function() {
-          if ($(this).is(':checked')) {
-              $('#yesCheckbox').prop('checked', false);
-              $('#datepicker').datepicker("option", "disabled", false);
-              $('#datePickerDiv').show();
-          }
-      });
-
       var selectedDates = $('#datepicker').multiDatesPicker('getDates');
       if (!selectedDates.includes(today.toISOString().slice(0, 10))) {
          //selectedDates.push(today.toISOString().slice(0, 10)); // Add current date if not already selected

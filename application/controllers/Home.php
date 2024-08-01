@@ -45,10 +45,8 @@ class Home extends CI_Controller
   	$pageData = [];
     $pageData['customer_rev'] = $this->common_model->get_customer_reviews();
     $pageData['all_services']=$this->common_model->get_all_service('my_services',8);
-    $pageData['all_categoty']=$this->common_model->get_parent_category('service_category',0,1);
-    // echo '<pre>';
-    // print_r($pageData);
-    // exit;
+    $pageData['all_categoty']=$this->common_model->get_service_main_category('service_category',0,1);
+
     $this->load->view('site/index', $pageData);
   }
 	
@@ -2407,9 +2405,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 			foreach($peopleViews as $rview){
 				$exPids[] = $rview['service_id'];
 			}
-		}
-
-		
+		}		
 
 		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exIds);
 		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exPids);
@@ -2434,16 +2430,32 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	}
 
 	public function categoryDetail($slug='', $slug2='', $slug3=''){
+		$joins = [
+	    [
+        'table' => 'category c',
+        'condition' => 'sc.main_category = c.cat_id',
+        'type' => 'LEFT'
+	    ]
+		];
+
 		if($slug2 == "" && $slug3 == ""){
-			$category = $this->common_model->GetSingleData('service_category',['slug'=>$slug,'is_activate'=>1]);
+			$conditions = ['sc.slug' => $slug, 'sc.is_activate' => 1];
+
+			$category = $this->common_model->getFirstRecord('service_category sc', $conditions, $joins, 'sc.*, c.cat_id, c.cat_name');
 			$step = 1;
 		}
 		if($slug2 != "" && $slug3 == ""){
-			$category = $this->common_model->GetSingleData('service_category',['slug'=>$slug2,'is_activate'=>1]);
+			$conditions = ['sc.slug' => $slug2, 'sc.is_activate' => 1];
+
+			$category = $this->common_model->getFirstRecord('service_category sc', $conditions, $joins, 'sc.*, c.cat_id, c.cat_name');
+
 			$step = 2;
 		}
 		if($slug3 != ""){
-			$category = $this->common_model->GetSingleData('service_category',['slug'=>$slug3,'is_activate'=>1]);
+			$conditions = ['sc.slug' => $slug3, 'sc.is_activate' => 1];
+
+			$category = $this->common_model->getFirstRecord('service_category sc', $conditions, $joins, 'sc.*, c.cat_id, c.cat_name');
+			
 			$step = 3;
 		}
 
@@ -2482,26 +2494,26 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 		$data['categories_data']=$this->getHirarchicalCategoryData();
 		$data['faqs'] = $this->common_model->get_faqs('category_faqs',($category['cat_id'] ?? 0));
-		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat('service_category',($category['cat_id'] ?? 0));
+		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat('category',($category['cat_id'] ?? 0));
 		$this->load->view('site/home_category_details',$data);
 	}
 
 	public function getHirarchicalCategoryData(){
-		$allCategory = $this->common_model->get_parent_category('service_category',0,1);
+		$allCategory = $this->common_model->get_service_main_category();
 		$hirarchicalData = [];
 		foreach($allCategory as $data){
 			$categoryId = $data['cat_id'] ?? 0;
 			if(!$categoryId){
 				continue;
 			}
-			$cData = $this->common_model->getAllChiledCat('service_category',$categoryId);
+			$cData = $this->common_model->getAllChiledCat('category',$categoryId);
 			$chileds = [];
 			foreach($cData as $chiledData){
 				$categoryId = $chiledData['cat_id'] ?? 0;
 				if(!$categoryId){
 					continue;
 				}
-				$chiledData['chiled'] = $this->common_model->getAllChiledCat('service_category',$categoryId); 
+				$chiledData['chiled'] = $this->common_model->getAllChiledCat('category',$categoryId); 
 				$chileds[] = $chiledData;
 			}
 			$data['chiled'] = $chileds;

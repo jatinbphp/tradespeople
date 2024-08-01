@@ -13,7 +13,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 	  
   </section>
 	<section class="content-header text-right">
-	  <button type="button" data-toggle="modal" data-target="#add_category" class="btn btn-success">
+	  <button type="button" onclick="openCategoryModel('add_category',0)" class="btn btn-success">
 		  Add Service Category
 		</button> 
   </section>
@@ -112,114 +112,111 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 </div>
 
 <div class="modal fade in" id="add_category">
-   <div class="modal-body" id="msg">
-      <div class="modal-dialog">	 
-         <div class="modal-content">         	
-		  		<form method="post" id="add_category1" enctype="multipart/form-data">
-            <div class="modal-header">
-              <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Add Service Category</h4>
-            </div>
-            <div class="modal-body form_width100">
-							<div class="form-group">
-								<label for="email"> Select category:</label>
-								<select type="text" name="category" id="category" class="form-control">
-									<option value=''>Select</option>								
-									<?php
-										$newCategory = getParent(0, 'category');								
-										foreach($parent_category as $key => $list){
-									?>
-										<option value="<?php echo $list['cat_id']; ?>"><?php echo $list['cat_name']; ?></option>
-									<?php } ?>								
-								</select>
+ 	<div class="modal-body" id="msg">
+    <div class="modal-dialog">	 
+       <div class="modal-content">         	
+	  		<form method="post" id="add_category1" enctype="multipart/form-data">
+          <div class="modal-header">
+            <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Add Service Category</h4>
+          </div>
+          <div class="modal-body form_width100">
+						<div class="form-group">
+							<label for="email"> Select category:</label>
+							<select name="category" id="category" class="form-control">
+								<option value=''>Select</option>								
+								<?php foreach($parent_category as $key => $list){ ?>
+									<option value="<?php echo $list['cat_id']; ?>"><?php echo $list['cat_name']; ?></option>
+								<?php } ?>								
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="email"> Select Sub Category:</label>
+							<select type="text" name="sub_category" id="sub_category" class="form-control">
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="email"> Select Service Type:</label>
+							<select type="text" name="service_type[]" id="service_type" multiple class="form-control">
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label id="addAttribute0" onclick="addAttribute(0)" ><i class="fa fa-plus"></i> Add Attributes:</label>							
+							<div class="allAttributes" data-id="0" id="attributeList0">
 							</div>
+						</div>
 
-							<div class="form-group">
-								<label for="email"> Select Sub Category:</label>
-								<select type="text" name="sub_category" id="sub_category" class="form-control">
-								</select>
+						<div class="form-group">
+							<label id="addExService"><i class="fa fa-plus"></i> Add Extra Service:</label>
+							<div id="exServiceList">
 							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="email"> Slug:</label>
+							<input type="text" name="slug" id="slug0" class="form-control" required>
+							<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
+						</div>
 
-							<div class="form-group">
-								<label for="email"> Select Service Type:</label>
-								<select type="text" name="service_type[]" id="service_type" multiple class="form-control">
-								</select>
-							</div>
+			 	 		<div class="form-group">
+							<label for="email"> Description:</label>
+							<textarea rows="5" placeholder="" name="cat_description" id="cat_description" class="form-control"></textarea>
+			 			</div>
 
-							<div class="form-group">
-								<label for="" id="addAttribute"><i class="fa fa-plus"></i> Add Attributes:</label>							
-								<div id="attributeList">
-								</div>
-							</div>
+					 	<div class="form-group hide">
+							<label for="description0"> Description (For find job page):</label>
+							<textarea rows="5" placeholder="" name="description" id="description0" class="form-control"></textarea>
+					 	</div>
 
-							<div class="form-group">
-								<label for="" id="addExService"><i class="fa fa-plus"></i> Add Extra Service:</label>
-								<div id="exServiceList">
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label for="email"> Slug:</label>
-								<input type="text" name="slug" id="slug0" class="form-control" required>
-								<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
-							</div>
+					 	<div class="form-group">
+							<label for="email"> Meta Title:</label>
+							<input type="text" name="meta_title" id="meta_title" class="form-control" >
+					 	</div>
 
-				 	 		<div class="form-group">
-								<label for="email"> Description:</label>
-								<textarea rows="5" placeholder="" name="cat_description" id="cat_description" class="form-control"></textarea>
-				 			</div>
+			 			<div class="form-group">
+							<label for="email"> Meta Keywords:</label>
+							<input type="text" name="meta_key" id="meta_key" class="form-control" >
+			 			</div>
 
-						 	<div class="form-group hide">
-								<label for="description0"> Description (For find job page):</label>
-								<textarea rows="5" placeholder="" name="description" id="description0" class="form-control"></textarea>
-						 	</div>
+					 	<div class="form-group">
+							<label for="email"> Meta Description:</label>
+							<textarea rows="5" placeholder="" name="meta_description" id="meta_description" class="form-control"></textarea>
+					 	</div>
 
-						 	<div class="form-group">
-								<label for="email"> Meta Title:</label>
-								<input type="text" name="meta_title" id="meta_title" class="form-control" >
-						 	</div>
+			 			<div class="form-group">
+							<label for="email"> Footer Description:</label>
+							<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea"></textarea>
+			 			</div>
 
-				 			<div class="form-group">
-								<label for="email"> Meta Keywords:</label>
-								<input type="text" name="meta_key" id="meta_key" class="form-control" >
-				 			</div>
+					 	<div class="form-group hide">
+							<label for="email"> Meta Title (For find job page):</label>
+							<input type="text" name="meta_title2" id="meta_title2" class="form-control" >
+					 	</div>
 
-						 	<div class="form-group">
-								<label for="email"> Meta Description:</label>
-								<textarea rows="5" placeholder="" name="meta_description" id="meta_description" class="form-control"></textarea>
-						 	</div>
+					 	<div class="form-group hide">
+							<label for="email"> Meta Keywords (For find job page):</label>
+							<input type="text" name="meta_key2" id="meta_key2" class="form-control" >
+					 	</div>
 
-				 			<div class="form-group">
-								<label for="email"> Footer Description:</label>
-								<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea"></textarea>
-				 			</div>
+			 			<div class="form-group hide">
+							<label for="email"> Meta Description (For find job page):</label>
+							<textarea rows="5" placeholder="" name="meta_description2" id="meta_description2" class="form-control"></textarea>
+			 			</div>
 
-						 	<div class="form-group hide">
-								<label for="email"> Meta Title (For find job page):</label>
-								<input type="text" name="meta_title2" id="meta_title2" class="form-control" >
-						 	</div>
-
-						 	<div class="form-group hide">
-								<label for="email"> Meta Keywords (For find job page):</label>
-								<input type="text" name="meta_key2" id="meta_key2" class="form-control" >
-						 	</div>
-
-				 			<div class="form-group hide">
-								<label for="email"> Meta Description (For find job page):</label>
-								<textarea rows="5" placeholder="" name="meta_description2" id="meta_description2" class="form-control"></textarea>
-				 			</div>
-
-	          </div>
-            <div class="modal-footer">
-							<button type="submit" class="btn btn-info signup_btn" >Save</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-			   </form>
-            </div>			
-         </div>
-      </div>
-   </div>
+          </div>
+          <div class="modal-footer">
+						<button type="submit" class="btn btn-info signup_btn" >Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+		   </form>
+          </div>			
+       </div>
+    </div>
+ </div>
 
 <script src="https://cloud.tinymce.com/5/tinymce.min.js?apiKey=y8edi4divxwsplcdd28rzuyx245zbzdndm22yzhuaanemki5"></script>
 
@@ -337,7 +334,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 </script>
 
 <script>
-	function myfunction(){
+	function myfunction(eleId = '0', no){
 		tinymce.init({
 			selector: '.textarea',
 			height:250,
@@ -353,6 +350,14 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 				});
 			}
 		});
+
+
+		var modalId = 'add_category';
+		if(eleId == 1){
+			var modalId = 'edit_category';
+		}
+
+		openCategoryModel(modalId,no);
 	}
 </script>	
 
@@ -527,31 +532,54 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 		});
   });
 
-  var totalAttribute = 1;
+  var totalAttribute = 0;
   var totalExService = 1;
 
-  $('#addAttribute').on('click', function(){
+  function openCategoryModel(eleId, no){
+  	if(eleId == 'edit_category'){
+			$('#edit_category'+no).modal('show');
+  	}else{
+  		$('#'+eleId).modal('show');	
+  	}  	
+  	totalAttribute = $('.attributeList'+no).length;  
+  }
+
+  function addAttribute(id){
   	var style= '';
-  	if(totalAttribute > 1){
+  	if(totalAttribute > 0){
   		style="margin-top:10px;";
   	}
-  	var html = '<div id="attribute'+totalAttribute+'" style="'+style+'">'+
+  	var html = '<div class="attributeList0" id="attribute_'+id+'_'+totalAttribute+'" style="'+style+'">'+
 										'<input type="text" name="attributes[]" placeholder="Enter attribute name" class="form-control" style="width: 92%; float: left;">'+
-										'<button class="btn btn-danger removeAttribute" data-id="'+totalAttribute+'" type="button" style="margin-left: 8px;">'+
+										'<button class="btn btn-danger removeAttribute" onclick="removeAttribute(0,'+totalAttribute+')" data-id="'+totalAttribute+'" data-id="'+totalAttribute+'" type="button" style="margin-left: 8px;">'+
 											'<i class="fa fa-trash"></i>'+
 										'</button>'+
 									'</div>';
 
-		$('#attributeList').append(html);
+		$('#attributeList'+id).append(html);
 		totalAttribute++;
-  });
+  };
 
-  $('#attributeList').on('click', '.removeAttribute', function (event) {
-  	event.preventDefault();
-  	var aId = $(this).data('id');
-  	$('#attribute'+aId).remove();
-  	totalAttribute--;
-  });
+  $(document).ready(function(){ 
+    $('.allAttributes').on('click', '.removeAttribute', function() {
+    	  var containerId = $(this).closest('.allAttributes').attr('id');
+        var eleId = $(this).parent().attr('id').split('_')[1];
+        var no = $(this).data('id');
+        alert(eleId + '_' + no);
+        removeAttribute(containerId, eleId, no);
+    });
+
+    function removeAttribute(eleId, no){
+      alert(eleId + '_' + no);
+      $('#attribute_'+eleId+'_'+aId).remove();
+	  	if(totalAttribute > 0){
+	  		totalAttribute--;	
+	  	}else{
+	  		totalAttribute = $('.attributeList'+no).length;	  		
+	  	} 
+    }
+	});
+
 
   $('#addExService').on('click', function(){
   	var style= '';
@@ -583,7 +611,11 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
   	event.preventDefault();
   	var aId = $(this).data('id');
   	$('#exService'+aId).remove();
-  	totalExService--;
+  	if(totalExService > 1){
+  		totalExService--;	
+  	}else{
+  		totalExService = 1;
+  	}  	
   });
 
 </script>	

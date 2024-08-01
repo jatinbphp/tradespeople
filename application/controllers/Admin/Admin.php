@@ -3069,9 +3069,79 @@ class Admin extends CI_Controller
         $memData = $this->ServiceCategory->getRows($_POST);
 
         $newCategory = getParent(0, 'category');
-
+        $parent_category=$this->Common_model->get_parent_category('category');
+        
         $i = $_POST['start'];
         foreach ($memData as $member) {
+            $parentCategory = '';
+            if(!empty($parent_category)){
+                foreach($parent_category as $pCat){
+                    $selected = $pCat['cat_id'] == $member->main_category ? 'selected' : '';
+                    $parentCategory .= '<option value="'.$pCat['cat_id'].'" '.$selected.'>'.$pCat['cat_name'].'</option>';
+                }
+            }
+
+            $getChild = getChild($member->main_category);
+            $subCategory = '';
+            if(!empty($getChild)){
+                foreach($getChild as $child){
+                    $selected = $child['cat_id'] == $member->sub_category ? 'selected' : '';
+                    $subCategory .= '<option value="'.$child['cat_id'].'" '.$selected.'>'.$child['cat_name'].'</option>';
+                }
+            }
+
+            $oldServiceType = !empty($member->service_type) ? explode(',', $member->service_type) : [];
+            $getserviceType = getChild($member->sub_category);
+            $serviceType = '';            
+            if(!empty($getserviceType)){
+                foreach($getserviceType as $type){
+                    $selected = in_array($type['cat_id'], $oldServiceType) ? 'selected' : '';
+                    $serviceType .= '<option value="'.$type['cat_id'].'" '.$selected.'>'.$type['cat_name'].'</option>';
+                }
+            }
+
+            $attributes = $this->Common_model->get_all_data('service_attribute',['service_cat_id'=>$member->cat_id]);
+            $attributeList = '';
+            if(!empty($attributes)){
+                $m = 1;
+                foreach($attributes as $att){
+                    $style = $m > 1 ? 'margin-top:10px;' : '';
+                    $attributeList .= '<div class="attributeList'.$member->cat_id.'" id="attribute_'.$member->cat_id.'_'.$m.'" style="'.$style.'">
+                                        <input type="text" name="attributes[]" placeholder="Enter attribute name" value="'.$att['attribute_name'].'" class="form-control" style="width: 92%; float: left;">
+                                        <button class="btn btn-danger removeAttribute" onclick="removeAttribute('.$member->cat_id.','.$m.')" data-id="'.$m.'" type="button" style="margin-left: 8px;">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>';
+                                    $m++;
+                }
+            }
+
+            $exServices = $this->Common_model->get_all_data('extra_service',['category'=>$member->cat_id]);
+            $exServicesList = '';
+            if(!empty($exServices)){
+                $n = 1;
+                foreach($exServices as $exs){
+                    $style = $n > 1 ? 'margin-top:10px;' : '';
+                    $exServicesList .= '<div class="row" id="exService'.$n.'" style="'.$style.' margin-right:0">
+                                    <div class="col-md-5">
+                                        <input type="text" name="exService[name]['.$n.']" placeholder="Enter extra service name" class="form-control" value="'.$exs['ex_service_name'].'">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" name="exService[price]['.$n.']" placeholder="Enter price" class="form-control" value="'.$exs['price'].'">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" min="0" name="exService[days]['.$n.']" placeholder="Enter days" class="form-control" value="'.$exs['days'].'">
+                                    </div>
+                                    <div class="col-md-1" style="padding-left:0px;">
+                                    <button class="btn btn-danger removeExService" data-id="'.$n.'" type="button" style="margin-left: 8px;">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>';
+                                    $n++;
+                }
+            }
+
             $i++;
             $main_cate = '';
             if ($member->main_category && !empty($member->main_category)) {
@@ -3089,103 +3159,97 @@ class Admin extends CI_Controller
 
             // $action .= '<a href="' . base_url() . 'child_category/' . $member->cat_id . '" class="btn btn-info btn-xs">Child Category</a> ';
 
-            // $action .= '<a href="javascript:void(0);"  onclick="myfunction()" data-toggle="modal" data-target="#edit_category' . $member->cat_id . '" class="btn btn-success btn-xs">Edit</a> ';
+            $action = '<button type="button" onclick="myfunction(1,'.$member->cat_id.')" class="btn btn-success btn-xs">Edit</button> ';
 
-            $action = '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/delete_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to delete this service category?\');">Delete</a> ';
+            $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/delete_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to delete this service category?\');">Delete</a> ';
 
-            // if ($member->is_activate == 1) {
-            //     $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/deactivate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to deactivate this service category?\');">Deactivate</a> ';
-            // } else {
-            //     $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/activate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to activate this service category?\');">Activate</a> ';
-            // }
+            if ($member->is_activate == 1) {
+                $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/deactivate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to deactivate this service category?\');">Deactivate</a> ';
+            } else {
+                $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/activate_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to activate this service category?\');">Activate</a> ';
+            }
 
             // $action .= '<a href="javascript:void(0);" class="btn btn-warning btn-xs" style="margin-top:1px" onclick="openFAQModal('.$member->cat_id.')">FAQs</a> ';
 
             $action .= '<div class="modal fade in" id="edit_category' . $member->cat_id . '">
-                        <div class="modal-body" >
-                            <div class="modal-dialog">
-                                <div class="modal-content" id="editMsg_' . $member->cat_id . '">
-                                    <form onsubmit="return edit_category(' . $member->cat_id . ');" id="edit_category1' . $member->cat_id . '" method="post"  enctype="multipart/form-data">
-                                        <div class="modal-header">
-                                            <div class="editmsg' . $member->cat_id . '" id="editmsg' . $member->cat_id . '"></div>
-                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                             <h4 class="modal-title">Edit Service Category</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                                            <div class="form-group">
-                                                <label for="email"> Select category:</label>
-                                                <select type="text" name="cat_parent1" id="cat_parent' . $member->cat_id . '"  class="form-control" onchange="InsertTitle(this ,\'title_ft' . $member->cat_id . '\',' . $member->cat_id . ')" >
-                                                    <option value="">select</option>';
-                                foreach ($newCategory as $newCategoryKey => $newCategoryVal) {
-                                    $newCategoryselected = ($newCategoryVal['cat_id'] == $member->cat_parent) ? 'selected' : '';
-                                    $action .= '<optgroup label="' . $newCategoryVal['cat_name'] . '">
-                                                        <option ' . $newCategoryselected . ' value="' . $newCategoryVal['cat_id'] . '">' . $newCategoryVal['cat_name'] . ' (Main)</option>';
-
-                                    if (!empty($newCategoryVal['child'])) {
-                                        foreach ($newCategoryVal['child'] as $childKey => $childVal) {
-
-                                            $childCategoryselected = ($childVal['cat_id'] == $member->cat_parent) ? 'selected' : '';
-
-                                            $action .= '<option ' . $childCategoryselected . ' value="' . $childVal['cat_id'] . '">' . $childVal['cat_name'] . '</option>';
-                                        }
-                                    }
-                                    $action .= '</optgroup>';
-                                }
-                                
-                                $action .= '</select>
+                            <div class="modal-body">
+                                <div class="modal-dialog">
+                                    <div class="modal-content" id="editMsg_' . $member->cat_id . '">
+                                        <form onsubmit="return edit_category(' . $member->cat_id . ');" id="edit_category1' . $member->cat_id . '" method="post" enctype="multipart/form-data">
+                                            <div class="modal-header">
+                                                <div class="editmsg' . $member->cat_id . '" id="editmsg' . $member->cat_id . '"></div>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                <h4 class="modal-title">Edit Service Category</h4>
                                             </div>
-                                <div class="form-group">
-                                    <label for="email"> Category Name:</label>
-                                    <input type="text" name="cat_name1" onkeyup="changeQues(this , ' . $member->cat_id . '); create_slug(' . $member->cat_id . ',this.value);"  id="cat_name' . $member->cat_id . '"  value="' . $member->cat_name . '" required class="form-control" >
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="cat_ques' . $member->cat_id . '">  Category Question:</label>
-                                    <input type="text" name="cat_ques"  id="cat_ques' . $member->cat_id . '"  value="' . $member->cat_ques . '" class="form-control" >
-                                 </div>
-                                 <div class="form-group utitle_ft title_ft' . $member->cat_id . '" style="display:none">
-                                    <label for="email">  Category title for find tradesmen page:</label>
-                                    <input type="text" name="title_ft1"  id="title_ft' . $member->cat_id . '"  value="' . $member->title_ft . '"  class="form-control" >
-                                 </div>
-                                <div class="form-group">
-                                    <label for="email"> Slug:</label>
-                                    <input type="text" name="slug1" id="slug' . $member->cat_id . '"  value="' . $member->slug . '" required class="form-control" >
-                                    <p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="email"> Description:</label>
-                                    <textarea rows="5" placeholder="" name="cat_description1" id="cat_description' . $member->cat_id . '" class="form-control">' . $member->cat_description . '</textarea>
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="email"> Meta Title:</label>
-                                    <input type="text" name="meta_title1" id="meta_title' . $member->cat_id . '" class="form-control" value="' . $member->meta_title . '">
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="email"> Meta Keywords:</label>
-                                    <input type="text" name="meta_key1" id="meta_key' . $member->cat_id . '" class="form-control" value="' . $member->meta_key . '">
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="email"> Meta Description:</label>
-                                    <textarea rows="5" placeholder="" name="meta_description1" id="meta_description' . $member->cat_id . '" class="form-control">' . $member->meta_description . '</textarea>
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="email"> Footer Description:</label>
-                                    <textarea rows="5" placeholder="" name="footer_description" id="footer_description' . $member->cat_id . '" class="form-control textarea">' . $member->footer_description . '</textarea>
-                                 </div>
-                                 <div class="form-group">
-                                    <label for="email"> Thumbnail Image:</label>
-                                <input type="file" name="cat_image1" id="cat_image' . $member->cat_id . '" class="form-control">
-                                <input type="hidden" name="catimage" id="catimage' . $member->cat_id . '" value="' . $member->cat_image . '"></div>
-                                 </div>
-                                   <div class="modal-footer">
-                                    <button type="submit" class="btn btn-info edit_btn' . $member->cat_id . '" >Save</button>
-                                      <button type="button" class="btn btn-default signup_btn1" data-dismiss="modal">Close</button>
-                                   </div>
-                                   </form>
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label for="category">Select category:</label>
+                                                    <select name="category" id="category" class="form-control">
+                                                        <option value="">Select</option>
+                                                        ' . $parentCategory . '
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="sub_category">Select Sub Category:</label>
+                                                    <select name="sub_category" id="sub_category" class="form-control">
+                                                        <option value="">Select</option>
+                                                        ' . $subCategory . '
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="service_type">Select Service Type:</label>
+                                                    <select name="service_type[]" id="service_type" multiple class="form-control">
+                                                        <option value="">Select</option>
+                                                        ' . $serviceType . '
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label id="addAttribute'.$member->cat_id.'" onclick="addAttribute('.$member->cat_id.')" ><i class="fa fa-plus"></i> Add Attributes:</label>                         
+                                                        <div class="allAttributes" data-id="'.$member->cat_id.'" id="attributeList'.$member->cat_id.'">
+                                                        ' . $attributeList . '
+                                                        </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="addExService"><i class="fa fa-plus"></i> Add Extra Service:</label>
+                                                    <div class="exServiceList">
+                                                        ' . $exServicesList . '
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="slug' . $member->cat_id . '">Slug:</label>
+                                                    <input type="text" name="slug1" id="slug' . $member->cat_id . '" value="' . $member->slug . '" required class="form-control">
+                                                    <p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="cat_description' . $member->cat_id . '">Description:</label>
+                                                    <textarea rows="5" name="cat_description1" id="cat_description' . $member->cat_id . '" class="form-control">' . $member->cat_description . '</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="meta_title' . $member->cat_id . '">Meta Title:</label>
+                                                    <input type="text" name="meta_title1" id="meta_title' . $member->cat_id . '" class="form-control" value="' . $member->meta_title . '">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="meta_key' . $member->cat_id . '">Meta Keywords:</label>
+                                                    <input type="text" name="meta_key1" id="meta_key' . $member->cat_id . '" class="form-control" value="' . $member->meta_key . '">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="meta_description' . $member->cat_id . '">Meta Description:</label>
+                                                    <textarea rows="5" name="meta_description1" id="meta_description' . $member->cat_id . '" class="form-control">' . $member->meta_description . '</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="footer_description' . $member->cat_id . '">Footer Description:</label>
+                                                    <textarea rows="5" name="footer_description" id="footer_description' . $member->cat_id . '" class="form-control textarea">' . $member->footer_description . '</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-info edit_btn' . $member->cat_id . '">Save</button>
+                                                <button type="button" class="btn btn-default signup_btn1" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                             </div>
-                          </div>
-                       </div>
-                    </div>';
+                            </div>
+                        </div>';
 
             $data[] = [$member->cat_id, $main_cate, $sub_cate, $member->slug, $action];
         }

@@ -456,11 +456,11 @@
 	<?php endif; ?>
 
 	<?php if(!empty($people_history)): ?>
-		<div class="container">
+		<div class="container" id="peopleHistory">
 			<div class="row">
-				<h1 class="title text-center">
+				<h2 class="title">
 					People Who Viewed This Service Also Viewed
-				</h1>
+				</h2>
 				<?php
 				$data['all_services'] = $people_history;
 				$this->load->view('site/service_list',$data);
@@ -690,33 +690,28 @@
 		showdiv();
 	});
 
-
-
-$(document).ready(function() {
-  var $window = $(window);  
-  var $sidebar = $(".sidebar-main"); 
-  var $sidebarHeight = $sidebar.innerHeight();   
-  var $footerOffsetTop = $("#footer").offset().top; 
-  var $sidebarOffset = $sidebar.offset();
-  var $sidebarwidth = $("#sidebar").width();
-  
-  $window.scroll(function() {
-    if($window.scrollTop() > $sidebarOffset.top) {
-      $sidebar.addClass("fixed");
-      $sidebar.css('width', $sidebarwidth); 
-    } else {
-      $sidebar.removeClass("fixed");
-      $sidebar.css('width', '100%');   
-    }    
-    if($window.scrollTop() + $sidebarHeight > $footerOffsetTop) {
-      $sidebar.css({"top" : -($window.scrollTop() + $sidebarHeight - $footerOffsetTop)});        
-    } else {
-      $sidebar.css({"top": "0"});  
-    }    
-  });   
-});
-
-
-
+	$(document).ready(function() {
+	  var $window = $(window);  
+	  var $sidebar = $(".sidebar-main"); 
+	  var $sidebarHeight = $sidebar.innerHeight();   
+	  var $footerOffsetTop = $("#peopleHistory").offset().top; 
+	  var $sidebarOffset = $sidebar.offset();
+	  var $sidebarwidth = $("#sidebar").width();
+	  
+	  $window.scroll(function() {
+	    if($window.scrollTop() > $sidebarOffset.top) {
+	      $sidebar.addClass("fixed");
+	      $sidebar.css('width', $sidebarwidth); 
+	    } else {
+	      $sidebar.removeClass("fixed");
+	      $sidebar.css('width', '100%');   
+	    }    
+	    if($window.scrollTop() + $sidebarHeight > $footerOffsetTop) {
+	      $sidebar.css({"top" : -($window.scrollTop() + $sidebarHeight - $footerOffsetTop)});        
+	    } else {
+	      $sidebar.css({"top": "0"});  
+	    }    
+	  });   
+	});
 
 </script>

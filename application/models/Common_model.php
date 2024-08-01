@@ -2726,9 +2726,11 @@ class Common_model extends CI_Model
 	{
 		//$query = $this->db->query("SELECT * FROM $table where user_id=$userid order by id desc limit 500");
 
-		$query = $this->db->query("SELECT ms.*, c.cat_name, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+		$query = $this->db->query("SELECT ms.*, mcat.cat_name, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
-                           LEFT JOIN service_category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category sc ON ms.category = sc.cat_id
+                           LEFT JOIN category mcat ON sc.main_category = mcat.cat_id
+
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.user_id = $userid
                            GROUP BY ms.id
@@ -2740,7 +2742,7 @@ class Common_model extends CI_Model
 	function get_all_service($table, $limit)
 	{
 		if($limit == 0){
-			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+			/*$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
@@ -2748,9 +2750,21 @@ class Common_model extends CI_Model
                            WHERE ms.status = 'active'
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
-                           LIMIT 500");	
+                           LIMIT 500");*/
+
+            $query = $this->db->query("
+			    SELECT ms.*, mcat.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+			    FROM $table ms
+			    LEFT JOIN service_category sc ON ms.category = sc.cat_id
+			    LEFT JOIN category mcat ON sc.main_category = mcat.cat_id
+			    LEFT JOIN users u ON ms.user_id = u.id
+			    LEFT JOIN service_rating srt ON ms.id = srt.service_id
+			    WHERE ms.status = 'active'
+			    GROUP BY ms.id, mcat.cat_name, u.trading_name, u.profile
+			    ORDER BY average_rating DESC 
+			    LIMIT 500");	
 		}else{
-			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+			/*$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
@@ -2758,9 +2772,59 @@ class Common_model extends CI_Model
                            WHERE ms.status = 'active'
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
-                           LIMIT ".$limit);
+                           LIMIT ".$limit);*/
+
+			$query = $this->db->query("
+			    SELECT ms.*, mcat.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+			    FROM $table ms
+			    LEFT JOIN service_category sc ON ms.category = sc.cat_id
+			    LEFT JOIN category mcat ON sc.main_category = mcat.cat_id
+			    LEFT JOIN users u ON ms.user_id = u.id
+			    LEFT JOIN service_rating srt ON ms.id = srt.service_id
+			    WHERE ms.status = 'active'
+			    GROUP BY ms.id, mcat.cat_name, u.trading_name, u.profile
+			    ORDER BY average_rating DESC 
+			    LIMIT ".$limit
+			);
 		}
 		return $query->result_array();
+	}
+
+	function get_service_main_category(){
+		$query = $this->db->query("
+		    SELECT sc.*, c.cat_id, c.cat_name
+		    FROM service_category sc
+		    LEFT JOIN category c ON sc.main_category = c.cat_id
+		    WHERE sc.is_activate = ?
+		    ORDER BY sc.main_category ASC
+		    LIMIT 500
+		",[1]);
+		return $query->result_array();
+	}
+
+	public function getFirstRecord($table, $conditions = [], $joins = [], $select = '*') {
+	    // Start building the query
+	    $this->db->select($select); // Use the provided select statement or default to '*'
+	    $this->db->from($table);
+
+	    // Add joins
+	    foreach ($joins as $join) {
+	        $this->db->join($join['table'], $join['condition'], $join['type'] ?? 'LEFT');
+	    }
+
+	    // Add conditions
+	    if (!empty($conditions)) {
+	        $this->db->where($conditions);
+	    }
+
+	    // Add LIMIT 1 to get a single record
+	    $this->db->limit(1);
+
+	    // Execute the query
+	    $query = $this->db->get();
+
+	    // Return the result as an associative array
+	    return $query->row_array();
 	}
 
 	function get_all_service_for_admin($table, $limit)
@@ -2778,9 +2842,10 @@ class Common_model extends CI_Model
 
 	public function getServiceByCategoriesId($categoryId, $step, $sIds='')
 	{
-		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
+		$this->db->select('ms.*, mcat.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
 		$this->db->from('my_services ms');
-		$this->db->join('service_category c', 'ms.category = c.cat_id', 'left');
+		$this->db->join('service_category sc', 'ms.category = sc.main_category', 'left');
+		$this->db->join('category mcat', 'sc.main_category = mcat.cat_id', 'left');
 		$this->db->join('users u', 'ms.user_id = u.id', 'left');
 		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
 		$this->db->where('ms.status', 'active');
@@ -2796,7 +2861,7 @@ class Common_model extends CI_Model
 			$this->db->where_in('ms.id', $sIds);
 		}		
 
-		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');
+		$this->db->group_by('ms.id, mcat.cat_name, u.trading_name, u.profile');
 		$this->db->order_by('average_rating', 'DESC');
 		$this->db->limit(500);
 
@@ -3329,7 +3394,7 @@ class Common_model extends CI_Model
 
 	public function get_service_details($table, $slug){
 		$query = $this->db->query("SELECT ms.*, 
-                                  c.cat_name, 
+                                  mcat.cat_name, 
                                   u.trading_name, 
                                   u.profile, 
                                   AVG(srt.rating) AS average_rating, 
@@ -3338,13 +3403,37 @@ class Common_model extends CI_Model
                                   (SELECT COUNT(*) FROM service_likes serl WHERE serl.service_id = ms.id) AS total_likes,
                                   (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders
                            FROM $table ms
-                           LEFT JOIN service_category c ON ms.category = c.cat_id
+                           LEFT JOIN service_category sc ON ms.category = sc.cat_id
+                           LEFT JOIN category mcat ON sc.main_category = mcat.cat_id
+
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.slug = '$slug' AND ms.status = 'active'
-                           GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
+                           GROUP BY ms.id, mcat.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC");
 
 		return $query->row_array();
+	}
+
+	public function get_service_sub_category($id){
+		$query = $this->db->query("
+		    SELECT sc.*, c.cat_id, c.cat_name
+		    FROM service_category sc
+		    LEFT JOIN category c ON sc.sub_category = c.cat_id
+		    WHERE sc.main_category = ?
+		    ORDER BY sc.main_category ASC
+		    LIMIT 500
+		", array($id));
+
+		return $query->result_array();
+	}
+
+	function findMatchingItem($item, $secondArray) {
+	    foreach ($secondArray as $secondItem) {
+	        if ($item['id'] == $secondItem['ex_service_id']) {
+	            return $secondItem;
+	        }
+	    }
+	    return null;
 	}
 }

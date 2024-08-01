@@ -10507,3 +10507,24 @@ button.switch-month:hover {
 .order-hourlie-addons-sidebar .ui-datepicker td a {
     border: 1px solid transparent;
 }
+
+#peopleHistory .title{
+    margin-bottom: 15px;
+}
+.packages-table .table>thead>tr>th {
+    border: 1px solid #ddd !important;
+    border-bottom: none !important;
+}
+.packages-table .table>tbody>tr>td {
+    border: 1px solid #ddd;
+}
+.packages-table .table tr td textarea {
+    width: 100%;
+}
+.packages-table .table tr td .form-check {
+    justify-content: center;
+}
+.packages-table .table .first-table-col {
+    border-bottom: none;
+    border-top: none;
+}

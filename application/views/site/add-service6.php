@@ -16,7 +16,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input" <?php echo (isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="yes" id="yesCheckbox" style="margin-right:10px;">
+								<input class="form-check-input available_mon_fri" <?php echo (isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'yes') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="yes" id="yesCheckbox" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">Yes</label>
 							</div>
 						</div>
@@ -24,7 +24,7 @@
 					<div class="col-sm-2">
 						<div class="form-group">
 							<div class="form-check" style="margin: 0;">
-								<input class="form-check-input" <?php echo (isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'no') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="no" id="noCheckbox" style="margin-right:10px;">
+								<input class="form-check-input available_mon_fri" <?php echo (isset($serviceData['service_availiblity']['available_mon_fri']) && $serviceData['service_availiblity']['available_mon_fri'] == 'no') ? 'checked' : '' ?> type="checkbox" name="available_mon_fri" value="no" id="noCheckbox" style="margin-right:10px;">
 								<label class="form-check-label" style="margin-top:10px; font-weight: normal;">No</label>
 							</div>
 						</div>
@@ -125,19 +125,32 @@
 	<?php endif; ?>
 	selectedDate = '<?php echo json_encode($datesArray); ?>';
 	$(document).ready(function() {
-        $('.weekends-checkbox').on('change', function() {
-        	var weekends = $(this).val();
-            $('.weekends-checkbox').not(this).prop('checked', false);
-            if(weekends == 'no'){
-            	$('#weekendsDiv').show();
-            }else{
-            	$('#weekendsDiv').hide();
-            }
-        });
+		$('.available_mon_fri').on('change', function() {
+    	var weekends = $(this).val();
+        $('.available_mon_fri').not(this).prop('checked', false);
+        if(weekends == 'no'){
+        	$('#datepicker').datepicker("option", "disabled", false);
+          $('#datePickerDiv').show();
+        }else{
+        	$('#datepicker').datepicker("option", "disabled", true);
+          $('#datePickerDiv').hide();
+        }
+    });
 
-        $('.group-checkbox').on('change', function() {
-            $('.group-checkbox').not(this).prop('checked', false);
-        });
+    $('.weekends-checkbox').on('change', function() {
+    	var weekends = $(this).val();
+        $('.weekends-checkbox').not(this).prop('checked', false);
+        if(weekends == 'no'){
+        	$('#weekendsDiv').show();
+        }else{
+        	$('#weekendsDiv').hide();
+        }
+    });
+
+    $('.group-checkbox').on('change', function() {
+        $('.group-checkbox').not(this).prop('checked', false);
+    });
+    
 		<?php if(isset($serviceData['service_availiblity']) && $serviceData['service_availiblity'] && $type != 'add'): ?>
 			$('#timeSlot').trigger('change');
 		<?php endif; ?>

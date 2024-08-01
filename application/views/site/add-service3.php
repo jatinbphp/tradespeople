@@ -9,41 +9,25 @@
 						What does the offer include?
 					</label>
 					<div class="col-md-12">
-						<?php if(!empty($ex_service)):?>
-							<div class="row">
-								<?php
-									$exServices = $serviceData['extra_service'] ?? '';
-									$selectedExServices = explode(',', $exServices);
-								?>
-								<?php foreach($ex_service as $list):?>
-									<div class="col-sm-12">
-										<div class="form-group">
-											<div class="form-check" style="margin: 0;">
-												<input class="form-check-input" <?php echo in_array($list['id'], $selectedExServices) ? 'checked' : ''; ?> type="checkbox" name="extra_service[]" value="<?php echo $list['id']?>" style="margin-right:10px;">
-												<label class="form-check-label" style="margin-top:10px; font-weight: normal;"><?php echo $list['ex_service_name']?></label>
-											</div>
-										</div>
-									</div>
-								<?php endforeach; ?>
-							</div>
-						<?php endif; ?>
-
 						<div id="ex-service-div" style="margin-top:10px">
-							<?php if(isset($serviceData['trades_ex_service']) && $serviceData['trades_ex_service']): ?>
+							<?php if(!empty($ex_service)):?>
 							<?php $i= 1;?>
-							<?php foreach($serviceData['trades_ex_service'] as $key => $exs): ?>
+							<?php 
+								foreach($ex_service as $key => $exs): 
+									$matchedItem = $this->common_model->findMatchingItem($exs, $serviceData['trades_ex_service']);
+								    $isChecked = $matchedItem ? 'checked' : '';
+								    $price = $matchedItem['price'] ?? '';
+								    $additional_working_days = $matchedItem['additional_working_days'] ?? '';
+							?>
 								<div class="row" id="newExS<?php echo $i; ?>" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">
-									<input type="hidden" name="newExS[<?php echo $i; ?>][id]" value="<?php echo $exs['id'] ?? '' ?>">
+
 									<input type="hidden" name="newExS[<?php echo $i; ?>][category]" value="<?php echo $exs['category'] ?? '' ?>">
+
+									<input type="hidden" name="newExS[<?php echo $i; ?>][ex_service_name]" value="<?php echo $exs['ex_service_name'] ?? '' ?>">
+
 									<div class="col-md-5" style="margin-top:10px;">
-										<div class="form-group">
-											<label class="control-label" for="ex_service_name<?php echo $i; ?>" style="width:100%">
-												Extra Service Name
-											</label>
-											<div>
-												<input type="text" class="form-control input-md" name="newExS[<?php echo $i; ?>][ex_service_name]" id="ex_service_name<?php echo $i; ?>" placeholder="Extra Service Name" value="<?php echo $exs['ex_service_name'] ?? '' ?>" required>
-											</div>
-										</div>
+										<input class="form-check-input" type="checkbox" name="newExS[<?php echo $i; ?>][id]" value="<?php echo $exs['id']?>" <?php echo $isChecked; ?> style="margin-right:10px;">
+										<label class="form-check-label" style="margin-top:10px; font-weight: normal;"><?php echo $exs['ex_service_name']?></label>
 									</div>
 									<div class="col-md-3" style="margin-top:10px;">
 										<div class="form-group">
@@ -51,7 +35,7 @@
 												Extra Service Price
 											</label>
 											<div class="">
-												<input type="number" class="form-control input-md" name="newExS[<?php echo $i; ?>][price]" id="price<?php echo $i; ?>" placeholder="Extra Service Price" value="<?php echo $exs['price'] ?? '' ?>" required>
+												<input type="number" class="form-control input-md" name="newExS[<?php echo $i; ?>][price]" id="price<?php echo $i; ?>" placeholder="Extra Service Price" value="<?php echo $price; ?>">
 											</div>
 										</div>
 									</div>
@@ -61,15 +45,10 @@
 												Additional Working Days
 											</label>
 											<div>
-												<input type="number" step="1" class="form-control input-md" name="newExS[<?php echo $i; ?>][additional_working_days]" id="additional_working_days<?php echo $i; ?>" placeholder="Additional Working Days" value="<?php echo $exs['additional_working_days'] ?? '' ?>" required>
+												<input type="number" step="1" class="form-control input-md" name="newExS[<?php echo $i; ?>][additional_working_days]" id="additional_working_days<?php echo $i; ?>" placeholder="Additional Working Days" value="<?php echo $additional_working_days; ?>">
 											</div>
 										</div>
-									</div>
-									<div class="col-md-1" style="margin-top:10px;">
-										<div class="form-group">
-											<span id="remove<?php echo $i; ?>" class="btn btn-sm btn-danger pull-right removeExService" data-id="<?php echo $i; ?>"><i class="fa fa-trash"></i></span>
-										</div>
-									</div>
+									</div>									
 								</div>
 								<?php $i++; ?>
 							<?php endforeach ?>

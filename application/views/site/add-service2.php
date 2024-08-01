@@ -7,7 +7,7 @@
 					<div class="col-md-12">
 						<select class="form-control input-md mainCategory" name="category" data-section="sub_category" id="category">
 							<option value="">Select Category</option>
-							<?php $selected = $serviceData['category1'] ?? '' ?>
+							<?php $selected = $serviceData['category'] ?? '' ?>
 							<?php foreach ($category as $cat) { ?>
 								<option <?php echo (($selected == $cat['cat_id']) ? 'selected' : '') ?> value="<?php echo $cat['cat_id']; ?>">
 									<?php echo $cat['cat_name']; ?>
@@ -67,7 +67,7 @@
 	var plugin = 1;
   	$('.mainCategory').on('change', function(){
   		var cat_id = $(this).val();
-  		var sectionId = $(this).attr('data-section');
+		var sectionId = $(this).attr('data-section');
 		$('.categories').empty();
 		$('.categories_div').addClass('hidden');
 		$.ajax({

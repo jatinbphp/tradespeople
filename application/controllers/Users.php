@@ -2496,15 +2496,19 @@ public function exists_refferals() {
 
 			$allSessionData = $this->session->userdata('service_data');
 			if(!empty($allSessionData['newExService']) && count($allSessionData['newExService']) > 0){
-				foreach($allSessionData['newExService'] as $list){
-					$insertExs['service_id'] = $run;
-					$insertExs['category'] = $list['category'];
-					$insertExs['ex_service_name'] = $list['ex_service_name'];
-					$insertExs['price'] = $list['price'];
-					$insertExs['additional_working_days'] = $list['additional_working_days'];
-					$this->common_model->insert('tradesman_extra_service', $insertExs);
+				foreach($allSessionData['newExService']	 as $list){
+					if(isset($list['id']) && !empty($list['id'])){
+						$insertExs['service_id'] = $id;
+						$insertExs['category'] = $list['category'];
+						$insertExs['ex_service_id'] = $list['id'];
+						$insertExs['ex_service_name'] = $list['ex_service_name'];
+						$insertExs['price'] = $list['price'];
+						$insertExs['additional_working_days'] = $list['additional_working_days'];
+
+						$this->common_model->insert('tradesman_extra_service', $insertExs);	
+					}
 				}			
-			}		
+			}	
 
 			$this->setServiceData($insert);
 		}
@@ -2562,6 +2566,35 @@ public function exists_refferals() {
 		redirect('my-services');
 	}
 
+	public function storeServices7($id=''){
+		if(!$id){
+			redirect(base_url());
+			return;
+		}
+
+		if($this->input->post('package_type')){
+			$insert['package_type'] = 1;
+		}else{
+			$insert['package_type'] = 0;
+		}
+
+		if($this->input->post('package')){
+			$insert['package_data'] = json_encode($this->input->post('package'));
+		}else{
+			$insert['package_data'] = '';
+		}
+
+		$this->common_model->update('my_services',array('id'=>$id),$insert);
+	
+		if($id){
+			$this->session->set_flashdata('success','Your service has been updated successfully.');
+		} else {
+			$this->session->set_flashdata('error','Something is wrong.');
+		}
+		$this->resetEditServiceTabData();
+		redirect("my-services");				
+	}
+
 	public function editServices($id=""){
 		if($this->session->userdata('user_id')) {
       		$user_id = $this->session->userdata('user_id');
@@ -2571,9 +2604,8 @@ public function exists_refferals() {
 			}
 
 			$this->setEditServiceData($serviceData);
-			$data['category'] = $this->common_model->get_parent_category('service_category',0,1);
-			$data['cities'] = $this->search_model->getJobCities();
-			$data['ex_service']=$this->common_model->get_ex_service('extra_service',$serviceData['category']);
+			$data['category'] = $this->common_model->get_service_main_category('service_category',0,1);
+			$data['cities'] = $this->search_model->getJobCities();			
 			$trades_ex_service = $this->common_model->getTradesExService($id);
 			$faqs = $this->common_model->getServiceFaqs($id);
 			$serviceAvailiblity = $this->common_model->getServiceAvailability($id);
@@ -2604,6 +2636,17 @@ public function exists_refferals() {
 			}
 			$data['id'] = $id;
 			$data['price_per_type'] = ["Hour","Service","Meter","Square Meter","Kilogram","Mile","Consultation"];
+
+			$service_category = $this->common_model->GetSingleData('service_category',['main_category'=>$serviceData['category'], 'sub_category'=>$serviceData['sub_category']]);
+
+			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
+
+			$data['ex_service'] = $this->common_model->get_all_data('extra_service',['category'=>$service_category['cat_id']]);
+
+			$serviceData1 = $this->session->userdata('edit_service_data');
+
+			$data['package_data'] = !empty($serviceData['package_data']) ? json_decode($serviceData['package_data']) : [];
+
 			$this->load->view('site/edit-service',$data);
     	} 
 	}
@@ -2678,7 +2721,7 @@ public function exists_refferals() {
 		}
 		$this->common_model->update('my_services', ['id'=>$id], $insert);
 		$ex_service=$this->common_model->get_ex_service('extra_service',$insert['category']);
-		$this->session->set_userdata('update_next_step',3);
+		$this->session->set_userdata('update_next_step',7);
 		redirect("edit-service/{$id}");					
 	}
 
@@ -2737,16 +2780,21 @@ public function exists_refferals() {
 
 			if(!empty($allSessionData['newExService']) && count($allSessionData['newExService']) > 0){
 				foreach($allSessionData['newExService']	 as $list){
-					$insertExs['service_id'] = $id;
-					$insertExs['category'] = $list['category'];
-					$insertExs['ex_service_name'] = $list['ex_service_name'];
-					$insertExs['price'] = $list['price'];
-					$insertExs['additional_working_days'] = $list['additional_working_days'];
+					if(isset($list['id']) && !empty($list['id'])){
+						$insertExs['service_id'] = $id;
+						$insertExs['category'] = $list['category'];
+						$insertExs['ex_service_id'] = $list['id'];
+						$insertExs['ex_service_name'] = $list['ex_service_name'];
+						$insertExs['price'] = $list['price'];
+						$insertExs['additional_working_days'] = $list['additional_working_days'];
 
-					if(isset($list['id']) && $list['id'] > 0){
-						$this->common_model->update('tradesman_extra_service',array('id'=>$list['id']),$insertExs);
-					}else{
-						$this->common_model->insert('tradesman_extra_service', $insertExs);	
+						$tradesExs = $this->common_model->GetSingleData('tradesman_extra_service',array('service_id'=>$id, 'ex_service_id'=>$list['id']));	
+
+						if(!empty($tradesExs)){
+							$this->common_model->update('tradesman_extra_service',array('service_id'=>$id, 'ex_service_id'=>$list['id']),$insertExs);
+						}else{
+							$this->common_model->insert('tradesman_extra_service', $insertExs);	
+						}
 					}
 				}			
 			}		
@@ -2789,13 +2837,21 @@ public function exists_refferals() {
 			$this->session->set_userdata('update_next_step',6);
 			redirect("edit-service/{$id}");
 		}
+
 		$insert['service_id'] = $id;
-		$insert['available_mon_fri'] = $this->input->post('available_mon_fri');
+		$insert['available_mon_fri'] = $this->input->post('available_mon_fri') ? 'yes' : 'no';
 		$insert['selected_dates'] = $this->input->post('selected_dates');
 		$insert['time_slot'] = $this->input->post('time_slot');
-		$insert['weekend_available'] = $this->input->post('weekend_available');
+		$insert['weekend_available'] = $this->input->post('weekend_available') ? 'yes' : 'no';
 		$insert['not_available_days'] = $this->input->post('not_available_days');
-		$this->common_model->update('service_availability',array('id'=>$id),$insert);
+
+		$serviceAvailible = $this->common_model->GetSingleData('service_availability',array('service_id'=>$id));
+
+		if(!empty($serviceAvailible)){
+			$this->common_model->update('service_availability',array('id'=>$id),$insert);	
+		}else{
+			$this->common_model->insert('service_availability', $insert);				
+		}
 	
 		if($id){
 			$this->session->set_flashdata('success','Your service has been updated successfully.');
@@ -2804,6 +2860,30 @@ public function exists_refferals() {
 		}
 		$this->resetEditServiceTabData();
 		redirect("my-services");				
+	}
+
+	public function updateServices7($id=''){
+		if(!$id){
+			redirect(base_url());
+			return;
+		}
+
+		if($this->input->post('package_type')){
+			$insert['package_type'] = 1;
+		}else{
+			$insert['package_type'] = 0;
+		}
+
+		if($this->input->post('package')){
+			$insert['package_data'] = json_encode($this->input->post('package'));
+		}else{
+			$insert['package_data'] = '';
+		}
+
+		$this->common_model->update('my_services',array('id'=>$id),$insert);
+
+		$this->session->set_userdata('update_next_step',3);
+		redirect("edit-service/{$id}");							
 	}
 
 	public function removeServiceImage(){
@@ -2852,7 +2932,7 @@ public function exists_refferals() {
 
 	public function getSubCategory(){
 		$id = $this->input->post('cat_id');
-		$subCategory=$this->common_model->get_sub_category('service_category',$id,1);
+		$subCategory=$this->common_model->get_service_sub_category($id);
 		$option = '';
 		if(!empty($subCategory)){
 			$option .= '<option value="">Please Select</option>';

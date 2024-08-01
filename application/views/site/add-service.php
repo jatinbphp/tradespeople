@@ -78,6 +78,7 @@
 						<ul id="myTabs" class="nav nav-tabs">
 							<li class="<?php echo ($active == 1) ? 'active ' : ''; echo ($nextStep >= 1) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step1">Service Details</a></li>
 							<li class="<?php echo ($active == 2) ? 'active ' : ''; echo ($nextStep >= 2) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step2">Categroy</a></li>
+							<li class="<?php echo ($active == 7) ? 'active ' : ''; echo ($nextStep >= 7) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step7">Package</a></li>
 							<li class="<?php echo ($active == 3) ? 'active ' : ''; echo ($nextStep >= 3) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step3">Extra Service</a></li>
 							<li class="<?php echo ($active == 4) ? 'active ' : ''; echo ($nextStep >= 4) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step4">Gallery</a></li>
 							<li class="<?php echo ($active == 5) ? 'active ' : ''; echo ($nextStep >= 5) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step5">FAQs</a></li>
@@ -89,6 +90,9 @@
 							</div>
 							<div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service2', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices2']); ?>
+							</div>
+							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/storeServices2"]); ?>
 							</div>
 							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service3', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices3']); ?>
