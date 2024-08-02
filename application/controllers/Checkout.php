@@ -30,10 +30,12 @@ class Checkout extends CI_Controller
 
 		$uId = $this->session->userdata('user_id');
 		$sId = $this->input->post('service_id');
+		$package_type = $this->input->post('package_type');
 		$this->common_model->delete(['user_id'=>$uId, 'service_id'=>$sId],'cart');
 
 		$insert['user_id'] = $uId;
 		$insert['service_id'] = $sId;
+		$insert['package_type'] = $package_type;
 		$insert['service_qty'] = $this->input->post('qty_of_type');
 		$insert['ex_service_ids'] = $this->input->post('selected_exsIds');
 		$newCart = $this->common_model->insert('cart', $insert);
@@ -84,12 +86,15 @@ class Checkout extends CI_Controller
 			$totalPrice = array_sum($prices);	
 		}
 
-		$servicePrice = $data['service_details']['price'] * $serviceQty;
+		$package_data = json_decode($data['service_details']['package_data'],true);
+		$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
 
 		$data['exIds'] = $exsId;
 		$data['totalPrice'] = $totalPrice + $servicePrice;
 		$data['serviceQty'] = $serviceQty;
 		$data['userCardData'] = $this->getCardData($uId);
+		$data['package_type'] = $cartData['package_type'];
+		$data['package_price'] = $package_data[$cartData['package_type']]['price'];
 
 		$this->load->view('site/checkout',$data);
 	}
@@ -132,7 +137,8 @@ class Checkout extends CI_Controller
 				}
 			}
 
-			$servicePrice = $service_details['price'] * $serviceQty;
+			$package_data = json_decode($service_details['package_data'],true);
+			$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
 			$total_amount = $totalPrice + $servicePrice;
 
 			$result = $this->getDiscount($promo_code, $total_amount, 0);
@@ -214,8 +220,7 @@ class Checkout extends CI_Controller
 		$is_proceed = 0;
 
 		if(!empty($exsId)){
-			$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $service_id);	
-
+			$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $service_id);
 			if(!empty($ex_services) && count($ex_services) > 0){
 				foreach($ex_services as $list){
 					$extraService .= $list['id'].'-'.$list['price'].',';
@@ -224,7 +229,10 @@ class Checkout extends CI_Controller
 				$totalPrice = array_sum($prices);
 			}
 		}
-		$servicePrice = $service_details['price'] * $serviceQty;
+
+		$package_data = json_decode($service_details['package_data'],true);
+		$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
+
 		$total_amount = $totalPrice + $servicePrice;
 		$discounted_amount = $total_amount;
 		$is_allowed = 0;
@@ -264,8 +272,9 @@ class Checkout extends CI_Controller
 			$insert['user_id'] = $uId;
 			$insert['service_id'] = $service_id;
 			$insert['ex_services'] = rtrim($extraService,',');
-			$insert['price'] = $service_details['price'];
+			$insert['price'] = $package_data[$cartData['package_type']]['price'];
 			$insert['service_qty'] = $serviceQty;
+			$insert['package_type'] = $cartData['package_type'];
 			$insert['service_fee'] = $setting['service_fees'];
 			$insert['promo_code'] = $promo_code['code'];
 			$insert['discount_type'] = $promo_code['discount_type'];

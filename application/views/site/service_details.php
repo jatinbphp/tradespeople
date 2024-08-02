@@ -1,4 +1,3 @@
-
 <?php include ("include/header.php") ?>
 
 <div class="loader-bg hide" id='loader'>
@@ -77,8 +76,7 @@
 												<?php foreach($plugins as $plugin): ?>
 													<?php
 													$pDetail = $this->common_model->GetSingleData('category',['cat_id'=>$plugin]); 											
-													?>
-													
+													?>													
 												<?php endforeach; ?>
 											</tbody>
 										</table>
@@ -291,7 +289,6 @@
 							<div class="sidebar-main" id="sidebar">
 								<div class="service-detail-sidebar">
 									<div class="sidebar-icons">
-
 										<button class="menu" type="button" data-toggle="tooltip" data-placement="top" title="list">
 											<svg fill="#b5b6ba" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
 												<path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
@@ -310,73 +307,273 @@
 											</svg>
 										</button>
 									</div>
-									<h2 class="title"><?php echo '£'.number_format($service_details['price'],2); ?></h2>
-									<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
+									
+									<!-- <h2 class="title"><?php echo '£'.number_format($service_details['price'],2); ?></h2>
+									<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
 
-									<div class="sidebar-tabs">
-										<ul  class="nav nav-pills">
-											<li class="active"><a href="#Basic" data-toggle="tab">Basic</a></li>
-											<li><a href="#Standard" data-toggle="tab">Standard</a></li>
-											<li><a href="#Premium" data-toggle="tab">Premium</a></li>
-										</ul>
-										<div class="tab-content">
-											<div class="tab-pane active" id="Basic">
-												<h2 class="title">£10.00</h2>
-												<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
-												<h4><i class="fa fa-clock-o" aria-hidden="true"></i> -day delivery</h4>
-												<ul>
-													<li><i class="fa fa-check" aria-hidden="true"></i> Basic</li>												
-													<li><i class="fa fa-check" aria-hidden="true"></i> Basic</li>												
-													<li><i class="fa fa-check" aria-hidden="true"></i> Basic</li>
-												</ul>
-												<div class="text-center">
-													<button class="btn btn-warning btn-lg" type="submit">Order (£10.00)</button>
+									<?php 
+									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+									$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+									?>
+
+									<?php if($service_details['package_type'] == 1):?>
+										<div class="sidebar-tabs">
+											<ul  class="nav nav-pills">
+												<li class="active"><a href="#Basic" data-toggle="tab">Basic</a></li>
+												<li><a href="#Standard" data-toggle="tab">Standard</a></li>
+												<li><a href="#Premium" data-toggle="tab">Premium</a></li>
+											</ul>
+											<div class="tab-content">
+												<div class="tab-pane active" id="Basic">
+													<h2 class="title">
+														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+													</h2>
+													<!-- <p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
+													<h4>
+														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery
+													</h4>
+													<ul>
+														<?php if(!empty($attributes)): ?>
+															<?php foreach($attributes as $att):?>
+																<?php
+																	$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+																?>
+																<?php if(in_array($att['id'], $basicAtt)):?>
+																<li>
+																	<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> 
+																	<span>
+																		<?php echo $att['attribute_name']; ?>
+																	</span>
+																</li>
+																<?php endif; ?>		
+															<?php endforeach; ?>	
+														<?php endif; ?>
+													</ul>
+													<form action="" method="post" id="serviceOrder" style="margin-top:0">
+														<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
+														<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
+														<input type="hidden" name="package_type" value="basic">
+														<p class="text-left">
+															Price is based on 
+															<?php echo lcfirst($service_details['price_per_type']); ?>.
+														</p>
+														<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>"> 
+														<div class="row text-left mb-3">
+															<div class="col-md-8">
+																<p>
+																	Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+																</p>
+															</div>
+															<div class="col-md-4">
+																<input type="number" class="form-control" name="qty_of_type" class="qty_of_type" id="qty_of_type_basic" min="1" value="1">
+															</div>
+														</div>
+														<input class="orderBtn btn btn-warning btn-lg " type="submit" id="orderBasicBtn" data-package="basic" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
+													</form>
 												</div>
-											</div>
-											<div class="tab-pane" id="Standard">
-												<h2 class="title">£15.00</h2>
-												<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
-												<h4><i class="fa fa-clock-o" aria-hidden="true"></i> -day delivery</h4>
-												<ul>
-													<li><i class="fa fa-check" aria-hidden="true"></i> Standard</li>												
-													<li><i class="fa fa-check" aria-hidden="true"></i> Standard</li>												
-													<li><i class="fa fa-check" aria-hidden="true"></i> Standard</li>
-												</ul>
-												<div class="text-center">
-													<button class="btn btn-warning btn-lg" type="submit">Order (£15.00)</button>
+
+												<div class="tab-pane" id="Standard">
+													<h2 class="title">
+														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
+													</h2>
+													<!-- <p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
+													<h4>
+														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->standard->days; ?>-day delivery
+													</h4>
+													<ul>
+														<?php if(!empty($attributes)): ?>
+															<?php foreach($attributes as $att):?>
+																<?php
+																	$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';					
+																?>
+																<?php if(in_array($att['id'], $standardAtt)):?>
+																<li>
+																	<i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i>
+																	<span>
+																		<?php echo $att['attribute_name']; ?>
+																	</span>
+																</li>
+																<?php endif; ?>												
+															<?php endforeach; ?>	
+														<?php endif; ?>
+													</ul>
+													<form action="" method="post" id="serviceOrder" style="margin-top:0">
+														<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
+														<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
+														<input type="hidden" name="package_type" value="standard">
+														<p class="text-left">
+															Price is based on 
+															<?php echo lcfirst($service_details['price_per_type']); ?>.
+														</p>
+														<input type="hidden" name="main_price" class="main_price" id="main_price_standard" value="<?php echo isset($package_data) ? $package_data->standard->price : 0;?>"> 
+														<div class="row text-left mb-3">
+															<div class="col-md-8">
+																<p>
+																	Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+																</p>
+															</div>
+															<div class="col-md-4">
+																<input type="number" class="form-control" name="qty_of_type" class="qty_of_type" id="qty_of_type_stndard" min="1" value="1">
+															</div>
+														</div>
+														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderStandardBtn" data-package="standard" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>)">
+													</form>
 												</div>
-											</div>
-											<div class="tab-pane" id="Premium">
-												<h2 class="title">£20.00</h2>
-												<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
-												<h4><i class="fa fa-clock-o" aria-hidden="true"></i> -day delivery</h4>
-												<ul>
-													<li><i class="fa fa-check" aria-hidden="true"></i> Premium</li>												
-													<li><i class="fa fa-check" aria-hidden="true"></i> Premium</li>												
-													<li><i class="fa fa-check" aria-hidden="true"></i> Premium</li>
-												</ul>
-												<div class="text-center">
-													<button class="btn btn-warning btn-lg" type="submit">Order (£20.00)</button>
+
+												<div class="tab-pane" id="Premium">
+													<h2 class="title">
+														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
+													</h2>
+													<!-- <p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
+													<h4>
+														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->premium->days; ?>-day delivery
+													</h4>
+													<ul>
+														<?php if(!empty($attributes)): ?>
+															<?php foreach($attributes as $att):?>
+																<?php
+																$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
+																?>
+																<?php if(in_array($att['id'], $premiumAtt)):?>
+																<li>
+																	<i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i>
+																	<span>
+																		<?php echo $att['attribute_name']; ?>
+																	</span>
+																</li>
+																<?php endif; ?>		
+															<?php endforeach; ?>	
+														<?php endif; ?>
+													</ul>
+													<form action="" method="post" id="serviceOrder" style="margin-top:0">
+														<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
+														<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
+														<input type="hidden" name="package_type" value="premium">
+														<p class="text-left">
+															Price is based on 
+															<?php echo lcfirst($service_details['price_per_type']); ?>.
+														</p>
+														<input type="hidden" name="main_price" class="main_price" id="main_price_premium" value="<?php echo isset($package_data) ? $package_data->premium->price : 0;?>"> 
+														<div class="row text-left mb-3">
+															<div class="col-md-8">
+																<p>
+																	Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+																</p>
+															</div>
+															<div class="col-md-4">
+																<input type="number" class="form-control" name="qty_of_type" class="qty_of_type" id="qty_of_type_premium" min="1" value="1">
+															</div>
+														</div>
+														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderPremiumBtn" data-package="premium" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>)">
+													</form>
 												</div>
 											</div>
 										</div>
-
+									<?php endif; ?>
 									</div>
 
 									<?php if($service_details['package_type'] == 0):?>
 										<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
 										<ul>
-											<?php 
-											$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-											$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-											$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-											?>
+									<?php if($service_details['package_type'] == 0):?>
+										<h2 class="title">
+											<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+										</h2>
+										<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
+										<ul>
 											<?php if(!empty($attributes)): ?>
 												<?php foreach($attributes as $att):?>
 													<?php
 													$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
 													$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
 													$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
+													?>
+													<li>
+														<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> 
+														<span>
+															<?php echo $att['attribute_name']; ?>
+														</span>
+													</li>												
+												<?php endforeach; ?>	
+											<?php endif; ?>
+										</ul>
+
+										<form action="" method="post" id="serviceOrder" style="margin-top:0">
+											<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
+											<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
+											<input type="hidden" name="package_type" value="basic">
+											<p class="text-left">
+												Price is based on 
+												<?php echo lcfirst($service_details['price_per_type']); ?>.
+											</p>
+											<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>"> 
+											<div class="row text-left mb-3">
+												<div class="col-md-8">
+													<p>
+														Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+													</p>
+												</div>
+												<div class="col-md-4">
+													<input type="number" class="form-control" name="qty_of_type" id="qty_of_type_basic" class="qty_of_type" min="1" value="1">
+												</div>
+											</div>
+											<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderBasicBtn" data-package="basic" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
+										</form>
+									<?php endif; ?>
+								</div>
+
+									<div class="about-this-sidebar">
+										<div class="row">
+											<div class="col-sm-4 text-center no-padding">
+												<div class="icon-container">
+													<i class="fa fa-paper-plane" aria-hidden="true"></i>
+												</div>
+												<div class="label-container">Delivery in</div>
+												<div class="value-container"><b><?php echo $service_details['delivery_in_days']; ?> days</b></div>
+											</div>
+											<div class="col-sm-4 text-center no-padding">
+												<div class="icon-container">
+													<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+												</div>
+												<div class="label-container">Rating</div>
+												<div class="value-container"><b><?php echo $rating_percentage; ?>%</b> (<?php echo $service_details['total_reviews']; ?> reviews)</div>
+											</div>
+											<div class="col-sm-4 text-center no-padding">
+												<div class="icon-container">
+													<i class="fa fa-clock-o" aria-hidden="true"></i>
+												</div>
+												<div class="label-container">Response time</div>
+												<div class="value-container"><b>within a few <br/>hours</b></div>
+											</div>
+										</div>
+										<div class="views-sales">
+											<ul>
+												<li>
+													<span>Views</span>
+													<span class="value"><?php echo $service_details['total_views']; ?></span>
+												</li>
+												<li>
+													<span>Sales</span>
+													<span class="value"><?php echo $service_details['total_orders']; ?></span>
+												</li>
+												<li class="star-container pull-right">
+													<div class="widget-star-item "><a class="action-entity-star fa fa-heart" href="#"></a><span class=" count-stars"><?php echo $service_details['total_likes']; ?></span></div>
+												</li>
+											</ul>
+										</div>
+
+										<div class="member-summary">
+											<div class="summary member-summary-section">
+												<div class="member-image-container">
+													<?php 
+													if(isset($service_user['profile']) && !empty($service_user['profile'])){
+														$uprofileImg = base_url('img/profile/'.$service_user['profile']);
+													}else{
+														$uprofileImg = base_url('img/default-img.png');
+													}
+													$suserName = ($service_user['f_name'] ?? '').' '.($service_user['l_name'] ??  '');
+>>>>>>> c3f5b2a40a4668d06527452765e332a6e23ee3e0
 													?>
 													<li>
 														<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> <?php echo $att['attribute_name']; ?>
@@ -568,47 +765,99 @@
 	let totalPrice = 0;
 
 	$('.checkbox-effect').change(function() {
-		updateTotalPrice();    
+		var exPrice =  $(this).attr('data-price');
+		var exId =  $(this).attr('data-id');
+	    updateTotalPrice(exPrice, exId);
 	});
 
-	function updateTotalPrice() {
-		totalPrice = 0;
-		let selectedIds = [];
-		var servicePrice = '<?php echo number_format($service_details['price'],2); ?>';
+	function updateTotalPrice(exPrice, exId) {
+	    $('.main_price').each(function() {
+	        var totalPrice = 0;
+	        let selectedIds = [];
+	        
+	        var mainPriceInput = $(this);
+	        var packageType = mainPriceInput.attr('id').replace('main_price_', '');
+	        var orderBtn = $('#order' + capitalizeFirstLetter(packageType) + 'Btn');
+	        var qtyInput = $('#qty_of_type_' + packageType);
+	        var servicePrice = parseFloat(mainPriceInput.val());
 
-		var qty = $('#qty_of_type').val();
-		if(qty != "" && qty > 0){
-			var mainPrice = parseFloat(servicePrice) * qty;	
-		}else{
-			var mainPrice = '<?php echo number_format($service_details['price'],2); ?>';
-		}
+	        var qty = qtyInput.val();
+	        if (qty != "" && qty > 0) {
+	            var mainPrice = servicePrice * qty;
+	        } else {
+	            var mainPrice = servicePrice;
+	        }
 
-		$('.checkbox-effect:checked').each(function() {
-			var price = $(this).attr('data-price');
-			totalPrice += parseFloat(price);
-			selectedIds.push($(this).data('id'));
-		});
-		var newPrice = parseFloat(mainPrice) + parseFloat(totalPrice); 
-		var priceText = 'Order (£'+newPrice.toFixed(2)+')';
-		$('#orderBtn').val(priceText);
-		$('#selected_exsIds').val(selectedIds.join(','));
+	        $('.order-hourlie-addons .checkbox-effect:checked').each(function() {
+	            var price = $(this).attr('data-price');
+	            totalPrice += parseFloat(price);
+	            selectedIds.push($(this).data('id'));
+	        });
+
+	        var newPrice = parseFloat(mainPrice) + parseFloat(totalPrice);
+	        var priceText = 'Order (£' + newPrice.toFixed(2) + ')';
+	        orderBtn.val(priceText);
+	        mainPriceInput.closest('form').find('.selected_exsIds').val(selectedIds.join(','));	        
+	    });
 	}
 
-	document.getElementById('qty_of_type').addEventListener('input', function() {
-		countPrice(this.value);
+	function capitalizeFirstLetter(string) {
+	    return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+
+	// document.getElementById('qty_of_type').addEventListener('input', function() {
+	// 	countPrice(this.value);
+	// });
+
+	// document.getElementById('qty_of_type').addEventListener('change', function() {
+	// 	countPrice(this.value);
+	// });
+
+	// function countPrice(qty){
+	// 	var price = <?php echo $service_details['price']; ?>;
+	// 	var mainPrice = parseFloat(price) * qty;
+	// 	updateTotalPrice();
+	// };
+
+	$(document).ready(function() {
+	    $('.orderBtn').click(function(e) {
+	        e.preventDefault(); // Prevent the default button click behavior
+
+	        var packageType = $(this).data('package'); // Get the package type from the data attribute
+	        var form = $(this).closest('form'); // Find the closest form element
+
+	        // Validate and serialize the form data
+	        var formData = form.serialize();
+
+	        // Submit the form using AJAX
+	        $.ajax({
+	            url: "<?= site_url().'checkout/addToCart'; ?>", 
+	            data: formData, 
+	            type: "POST", 
+	            dataType: 'json',
+	            success: function (data) {
+	                if (data.status == 1) {
+	                    window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
+	                } else if (data.status == 2) {
+	                    swal({
+	                        title: "Login Required!",
+	                        text: "If you want to order the please login first!",
+	                        type: "warning"
+	                    }, function() {
+	                        window.location.href = '<?php echo base_url().'login'; ?>';
+	                    });        
+	                } else {
+	                    alert('Something is wrong. Please try again!!!');
+	                }            
+	            },
+	            error: function(e) {
+	                console.log(JSON.stringify(e));
+	            }
+	        });
+	    });
 	});
 
-	document.getElementById('qty_of_type').addEventListener('change', function() {
-		countPrice(this.value);
-	});
-
-	function countPrice(qty){
-		var price = <?php echo $service_details['price']; ?>;
-		var mainPrice = parseFloat(price) * qty;
-		updateTotalPrice();
-	};
-
-	$("#serviceOrder").submit(function(){
+	/*$("#serviceOrder").submit(function(){
 		$.ajax({
 			url: "<?= site_url().'checkout/addToCart'; ?>", 
 			data: $("#serviceOrder").serialize(), 
@@ -634,7 +883,7 @@
 			}
 		}); 
 		return false;
-	});
+	});*/
 
 	let offset = <?php echo count($service_rating); ?>;
 	const limit = 3;

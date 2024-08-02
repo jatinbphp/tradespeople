@@ -78,32 +78,44 @@
 						?>
 						<ul id="myTabs" class="nav nav-tabs">
 							<li class="<?php echo ($active == 1) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step1">Service Details</a></li>
+
 							<!-- <li class="<?php echo ($active == 2) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step2">Categroy</a></li> -->
+
 							<li class="<?php echo ($active == 7) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step7">Package</a></li>
+
 							<li class="<?php echo ($active == 3) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step3">Extra Service</a></li>
+
 							<li class="<?php echo ($active == 4) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step4">Gallery</a></li>
+
 							<li class="<?php echo ($active == 5) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step5">FAQs</a></li>
+
 							<li class="<?php echo ($active == 6) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step6">Availability</a></li>
 						</ul>
 						<div class="tab-content">
 							<div id="step1" class="tab-pane fade <?php echo ($active == 1) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service1', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices/{$id}"]); ?>
 							</div>
+
 							<!-- <div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
 								<?php //$this->load->view('site/add-service2', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices2/{$id}"]); ?>
 							</div> -->
+
 							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices7/{$id}"]); ?>
 							</div>
+
 							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service3', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices3/{$id}"]); ?>
 							</div>
+
 							<div id="step4" class="tab-pane fade <?php echo ($active == 4) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service4', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices4/{$id}"]); ?>
 							</div>
+
 							<div id="step5" class="tab-pane fade <?php echo ($active == 5) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service5', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices5/{$id}"]); ?>
 							</div>
+							
 							<div id="step6" class="tab-pane fade <?php echo ($active == 6) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices6/{$id}"]); ?>
 							</div>
