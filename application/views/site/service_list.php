@@ -2,7 +2,11 @@
 <div class="col-sm-3">
 	<div class="tradespeople-box">
 		<div class="tradespeople-box-img">
+			<div class="icon-wishlist">
+				<a href="#"></a>
+				</div>
 			<a href="<?php echo base_url().'service/'.$list['slug']?>">
+				
 				<?php $image_path = FCPATH . 'img/services/' . ($list['image'] ?? ''); ?>
 				<?php if (file_exists($image_path) && $list['image']): ?>
 					<?php
