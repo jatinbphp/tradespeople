@@ -55,7 +55,7 @@
 								<?php if($service_details['package_type'] == 0):?>
 									<h2 class="title">What you get with this Offer</h2>
 									<?php 
-										$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
 									?>
 									<div class="table-responsive">
 										<table class="table">
@@ -63,7 +63,7 @@
 												<?php if(!empty($attributes)): ?>
 													<?php foreach($attributes as $att):?>
 														<?php
-															$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';		
+														$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';		
 														?>
 														<tr>
 															<td><?php echo $att['attribute_name']; ?></td>
@@ -247,9 +247,9 @@
 													<td><?php echo $package_data->premium->days; ?> Days</td>
 												</tr>
 												<?php 
-													$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-													$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-													$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+												$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+												$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+												$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
 												?>
 												<?php if(!empty($attributes)): ?>
 													<?php foreach($attributes as $att):?>
@@ -293,168 +293,217 @@
 									<h2 class="title"><?php echo '£'.number_format($service_details['price'],2); ?></h2>
 									<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
 
-									<?php if($service_details['package_type'] == 0):?>
-										<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
-										<ul>
-											<?php 
+									<div class="sidebar-tabs">
+										<ul  class="nav nav-pills">
+											<li class="active"><a href="#Basic" data-toggle="tab">Basic</a></li>
+											<li><a href="#Standard" data-toggle="tab">Standard</a></li>
+											<li><a href="#Premium" data-toggle="tab">Premium</a></li>
+										</ul>
+										<div class="tab-content">
+											<div class="tab-pane active" id="Basic">
+												<h2 class="title">£10.00</h2>
+												<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
+												<h4><i class="fa fa-clock-o" aria-hidden="true"></i> -day delivery</h4>
+												<ul>
+													<li><i class="fa fa-check" aria-hidden="true"></i> Basic</li>												
+													<li><i class="fa fa-check" aria-hidden="true"></i> Basic</li>												
+													<li><i class="fa fa-check" aria-hidden="true"></i> Basic</li>
+												</ul>
+												<div class="text-center">
+													<button class="btn btn-warning btn-lg" type="submit">Order (£10.00)</button>
+												</div>
+												</div>
+												<div class="tab-pane" id="Standard">
+													<h2 class="title">£15.00</h2>
+													<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
+												<h4><i class="fa fa-clock-o" aria-hidden="true"></i> -day delivery</h4>
+												<ul>
+													<li><i class="fa fa-check" aria-hidden="true"></i> Standard</li>												
+													<li><i class="fa fa-check" aria-hidden="true"></i> Standard</li>												
+													<li><i class="fa fa-check" aria-hidden="true"></i> Standard</li>
+												</ul>
+												<div class="text-center">
+													<button class="btn btn-warning btn-lg" type="submit">Order (£15.00)</button>
+												</div>
+												</div>
+												<div class="tab-pane" id="Premium">
+													<h2 class="title">£20.00</h2>
+													<p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p>
+												<h4><i class="fa fa-clock-o" aria-hidden="true"></i> -day delivery</h4>
+												<ul>
+													<li><i class="fa fa-check" aria-hidden="true"></i> Premium</li>												
+													<li><i class="fa fa-check" aria-hidden="true"></i> Premium</li>												
+													<li><i class="fa fa-check" aria-hidden="true"></i> Premium</li>
+												</ul>
+												<div class="text-center">
+													<button class="btn btn-warning btn-lg" type="submit">Order (£20.00)</button>
+												</div>
+												</div>
+											</div>
+
+										</div>
+
+										<?php if($service_details['package_type'] == 0):?>
+											<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
+											<ul>
+												<?php 
 												$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
 												$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
 												$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-											?>
-											<?php if(!empty($attributes)): ?>
-												<?php foreach($attributes as $att):?>
-													<?php
+												?>
+												<?php if(!empty($attributes)): ?>
+													<?php foreach($attributes as $att):?>
+														<?php
 														$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
 														$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
 														$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
-													?>
-													<li>
-														<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> <?php echo $att['attribute_name']; ?>
-													</li>												
-												<?php endforeach; ?>	
-											<?php endif; ?>
-										</ul>
-									<?php endif; ?>										
-									
-									<form action="" method="post" id="serviceOrder" style="margin-top:0">
-										<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
-										<input type="hidden" name="selected_exsIds" id="selected_exsIds">
-										<p class="text-left">
-											Price is based on 
-											<?php echo lcfirst($service_details['price_per_type']); ?>.
-										</p>
-										<div class="row text-left mb-3">
-											<div class="col-md-8">
-												<p>
-													Number of <?php echo lcfirst($service_details['price_per_type']); ?>
-												</p>
-											</div>
-											<div class="col-md-4">
-												<input type="number" class="form-control" name="qty_of_type" id="qty_of_type" min="1" value="1">
-											</div>
-										</div>
-										<input class="btn btn-warning btn-lg" type="submit" id="orderBtn" value="Order (<?php echo '£'.number_format($service_details['price'],2); ?>)">
-									</form>
-								</div>
-							
+														?>
+														<li>
+															<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> <?php echo $att['attribute_name']; ?>
+														</li>												
+													<?php endforeach; ?>	
+												<?php endif; ?>
+											</ul>
+										<?php endif; ?>										
 
-							<div class="about-this-sidebar">
-								<div class="row">
-									<div class="col-sm-4 text-center no-padding">
-										<div class="icon-container">
-											<i class="fa fa-paper-plane" aria-hidden="true"></i>
-										</div>
-										<div class="label-container">Delivery in</div>
-										<div class="value-container"><b><?php echo $service_details['delivery_in_days']; ?> days</b></div>
-									</div>
-									<div class="col-sm-4 text-center no-padding">
-										<div class="icon-container">
-											<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-										</div>
-										<div class="label-container">Rating</div>
-										<div class="value-container"><b><?php echo $rating_percentage; ?>%</b> (<?php echo $service_details['total_reviews']; ?> reviews)</div>
-									</div>
-									<div class="col-sm-4 text-center no-padding">
-										<div class="icon-container">
-											<i class="fa fa-clock-o" aria-hidden="true"></i>
-										</div>
-										<div class="label-container">Response time</div>
-										<div class="value-container"><b>within a few <br/>hours</b></div>
-									</div>
-								</div>
-								<div class="views-sales">
-									<ul>
-										<li>
-											<span>Views</span>
-											<span class="value"><?php echo $service_details['total_views']; ?></span>
-										</li>
-										<li>
-											<span>Sales</span>
-											<span class="value"><?php echo $service_details['total_orders']; ?></span>
-										</li>
-										<li class="star-container pull-right">
-											<div class="widget-star-item "><a class="action-entity-star fa fa-heart" href="#"></a><span class=" count-stars"><?php echo $service_details['total_likes']; ?></span></div>
-										</li>
-									</ul>
-								</div>
-
-								<div class="member-summary">
-									<div class="summary member-summary-section">
-										<div class="member-image-container">
-											<?php 
-											if(isset($service_user['profile']) && !empty($service_user['profile'])){
-												$uprofileImg = base_url('img/profile/'.$service_user['profile']);
-											}else{
-												$uprofileImg = base_url('img/default-img.png');
-											}
-											$suserName = ($service_user['f_name'] ?? '').' '.($service_user['l_name'] ??  '');
-											?>
-											<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
-										</div>
-										<div class="member-information-container">
-											<div class="member-name-container crop">
-												<h5>
-													<a class="crop member-short-name" rel="nofollow" title="Ripon K." href="<?php echo base_url('profile/'.$service_user['id']); ?>">
-														<?php echo $suserName;?>
-													</a>
-												</h5>
-												<div class="member-job-title crop">
-													<?php echo $service_user['trading_name'];?>
+										<form action="" method="post" id="serviceOrder" style="margin-top:0">
+											<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
+											<input type="hidden" name="selected_exsIds" id="selected_exsIds">
+											<p class="text-left">
+												Price is based on 
+												<?php echo lcfirst($service_details['price_per_type']); ?>.
+											</p>
+											<div class="row text-left mb-3">
+												<div class="col-md-8">
+													<p>
+														Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+													</p>
+												</div>
+												<div class="col-md-4">
+													<input type="number" class="form-control" name="qty_of_type" id="qty_of_type" min="1" value="1">
 												</div>
 											</div>
-										</div>
-
-									</div>
-									<div class=" about member-summary-section clearfix">
-										<div class="about-container js-about-container">
-											<p><?php echo $service_user['about_business'];?></span>
-											</p>
-										</div>
-									</div>
-									<div class=" location member-summary-section clearfix">
-										<div class="location-container crop">
-											<i class="fa fa-map-marker"></i>
-											<?php echo $service_user['city'];?></div>
-										</div>
-										<div class=" contact member-summary-section clearfix">
-											<a class="btn btn-warning contact-button" id="contactBtn" rel="nofollow" href="javascript:void(0)">Contact</a>
-										</div>
+											<input class="btn btn-warning btn-lg" type="submit" id="orderBtn" value="Order (<?php echo '£'.number_format($service_details['price'],2); ?>)">
+										</form>
 									</div>
 
-								</div>
 
-								<div class="rating">
+									<div class="about-this-sidebar">
+										<div class="row">
+											<div class="col-sm-4 text-center no-padding">
+												<div class="icon-container">
+													<i class="fa fa-paper-plane" aria-hidden="true"></i>
+												</div>
+												<div class="label-container">Delivery in</div>
+												<div class="value-container"><b><?php echo $service_details['delivery_in_days']; ?> days</b></div>
+											</div>
+											<div class="col-sm-4 text-center no-padding">
+												<div class="icon-container">
+													<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+												</div>
+												<div class="label-container">Rating</div>
+												<div class="value-container"><b><?php echo $rating_percentage; ?>%</b> (<?php echo $service_details['total_reviews']; ?> reviews)</div>
+											</div>
+											<div class="col-sm-4 text-center no-padding">
+												<div class="icon-container">
+													<i class="fa fa-clock-o" aria-hidden="true"></i>
+												</div>
+												<div class="label-container">Response time</div>
+												<div class="value-container"><b>within a few <br/>hours</b></div>
+											</div>
+										</div>
+										<div class="views-sales">
+											<ul>
+												<li>
+													<span>Views</span>
+													<span class="value"><?php echo $service_details['total_views']; ?></span>
+												</li>
+												<li>
+													<span>Sales</span>
+													<span class="value"><?php echo $service_details['total_orders']; ?></span>
+												</li>
+												<li class="star-container pull-right">
+													<div class="widget-star-item "><a class="action-entity-star fa fa-heart" href="#"></a><span class=" count-stars"><?php echo $service_details['total_likes']; ?></span></div>
+												</li>
+											</ul>
+										</div>
 
-									<ul>
-										<li><p>seller communication level</p><div class="star"><span></span> 4.9</div></li>
-										<li><p>Recommend to a friend</p><div class="star"><span></span> 4.9</div></li>
-										<li><p>Service as described</p><div class="star"><span></span> 5.0</div></li>
-									</ul>
-								</div>
+										<div class="member-summary">
+											<div class="summary member-summary-section">
+												<div class="member-image-container">
+													<?php 
+													if(isset($service_user['profile']) && !empty($service_user['profile'])){
+														$uprofileImg = base_url('img/profile/'.$service_user['profile']);
+													}else{
+														$uprofileImg = base_url('img/default-img.png');
+													}
+													$suserName = ($service_user['f_name'] ?? '').' '.($service_user['l_name'] ??  '');
+													?>
+													<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
+												</div>
+												<div class="member-information-container">
+													<div class="member-name-container crop">
+														<h5>
+															<a class="crop member-short-name" rel="nofollow" title="Ripon K." href="<?php echo base_url('profile/'.$service_user['id']); ?>">
+																<?php echo $suserName;?>
+															</a>
+														</h5>
+														<div class="member-job-title crop">
+															<?php echo $service_user['trading_name'];?>
+														</div>
+													</div>
+												</div>
 
-								<div class="order-hourlie-addons-sidebar">
-									<h2 class="title">Availability Of Seller</h2>
-									<div id="datepicker"></div>
-									<input type="hidden" name="selected_dates" id="selectedDates">
-									<div class="mt-4">
-										<select class="form-control input-md" name="time_slot" id="timeSlot">
-											<option value="">Select time slot</option>
-											<?php for ($hour = 0; $hour <= 23; $hour++) {
+											</div>
+											<div class=" about member-summary-section clearfix">
+												<div class="about-container js-about-container">
+													<p><?php echo $service_user['about_business'];?></span>
+													</p>
+												</div>
+											</div>
+											<div class=" location member-summary-section clearfix">
+												<div class="location-container crop">
+													<i class="fa fa-map-marker"></i>
+													<?php echo $service_user['city'];?></div>
+												</div>
+												<div class=" contact member-summary-section clearfix">
+													<a class="btn btn-warning contact-button" id="contactBtn" rel="nofollow" href="javascript:void(0)">Contact</a>
+												</div>
+											</div>
+
+										</div>
+
+										<div class="rating">
+
+											<ul>
+												<li><p>seller communication level</p><div class="star"><span></span> 4.9</div></li>
+												<li><p>Recommend to a friend</p><div class="star"><span></span> 4.9</div></li>
+												<li><p>Service as described</p><div class="star"><span></span> 5.0</div></li>
+											</ul>
+										</div>
+
+										<div class="order-hourlie-addons-sidebar">
+											<h2 class="title">Availability Of Seller</h2>
+											<div id="datepicker"></div>
+											<input type="hidden" name="selected_dates" id="selectedDates">
+											<div class="mt-4">
+												<select class="form-control input-md" name="time_slot" id="timeSlot">
+													<option value="">Select time slot</option>
+													<?php for ($hour = 0; $hour <= 23; $hour++) {
 											$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
 											$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
 											echo "<option value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
-											}?>
-										</select>
-									</div>
-									<div style="padding: 10px 0;">
-										<span>
-											Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-										</span>
-									</div>
-									<div id="notAvailablMsg" style="border-top:1px solid #b0c0d3; padding: 10px 0; display: none;">
-									</div>
-									<input class="btn btn-warning btn-lg col-md-12" type="button" id="openChat" value="Select & Continue">
+										}?>
+									</select>
 								</div>
+								<div style="padding: 10px 0;">
+									<span>
+										Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+									</span>
+								</div>
+								<div id="notAvailablMsg" style="border-top:1px solid #b0c0d3; padding: 10px 0; display: none;">
+								</div>
+								<input class="btn btn-warning btn-lg col-md-12" type="button" id="openChat" value="Select & Continue">
 							</div>
 						</div>
 					</div>
@@ -462,34 +511,35 @@
 			</div>
 		</div>
 	</div>
+</div>
 
-	<?php if(!empty($browse_history)): ?>
-		<div class="container" id="browseHistory">
-			<div class="row">
-				<h2 class="title">
-					Your Browsing History
-				</h2>
-				<?php
-				$data['all_services'] = $browse_history;
-				$this->load->view('site/service_list',$data);
-				?>
-			</div>
+<?php if(!empty($browse_history)): ?>
+	<div class="container" id="browseHistory">
+		<div class="row">
+			<h2 class="title">
+				Your Browsing History
+			</h2>
+			<?php
+			$data['all_services'] = $browse_history;
+			$this->load->view('site/service_list',$data);
+			?>
 		</div>
-	<?php endif; ?>
+	</div>
+<?php endif; ?>
 
-	<?php if(!empty($people_history)): ?>
-		<div class="container" id="peopleHistory">
-			<div class="row">
-				<h2 class="title">
-					People Who Viewed This Service Also Viewed
-				</h2>
-				<?php
-				$data['all_services'] = $people_history;
-				$this->load->view('site/service_list',$data);
-				?>			
-			</div>
+<?php if(!empty($people_history)): ?>
+	<div class="container" id="peopleHistory">
+		<div class="row">
+			<h2 class="title">
+				People Who Viewed This Service Also Viewed
+			</h2>
+			<?php
+			$data['all_services'] = $people_history;
+			$this->load->view('site/service_list',$data);
+			?>			
 		</div>
-	<?php endif; ?>
+	</div>
+<?php endif; ?>
 </div>
 
 <?php include ("include/footer.php") ?>
@@ -713,27 +763,27 @@
 	});
 
 	$(document).ready(function() {
-	  var $window = $(window);  
-	  var $sidebar = $(".sidebar-main"); 
-	  var $sidebarHeight = $sidebar.innerHeight();   
-	  var $footerOffsetTop = $("#browseHistory").offset().top; 
-	  var $sidebarOffset = $sidebar.offset();
-	  var $sidebarwidth = $("#sidebar").width();
-	  
-	  $window.scroll(function() {
-	    if($window.scrollTop() > $sidebarOffset.top) {
-	      $sidebar.addClass("fixed");
-	      $sidebar.css('width', $sidebarwidth); 
-	    } else {
-	      $sidebar.removeClass("fixed");
-	      $sidebar.css('width', '100%');   
-	    }    
-	    if($window.scrollTop() + $sidebarHeight > $footerOffsetTop) {
-	      $sidebar.css({"top" : -($window.scrollTop() + $sidebarHeight - $footerOffsetTop)});        
-	    } else {
-	      $sidebar.css({"top": "0"});  
-	    }    
-	  });   
+		var $window = $(window);  
+		var $sidebar = $(".sidebar-main"); 
+		var $sidebarHeight = $sidebar.innerHeight();   
+		var $footerOffsetTop = $("#browseHistory").offset().top; 
+		var $sidebarOffset = $sidebar.offset();
+		var $sidebarwidth = $("#sidebar").width();
+
+		$window.scroll(function() {
+			if($window.scrollTop() > $sidebarOffset.top) {
+				$sidebar.addClass("fixed");
+				$sidebar.css('width', $sidebarwidth); 
+			} else {
+				$sidebar.removeClass("fixed");
+				$sidebar.css('width', '100%');   
+			}    
+			if($window.scrollTop() + $sidebarHeight > $footerOffsetTop) {
+				$sidebar.css({"top" : -($window.scrollTop() + $sidebarHeight - $footerOffsetTop)});        
+			} else {
+				$sidebar.css({"top": "0"});  
+			}    
+		});   
 	});
 
 </script>
