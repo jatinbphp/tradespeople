@@ -253,6 +253,9 @@ $route['tradesmen_user']        = 'Admin/Admin/tradesmen_user';
 $route['tradesmen_user/(:any)']='Admin/Admin/tradesmen_user/$1';
 
 $route['service_category']        = 'Admin/Admin/service_category';
+$route['approval_pending_service']        = 'Admin/Admin/approval_pending_service';
+$route['required_modification']        = 'Admin/Admin/required_modification';
+$route['approved_service']        = 'Admin/Admin/approved_service';
 $route['all_services']        = 'Admin/Admin/service_list';
 $route['service-orders']        = 'Admin/Admin/service_orders';
 

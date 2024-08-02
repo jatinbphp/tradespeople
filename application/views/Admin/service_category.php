@@ -156,8 +156,6 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 			data:{title:v},
 			async:false,
 			success:function(res){
-				console.log(res);
-
 				$('#slug'+eleId).val(res);				
 			}
 		})

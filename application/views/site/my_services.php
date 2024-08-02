@@ -34,6 +34,21 @@
                     <div class="row">
                         <div class="col-md-12 col-sm-12"> 
                             <div class="dashboard-white"> 
+                                <div class="verification-checklist order-metrics mb-5">
+                                    <ul class="list">
+                                        <?php foreach($statusArr as $list): ?>
+                                            <li>
+                                                <a href="<?php echo base_url().'my-services?status='.$list; ?>">
+                                                    <?php echo ucwords(str_replace('_', ' ', $list)); ?> 
+                                                    <span class="<?php echo $list == $_GET['status'] ? 'bg-green text-white' : 'bg-gray'; ?>">
+                                                        <?php echo $totalStatusService['total_'.$list]; ?>
+                                                    </span>
+                                                </a>
+                                            </li>                                            
+                                        <?php endforeach; ?>
+                                    </ul>                                    
+                                </div> 
+
                                 <div class="row">
                                     <div class="col-sm-3" id="filterDiv">
                                         <div class="form-group">
@@ -90,12 +105,13 @@
 <?php include 'include/footer.php'; ?>
 <script>
 $(function () {
+    var status = '<?php echo isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';?>';
     var table = $("#boottable").DataTable({
         stateSave: true,
         "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
         "pageLength": 25,
         "ajax": {
-            "url": site_url + 'users/getAllServices',
+            "url": site_url + 'users/getAllServices?status='+status,
             "type": "GET",
             "dataSrc": "data"
         },
@@ -114,10 +130,10 @@ $(function () {
                         if (row.image.endsWith('.mp4')) {
                             return '<video width="100" controls autoplay><source src="'+site_url+'img/services/'+row.image+'" type="video/mp4">Your browser does not support the video tag.</video>';
                         } else {
-                            return '<img src="'+site_url+'img/services/'+row.image+'" alt="Service Image" width="50">';
+                            return '<img src="'+site_url+'img/services/'+row.image+'" alt="Service Image" width="100">';
                         }
                     } else {
-                        return '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+                        return '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="100">';
                     }
                 }
             },

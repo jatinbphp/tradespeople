@@ -2722,15 +2722,18 @@ class Common_model extends CI_Model
 		$query = $this->db->query("SELECT * FROM $table where nt_userId=$userid order by nt_id desc limit 500");
 		return $query->result_array();
 	}
-	function get_my_service($table, $userid)
+	function get_my_service($table, $userid, $status)
 	{
-		//$query = $this->db->query("SELECT * FROM $table where user_id=$userid order by id desc limit 500");
+		$statusWhere = '';
+		if(!empty($status) && $status != 'all'){
+			$statusWhere = 'AND ms.status = "'.$status.'"';
+		}
 
 		$query = $this->db->query("SELECT ms.*, c.cat_name, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
-                           WHERE ms.user_id = $userid
+                           WHERE ms.user_id = $userid $statusWhere
                            GROUP BY ms.id
                            ORDER BY ms.id DESC 
                            LIMIT 500");
@@ -2800,18 +2803,26 @@ class Common_model extends CI_Model
 	    return $query->row_array();
 	}
 
-	function get_all_service_for_admin($table, $limit)
-	{
-		$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
-                           FROM $table ms
-                           LEFT JOIN service_category c ON ms.category = c.cat_id
-                           LEFT JOIN users u ON ms.user_id = u.id
-                           LEFT JOIN service_rating srt ON ms.id = srt.service_id
-                           GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
-                           ORDER BY average_rating DESC 
-                           LIMIT 500");
-		return $query->result_array();
+	function get_all_service_for_admin($table, $limit, $status = null){
+	    $query = "SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+	              FROM $table ms
+	              LEFT JOIN service_category c ON ms.category = c.cat_id
+	              LEFT JOIN users u ON ms.user_id = u.id
+	              LEFT JOIN service_rating srt ON ms.id = srt.service_id";
+
+	    if ($status !== null) {
+	        $query .= " WHERE ms.status = '$status'";
+	    }
+
+	    $query .= " GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
+	                ORDER BY average_rating DESC 
+	                LIMIT 500";
+
+	    $result = $this->db->query($query);
+	    return $result->result_array();
 	}
+
+
 
 	public function getServiceByCategoriesId($categoryId, $step, $sIds='')
 	{
@@ -3319,6 +3330,24 @@ class Common_model extends CI_Model
 			        my_services s ON so.service_id = s.id
 			    WHERE
 			        s.user_id = $user_id");
+
+			return $query->row_array();
+	}
+
+	public function getTotalStatusService($user_id){
+		$query = $this->db->query("
+			    SELECT
+			    	COUNT(*) AS total_all,
+			        SUM(CASE WHEN ms.status = 'approval_pending' THEN 1 ELSE 0 END) AS total_approval_pending,
+			        SUM(CASE WHEN ms.status = 'required_modification' THEN 1 ELSE 0 END) AS total_required_modification,
+			        SUM(CASE WHEN ms.status = 'draft' THEN 1 ELSE 0 END) AS total_draft,
+			        SUM(CASE WHEN ms.status = 'denied' THEN 1 ELSE 0 END) AS total_denied,
+			        SUM(CASE WHEN ms.status = 'paused' THEN 1 ELSE 0 END) AS total_paused,
+			        SUM(CASE WHEN ms.status = 'active' THEN 1 ELSE 0 END) AS total_active
+			    FROM
+			        my_services ms
+			    WHERE
+			        ms.user_id = $user_id");
 
 			return $query->row_array();
 	}

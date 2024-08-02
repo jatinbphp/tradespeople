@@ -599,12 +599,16 @@
           <?php
           if (in_array(22, $my_access)) {
             $totalPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->count_all_results();
+            $totalRequiredModificationService = $this->db->select(['id','status'])->from('my_services')->where('status','required_modification')->count_all_results();
+            // $totalApprovedService = $this->db->select(['id','status'])->from('my_services')->where('status','active')->count_all_results();
+
+            $totalService = $totalPendingService + $totalRequiredModificationService;
           ?>
 
             <li class="us_er3">
               <a href="#">
                 <i class="fa fa-tasks"></i> 
-                <span>Service <?php echo ($totalPendingService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalPendingService . '</span>' : ''; ?></span>
+                <span>Service <?php echo ($totalService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalService . '</span>' : ''; ?></span>
                 <span class="pull-right-container">
                   <i class="fa fa-angle-left pull-right"></i>
                 </span>
@@ -616,9 +620,26 @@
                   </a>
                 </li>
                 <li>
-                  <a href="<?php echo base_url(); ?>all_services">
-                    <i class="fa fa-circle-o"></i>Service 
+                  <a href="<?php echo base_url(); ?>approval_pending_service">
+                    <i class="fa fa-circle-o"></i>Approval Pendning Service 
                     <?php echo ($totalPendingService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalPendingService . '</span>' : ''; ?>
+                  </a>
+                </li>  
+                <li>
+                  <a href="<?php echo base_url(); ?>required_modification">
+                    <i class="fa fa-circle-o"></i>Required Modification Service 
+                    <?php echo ($totalRequiredModificationService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalRequiredModificationService . '</span>' : ''; ?>
+                  </a>
+                </li>  
+                <li>
+                  <a href="<?php echo base_url(); ?>approved_service">
+                    <i class="fa fa-circle-o"></i>Approved Service 
+                    <!-- <?php echo ($totalApprovedService > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalApprovedService . '</span>' : ''; ?> -->
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>all_services">
+                    <i class="fa fa-circle-o"></i>All Service                     
                   </a>
                 </li>                
               </ul>

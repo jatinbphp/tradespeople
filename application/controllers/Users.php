@@ -2254,8 +2254,11 @@ public function exists_refferals() {
 	}
 
 	public function my_services(){
+		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
 		if($this->session->userdata('user_id')) {
-			$data['my_services']=$this->common_model->get_my_service('my_services',$this->session->userdata('user_id'));
+			$data['my_services']=$this->common_model->get_my_service('my_services',$this->session->userdata('user_id'),$status);
+			$data['statusArr'] = ['active', 'approval_pending', 'required_modification', 'draft', 'denied', 'paused'];
+			$data['totalStatusService'] = $this->common_model->getTotalStatusService($this->session->userdata('user_id'));
 			$this->load->view('site/my_services',$data);
 		} else {
 			redirect('login');
@@ -2263,8 +2266,9 @@ public function exists_refferals() {
 	}
 
 	public function getAllServices() {
+		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
 	    if($this->session->userdata('user_id')) {
-	        $services = $this->common_model->get_my_service('my_services', $this->session->userdata('user_id'));
+	        $services = $this->common_model->get_my_service('my_services', $this->session->userdata('user_id'), $status);
 	        $data = [];
 
 	        foreach($services as $service) {        	 
@@ -2380,6 +2384,8 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('price','Price','required|numeric');
 		$this->form_validation->set_rules('delivery_in_days','Delivery in days','required|numeric');
+		$this->form_validation->set_rules('category','Category','required');
+		$this->form_validation->set_rules('sub_category','Sub Category','required');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2406,11 +2412,19 @@ public function exists_refferals() {
 		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
 		$insert['price'] = trim($this->input->post('price'));
 		$insert['image'] = $newImg;
-		$insert['status'] = 'approval_pending';
+		$insert['status'] = 'draft';
 		$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
+		$insert['category'] = $this->input->post('category');
+		$insert['sub_category'] = $this->input->post('sub_category');
+		$insert['service_type'] = $this->input->post('service_type');
+		if(!empty($this->input->post('plugins'))){
+			$insert['plugins'] = implode(',', $this->input->post('plugins'));
+		} else {
+			$insert['plugins'] = '';
+		}
 
 		$this->session->set_userdata('store_service1',$insert);
-		$this->session->set_userdata('next_step',2);
+		$this->session->set_userdata('next_step',7);
 		$this->session->set_flashdata('success',"Service details added successfully.");
 		$this->setServiceData($insert);
 		redirect('add-service');
@@ -2559,9 +2573,9 @@ public function exists_refferals() {
 			$this->session->unset_userdata('latest_service');
 			$this->reserServiceTabData();							
 
-			$this->session->set_flashdata('success','Your service has been posted successfully.');
+			$this->session->set_flashdata('success','Your service has been saved successfully.');
 		} else {
-			$this->session->set_flashdata('error','Something is wrong. Your Service is not posted!!!');
+			$this->session->set_flashdata('error','Something is wrong. Your Service is not saved successfully!!!');
 		}			
 		redirect('my-services');
 	}
@@ -2584,15 +2598,17 @@ public function exists_refferals() {
 			$insert['package_data'] = '';
 		}
 
-		$this->common_model->update('my_services',array('id'=>$id),$insert);
-	
-		if($id){
-			$this->session->set_flashdata('success','Your service has been updated successfully.');
+		$insert['status'] = 'approval_pending';
+
+		$result = $this->common_model->update('my_services',array('id'=>$id),$insert);
+
+		if($result){
+			$this->session->set_userdata('next_step',3);
+			$this->session->set_flashdata('success',"Package details added successfully.");			
 		} else {
 			$this->session->set_flashdata('error','Something is wrong.');
 		}
-		$this->resetEditServiceTabData();
-		redirect("my-services");				
+		redirect('add-service');		
 	}
 
 	public function editServices($id=""){
@@ -2663,6 +2679,8 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('price','Price','required|numeric');
 		$this->form_validation->set_rules('delivery_in_days','Delivery in days','required|numeric');
+		$this->form_validation->set_rules('category','Category','required');
+		$this->form_validation->set_rules('sub_category','Subcategory','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2693,10 +2711,18 @@ public function exists_refferals() {
 		$insert['location'] = $this->input->post('location');
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
 		$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
+		$insert['category'] = $this->input->post('category');
+		$insert['sub_category'] = $this->input->post('sub_category');
+		$insert['service_type'] = $this->input->post('service_type');
+		if(!empty($this->input->post('plugins'))){
+			$insert['plugins'] = implode(',', $this->input->post('plugins'));
+		} else {
+			$insert['plugins'] = '';
+		}
 
 		$this->common_model->update('my_services', ['id'=>$id], $insert);
 		$this->session->set_flashdata('success','Service details updated succesfully.');
-		$this->session->set_userdata('update_next_step',2);
+		$this->session->set_userdata('update_next_step',7);
 		redirect("edit-service/{$id}");
 	}
 
@@ -2849,6 +2875,9 @@ public function exists_refferals() {
 
 		$serviceAvailible = $this->common_model->GetSingleData('service_availability',array('service_id'=>$id));
 
+		$insert1['status'] = 'approval_pending';
+		$this->common_model->update('my_services',array('id'=>$id),$insert1);
+
 		if(!empty($serviceAvailible)){
 			$this->common_model->update('service_availability',array('id'=>$id),$insert);	
 		}else{
@@ -2881,7 +2910,6 @@ public function exists_refferals() {
 		}else{
 			$insert['package_data'] = '';
 		}
-
 		$this->common_model->update('my_services',array('id'=>$id),$insert);
 
 		$this->session->set_userdata('update_next_step',3);

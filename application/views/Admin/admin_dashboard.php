@@ -376,7 +376,7 @@
       <?php } ?>
 
       <?php
-          if (in_array(10, $my_access)) {
+          if (in_array(22, $my_access)) {
           ?>
         <div class="col-md-4 col-sm-6 col-xs-12">
           <div class="info-box">
@@ -395,11 +395,30 @@
       ?>
 
       <?php
-          if (in_array(1, $my_access)) {
+          if (in_array(22, $my_access)) {
+          ?>
+        <div class="col-md-4 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-yellow"><i class="fa fa-tasks"></i></span>           
+            <div class="info-box-content">
+              <?php
+              $totalPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->count_all_results();
+              ?>
+              <span class="info-box-text">Approval Pending Service</span>
+              <span class="info-box-number"><?=$totalPendingService;?> </span>
+            </div>
+          </div>
+        </div>
+      <?php
+          }
+      ?>
+
+      <?php
+          if (in_array(23, $my_access)) {
           ?>
           <div class="col-md-4 col-sm-6 col-xs-12">
               <div class="info-box">
-                <span class="info-box-icon bg-yellow"><i class="fa fa-shopping-cart"></i></span>
+                <span class="info-box-icon bg-red"><i class="fa fa-shopping-cart"></i></span>
                 <div class="info-box-content">
                   <?php
                       $serviceOrders = $this->db->select('*')->from('service_order')->count_all_results();

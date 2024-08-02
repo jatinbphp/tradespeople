@@ -3035,6 +3035,21 @@ class Admin extends CI_Controller
         $this->load->view('Admin/service_list', $result);
     }
 
+    public function approved_service(){
+        $result['service_list'] = $this->Common_model->get_all_service_for_admin('my_services',0,'active');
+        $this->load->view('Admin/service_list', $result);
+    }
+
+    public function required_modification(){
+        $result['service_list'] = $this->Common_model->get_all_service_for_admin('my_services',0,'required_modification');
+        $this->load->view('Admin/service_list', $result);
+    }
+
+    public function approval_pending_service(){
+        $result['service_list'] = $this->Common_model->get_all_service_for_admin('my_services',0,'approval_pending');
+        $this->load->view('Admin/service_list', $result);
+    }
+
     public function getServiceDetails(){
         $sId = $this->input->post('id');
         $data['service_details'] = $this->Common_model->GetSingleData('my_services',['id'=>$sId]);
@@ -3546,6 +3561,39 @@ class Admin extends CI_Controller
             echo strtolower($slug);
         }else{
             return strtolower($slug);
+        }
+    }
+
+    public function updateStatus(){
+        $sId = $this->input->post('id');
+        $status = $this->input->post('status');
+        $service = $this->Common_model->GetSingleData('my_services',['id'=>$sId]);
+
+        if(!empty($service)){
+            $update_array = [
+                'status' => $status 
+            ];
+            $where_array = ['id' => $sId];
+            $result = $this->My_model->update_entry('my_services', $update_array, $where_array);
+
+            if($result){
+                /*Tradesman Email Code*/
+                $tradesMan = $this->Common_model->GetSingleData('users',['id'=>$service['user_id']]);
+                $newStatus = ucwords(str_replace('_',' ',$status));
+
+                if($tradesMan){
+                    $subject = "Your service status updated: “".$service['service_name']."”"; 
+                    $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesMan['f_name'] .',</p>';     
+                    $html .= '<p style="margin:0;padding:10px 0px">Your service status has beedn updated</p>';
+                    $html .= '<p style="margin:0;padding:10px 0px">Service status is '.$newStatus.'</p>';
+                    $this->Common_model->send_mail($tradesMan['email'],$subject,$html);
+                }    
+            }
+            echo 1;
+            exit;
+        }else{
+            echo 0;
+            exit;
         }
     }
 }

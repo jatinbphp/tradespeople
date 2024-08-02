@@ -80,6 +80,7 @@
 					$('#'+sectionId).empty().html(data);
 					<?php if(isset($serviceData['sub_category']) && $serviceData['sub_category']): ?>
 						if(subCategory == 1){
+							console.log('sub_category==>'+<?php echo $serviceData['sub_category'] ?? '' ?>);
 							$('.subCategory').val(<?php echo $serviceData['sub_category'] ?? '' ?>);
 							$('.subCategory').trigger('change');
 							subCategory = 0;

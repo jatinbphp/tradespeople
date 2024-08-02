@@ -94,7 +94,19 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<td><?php echo $lists['location']; ?></td>
 										<td><?php echo '£'.number_format($lists['price'],2); ?></td>
 										<td><?php echo $lists['created_at']; ?></td>
-										<td><?php echo ucwords(str_replace('_',' ',$lists['status'])); ?></td>
+										<td>
+											<select class="form-control serviceStatus" data-id="<?php echo $lists['id']; ?>" <?php echo $lists['status'] == 'active' ? 'disabled' : ''; ?>>
+												<option value="approval_pending" <?php echo $lists['status'] == 'approval_pending' ? 'selected' : ''; ?> >Approval Pending</option>
+
+												<option value="required_modification" <?php echo $lists['status'] == 'required_modification' ? 'selected' : ''; ?>>Required Modification</option>
+
+												<option value="denied" <?php echo $lists['status'] == 'denied' ? 'selected' : ''; ?>>Denied</option>
+
+												<option value="paused" <?php echo $lists['status'] == 'paused' ? 'selected' : ''; ?>>Paused</option>
+												
+												<option value="active" <?php echo $lists['status'] == 'active' ? 'selected' : ''; ?>>Approved</option>												
+											</select>	
+										</td>
 										<td>
 											<button type="button" class="btn btn-sm btn-primary serviceDetails" data-id="<?php echo $lists['id']; ?>" data-name="<?php echo $lists['service_name']; ?>"><i class="fa fa-eye"></i></button>
 										</td>				
@@ -232,5 +244,29 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 	    }
   	}
   }
+
+  $('.serviceStatus').on('change', function(){
+  	var status = $(this).val();
+  	var sId = $(this).data('id');
+
+  	var userConfirmed = confirm('Are you sure to update a status of the service?');
+
+  	if (userConfirmed) {
+      $.ajax({
+				type:'POST',
+				url:site_url+'Admin/admin/updateStatus',
+				data:{id:sId,status:status},
+				success:function(response){
+					if(response == 1){
+						window.location.reload();
+					}else{
+						alert('Something is wrong.');
+					}
+				}
+			});
+    } else {
+    	$(this).prop('selectedIndex', 0);
+    }
+  });
 </script>
 
