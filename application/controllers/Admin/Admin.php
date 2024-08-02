@@ -3151,7 +3151,7 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('main_category', 'Main Category', 'required');
         $this->form_validation->set_rules('sub_category', 'Sub Category', 'required');
         $this->form_validation->set_rules('service_type_category', 'Service Type', 'required');
-        $this->form_validation->set_rules('price_type', 'Price Type', 'required');        
+        $this->form_validation->set_rules('price_type[]', 'Price Type', 'required');        
         $this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']);        
         
         if ($this->form_validation->run() == false) {
@@ -3163,6 +3163,11 @@ class Admin extends CI_Controller
                 $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
                 $json['status'] = 2;
             } else {
+                $price_type = '';
+                if(!empty($this->input->post('price_type'))){
+                    $price_type = implode(',',$this->input->post('price_type'));
+                }
+
                 $insert_arr = [
                     'cat_name'           => $this->input->post('main_category'),
                     'find_job_title'     => $this->input->post('main_category'),
@@ -3172,7 +3177,7 @@ class Admin extends CI_Controller
                     'cat_create'         => date('Y-m-d h:i:s'),
                     'cat_description'    => $this->input->post('cat_description'),
                     'description'        => $this->input->post('description'),
-                    'price_type'        => $this->input->post('price_type'),
+                    'price_type'        => $price_type,
                     'meta_title'         => $this->input->post('meta_title'),
                     'meta_key'           => $this->input->post('meta_key'),
                     'meta_description'   => $this->input->post('meta_description'),
@@ -3194,7 +3199,7 @@ class Admin extends CI_Controller
                         'cat_create'         => date('Y-m-d h:i:s'),
                         'cat_description'    => $this->input->post('cat_description'),
                         'description'        => $this->input->post('description'),
-                        'price_type'        => $this->input->post('price_type'),
+                        'price_type'        => $price_type,
                         'meta_title'         => $this->input->post('meta_title'),
                         'meta_key'           => $this->input->post('meta_key'),
                         'meta_description'   => $this->input->post('meta_description'),
@@ -3221,7 +3226,7 @@ class Admin extends CI_Controller
                                     'cat_create'         => date('Y-m-d h:i:s'),
                                     'cat_description'    => $this->input->post('cat_description'),
                                     'description'        => $this->input->post('description'),
-                                    'price_type'        => $this->input->post('price_type'),
+                                    'price_type'        => $price_type,
                                     'meta_title'         => $this->input->post('meta_title'),
                                     'meta_key'           => $this->input->post('meta_key'),
                                     'meta_description'   => $this->input->post('meta_description'),
@@ -3278,7 +3283,7 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('main_category', 'Main Category', 'required');
         $this->form_validation->set_rules('sub_category', 'Sub Category', 'required');
         $this->form_validation->set_rules('service_type_category', 'Service Type', 'required');
-        $this->form_validation->set_rules('price_type', 'Price Type', 'required');        
+        $this->form_validation->set_rules('price_type[]', 'Price Type', 'required');        
         
         if ($categories) {
             $this->form_validation->set_rules('slug1', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']);
@@ -3294,6 +3299,11 @@ class Admin extends CI_Controller
                 $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
                 $this->session->set_flashdata('error', $this->upload->display_errors());
             } else {
+                $price_type = '';
+                if(!empty($this->input->post('price_type'))){
+                    $price_type = implode(',',$this->input->post('price_type'));
+                }
+
                 $update_array = [
                     'cat_name'           => $this->input->post('main_category'),
                     'find_job_title'     => $this->input->post('main_category'),
@@ -3303,7 +3313,7 @@ class Admin extends CI_Controller
                     'cat_create'         => date('Y-m-d h:i:s'),
                     'cat_description'    => $this->input->post('cat_description'),
                     'description'        => $this->input->post('description'),
-                    'price_type'        => $this->input->post('price_type'),
+                    'price_type'        => $price_type,
                     'meta_title'         => $this->input->post('meta_title'),
                     'meta_key'           => $this->input->post('meta_key'),
                     'meta_description'   => $this->input->post('meta_description'),
@@ -3326,7 +3336,7 @@ class Admin extends CI_Controller
                         'cat_create'         => date('Y-m-d h:i:s'),
                         'cat_description'    => $this->input->post('cat_description'),
                         'description'        => $this->input->post('description'),
-                        'price_type'        => $this->input->post('price_type'),
+                        'price_type'        => $price_type,
                         'meta_title'         => $this->input->post('meta_title'),
                         'meta_key'           => $this->input->post('meta_key'),
                         'meta_description'   => $this->input->post('meta_description'),
@@ -3362,7 +3372,7 @@ class Admin extends CI_Controller
                                     'cat_create'         => date('Y-m-d h:i:s'),
                                     'cat_description'    => $this->input->post('cat_description'),
                                     'description'        => $this->input->post('description'),
-                                    'price_type'        => $this->input->post('price_type'),
+                                    'price_type'        => $price_type,
                                     'meta_title'         => $this->input->post('meta_title'),
                                     'meta_key'           => $this->input->post('meta_key'),
                                     'meta_description'   => $this->input->post('meta_description'),
@@ -3489,6 +3499,7 @@ class Admin extends CI_Controller
 
             $data['main_service'] = $sCategory;
             $data['service_type_name'] = rtrim($service_type_name,',');
+            $data['price_type'] = !empty($sCategory['price_type']) ? explode(',', $sCategory['price_type']) : [];
 
             $attributes = $this->Common_model->get_all_data('service_attribute',['service_cat_id'=>$catId]);
             $attributeList = '';

@@ -2366,6 +2366,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 	public function serviceDetail($slug=""){
 		$data['service_details'] = $this->common_model->get_service_details('my_services',$slug);
+
 		$data['is_detail'] = 1;
 		if($data['service_details']['status'] != 'active'){
 			redirect('/');

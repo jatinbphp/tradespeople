@@ -1950,8 +1950,19 @@ class Common_model extends CI_Model
 		$slider = '';
 		$image_path = FCPATH . 'img/services/' . $mainImg;
 		if(isset($mainImg) && file_exists($image_path)){
+			$mime_type = get_mime_by_extension($image_path);
+            $is_image = strpos($mime_type, 'image') !== false;
+            $is_video = strpos($mime_type, 'video') !== false;
+
 			$main_image = base_url('img/services/').$mainImg;
-			$slider .= '<div><img src="'.$main_image.'" class="img-responsive"></div>';
+
+			if ($is_image){
+				$slider .= '<div><img src="'.$main_image.'" class="img-responsive"></div>';
+			}
+
+			if($is_video){
+				$slider .= '<div><video controls autoplay src="'.$main_image.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
+			}
 		}
 
 		if(count($sliderImgs)){

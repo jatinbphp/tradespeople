@@ -187,16 +187,19 @@
 									</td>
 								</tr>
 								<tr>
+
+									<?php echo $serviceData['price_per_type']; ?>
+
 									<td>
-										<b>Price <?php echo !empty($service_category['price_type']) ? '/'.$service_category['price_type'] : ''; ?></b>
+										<b>Price <?php echo !empty($serviceData['price_per_type']) ? '/'.$serviceData['price_per_type'] : ''; ?></b>
 										<input name="package[basic][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->basic->price) : '';?>">
 									</td>
 									<td class="multiplePackage">
-										<b>Price <?php echo !empty($service_category['price_type']) ? '/'.$service_category['price_type'] : ''; ?></b>
+										<b>Price <?php echo !empty($serviceData['price_per_type']) ? '/'.$serviceData['price_per_type'] : ''; ?></b>
 										<input name="package[standard][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->standard->price) : '';?>">
 									</td>
 									<td class="multiplePackage">
-										<b>Price <?php echo !empty($service_category['price_type']) ? '/'.$service_category['price_type'] : ''; ?></b>
+										<b>Price <?php echo !empty($serviceData['price_per_type']) ? '/'.$serviceData['price_per_type'] : ''; ?></b>
 										<input name="package[premium][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->premium->price) : '';?>">
 									</td>
 								</tr>
@@ -220,7 +223,7 @@
 </form>
 <script type="text/javascript">
 	$(document).ready(function() {
-		var package_type = <?php echo $serviceData['package_type']; ?>
+		var package_type = <?php echo isset($serviceData['package_type']) ? $serviceData['package_type'] : 0; ?>;
 
 		if (package_type == 0) {
 	        $('#offerPackage').prop('checked', false);

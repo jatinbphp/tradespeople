@@ -63,7 +63,7 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Location</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md" name="location"  id="city_id">
+                        <select class="form-control input-md" name="location" id="city_id">
                             <option value="">Select Location</option>
                             <?php $selected = $serviceData['location'] ?? '' ?>
                             <?php foreach ($cities as $city) { ?>
@@ -81,28 +81,22 @@
                     <label class="col-md-12 control-label" for="">Price</label>
                     <div class="col-md-12">
                         <label class="col-md-12 control-label pl-0" for="">How do you charge?</label>
-                        <select class="form-control input-md" name="price_per_type"  id="price_per_type">
-                            <option value="">Select Type</option>
-                            <?php if(!empty($price_per_type)):?>
-                                <?php foreach($price_per_type as $pType): ?>
-                                    <option value="<?php echo $pType; ?>" <?php echo $pType == $serviceData['price_per_type'] ? 'selected' : '' ; ?> ><?php echo $pType; ?></option>
-                                <?php endforeach;?>    
-                            <?php endif;?>                                
+                        <select class="form-control input-md" name="price_per_type" id="price_per_type">
+                            <option>Please Select</option>
                         </select>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12">
-                <!-- Text input-->
+            <!-- <div class="col-sm-12">
                 <div class="form-group">
                     <div class="col-md-12">
                         <label class="col-md-12 control-label pl-0" id="priceLabel" for="">
-                            How much do you charge <?php echo isset($serviceData) ? lcfirst($serviceData['price_per_type']) : '' ?>?
+                            How much do you charge <?php //echo isset($serviceData) ? lcfirst($serviceData['price_per_type']) : '' ?>?
                         </label>
-                        <input id="price" value="<?php echo $serviceData['price'] ?? '' ?>" name="price" placeholder="Price" class="form-control input-md" type="number" required>
+                        <input id="price" value="<?php //echo $serviceData['price'] ?? '' ?>" name="price" placeholder="Price" class="form-control input-md" type="number" required>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="col-sm-12">
                 <!-- Text input-->
                 <div class="form-group">
@@ -115,15 +109,14 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12">
-                <!-- Text input-->
+            <!-- <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Delivery In Days</label>
                     <div class="col-md-12">
                         <input id="service" value="<?php echo $serviceData['delivery_in_days'] ?? '' ?>" name="delivery_in_days" placeholder="Delivery In Days" class="form-control input-md" type="number" min="1" required>
                     </div>
                 </div>
-            </div>							
+            </div>-->
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -163,11 +156,11 @@
                         <div class="imgUp">
                             <div class="videoPreviewPlus">
                                 <video 
-                                src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" 
-                                type="<?php echo $mime_type; ?>" 
-                                 loop 
-                                class="serviceVideo">
-                            </video>
+                                    src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" 
+                                    type="<?php echo $mime_type; ?>" 
+                                     loop 
+                                    class="serviceVideo">
+                                </video>
                             <svg id="play-control-btn" class="playing" width="30" height="30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
                                 <path id="border" fill="none" stroke="#fff" stroke-width="1.5" stroke-miterlimit="10" d="M50,2.9L50,2.9C76,2.9,97.1,24,97.1,50v0C97.1,76,76,97.1,50,97.1h0C24,97.1,2.9,76,2.9,50v0C2.9,24,24,2.9,50,2.9z"/>
                                 <path id="bar" fill="none" stroke="#fff" stroke-width="4.5" stroke-miterlimit="10" d="M50,2.9L50,2.9C76,2.9,97.1,24,97.1,50v0C97.1,76,76,97.1,50,97.1h0C24,97.1,2.9,76,2.9,50v0C2.9,24,24,2.9,50,2.9z" style="transition: all .3s;"/>
@@ -199,13 +192,14 @@
 </form>
 
 <script type="text/javascript">
-    $('#price_per_type').on('change', function(){
-        var priceType = $(this).val();
-        $('#priceLabel').text('How much do you charge per '+priceType.toLowerCase()+'?');
-    });
+    // $('#price_per_type').on('change', function(){
+    //     var priceType = $(this).val();
+    //     $('#priceLabel').text('How much do you charge per '+priceType.toLowerCase()+'?');
+    // });
 
     var subCategory = 1;
     var serviceType = 1;
+    var priceType = 1;
     var plugin = 1;
     $('.mainCategory').on('change', function(){
         var cat_id = $(this).val();
@@ -228,7 +222,25 @@
                         }else{
                             subCategory = 0;
                         }
-                    <?php endif ?>
+                    <?php endif; ?>
+
+                    /*Get Price Type*/
+                    $.ajax({
+                        url:site_url+'users/getPriceType',
+                        type:"POST",
+                        data:{'cat_id':cat_id,'type':1},
+                        success:function(response){
+                            $('#price_per_type').empty().html(response);
+                            <?php if(isset($serviceData['price_per_type']) && $serviceData['price_per_type']): ?>
+                                if(priceType == 1){
+                                    $('#price_per_type').val('<?php echo $serviceData['price_per_type'] ?? '' ?>');
+                                    priceType = 0;
+                                }else{
+                                    priceType = 0;
+                                }
+                            <?php endif; ?>
+                        }
+                    });
                 }else{
                     $('#'+sectionId+'_div').addClass('hidden');
                 }
