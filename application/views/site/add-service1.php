@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12">
+            <div class="col-sm-12 hide" id="price_type_div">
                 <!-- Text input-->
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Price</label>
@@ -83,6 +83,16 @@
                         <label class="col-md-12 control-label pl-0" for="">How do you charge?</label>
                         <select class="form-control input-md" name="price_per_type" id="price_per_type">
                             <option>Please Select</option>
+                            <?php if(!empty($price_per_type)): ?>
+                                <?php foreach ($price_per_type as $value): ?>
+                                    <?php 
+                                        $selected = $value == $serviceData['price_per_type'] ? 'selected' : '';
+                                    ?>
+                                    <option value="<?php echo $value; ?>" <?php echo $selected; ?> >
+                                        <?php echo $value; ?>
+                                    </option>
+                                <?php endforeach;?>
+                            <?php endif;?>    
                         </select>
                     </div>
                 </div>
@@ -230,15 +240,11 @@
                         type:"POST",
                         data:{'cat_id':cat_id,'type':1},
                         success:function(response){
-                            $('#price_per_type').empty().html(response);
-                            <?php if(isset($serviceData['price_per_type']) && $serviceData['price_per_type']): ?>
-                                if(priceType == 1){
-                                    $('#price_per_type').val('<?php echo $serviceData['price_per_type'] ?? '' ?>');
-                                    priceType = 0;
-                                }else{
-                                    priceType = 0;
-                                }
-                            <?php endif; ?>
+                            if(response == 1){
+                                $('#price_type_div').removeClass('hide');
+                            }else{
+                                $('#price_type_div').addClass('hide');
+                            }
                         }
                     });
                 }else{

@@ -42,25 +42,13 @@
 
 						<div class="form-group">
 							<label> Price Per Unit:</label>
-							<?php if(!empty($data['price_per_type'])):?>
-								<div class="row">
-                	<?php foreach($data['price_per_type'] as $pType): ?>
-                		<?php 
-                			$checked = '';
-                			if(!empty($data['price_type'])){
-                				if(in_array($pType, $data['price_type'])){
-													$checked = 'checked';
-                				}
-                			}
-                		?>
-                		<div class="col-md-3">
-											<input type="checkbox" name="price_type[]" value="<?php echo $pType; ?>" 
-											id="<?php echo $pType; ?>" <?php echo $checked; ?> >
-											<label for="<?php echo $pType; ?>" style="padding-left: 5px;"><?php echo $pType; ?></label>
-										</div>									
-                	<?php endforeach;?>    
-                </div>
-              <?php endif;?>
+							<label class="switch pull-right">
+								<?php
+									$checked = $data['main_service']['price_type'] == 1 ? 'checked' : '';
+								?>
+								<input type="checkbox" name="price_type" id="price_type" <?php echo $checked; ?> >
+								<span class="switch-slider round"></span>						  
+							</label>
 						</div>
 						
 						<div class="form-group">

@@ -2329,7 +2329,7 @@ public function exists_refferals() {
 			$data['cities'] = $this->search_model->getJobCities();
 			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
 			$sesData = $this->session->userdata('store_service1');
-			$data['price_per_type'] = [];
+			$data['price_per_type'] = ['Hour','Service','Meter','Square Meter','Kilogram','Mile','Consultation'];
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$sesData['category']]);
 			$data['ex_service'] = $this->common_model->get_all_data('extra_service',['category'=>$sesData['category']]);
 			$data['service_category'] = $this->common_model->GetSingleData('service_category',['cat_id'=>$sesData['category']]);
@@ -2664,7 +2664,7 @@ public function exists_refferals() {
 
 			$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$serviceData['category']]);
 
-			$data['price_per_type'] = !empty($service_category['price_type']) ? explode(',', $service_category['price_type']) : [];
+			$data['price_per_type'] = ['Hour','Service','Meter','Square Meter','Kilogram','Mile','Consultation'];
 
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
 
@@ -2986,18 +2986,12 @@ public function exists_refferals() {
 
 	public function getPriceType(){
 		$id = $this->input->post('cat_id');
-
 		$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$id]);
-
-		$price_per_type = '';
+		$price_type = 0;
 		if(!empty($service_category)){
-			$pType = !empty($service_category['price_type']) ? explode(',', $service_category['price_type']) : [];
-			$price_per_type .= '<option value="">Please Select</option>';
-			foreach($pType as $list){
-				$price_per_type .= '<option value="'.$list.'">'.$list.'</option>';
-			}
+			$price_type = !empty($service_category['price_type']) && $service_category['price_type'] == 1 ? 1 : 0;
 		}
-		echo $price_per_type;
+		echo $price_type;
 	}
 
 	public function setServiceData($data) {

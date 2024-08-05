@@ -3428,9 +3428,8 @@ class Common_model extends CI_Model
 	public function get_service_sub_category($id){
 		$query = $this->db->query("
 		    SELECT sc.*, c.cat_id, c.cat_name
-		    FROM service_category sc
-		    LEFT JOIN category c ON sc.sub_category = c.cat_id
-		    WHERE sc.main_category = ?
+		    FROM service_category c
+		    WHERE sc.cat_id = ?
 		    ORDER BY sc.main_category ASC
 		    LIMIT 500
 		", array($id));

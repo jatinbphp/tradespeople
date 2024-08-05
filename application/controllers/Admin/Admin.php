@@ -3151,7 +3151,7 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('main_category', 'Main Category', 'required');
         $this->form_validation->set_rules('sub_category', 'Sub Category', 'required');
         $this->form_validation->set_rules('service_type_category', 'Service Type', 'required');
-        $this->form_validation->set_rules('price_type[]', 'Price Type', 'required');        
+        // $this->form_validation->set_rules('price_type', 'Price Type', 'required');        
         $this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']);        
         
         if ($this->form_validation->run() == false) {
@@ -3163,9 +3163,10 @@ class Admin extends CI_Controller
                 $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
                 $json['status'] = 2;
             } else {
-                $price_type = '';
+                $price_type = 0;
                 if(!empty($this->input->post('price_type'))){
-                    $price_type = implode(',',$this->input->post('price_type'));
+                    //$price_type = implode(',',$this->input->post('price_type'));
+                    $price_type = 1;
                 }
 
                 $insert_arr = [
@@ -3283,7 +3284,7 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('main_category', 'Main Category', 'required');
         $this->form_validation->set_rules('sub_category', 'Sub Category', 'required');
         $this->form_validation->set_rules('service_type_category', 'Service Type', 'required');
-        $this->form_validation->set_rules('price_type[]', 'Price Type', 'required');        
+        //$this->form_validation->set_rules('price_type[]', 'Price Type', 'required');        
         
         if ($categories) {
             $this->form_validation->set_rules('slug1', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']);
@@ -3299,9 +3300,10 @@ class Admin extends CI_Controller
                 $json['msg']    = '<div class="alert alert-danger">' . $this->upload->display_errors() . '<div>';
                 $this->session->set_flashdata('error', $this->upload->display_errors());
             } else {
-                $price_type = '';
+                $price_type = 0;
                 if(!empty($this->input->post('price_type'))){
-                    $price_type = implode(',',$this->input->post('price_type'));
+                    //$price_type = implode(',',$this->input->post('price_type'));
+                    $price_type = 1;
                 }
 
                 $update_array = [
@@ -3385,41 +3387,79 @@ class Admin extends CI_Controller
                     }
 
                     $attribute = $this->input->post('attributes');
+                    $attribute_ids = $this->input->post('attribute_ids');
                     if(!empty($attribute)){
 
                         $old_attribute = $this->Common_model->get_all_data('service_attribute', ['service_cat_id' => $result]);
+                        $old_attributes_map = [];
                         if(!empty($old_attribute)){
                             foreach($old_attribute as $oa){
-                                $this->Common_model->delete(['id' => $oa['id']], 'service_attribute');
+                                $old_attributes_map[$oa['id']] = $oa['attribute_name'];
                             }
                         }
 
                         foreach ($attribute as $key => $value) {
-                            $insert_attribute = [
-                                'service_cat_id' => $result,
-                                'attribute_name' => $value,
-                            ];
-                            $this->My_model->insert_entry('service_attribute', $insert_attribute);
+                            $attribute_id = isset($attribute_ids[$key]) ? $attribute_ids[$key] : false;
+                            if ($attribute_id && isset($old_attributes_map[$attribute_id])) {
+                                // Update existing attribute
+                                $update_data = ['attribute_name' => $value];
+                                $this->Common_model->update('service_attribute', ['id' => $attribute_id], $update_data);
+
+                                // Remove from map after updating
+                                unset($old_attributes_map[$attribute_id]);
+                            } else {
+                                // Insert new attribute
+                                $insert_data = [
+                                    'service_cat_id' => $result,
+                                    'attribute_name' => $value,
+                                ];
+                                $this->My_model->insert_entry('service_attribute', $insert_data);
+                            }
+                        }
+
+                        foreach ($old_attributes_map as $id => $name) {
+                            $this->Common_model->delete(['id' => $id], 'service_attribute');
                         }
                     }
 
                     $exService = $this->input->post('exService');
                     if(!empty($exService['name'])){
                         $old_exs = $this->Common_model->get_all_data('extra_service', ['category' => $result]);
+                        $old_exs_map = [];
                         if(!empty($old_exs)){
                             foreach($old_exs as $oexs){
-                                $this->Common_model->delete(['id' => $oexs['id']], 'extra_service');
+                                $old_exs_map[$oexs['id']] = $oexs['ex_service_name'];
                             }
                         }
 
                         foreach ($exService['name'] as $key => $value) {
-                            $insert_exService = [
-                                'category' => $result,
-                                'ex_service_name' => $value,
-                                'price' => $exService['price'][$key],
-                                'days' => $exService['days'][$key],
-                            ];
-                            $this->My_model->insert_entry('extra_service', $insert_exService);
+                            $ex_service_id = isset($exService['id'][$key]) ? $exService['id'][$key] : false;
+                            
+                            if ($ex_service_id && isset($old_exs_map[$ex_service_id])) {
+                                // Update existing extra service
+                                $update_data = [
+                                    'ex_service_name' => $value,
+                                    'price' => $exService['price'][$key],
+                                    'days' => $exService['days'][$key],
+                                ];
+                                $this->Common_model->update('extra_service', ['id' => $ex_service_id], $update_data);
+
+                                // Remove from map after updating
+                                unset($old_exs_map[$ex_service_id]);
+                            } else {
+                                // Insert new extra service
+                                $insert_data = [
+                                    'category' => $result,
+                                    'ex_service_name' => $value,
+                                    'price' => $exService['price'][$key],
+                                    'days' => $exService['days'][$key],
+                                ];
+                                $this->My_model->insert_entry('extra_service', $insert_data);
+                            }
+                        }
+
+                        foreach ($old_exs_map as $id => $data) {
+                            $this->Common_model->delete(['id' => $id], 'extra_service');
                         }
                     }
 
@@ -3508,6 +3548,7 @@ class Admin extends CI_Controller
                 foreach($attributes as $att){
                     $style = $m > 1 ? 'margin-top:10px;' : '';
                     $attributeList .= '<div class="attributeList" id="attribute_'.$m.'" style="'.$style.'">
+                                        <input type="hidden" name="attribute_ids[]" value="'.$att['id'].'">
                                         <input type="text" name="attributes[]" placeholder="Enter attribute name" value="'.$att['attribute_name'].'" class="form-control" style="width: 92%; float: left;">
                                         <button class="btn btn-danger removeAttribute" data-id="'.$m.'" type="button" style="margin-left: 8px;">
                                             <i class="fa fa-trash"></i>
@@ -3526,6 +3567,7 @@ class Admin extends CI_Controller
                 foreach($exServices as $exs){
                     $style = $n > 1 ? 'margin-top:10px;' : '';
                     $exServicesList .= '<div class="row exServiceList" id="exService_'.$n.'" style="'.$style.' margin-right:0">
+                                    <input type="hidden" name="exService[id]['.$n.']" value="'.$exs['id'].'">
                                     <div class="col-md-5">
                                         <input type="text" name="exService[name]['.$n.']" placeholder="Enter extra service name" class="form-control" value="'.$exs['ex_service_name'].'">
                                     </div>

@@ -2444,32 +2444,16 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	}
 
 	public function categoryDetail($slug='', $slug2='', $slug3=''){
-		$joins = [
-	    [
-        'table' => 'category c',
-        'condition' => 'sc.main_category = c.cat_id',
-        'type' => 'LEFT'
-	    ]
-		];
-
 		if($slug2 == "" && $slug3 == ""){
-			$conditions = ['sc.slug' => $slug, 'sc.is_activate' => 1];
-
-			$category = $this->common_model->getFirstRecord('service_category sc', $conditions, $joins, 'sc.*, c.cat_id, c.cat_name');
+			$category = $this->common_model->GetSingleData('service_category',['slug'=>$slug]);
 			$step = 1;
 		}
 		if($slug2 != "" && $slug3 == ""){
-			$conditions = ['sc.slug' => $slug2, 'sc.is_activate' => 1];
-
-			$category = $this->common_model->getFirstRecord('service_category sc', $conditions, $joins, 'sc.*, c.cat_id, c.cat_name');
-
+			$category = $this->common_model->GetSingleData('service_category',['slug'=>$slug2]);
 			$step = 2;
 		}
 		if($slug3 != ""){
-			$conditions = ['sc.slug' => $slug3, 'sc.is_activate' => 1];
-
-			$category = $this->common_model->getFirstRecord('service_category sc', $conditions, $joins, 'sc.*, c.cat_id, c.cat_name');
-			
+			$category = $this->common_model->GetSingleData('service_category',['slug'=>$slug3]);
 			$step = 3;
 		}
 
@@ -2508,12 +2492,12 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 		$data['categories_data']=$this->getHirarchicalCategoryData();
 		$data['faqs'] = $this->common_model->get_faqs('category_faqs',($category['cat_id'] ?? 0));
-		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat('category',($category['cat_id'] ?? 0));
+		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat('service_category',($category['cat_id'] ?? 0));
 		$this->load->view('site/home_category_details',$data);
 	}
 
 	public function getHirarchicalCategoryData(){
-		$allCategory = $this->common_model->get_service_main_category();
+		$allCategory = $this->common_model->get_parent_category('service_category');
 		$hirarchicalData = [];
 		foreach($allCategory as $data){
 			$categoryId = $data['cat_id'] ?? 0;

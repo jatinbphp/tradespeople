@@ -10576,6 +10576,9 @@ button.switch-month:hover {
 
 .sidebar-tabs {
     margin: 15px 0 30px 0;
+    border: 1px solid #e1e1e1;
+    padding: 10px;
+    border-radius: 10px;
 }
 .sidebar-tabs .nav {
     margin-bottom: 15px;
