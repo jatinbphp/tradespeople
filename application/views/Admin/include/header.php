@@ -27,7 +27,8 @@
 
 
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="shortcut icon" href="img/favi.png">
+  <link rel="stylesheet" href="<?php echo base_url(); ?>asset/admin/dist/css/select2.min.css">
+  <link rel="shortcut icon" href="img/favi.png">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -42,8 +43,7 @@
   <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.min.js"></script>
   <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js">  
-</script>
-
+  </script>
   <script>
   $(function(){
     $("#boottable").DataTable({

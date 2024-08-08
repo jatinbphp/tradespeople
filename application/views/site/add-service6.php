@@ -43,16 +43,29 @@
 				<span style="font-size: 12px; color: #b0c0d3;">
 					Time you will not be available?
 				</span>
-				<div>
-					<select class="form-control input-md" name="time_slot" id="timeSlot">
-						<option value="">Specify your unavailable time range</option>
-						<?php for ($hour = 0; $hour <= 23; $hour++) {
-							$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
-							$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
-							echo "<option " . (isset($serviceData['service_availiblity']['time_slot']) && $serviceData['service_availiblity']['time_slot'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
-
-						}?>
-					</select>
+				<div class="row">
+					<div class="col-md-6">
+						<label class="control-label" for="timeSlot">From</label>
+						<select class="form-control input-md" name="time_slot" id="timeSlot">
+							<option value="">Specify your unavailable time range</option>
+							<?php for ($hour = 0; $hour <= 23; $hour++) {
+								$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
+								$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
+								echo "<option " . (isset($serviceData['service_availiblity']['time_slot']) && $serviceData['service_availiblity']['time_slot'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+							}?>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label class="control-label" for="timeSlotTo">To</label>
+						<select class="form-control input-md" name="time_slot_2" id="timeSlotTo">
+							<option value="">Specify your unavailable time range</option>
+							<?php for ($hour = 0; $hour <= 23; $hour++) {
+								$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
+								$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
+								echo "<option " . (isset($serviceData['service_availiblity']['time_slot_2']) && $serviceData['service_availiblity']['time_slot_2'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+							}?>
+						</select>
+					</div>
 				</div>
 				<div style="padding: 10px 0;">
 					<span>
@@ -153,6 +166,7 @@
     
 		<?php if(isset($serviceData['service_availiblity']) && $serviceData['service_availiblity'] && $type != 'add'): ?>
 			$('#timeSlot').trigger('change');
+			$('#timeSlotTo').trigger('change');
 		<?php endif; ?>
 		<?php if(isset($serviceData['service_availiblity']['weekend_available']) && $serviceData['service_availiblity']['weekend_available'] == 'yes' && $type != 'add'): ?>
 			$('#weekendYes').trigger('change');
@@ -162,7 +176,11 @@
 			$('#weekendNo').trigger('change');
 		<?php endif; ?>
     });
-	$('#timeSlot').on('change', function() {
+		$('#timeSlot').on('change', function() {
+        updateAvailabilityMessage(); // Call formatSentence when time slot changes
+    });
+
+    $('#timeSlotTo').on('change', function() {
         updateAvailabilityMessage(); // Call formatSentence when time slot changes
     });
 </script>

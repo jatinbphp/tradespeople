@@ -51,6 +51,7 @@
                                             <table id="boottable" class="table table-bordered table-striped">
                                                 <thead>
                                                     <tr>
+                                                        <th>Image/Video</th>                     
                                                         <th>Service Name</th>                     
                                                         <th>Order Date</th>                     
                                                         <th>Total</th> 
@@ -102,13 +103,16 @@ $(function () {
             { "data": "service_name", "render": function(data, type, row) {
                if (row.service_name.file) {
                     if (row.service_name.file.endsWith('.mp4')) {
-                        return '<video class="mr-4" width="100" controls autoplay><source src="'+site_url+'img/services/'+row.service_name.file+'" type="video/mp4">Your browser does not support the video tag.</video><span>'+row.service_name.service_name+'</span>';
+                        return '<video class="mr-4" width="100" controls autoplay><source src="'+site_url+'img/services/'+row.service_name.file+'" type="video/mp4">Your browser does not support the video tag.</video>';
                     } else {
-                        return '<img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="50"><span>'+row.service_name.service_name+'</span>';
+                        return '<img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="50">';
                     }
                 } else {
-                    return '<img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50"><span>'+row.service_name.service_name+'</span>';
+                    return '<img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
                 }
+            }},
+            { "data": "service_name", "render": function(data, type, row) {
+                return row.service_name.service_name;                    
             }},
             { "data": "created_at"},
             { "data": "total_price"},

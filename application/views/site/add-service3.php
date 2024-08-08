@@ -16,8 +16,8 @@
 								foreach($ex_service as $key => $exs): 
 									$matchedItem = $this->common_model->findMatchingItem($exs, $serviceData['trades_ex_service']);
 								    $isChecked = $matchedItem ? 'checked' : '';
-								    $price = $matchedItem['price'] ?? '';
-								    $additional_working_days = $matchedItem['additional_working_days'] ?? '';
+								    $price = $matchedItem['price'] ?? $exs['price'];
+								    $additional_working_days = $matchedItem['additional_working_days'] ?? $exs['days'];
 							?>
 								<div class="row" id="newExS<?php echo $i; ?>" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">
 
@@ -73,7 +73,6 @@
 <script>
 	var totalnewExService =  <?php echo ($i ?? 0); ?>;
 	$('.addNewExService').on('click', function(){
-		totalnewExService++;
 		var exservicehtml = '<div class="row" id="newExS'+totalnewExService+'" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">'+
 					'<input type="hidden" name="newExS['+totalnewExService+'][id]" value="0">'+
 					'<input type="hidden" name="newExS['+totalnewExService+'][category]" value="<?php echo $serviceData['category']?>">'+
@@ -97,7 +96,7 @@
 						'<div class="form-group">'+
 							'<label class="control-label" for="additional_working_days'+totalnewExService+'">Additional Working Days</label>'+
 							'<div class="">'+
-								'<input type="number" class="form-control input-md" name="newExS['+totalnewExService+'][price]" step="1" id="additional_working_days'+totalnewExService+'" placeholder="Additional Working Days" rows="3" required>'+
+								'<input type="number" class="form-control input-md" name="newExS['+totalnewExService+'][additional_working_days]" step="1" id="additional_working_days'+totalnewExService+'" placeholder="Additional Working Days" rows="3" required>'+
 							'</div>'+
 						'</div>'+
 					'</div>'+
@@ -106,10 +105,8 @@
 						'<span id="remove'+totalnewExService+'" class="btn btn-sm btn-danger pull-right removeExService" data-id="'+totalnewExService+'"><i class="fa fa-trash"></i></span></label>'+
 					'</div>'+
 				'</div>';
-
-				console.log(exservicehtml);
-
 		$('#ex-service-div').append(exservicehtml);
+		totalnewExService++;
 		updateExsIndices();
 	});	
 
@@ -117,7 +114,6 @@
 	$('#ex-service-div').on('click', '.removeExService', function (event) {
 		event.preventDefault();
 		var fId = $(this).attr('data-id');
-		console.log(fId);
 		$('#newExS'+fId).remove();
 		totalnewExService--;
 		updateExsIndices();

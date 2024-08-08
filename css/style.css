@@ -10640,3 +10640,13 @@ button.switch-month:hover {
     top: 10px;
     z-index: 3;
 }
+
+#subcategories, #subcategories_1{
+    border: 2px solid #b0c0d3;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#subcategories_1 input{
+    margin-right:4px;
+}

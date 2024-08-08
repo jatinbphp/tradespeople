@@ -2197,11 +2197,20 @@ class Common_model extends CI_Model
 
 	public function get_sub_category($table, $id, $is_active = 0)
 	{
+		$idType = gettype($id);
+
 		$this->db->where('is_delete', 0);
-		$this->db->where('cat_parent', $id);
+		
+		if($idType != 'array'){
+			$this->db->where('cat_parent', $id);	
+		}else{
+			$this->db->where_in('cat_parent', $id);
+		}
+		
 		if($is_active > 0){
 			$this->db->where('is_activate', 1);
 		}
+
 		$this->db->order_by("cat_id", "asc");
 		$this->db->select(['cat_id','cat_name','slug']);
 		$query = $this->db->get($table);
@@ -2733,7 +2742,7 @@ class Common_model extends CI_Model
 		$query = $this->db->query("SELECT * FROM $table where nt_userId=$userid order by nt_id desc limit 500");
 		return $query->result_array();
 	}
-	function get_my_service($table, $userid, $status)
+	function get_my_service($table, $userid, $status = 'all')
 	{
 		$statusWhere = '';
 		if(!empty($status) && $status != 'all'){
@@ -2751,15 +2760,20 @@ class Common_model extends CI_Model
 
 		return $query->result_array();
 	}
-	function get_all_service($table, $limit)
+	function get_all_service($table, $limit, $search = '')
 	{
+		$where_clause = "WHERE ms.status = 'active'";
+		if (!empty($search)) {
+		    $where_clause .= " AND (ms.service_name LIKE '%$search%' OR c.cat_name LIKE '%$search%' OR u.trading_name LIKE '%$search%')";
+		}
+
 		if($limit == 0){
 			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
-                           WHERE ms.status = 'active'
+                            $where_clause
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
                            LIMIT 500");
@@ -2769,7 +2783,7 @@ class Common_model extends CI_Model
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
-                           WHERE ms.status = 'active'
+                            $where_clause
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
                            LIMIT ".$limit);
@@ -2843,12 +2857,20 @@ class Common_model extends CI_Model
 		$this->db->join('users u', 'ms.user_id = u.id', 'left');
 		$this->db->join('service_rating srt', 'ms.id = srt.service_id', 'left');
 		$this->db->where('ms.status', 'active');
-		if($step == 1){
+		/*if($step == 1){
 			$this->db->where('ms.category', $categoryId);
 		}elseif($step == 2){
 			$this->db->where('ms.sub_category', $categoryId);
 		}else{
 			$this->db->where('ms.service_type', $categoryId);
+		}*/
+
+		if($step == 1){
+		    $this->db->where('ms.category', $categoryId);
+		}elseif($step == 2){
+		    $this->db->where('FIND_IN_SET('.$this->db->escape($categoryId).', ms.sub_category) > 0');
+		}else{
+		    $this->db->where('FIND_IN_SET('.$this->db->escape($categoryId).', ms.service_type) > 0');
 		}	
 
 		if(!empty($sIds)){

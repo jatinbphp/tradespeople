@@ -96,8 +96,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 						<div class="table-responsive">
             <table id="memListTable" class="table table-bordered table-striped">
               <thead>
-                <tr>
-                  
+                <tr>                  
 									<th>S.No</th> 
 									<th>Category</th>
 									<th>Slug</th>
@@ -105,8 +104,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 								</tr>
               </thead>
 							<tfoot>
-                <tr>
-                  
+                <tr>                  
 									<th>S.No</th> 
 									<th>Category</th>
 									<th>Slug</th>
@@ -201,10 +199,18 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 				if(data.status==1){
 					window.location.href = site_url+'service_category';
 				} else {
-	        window.location.href="#msg";
-					$('.msg').html(resp.msg);
+	        //window.location.href="#msg";
+					$('.msg').html(data.msg);
 					$('.signup_btn').html('Save');
 					$('.signup_btn').prop('disabled',false);
+
+					$('.msg').attr('tabindex', '-1');
+
+          $('html, body').animate({
+          	scrollTop: $('.msg').offset().top - 20  // Add offset if needed
+          }, 500, function() {
+            $('.msg').focus();
+          });
 				}
 			}
 		});
@@ -233,7 +239,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
             if (callback) callback(res);
         }
     });
-}
+	}
 
 	function show_at_job_search(status,id){
 		
@@ -305,9 +311,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 		});
 		return false;
 	}
-</script>
 
-<script>
 	function myfunction(no){
 		tinymce.init({
 			selector: '.textarea',
@@ -325,31 +329,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 			}
 		});
 		openCategoryModel(no);
-	}
-</script>	
-
-<script>
-	$(document).ready(function(){
-	  $('#memListTable').DataTable({
-	    // Processing indicator
-	    "processing": true,
-	    // DataTables server-side processing mode
-	    "serverSide": true,
-	    "stateSave": true,
-	    // Initial no order.
-	    "order": [],
-	    // Load data from an Ajax source
-	    "ajax": {
-	        "url": site_url+"Admin/Admin/getServiceCategoryLists",
-	        "type": "POST"
-	    },
-	    //Set column definition initialisation properties
-	    "columnDefs": [{ 
-	        "targets": [0],
-	        "orderable": false
-	    }]
-	  });
-	});
+	}	
 
 	$('.title_ft').hide();
 	$('.utitle_ft').hide();
@@ -465,42 +445,48 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
     }, 3000);
   };
 
-  $('#category').on('change', function(){
-  	var cat_id = $(this).val();
+  function getSubCategory(cat_id){  	
+  	var ser_cat_id = $('#service_cat_id').val();
   	$.ajax({
   		url:site_url+'Admin/Admin/getSubCategory',
 			type:"POST",
-			data:{'cat_id':cat_id},
+			data:{'cat_id':cat_id, 'ser_cat_id':ser_cat_id},
 			success:function(data){
 				if(data != ""){
 					$('#sub_category').empty().html(data);
 					$('#service_type').empty();
+					if(cat_id > 0){
+						var selectedValues = $('#sub_category').val();
+			      getServiceType(selectedValues);			      
+					}
 				}else{
 					$('#sub_category').empty();
-					$('#service_type').empty();
+					$('#service_type').empty();					
 				}
 			}
 		});
-  });
+  }
 
-  $('#sub_category').on('change', function(){
-  	var cat_id = $(this).val();
-  	$.ajax({
+	function getServiceType(cat_ids){
+		var ser_cat_id = $('#service_cat_id').val();
+		$.ajax({
   		url:site_url+'Admin/Admin/getSubCategory',
 			type:"POST",
-			data:{'cat_id':cat_id},
+			data:{'cat_id':cat_ids, 'ser_cat_id':ser_cat_id, 'is_service_type':1},
 			success:function(data){
-				if(data != ""){
-					$('#service_type').empty().html(data);
-				}else{
-					$('#service_type').empty();
-				}
+				if (data != "") {
+          $('#service_type_category').empty(); // Clear the existing options
+          $('#service_type_category').append(data); // Append the new options
+        } else {
+          $('#service_type_category').empty(); // Clear if no data
+        }
 			}
 		});
-  });
+  };
 
-  var totalAttribute = $('.attributeList').length;
-  var totalExService = $('.exServiceList').length;
+  var totalAttribute = 0;
+  var totalExService = 0;
+  var totalPriceUnit = 0;
 
   function openCategoryModel(catId = 0){
   	$.ajax({
@@ -510,10 +496,24 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 			success:function(response){
 				$('#modal-div').html(response.html);
 				$('#service_category_modal').modal('show');
-
+				$('.select2').select2();
 				$('#service_category_modal').on('shown.bs.modal', function() {
-            initializeTagsInput();
+					$('#main_category').select2();
+					$('#sub_category').select2();
+					$('#service_type_category').select2();
+
+					totalAttribute = $('.attributeList').length;
+				  totalExService = $('.exServiceList').length;
+				  totalPriceUnit = $('.priceUnitList').length;
+
+					if(catId > 0){
+						$('.modal-title').text('Edit Service Category');
+						$('#main_category').trigger('change');		
+					}else{
+						$('.modal-title').text('Add Service Category');
+					}
         });
+
 			},
 	    error: function(xhr, status, error) {
 	        console.error('AJAX Error: ' + status, error);
@@ -521,20 +521,20 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 		});
   }
 
-  function initializeTagsInput() {
-    $('#service_type_category').tagsinput({
-        minTags: 5
-    });
+  // function initializeTagsInput() {
+  //   $('#service_type_category').tagsinput({
+  //       minTags: 5
+  //   });
 
-    $('#service_type_category').on('beforeItemAdd', function(event) {
-        var tag = event.item;
-        console.log(tag);
-        var regex = /^[a-zA-Z0-9\s]+$/;
-        if (!regex.test(tag)) {
-            event.cancel = true; // Cancel adding the tag
-        }
-    });
-	}
+  //   $('#service_type_category').on('beforeItemAdd', function(event) {
+  //       var tag = event.item;
+  //       console.log(tag);
+  //       var regex = /^[a-zA-Z0-9\s]+$/;
+  //       if (!regex.test(tag)) {
+  //           event.cancel = true; // Cancel adding the tag
+  //       }
+  //   });
+	// }
 
   function addAttribute(){
   	var style= '';
@@ -604,6 +604,76 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
   	}else{
   		totalAttribute = $('.exServiceList').length;	  		
   	}
+  }  
+
+  function addPriceUnit(){
+  	var style= '';
+  	console.log(totalPriceUnit);
+  	if(totalPriceUnit > 0){
+  		style="margin-top:10px;";
+  	}
+  	var html = '<div class="priceUnitList" id="priceUnit_'+totalPriceUnit+'" style="'+style+'">'+
+									'<input type="text" name="priceUnit[]" placeholder="Enter price unit name" class="form-control" style="width: 92%; float: left;">'+
+									'<button class="btn btn-danger removePriceUnit" data-id="'+totalPriceUnit+'" type="button" style="margin-left: 8px;">'+
+										'<i class="fa fa-trash"></i>'+
+									'</button>'+
+								'</div>';
+
+		$('#priceUnitList').append(html);
+		totalPriceUnit++;
   }
+
+  $(document).on('click', '.removePriceUnit', function() {
+    var id = $(this).data('id');
+    removePriceUnit(id);
+	});
+
+  function removePriceUnit(attId) {
+  	$('#priceUnit_'+attId).remove();
+  	if(totalPriceUnit > 0){
+  		totalPriceUnit--;	
+  	}else{
+  		totalPriceUnit = $('.priceUnitList').length;	  		
+  	}
+  }
+
+  $(document).ready(function(){
+	  $('#memListTable').DataTable({
+	    "processing": true,
+	    "serverSide": true,
+	    "stateSave": true,
+	    "order": [],
+	    "ajax": {
+	        "url": site_url+"Admin/Admin/getServiceCategoryLists",
+	        "type": "POST"
+	    },
+	    "columnDefs": [{ 
+	        "targets": [0],
+	        "orderable": false
+	    }] 
+	  });	  
+
+	  $(document).on('change', '#sub_category', function() {
+        var selectedValues = $(this).val();
+        getServiceType(selectedValues);
+    });
+
+    function toggleDiv() {
+  	  if ($('#price_type').is(':checked')) {
+  	  	$('#priceUnitListDiv').removeClass('hide');
+      } else {
+        $('#priceUnitListDiv').addClass('hide');
+      }
+    }
+
+    $(document).on('change', '#price_type', function() {
+    	toggleDiv();
+    });
+
+    $('#service_category_modal').on('shown.bs.modal', function() {
+			toggleDiv();
+			$('#main_category').trigger('change');
+    });
+	});
 </script>	
 <?php include_once('include/footer.php'); ?>

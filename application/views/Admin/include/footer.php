@@ -9,7 +9,13 @@
 <!-- textaria editer -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.7.13/tinymce.min.js"></script> -->
 
+<script src="<?php echo base_url(); ?>asset/admin/dist/js/select2.full.min.js"></script>  
 
+<script>
+    $(function(){
+        $('.select2').select2();    
+    });
+</script>
 
 <script type="text/javascript">
 function mark_read_in_admin(table,where){

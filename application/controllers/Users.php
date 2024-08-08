@@ -189,7 +189,7 @@ class Users extends CI_Controller
 		echo json_encode($json);
 	}
 
-  public function get_home_email_by_job_id() {
+  	public function get_home_email_by_job_id() {
 		$id = $this->input->post('id');
 		$data = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$id),array('title','job_id','userid','(select f_name from users where users.id = tbl_jobs.userid) as f_name','(select l_name from users where users.id = tbl_jobs.userid) as l_name','(select email from users where users.id = tbl_jobs.userid) as email'));
 		
@@ -1137,7 +1137,7 @@ class Users extends CI_Controller
 			}
 		}
 	} 
-public function exists_refferals() {
+	public function exists_refferals() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
 		} else {
@@ -1246,16 +1246,16 @@ public function exists_refferals() {
 		}
 	}
 
-  public function edit_profile(){
-    if($this->session->userdata('user_id')){
-      $data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
-      $data['portfolio']=$this->common_model->get_education('user_portfolio',$this->session->userdata('user_id'));
-	  	$data['country']=$this->common_model->newgetRows('tbl_region',array('is_delete'=>0));
-      $this->load->view('site/edit_profile',$data);
-    }else{
-      redirect('login');
-    }
-  }
+	public function edit_profile(){
+	    if($this->session->userdata('user_id')){
+	      $data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
+	      $data['portfolio']=$this->common_model->get_education('user_portfolio',$this->session->userdata('user_id'));
+		  	$data['country']=$this->common_model->newgetRows('tbl_region',array('is_delete'=>0));
+	      $this->load->view('site/edit_profile',$data);
+	    }else{
+	      redirect('login');
+	    }
+	}
 
 	public function update_profile(){
 		$u_type = $this->session->userdata('type');
@@ -1280,7 +1280,7 @@ public function exists_refferals() {
 
 		$this->form_validation->set_rules('locality','City','required');
 		$this->form_validation->set_rules('e_address','Address','required');
-// print_r($_POST); exit;
+		// print_r($_POST); exit;
 
 		if(count($user_profile)>=0 && $userprofile['id']!=$user_id) {
 	 		$this->form_validation->set_rules('phone_no','Phone number','required|integer|is_unique[users.phone_no]',array('is_unique'=>'This phone number is already registered'));
@@ -2293,7 +2293,7 @@ public function exists_refferals() {
 		if($this->session->userdata('user_id')) {
 			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),$status,0);
 			$data['totalStatusOrder'] = $this->common_model->getTotalStatusOrder($this->session->userdata('user_id'));
-			$data['statusArr'] = ['placed', 'completed', 'cancelled', 'all'];
+			$data['statusArr'] = ['placed', 'active', 'completed', 'cancelled', 'all'];
 			$this->load->view('site/my_orders',$data);
 		} else {
 			redirect('login');
@@ -2311,7 +2311,7 @@ public function exists_refferals() {
 	        	$date = new DateTime($order['created_at']);
 
 	          	$data[] = [
-		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'] ,'service_name'=>$order['service_name']),
+		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name']),
 		            'created_at' => $date->format('F j, Y'),
 		            'total_price' => '£'.number_format($order['total_price'],2),
 		            'status' => ucfirst($order['status'])
@@ -2329,10 +2329,21 @@ public function exists_refferals() {
 			$data['cities'] = $this->search_model->getJobCities();
 			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
 			$sesData = $this->session->userdata('store_service1');
-			$data['price_per_type'] = ['Hour','Service','Meter','Square Meter','Kilogram','Mile','Consultation'];
+
+			$sub_category = !empty($sesData['sub_category']) ? explode(',',$sesData['sub_category']) : [];
+			$service_type = !empty($sesData['service_type']) ? explode(',',$sesData['service_type']) : [];
+
+			$this->session->set_userdata('sub_category_data', $sub_category);
+			$this->session->set_userdata('service_type_data', $service_type);
+
+			$data['price_per_type'] = !empty($data['category']['price_type_list']) ? explode(',', $data['category']['price_type_list']) : [];
+
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$sesData['category']]);
 			$data['ex_service'] = $this->common_model->get_all_data('extra_service',['category'=>$sesData['category']]);
 			$data['service_category'] = $this->common_model->GetSingleData('service_category',['cat_id'=>$sesData['category']]);
+
+			$data['price_per_type'] = !empty($data['service_category']['price_type_list']) ? explode(',', $data['service_category']['price_type_list']) : [];
+
       		$this->load->view('site/add-service',$data);
     	} 
 	}
@@ -2384,10 +2395,9 @@ public function exists_refferals() {
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
-		// $this->form_validation->set_rules('price','Price','required|numeric');
-		// $this->form_validation->set_rules('delivery_in_days','Delivery in days','required|numeric');
 		$this->form_validation->set_rules('category','Category','required');
-		$this->form_validation->set_rules('sub_category','Sub Category','required');
+		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
+		$this->form_validation->set_rules('service_type[]','Sub Category','required');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2405,20 +2415,22 @@ public function exists_refferals() {
 				$newImg = $profile;
 			} 
 		}
+
+		$subCat = !empty($this->input->post('sub_category')) ? implode(',', $this->input->post('sub_category')) : '';
+
+		$sType = !empty($this->input->post('service_type')) ? implode(',', $this->input->post('service_type')) : '';
+		
 		$insert['user_id'] = $this->session->userdata('user_id');
 		$insert['service_name'] = $this->input->post('service_name');
 		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 		$insert['description'] = trim($this->input->post('description'));
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
 		$insert['location'] = trim($this->input->post('location'));
-		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
-		//$insert['price'] = trim($this->input->post('price'));
 		$insert['image'] = $newImg;
 		$insert['status'] = 'draft';
-		//$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
 		$insert['category'] = $this->input->post('category');
-		$insert['sub_category'] = $this->input->post('sub_category');
-		$insert['service_type'] = $this->input->post('service_type');
+		$insert['sub_category'] = $subCat;
+		$insert['service_type'] = $sType;
 		if(!empty($this->input->post('plugins'))){
 			$insert['plugins'] = implode(',', $this->input->post('plugins'));
 		} else {
@@ -2571,6 +2583,7 @@ public function exists_refferals() {
 		$insert['available_mon_fri'] = $this->input->post('available_mon_fri');
 		$insert['selected_dates'] = $this->input->post('selected_dates');
 		$insert['time_slot'] = $this->input->post('time_slot');
+		$insert['time_slot_2'] = $this->input->post('time_slot_2');
 		$insert['weekend_available'] = $this->input->post('weekend_available');
 		$insert['not_available_days'] = $this->input->post('not_available_days');
 		$run = $this->common_model->insert('service_availability', $insert);
@@ -2611,7 +2624,9 @@ public function exists_refferals() {
 			$insert['package_data'] = json_encode($this->input->post('package'));
 		}else{
 			$insert['package_data'] = '';
-		}		
+		}
+
+		$insert['price_per_type'] = trim($this->input->post('price_per_type'));	
 
 		$this->session->set_userdata('store_service7',$insert);
 		$this->setServiceData($insert);		
@@ -2662,9 +2677,7 @@ public function exists_refferals() {
 			}
 			$data['id'] = $id;			
 
-			$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$serviceData['category']]);
-
-			$data['price_per_type'] = ['Hour','Service','Meter','Square Meter','Kilogram','Mile','Consultation'];
+			$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$serviceData['category']]);			
 
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
 
@@ -2672,9 +2685,19 @@ public function exists_refferals() {
 
 			$serviceData1 = $this->session->userdata('edit_service_data');
 
+			$updatedCat = $this->common_model->GetSingleData('service_category',['cat_id'=>$serviceData1['category']]);
+
+			$data['price_per_type'] = !empty($updatedCat['price_type_list']) ? explode(',', $updatedCat['price_type_list']) : [];
+
 			$data['package_data'] = !empty($serviceData['package_data']) ? json_decode($serviceData['package_data']) : [];
 
 			$data['service_category'] = $service_category;
+
+			$sub_category = !empty($serviceData1['sub_category']) ? explode(',',$serviceData1['sub_category']) : [];
+			$service_type = !empty($serviceData1['service_type']) ? explode(',',$serviceData1['service_type']) : [];
+
+			$this->session->set_userdata('sub_category_data', $sub_category);
+			$this->session->set_userdata('service_type_data', $service_type);
 
 			$this->load->view('site/edit-service',$data);
     	} 
@@ -2685,13 +2708,13 @@ public function exists_refferals() {
 			redirect(base_url());
 			return;
 		}
+
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
-		//$this->form_validation->set_rules('price','Price','required|numeric');
-		//$this->form_validation->set_rules('delivery_in_days','Delivery in days','required|numeric');
 		$this->form_validation->set_rules('category','Category','required');
-		$this->form_validation->set_rules('sub_category','Subcategory','required');
+		$this->form_validation->set_rules('sub_category[]','Subcategory','required');
+		$this->form_validation->set_rules('service_type[]','Subcategory','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2714,17 +2737,19 @@ public function exists_refferals() {
 		if($newImg){
 			$insert['image'] = $newImg;
 		}
+
+		$subCat = !empty($this->input->post('sub_category')) ? implode(',', $this->input->post('sub_category')) : '';
+
+		$sType = !empty($this->input->post('service_type')) ? implode(',', $this->input->post('service_type')) : '';
+
 		$insert['service_name'] = $this->input->post('service_name');
 		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 		$insert['description'] = trim($this->input->post('description'));
-		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
-		//$insert['price'] = $this->input->post('price');
 		$insert['location'] = $this->input->post('location');
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
-		//$insert['delivery_in_days'] = $this->input->post('delivery_in_days');
 		$insert['category'] = $this->input->post('category');
-		$insert['sub_category'] = $this->input->post('sub_category');
-		$insert['service_type'] = $this->input->post('service_type');
+		$insert['sub_category'] = $subCat;
+		$insert['service_type'] = $sType;
 		if(!empty($this->input->post('plugins'))){
 			$insert['plugins'] = implode(',', $this->input->post('plugins'));
 		} else {
@@ -2878,10 +2903,11 @@ public function exists_refferals() {
 		}
 
 		$insert['service_id'] = $id;
-		$insert['available_mon_fri'] = $this->input->post('available_mon_fri') ? 'yes' : 'no';
+		$insert['available_mon_fri'] = $this->input->post('available_mon_fri');
 		$insert['selected_dates'] = $this->input->post('selected_dates');
 		$insert['time_slot'] = $this->input->post('time_slot');
-		$insert['weekend_available'] = $this->input->post('weekend_available') ? 'yes' : 'no';
+		$insert['time_slot_2'] = $this->input->post('time_slot_2');
+		$insert['weekend_available'] = $this->input->post('weekend_available');
 		$insert['not_available_days'] = $this->input->post('not_available_days');
 
 		$serviceAvailible = $this->common_model->GetSingleData('service_availability',array('service_id'=>$id));
@@ -2890,7 +2916,7 @@ public function exists_refferals() {
 		$this->common_model->update('my_services',array('id'=>$id),$insert1);
 
 		if(!empty($serviceAvailible)){
-			$this->common_model->update('service_availability',array('id'=>$id),$insert);	
+			$this->common_model->update('service_availability',array('service_id'=>$id),$insert);	
 		}else{
 			$this->common_model->insert('service_availability', $insert);				
 		}
@@ -2921,6 +2947,9 @@ public function exists_refferals() {
 		}else{
 			$insert['package_data'] = '';
 		}
+
+		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
+
 		$this->common_model->update('my_services',array('id'=>$id),$insert);
 
 		$this->session->set_userdata('update_next_step',3);
@@ -2973,14 +3002,32 @@ public function exists_refferals() {
 
 	public function getSubCategory(){
 		$id = $this->input->post('cat_id');
+		$type = $this->input->post('type');
 		$subCategory=$this->common_model->get_sub_category('service_category',$id);
 		$option = '';
+
+		$existSCat = $this->session->userdata('sub_category_data');
+		$existSType = $this->session->userdata('service_type_data');
+
 		if(!empty($subCategory)){
-			$option .= '<option value="">Please Select</option>';
+			$option .= '<div class="row">';
+			$jsFunction = $type == 1 ? 'onclick="return changesub($(this).val())"' : '';
+			$chkName = $type == 1 ? 'sub_category[]' : 'service_type[]';
+
+			// $option .= '<option value="">Please Select</option>';
 			foreach($subCategory as $sCat){
-				$option .= '<option value="'.$sCat['cat_id'].'">'.$sCat['cat_name'].'</option>';
+				// $option .= '<option value="'.$sCat['cat_id'].'">'.$sCat['cat_name'].'</option>';
+
+				if($type == 1){
+					$checked = in_array($sCat['cat_id'], $existSCat) ? 'checked' : '';
+				}else{
+					$checked = in_array($sCat['cat_id'], $existSType) ? 'checked' : '';
+				}
+
+				$option .= '<div class="col-sm-6"><div class=""><label><input type="checkbox" name="'.$chkName.'" class="subCategory" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
 			}
-		}
+			$option .= '</div>';
+		}		
 		echo $option;
 	}
 
@@ -3023,11 +3070,15 @@ public function exists_refferals() {
 	public function reserServiceTabData() {
 		$this->session->unset_userdata('service_data');
 		$this->session->unset_userdata('next_step');
+		$this->session->unset_userdata('sub_category_data');
+		$this->session->unset_userdata('service_type_data');
 	}
 
 	public function resetEditServiceTabData() {
 		$this->session->unset_userdata('update_service_data');
 		$this->session->unset_userdata('update_next_step');
+		$this->session->unset_userdata('sub_category_data');
+		$this->session->unset_userdata('service_type_data');
 	}
 
 	public function deleteAllServices(){

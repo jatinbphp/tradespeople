@@ -75,23 +75,44 @@
 						</label>
 					</div>
 				</div>
+
+				<?php if($service_category['price_type'] == 1):?>
+					<div class="form-group">
+	                    <div class="col-md-12 p-0">
+	                        <label class="col-md-12 control-label pl-0" for="">How do you charge?</label>
+	                        <select class="form-control input-md" name="price_per_type" id="price_per_type">
+	                            <option>Please Select</option>
+	                            <?php if(!empty($price_per_type)): ?>
+	                                <?php foreach ($price_per_type as $value): ?>
+	                                    <?php 
+	                                        $selected = $value == $serviceData['price_per_type'] ? 'selected' : '';
+	                                    ?>
+	                                    <option value="<?php echo $value; ?>" <?php echo $selected; ?> >
+	                                        <?php echo $value; ?>
+	                                    </option>
+	                                <?php endforeach;?>
+	                            <?php endif;?>    
+	                        </select>
+	                    </div>
+	                </div>
+	            <?php endif; ?>    
 			</div>
+
 			<div class="col-md-12">
 				<h4 class="control-label" for="">Packages</h4>				
 			</div>
+
 			<div class="col-md-12">
 				<div class="packages-table">
 					<table class="table">
 						<thead>
 							<tr>
-								<!-- <th></th> -->
 								<th>BASIC</th>
 								<th class="multiplePackage">STANDARD</th>
 								<th class="multiplePackage">PREMIUM</th>
 							</tr>
 							<tbody>
-								<!--<tr>
-									<td class="first-table-col"></td>
+								<tr>
 									<td>
 										<textarea class="form-control input-md" rows="3" name="package[basic][name]" placeholder="Name your package"><?php echo isset($package_data) ? trim($package_data->basic->name) : '';?></textarea>
 									</td>
@@ -103,7 +124,6 @@
 									</td>
 								</tr>
 								<tr>
-									<td class="first-table-col"></td>
 									<td>
 										<textarea class="form-control input-md" rows="3" name="package[basic][description]" placeholder="Describe the details of your offering"><?php echo isset($package_data) ? trim($package_data->basic->description) : '';?></textarea>
 									</td>
@@ -113,7 +133,7 @@
 									<td class="multiplePackage">
 										<textarea class="form-control input-md" rows="3" name="package[premium][description]" placeholder="Describe the details of your offering"><?php echo isset($package_data) ? trim($package_data->premium->description) : '';?></textarea>
 									</td>
-								</tr>-->								
+								</tr>
 								<?php 
 									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
 									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
@@ -187,19 +207,16 @@
 									</td>
 								</tr>
 								<tr>
-
-									<?php echo $serviceData['price_per_type']; ?>
-
 									<td>
-										<b>Price <?php echo !empty($serviceData['price_per_type']) ? '/'.$serviceData['price_per_type'] : ''; ?></b>
+										<b class="packagePrice">Price <?php echo $service_category['price_type'] == 1 ? '/ '.$serviceData['price_per_type'] : ''; ?></b>
 										<input name="package[basic][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->basic->price) : '';?>">
 									</td>
 									<td class="multiplePackage">
-										<b>Price <?php echo !empty($serviceData['price_per_type']) ? '/'.$serviceData['price_per_type'] : ''; ?></b>
+										<b class="packagePrice">Price <?php echo $service_category['price_type'] == 1 ? '/ '.$serviceData['price_per_type'] : ''; ?></b>
 										<input name="package[standard][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->standard->price) : '';?>">
 									</td>
 									<td class="multiplePackage">
-										<b>Price <?php echo !empty($serviceData['price_per_type']) ? '/'.$serviceData['price_per_type'] : ''; ?></b>
+										<b class="packagePrice">Price <?php echo $service_category['price_type'] == 1 ? '/ '.$serviceData['price_per_type'] : ''; ?></b>
 										<input name="package[premium][price]" class="form-control" type="number" value="<?php echo isset($package_data) ? trim($package_data->premium->price) : '';?>">
 									</td>
 								</tr>
@@ -235,7 +252,6 @@
 	        $('.multiplePackage input, .multiplePackage textarea, .multiplePackage select').prop('disabled', false);
 	    }
 
-
 	    $('#offerPackage').on('change', function() {
 	        if ($(this).is(':checked')) {	            
 	            $('.multiplePackage').css('background-color', ''); // Reset to original background color
@@ -245,5 +261,10 @@
 	            $('.multiplePackage input, .multiplePackage textarea, .multiplePackage select').prop('disabled', true);;
 	        }
 	    });
-	});	
+
+	    $('#price_per_type').on('change', function(){
+	    	var puType = $(this).val();
+	    	$('.packagePrice').text('Price / '+puType);
+	    });
+	});
 </script>

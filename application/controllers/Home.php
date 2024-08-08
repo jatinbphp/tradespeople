@@ -2359,7 +2359,8 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	}
 
 	public function services(){
-		$data['all_services']=$this->common_model->get_all_service('my_services',0);
+		$search = isset($_GET['search']) && !empty($_GET['search']) ? $_GET['search'] : '';
+		$data['all_services']=$this->common_model->get_all_service('my_services',0, $search);
 		$data['categories_data']=$this->getHirarchicalCategoryData();
 		$this->load->view('site/all_services',$data);
 	}
@@ -2493,6 +2494,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['categories_data']=$this->getHirarchicalCategoryData();
 		$data['faqs'] = $this->common_model->get_faqs('category_faqs',($category['cat_id'] ?? 0));
 		$data['first_chiled_categories'] = $this->common_model->getAllChiledCat('service_category',($category['cat_id'] ?? 0));
+
 		$this->load->view('site/home_category_details',$data);
 	}
 

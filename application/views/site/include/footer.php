@@ -2271,7 +2271,7 @@ $(document).ready(function(){
   });
 
   
-    $('.category-list-slider').slick({
+  $('.category-list-slider').slick({
     dots: false,
     infinite: true,
     arrows: true,
@@ -2297,50 +2297,50 @@ $(document).ready(function(){
       }
   });
 
-  function formatSentence(selectedDates, timeSlot) {
+  function formatSentence(selectedDates, timeSlot, toTimeSlot) {
     var sentence = "";
-    if (selectedDates.length > 0 && timeSlot) {
-      // Sort the dates
-      selectedDates.sort(function(a, b) {
-          return new Date(a) - new Date(b);
-      });
+    if (selectedDates.length > 0 && timeSlot && toTimeSlot) {
+        // Sort the dates
+        selectedDates.sort(function(a, b) {
+            return new Date(a) - new Date(b);
+        });
 
-      var groupedDates = {}; // To store dates grouped by month
+        var groupedDates = {}; // To store dates grouped by month
 
-      selectedDates.forEach(function(dateStr) {
-        var date = new Date(dateStr);
-        var month = monthNames[date.getMonth()];
-        if (!groupedDates[month]) {
-          groupedDates[month] = [];
+        selectedDates.forEach(function(dateStr) {
+            var date = new Date(dateStr);
+            var month = monthNames[date.getMonth()];
+            if (!groupedDates[month]) {
+                groupedDates[month] = [];
+            }
+            groupedDates[month].push(date);
+        });
+
+        var formattedDates = [];
+        for (var month in groupedDates) {
+            var dates = groupedDates[month];
+            var dateRanges = [];
+            var start = dates[0];
+            var end = start;
+
+            for (var i = 1; i < dates.length; i++) {
+                if (dates[i] - end === 86400000) { // Check if the next date is consecutive (1 day in ms)
+                    end = dates[i];
+                } else {
+                    dateRanges.push(formatDateRange(start, end));
+                    start = dates[i];
+                    end = start;
+                }
+            }
+            dateRanges.push(formatDateRange(start, end)); // Add the last range
+            formattedDates.push(month + " " + dateRanges.join(", "));
         }
-        groupedDates[month].push(date);
-      });
 
-      var formattedDates = [];
-      for (var month in groupedDates) {
-        var dates = groupedDates[month];
-        var dateRanges = [];
-        var start = dates[0];
-        var end = start;
-
-        for (var i = 1; i < dates.length; i++) {
-          if (dates[i] - end === 86400000) { // Check if the next date is consecutive (1 day in ms)
-              end = dates[i];
-          } else {
-              dateRanges.push(formatDateRange(start, end));
-              start = dates[i];
-              end = start;
-          }
-        }
-        dateRanges.push(formatDateRange(start, end)); // Add the last range
-        formattedDates.push(month + " " + dateRanges.join(", "));
-      }
-
-      <?php if(isset($is_detail)): ?>
-        sentence = "<span>Request for: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
-      <?php else: ?>
-        sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + ", till " + timeSlot+"</span></span>";
-      <?php endif; ?>
+        <?php if(isset($is_detail)): ?>
+            sentence = "<span>Request for: <span class='text-info pull-right'>" + formattedDates.join(", ") + " from " + timeSlot + " to " + toTimeSlot + "</span></span>";
+        <?php else: ?>
+            sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + " from " + timeSlot + " to " + toTimeSlot + "</span></span>";
+        <?php endif; ?>
     }
     return sentence;
   }
@@ -2372,7 +2372,8 @@ $(document).ready(function(){
   function updateAvailabilityMessage() {
     var selectedDates = $('#selectedDates').val().split(',');
     var timeSlot = $('#timeSlot').val();
-    var sentence = formatSentence(selectedDates, timeSlot);
+    var timeSlotTo = $('#timeSlotTo').val();
+    var sentence = formatSentence(selectedDates, timeSlot, timeSlotTo);
     //console.log('sentence====>'+sentence);
     if(sentence != ""){
       $('#notAvailablMsg').show().html(sentence); // Update the availability text  

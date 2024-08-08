@@ -6,23 +6,32 @@
           <div class="modal-header">
             <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">Add Service Category</h4>
+            <h4 class="modal-title"></h4>
           </div>
           <div class="modal-body form_width100">
-          	<div class="form-group">
-							<label for="email"> Main Category:</label>
-							<input type="text" name="main_category" id="main_category" onkeyup="create_slug(0,this.value,0);" class="form-control" value="<?php echo $data['main_service']['cat_name']; ?>" required>
+          	<div class="form-group" id="main-cat-div">
+							<label for="main_category"> Main Category:</label>
+							<select name="main_category" id="main_category" class="form-control" onchange="getSubCategory(this.value)">
+								<option value=''>Select</option>
+								<?php foreach($data['parent_category'] as $key => $val): ?>
+									<?php $selected = $data['main_service']['original_cat_id'] == $val['cat_id'] ? 'selected' : ''; ?>
+									<option value="<?php echo $val['cat_id']; ?>" <?php echo $selected; ?> ><?php echo $val['cat_name']; ?></option>
+								<?php endforeach; ?>
+							</select>
 						</div>
 
 						<div class="form-group">
-							<label for="email"> Sub Category:</label>
-							<input type="text" name="sub_category" value="<?php echo $data['subCategory']['cat_name']; ?>" id="sub_category" onkeyup="create_slug(0,this.value,1);" class="form-control" required>
-							<input type="hidden" name="sub_category_slug" value="<?php echo $data['subCategory']['slug']; ?>" id="slug1" class="form-control">
+							<label for="sub_category"> Sub Category:</label>
+							<select name="sub_category[]" id="sub_category" class="form-control" multiple>
+								<option value=''>Select</option>
+							</select>
 						</div>
 
 						<div class="form-group">
-							<label for="email"> Service Type:</label>
-							<input id="service_type_category" value="<?php echo $data['service_type_name']; ?>" name="service_type_category"  placeholder="Service Type" class="form-control input-md" data-role="tagsinput" type="text" value="">
+							<label for="service_type_category"> Service Type:</label>
+							<select name="service_type_category[]" id="service_type_category" class="form-control select2" multiple>
+								<option value=''>Select</option>								
+							</select>
 							<span class="text-muted">Add atleast 3 service types. Use letters and numbers only.</span>
 						</div>
 
@@ -45,10 +54,18 @@
 							<label class="switch pull-right">
 								<?php
 									$checked = $data['main_service']['price_type'] == 1 ? 'checked' : '';
+									$class = $data['main_service']['price_type'] == 1 ? '' : 'hide';
 								?>
 								<input type="checkbox" name="price_type" id="price_type" <?php echo $checked; ?> >
 								<span class="switch-slider round"></span>						  
 							</label>
+						</div>
+
+						<div class="form-group <?php echo $class; ?>" id="priceUnitListDiv">
+							<label id="addPriceUnit" onclick="addPriceUnit()"><i class="fa fa-plus"></i> Add Price Unit:</label>							
+							<div id="priceUnitList">
+								<?php echo $data['priceUnitList']; ?>
+							</div>
 						</div>
 						
 						<div class="form-group">
@@ -88,6 +105,7 @@
 			 			</div>
           </div>
           <div class="modal-footer">
+          	<input type="hidden" value="<?php echo !empty($data['catId']) ? $data['catId'] : 0; ?>" id="service_cat_id">
           	<button type="button" onclick="submitServiceCategory(<?php echo $data['formType']; ?>, <?php echo $data['catId']; ?>)" class="btn btn-info signup_btn" >Save</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
@@ -96,3 +114,11 @@
        </div>
     </div>
  </div>
+
+<script src="<?php echo base_url(); ?>asset/admin/dist/js/select2.full.min.js"></script>  
+
+<script>
+    $(function(){
+        $('.select2').select2();    
+    });
+</script>

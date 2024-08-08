@@ -5,7 +5,9 @@
 <?php $this->load->view('site/category_header'); ?>
 <div class="categories-results">
 	<div class="container">
-		<h1>Results for <b>seo</b></h1>
+		<?php if(isset($_GET['search']) && !empty($_GET['search'])):?>
+		<h1>Results for <b><?php echo $_GET['search']; ?></b></h1>
+	<?php endif; ?>
 		<div class="floating-top-bar">
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">

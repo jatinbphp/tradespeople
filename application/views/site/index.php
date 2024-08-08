@@ -30,12 +30,10 @@
 				<h1>Find Tradespeople, compare up to 3 quotes!</h1>
 				<p>It's FREE and there are no obligations</p>
 				<div class="postcode-container">
-					<form method="post" action="">
-						<input type="hidden" name="_token" value="" autocomplete="off">
-						<!-- <i class="icon-search search"></i> -->
+					<form method="get" action="<?= site_url().'services'; ?>">
 						<i class="fa fa-search search" aria-hidden="true"></i>
-						<input type="text" name="postcode" value="" placeholder="Enter your postcode" aria-label="Your postcode">
-						<button type="submit" class="qform">Get Started</button>
+						<input type="text" name="search" value="" placeholder="Search service" aria-label="Service Name">
+						<button type="submit" class="qform">Search</button>
 					</form>
 				</div>
 			</div>

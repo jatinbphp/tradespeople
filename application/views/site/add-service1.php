@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Main Category</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md mainCategory" name="category" data-section="sub_category" id="category">
+                        <select class="form-control input-md mainCategory" name="category" data-section="subcategories" id="category">
                             <option value="">Select Category</option>
                             <?php $selected = $serviceData['category'] ?? '' ?>
                             <?php foreach ($category as $cat) { ?>
@@ -38,23 +38,25 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12">
+            <div class="col-sm-12 hidden" id="subcategories_div">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Sub Category</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md subCategory categories" name="sub_category" data-section="service_type" id="sub_category">
+                        <!--<select class="form-control input-md subCategory categories" name="sub_category" data-section="service_type" id="sub_category">
                             <option value="">Select Sub Category</option>
-                        </select>
+                        </select>-->
+                        <div id="subcategories"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 hidden categories_div" id="service_type_div">
+            <div class="col-sm-12 hidden" id="service_type_div">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Service Type</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md serviceType categories" name="service_type" data-section="plugins" id="service_type">
+                        <!--<select class="form-control input-md serviceType categories" name="service_type" data-section="plugins" id="service_type">
                             <option value="">Select Service Type</option>
-                        </select>
+                        </select>-->
+                        <div id="subcategories_1"></div>
                     </div>
                 </div>
             </div>
@@ -75,38 +77,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 hide" id="price_type_div">
-                <!-- Text input-->
-                <div class="form-group">
-                    <label class="col-md-12 control-label" for="">Price</label>
-                    <div class="col-md-12">
-                        <label class="col-md-12 control-label pl-0" for="">How do you charge?</label>
-                        <select class="form-control input-md" name="price_per_type" id="price_per_type">
-                            <option>Please Select</option>
-                            <?php if(!empty($price_per_type)): ?>
-                                <?php foreach ($price_per_type as $value): ?>
-                                    <?php 
-                                        $selected = $value == $serviceData['price_per_type'] ? 'selected' : '';
-                                    ?>
-                                    <option value="<?php echo $value; ?>" <?php echo $selected; ?> >
-                                        <?php echo $value; ?>
-                                    </option>
-                                <?php endforeach;?>
-                            <?php endif;?>    
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="col-sm-12">
-                <div class="form-group">
-                    <div class="col-md-12">
-                        <label class="col-md-12 control-label pl-0" id="priceLabel" for="">
-                            How much do you charge <?php //echo isset($serviceData) ? lcfirst($serviceData['price_per_type']) : '' ?>?
-                        </label>
-                        <input id="price" value="<?php //echo $serviceData['price'] ?? '' ?>" name="price" placeholder="Price" class="form-control input-md" type="number" required>
-                    </div>
-                </div>
-            </div> -->
             <div class="col-sm-12">
                 <!-- Text input-->
                 <div class="form-group">
@@ -118,15 +88,7 @@
                         <span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
                     </div>
                 </div>
-            </div>
-            <!-- <div class="col-sm-12">
-                <div class="form-group">
-                    <label class="col-md-12 control-label" for="">Delivery In Days</label>
-                    <div class="col-md-12">
-                        <input id="service" value="<?php echo $serviceData['delivery_in_days'] ?? '' ?>" name="delivery_in_days" placeholder="Delivery In Days" class="form-control input-md" type="number" min="1" required>
-                    </div>
-                </div>
-            </div>-->
+            </div>            
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -224,29 +186,6 @@
                 if(data != ""){
                     $('#'+sectionId+'_div').removeClass('hidden');
                     $('#'+sectionId).empty().html(data);
-                    <?php if(isset($serviceData['sub_category']) && $serviceData['sub_category']): ?>
-                        if(subCategory == 1){
-                            $('.subCategory').val(<?php echo $serviceData['sub_category'] ?? '' ?>);
-                            $('.subCategory').trigger('change');
-                            subCategory = 0;
-                        }else{
-                            subCategory = 0;
-                        }
-                    <?php endif; ?>
-
-                    /*Get Price Type*/
-                    $.ajax({
-                        url:site_url+'users/getPriceType',
-                        type:"POST",
-                        data:{'cat_id':cat_id,'type':1},
-                        success:function(response){
-                            if(response == 1){
-                                $('#price_type_div').removeClass('hide');
-                            }else{
-                                $('#price_type_div').addClass('hide');
-                            }
-                        }
-                    });
                 }else{
                     $('#'+sectionId+'_div').addClass('hidden');
                 }
@@ -281,10 +220,36 @@
         });
     });
 
+    function changesub(){
+        console.log('Function Run');
+        var checkedValues = $('.subCategory:checked').map(function() {
+            return $(this).val();
+        }).get();
+
+        console.log(checkedValues);
+
+        $.ajax({
+            url:site_url+'users/getSubCategory',
+            type:"POST",
+            data:{'cat_id':checkedValues,'type':2},
+            success:function(data){
+                console.log('AJAX Success');
+                if(data != ""){
+                    $('#service_type_div').removeClass('hidden');
+                    $('#subcategories_1').empty().append(data);                        
+                }else{
+                    $('#service_type_div').addClass('hidden');
+                    $('#subcategories_1').empty(); 
+                }
+            }
+        });
+    }
+
     $(document).ready(function(){
         <?php if(isset($serviceData['category']) && $serviceData['category']): ?>
             $('.mainCategory').val(<?php echo $serviceData['category'] ?? '' ?>);
             $('.mainCategory').trigger('change');
+            setTimeout(changesub, 2000);            
         <?php endif ?>
     });
 </script>

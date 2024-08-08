@@ -315,21 +315,25 @@
 									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
 									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
 									$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+
+									$basicPackageName = isset($package_data) ? $package_data->basic->name : 'Basic';
+									$standardPackageName = isset($package_data) ? $package_data->standard->name : 'Standad';
+									$premiumPackageName = isset($package_data) ? $package_data->premium->name : 'Premium';
 									?>
 
 									<?php if($service_details['package_type'] == 1):?>
 										<div class="sidebar-tabs">
 											<ul  class="nav nav-pills">
-												<li class="active"><a href="#Basic" data-toggle="tab">Basic</a></li>
-												<li><a href="#Standard" data-toggle="tab">Standard</a></li>
-												<li><a href="#Premium" data-toggle="tab">Premium</a></li>
+												<li class="active"><a href="#Basic" data-toggle="tab"><?php echo $basicPackageName?></a></li>
+												<li><a href="#Standard" data-toggle="tab"><?php echo $standardPackageName?></a></li>
+												<li><a href="#Premium" data-toggle="tab"><?php echo $premiumPackageName?></a></li>
 											</ul>
 											<div class="tab-content">
 												<div class="tab-pane active" id="Basic">
 													<h2 class="title">
 														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
 													</h2>
-													<!-- <p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
+													<p><?php echo isset($package_data) ? $package_data->basic->description : '';?></p>
 													<h4>
 														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery
 													</h4>
@@ -377,7 +381,7 @@
 													<h2 class="title">
 														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
 													</h2>
-													<!-- <p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
+													<p><?php echo isset($package_data) ? $package_data->standard->description : '';?></p>
 													<h4>
 														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->standard->days; ?>-day delivery
 													</h4>
@@ -425,7 +429,7 @@
 													<h2 class="title">
 														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
 													</h2>
-													<!-- <p>15s Social Media Ad in 1 format of your choice: Landscape, Square or Vertical</p> -->
+													<p><?php echo isset($package_data) ? $package_data->premium->description : '';?></p>
 													<h4>
 														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->premium->days; ?>-day delivery
 													</h4>
@@ -476,6 +480,7 @@
 										<h2 class="title">
 											<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
 										</h2>
+										<p><?php echo isset($package_data) ? $package_data->basic->description : '';?></p>
 										<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
 										<ul>
 											<?php if(!empty($attributes)): ?>

@@ -76,8 +76,6 @@
                                                         <th>Image</th>                     
                                                         <th>Service Name</th> 
                                                         <th>Date Created</th> 
-                                                        <th>Price</th>                     
-                                                        
                                                         <th>Action</th>                     
                                                     </tr>
                                                 </thead>
@@ -140,9 +138,6 @@ $(function () {
             { "data": "service_name" },
             { "data": "created_at", "render": function(data, type, row) {
                 return new Date(data).toLocaleDateString() + ' ' + new Date(data).toLocaleTimeString();
-            }},
-            { "data": "price", "render": function(data, type, row) {
-                return '£' + parseFloat(data).toFixed(2);
             }},
             { "data": "id", "render": function(data, type, row) {
                 // return '<a class="btn btn-warning btn-sm" href="'+site_url+'edit-service/'+data+'">Edit</a>' +
