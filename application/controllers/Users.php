@@ -2274,7 +2274,7 @@ class Users extends CI_Controller
 	        foreach($services as $service) {        	 
 	          $data[] = [
 	              'id' => $service['id'],
-	              'status' => $service['status'],
+	              'status' => ucwords(str_replace('_',' ',$service['status'])),
 	              'image' => $service['image'],
 	              'service_name' => $service['service_name'],
 	              'created_at' => $service['created_at'],
@@ -2397,13 +2397,20 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('category','Category','required');
 		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
-		$this->form_validation->set_rules('service_type[]','Sub Category','required');
+		$this->form_validation->set_rules('service_type[]','Service Type','required');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
 			$this->session->set_userdata('next_step',1);
 			redirect('add-service');
 		}
+		
+		if(count($this->input->post('service_type')) < 3){
+			$this->session->set_flashdata('error',"You need to select at least 3 service types");
+			$this->session->set_userdata('next_step',1);
+			redirect('add-service');
+		}
+
 		$newImg = '';
 		if($_FILES['image']['name']){ 
 			$config['upload_path']="img/services";
@@ -2714,13 +2721,20 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('category','Category','required');
 		$this->form_validation->set_rules('sub_category[]','Subcategory','required');
-		$this->form_validation->set_rules('service_type[]','Subcategory','required');
+		$this->form_validation->set_rules('service_type[]','Service Type','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
 			$this->session->set_userdata('update_next_step',1);
 			redirect("edit-service/{$id}");
 		}
+
+		if(count($this->input->post('service_type')) < 3){
+			$this->session->set_flashdata('error',"You need to select at least 3 service types");
+			$this->session->set_userdata('next_step',1);
+			redirect("edit-service/{$id}");
+		}
+
 		$insert = [];
 		$newImg = '';
 		if($_FILES['image']['name']){ 

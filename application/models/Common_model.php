@@ -3355,6 +3355,7 @@ class Common_model extends CI_Model
 			    SELECT
 			    	COUNT(*) AS total_all,
 			        SUM(CASE WHEN so.status IN ('placed', 'pending') THEN 1 ELSE 0 END) AS total_placed,
+			        SUM(CASE WHEN so.status = 'active' THEN 1 ELSE 0 END) AS total_active,
 			        SUM(CASE WHEN so.status = 'complete' THEN 1 ELSE 0 END) AS total_completed,
 			        SUM(CASE WHEN so.status = 'cancel' THEN 1 ELSE 0 END) AS total_cancelled
 			    FROM
