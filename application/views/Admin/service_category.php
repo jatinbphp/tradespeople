@@ -467,7 +467,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
 		});
   }
 
-	function getServiceType(cat_ids){
+	/*function getServiceType(cat_ids){
 		var ser_cat_id = $('#service_cat_id').val();
 		$.ajax({
   		url:site_url+'Admin/Admin/getSubCategory',
@@ -482,7 +482,41 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
         }
 			}
 		});
-  };
+  };*/
+
+  function getServiceType(cat_ids) {
+    var ser_cat_id = $('#service_cat_id').val();
+    var selectedOptions = $('#service_type_category').val(); // Get currently selected options
+
+    $.ajax({
+        url: site_url + 'Admin/Admin/getSubCategory',
+        type: "POST",
+        data: { 'cat_id': cat_ids, 'ser_cat_id': ser_cat_id, 'is_service_type': 1 },
+        success: function (data) {
+            if (data != "") {
+                var newOptions = $(data); // Convert the returned HTML to a jQuery object
+                var retainedOptions = []; // Array to store retained selected options
+
+                // Check if currently selected options should be retained
+                newOptions.each(function () {
+                    var optionValue = $(this).val();
+                    if (selectedOptions.includes(optionValue)) {
+                        retainedOptions.push(optionValue);
+                    }
+                });
+
+                $('#service_type_category').empty(); // Clear the existing options
+                $('#service_type_category').append(newOptions); // Append the new options
+
+                // Retain the previously selected options
+                $('#service_type_category').val(retainedOptions).trigger('change');
+            } else {
+                $('#service_type_category').empty(); // Clear if no data
+            }
+        }
+    });
+}
+  
 
   var totalAttribute = 0;
   var totalExService = 0;

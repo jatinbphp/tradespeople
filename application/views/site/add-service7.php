@@ -112,15 +112,34 @@
 								<th class="multiplePackage">PREMIUM</th>
 							</tr>
 							<tbody>
+								<?php 
+									$stName1 = isset($service_type[0]) ? $service_type[0]['cat_name'] : '';
+									$stName2 = isset($service_type[1]) ? $service_type[1]['cat_name'] : '';
+									$stName3 = isset($service_type[2]) ? $service_type[2]['cat_name'] : '';
+
+									$bName = '';
+									$sName = '';
+									$pName = '';
+
+									if(!empty(isset($package_data))){
+										$bName = !empty($package_data->basic->name) ? $package_data->basic->name : $stName1;
+										$sName = !empty($package_data->standard->name) ? $package_data->standard->name : $stName2;
+										$pName = !empty($package_data->premium->name) ? $package_data->premium->name : $stName3;
+									}else{
+										$bName = $stName1;
+										$sName = $stName2;
+										$pName = $stName3;
+									}
+								?>
 								<tr>
 									<td>
-										<textarea class="form-control input-md" rows="3" name="package[basic][name]" placeholder="Name your package"><?php echo isset($package_data) ? trim($package_data->basic->name) : '';?></textarea>
+										<textarea class="form-control input-md" rows="3" name="package[basic][name]" placeholder="Name your package"><?php echo $bName; ?></textarea>
 									</td>
 									<td class="multiplePackage">
-										<textarea class="form-control input-md" rows="3" name="package[standard][name]" placeholder="Name your package"><?php echo isset($package_data) ? trim($package_data->standard->name) : '';?></textarea>
+										<textarea class="form-control input-md" rows="3" name="package[standard][name]" placeholder="Name your package"><?php echo $sName; ?></textarea>
 									</td>
 									<td class="multiplePackage">
-										<textarea class="form-control input-md" rows="3" name="package[premium][name]" placeholder="Name your package"><?php echo isset($package_data) ? trim($package_data->premium->name) : '';?></textarea>
+										<textarea class="form-control input-md" rows="3" name="package[premium][name]" placeholder="Name your package"><?php echo $pName; ?></textarea>
 									</td>
 								</tr>
 								<tr>

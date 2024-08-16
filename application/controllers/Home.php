@@ -273,6 +273,11 @@ class Home extends CI_Controller
 	}
 	
 	public function logout(){
+		$uId = $this->session->userdata('user_id');
+
+		$updateUsers['is_active']=0;
+		$this->common_model->update('users',array('id'=>$uId),$updateUsers);
+
 		$this->session->sess_destroy();
 		//echo 'sfsd';
 		delete_cookie('type');
@@ -1733,7 +1738,7 @@ class Home extends CI_Controller
 					$this->session->set_userdata('email',$data['email']);
 					$this->session->set_userdata('unique_id',$data['unique_id']);
 					$get_name=$data['f_name'].' '.$data['l_name'];
-					$this->session->set_userdata('u_name',$get_name);
+					$this->session->set_userdata('u_name',$get_name);					
 
 					$this->input->set_cookie('type',$data['type'],43200*60);
 					$this->input->set_cookie('user_id',$data['id'],43200*60);
@@ -1750,6 +1755,9 @@ class Home extends CI_Controller
 					
 					$json['id'] = $data['id'];
 					$json['status'] = 1;
+
+					$updateUsers['is_active']=1;
+					$run = $this->common_model->update('users',array('id'=>$data['id']),$updateUsers);
 					
 					$redirectUrl = false;
 					
@@ -2524,5 +2532,19 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 	public function checkout(){
 		$this->load->view('site/checkout');
+	}
+
+	public function auto_logout()
+	{
+    $user_id = $this->session->userdata('user_id');
+    if ($user_id) {
+      // Update the flag in the database
+      $this->db->where('id', $user_id);
+      $this->db->update('users', ['is_active' => 0]);
+
+      // Destroy the session
+      $this->session->sess_destroy();
+      echo json_encode(['status' => 'logged_out']);
+    }
 	}
 }

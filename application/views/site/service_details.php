@@ -299,12 +299,12 @@
 										</button>
 										<div class="">
 											<button class="save" type="button" data-toggle="tooltip" data-placement="top" title="Save to list"><svg fill="#b5b6ba" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.4469 1.95625C12.7344 0.496875 10.1875 0.759375 8.61561 2.38125L7.99999 3.01562L7.38436 2.38125C5.81561 0.759375 3.26561 0.496875 1.55311 1.95625C-0.409388 3.63125 -0.512513 6.6375 1.24374 8.45312L7.29061 14.6969C7.68124 15.1 8.31561 15.1 8.70624 14.6969L14.7531 8.45312C16.5125 6.6375 16.4094 3.63125 14.4469 1.95625Z"></path></svg></button>
-											<span class="collect-count">3,922</span>
+											<span class="collect-count"><?php echo $service_details['total_likes']; ?></span>
 										</div>
-										<button type="button" class="btn btn-outline" data-toggle="tooltip" data-placement="top" title="Share this Gig">
+										<button type="button" class="btn btn-outline" data-toggle="tooltip" data-placement="top" title="Share this service">
 											<svg width="16" height="16" viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path d="M11 10c-.707 0-1.356.244-1.868.653L5.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L4.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 11 10Z"></path></svg>
 										</button>
-										<button type="button" class="btn btn-outline" data-toggle="tooltip" data-placement="top" title="Share this Gig">
+										<button type="button" class="btn btn-outline" data-toggle="tooltip" data-placement="top" title="Share this service">
 											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
 												<path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
 											</svg>
@@ -312,13 +312,13 @@
 									</div>
 
 									<?php 
-									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-									$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+										$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+										$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+										$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
 
-									$basicPackageName = isset($package_data) ? $package_data->basic->name : 'Basic';
-									$standardPackageName = isset($package_data) ? $package_data->standard->name : 'Standad';
-									$premiumPackageName = isset($package_data) ? $package_data->premium->name : 'Premium';
+										$basicPackageName = isset($package_data) ? $package_data->basic->name : 'Basic';
+										$standardPackageName = isset($package_data) ? $package_data->standard->name : 'Standad';
+										$premiumPackageName = isset($package_data) ? $package_data->premium->name : 'Premium';
 									?>
 
 									<?php if($service_details['package_type'] == 1):?>
@@ -589,20 +589,22 @@
 														</div>
 													</div>
 												</div>
-
 											</div>
-											<div class=" about member-summary-section clearfix">
+											<div class="about member-summary-section clearfix">
 												<div class="about-container js-about-container">
 													<p><?php echo $service_user['about_business'];?></span>
 													</p>
 												</div>
 											</div>
-											<div class=" location member-summary-section clearfix">
+											<div class="location member-summary-section clearfix">
 												<div class="location-container crop">
 													<i class="fa fa-map-marker"></i>
-													<?php echo $service_user['city'];?></div>
+													<?php //echo $service_user['city'];?>
+													<?php echo !empty($service_details['area']) ? $service_details['area'].', ' : ''; ?>
+													<?php echo $service_details['city_name']; ?>
 												</div>
-												<div class=" contact member-summary-section clearfix">
+												</div>
+												<div class="contact member-summary-section clearfix">
 													<a class="btn btn-warning contact-button" id="contactBtn" rel="nofollow" href="javascript:void(0)">Contact</a>
 												</div>
 											</div>

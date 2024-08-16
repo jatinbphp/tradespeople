@@ -822,7 +822,6 @@ class Common_model extends CI_Model
 		}
 	}
 	
-	
 
 	public function get_data_count($table, $id = null, $col)
 	{
@@ -2470,11 +2469,22 @@ class Common_model extends CI_Model
 		$query = $this->db->query("SELECT * FROM $table where up_user='$id' and up_status=1 order by up_id DESC LIMIT 1");
 		return $query->result_array();
 	}
-	function get_category_detailsbyname($name)
+	function get_category_detailsbyname($table = 'category', $name, $limit = 0)
 	{
-		$query = $this->db->query("SELECT * FROM `category` where cat_name LIKE '%" . $name . "%'");
+		if($limit == 0){
+			$query = $this->db->query("SELECT * FROM $table WHERE cat_name LIKE '%" . $this->db->escape_like_str($name) . "%'");
+		}else{
+			$query = $this->db->query("SELECT cat_id, cat_name FROM $table WHERE cat_parent = 0 AND cat_name LIKE '%" . $this->db->escape_like_str($name) . "%' LIMIT 3");
+		}
+		
 		return $query->result_array();
 	}
+
+	function get_child_category($pId, $name){
+		$query = $this->db->query("SELECT cat_id, cat_name FROM `service_category` where cat_parent = $pId AND cat_name LIKE '%" . $name . "%'");
+		return $query->row_array();
+	}
+
 	function get_all_files($id)
 	{
 		$query = $this->db->query("SELECT * FROM `job_files` where job_id=$id");
@@ -2633,7 +2643,12 @@ class Common_model extends CI_Model
 	}
 	function get_all_chats($receiver_id, $sender_id, $post_id)
 	{
-		$query = $this->db->query("SELECT * FROM chat WHERE ((sender_id = '$sender_id' and receiver_id = '$receiver_id') or (sender_id = '$receiver_id' and receiver_id = '$sender_id')) AND post_id = '$post_id'");
+		if($post_id == 0){
+			$query = $this->db->query("SELECT * FROM chat WHERE ((sender_id = '$sender_id' and receiver_id = '$receiver_id') or (sender_id = '$receiver_id' and receiver_id = '$sender_id'))");	
+		}else{
+			$query = $this->db->query("SELECT * FROM chat WHERE ((sender_id = '$sender_id' and receiver_id = '$receiver_id') or (sender_id = '$receiver_id' and receiver_id = '$sender_id')) AND post_id = '$post_id'");
+		}
+		
 		return $query->result_array();
 	}
 	function time_ago($timestamp)
@@ -2899,7 +2914,9 @@ class Common_model extends CI_Model
 
 	function get_chat_list($id)
 	{
-		$query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id group by post_id order by MAX(id) desc");
+		// $query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id group by post_id order by MAX(id) desc");
+
+		$query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id order by MAX(id) desc");
 		return $query->result_array();
 	}
 	function get_unread_by_sid_rid($sender, $receiver, $post_id)
@@ -3429,7 +3446,8 @@ class Common_model extends CI_Model
 
 	public function get_service_details($table, $slug){
 		$query = $this->db->query("SELECT ms.*, 
-                                  c.cat_name, 
+                                  c.cat_name,
+                                  l.city_name,
                                   u.trading_name, 
                                   u.profile, 
                                   AVG(srt.rating) AS average_rating, 
@@ -3439,6 +3457,7 @@ class Common_model extends CI_Model
                                   (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
+                           LEFT JOIN location l ON ms.location = l.id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
                            WHERE ms.slug = '$slug' AND ms.status = 'active'
@@ -3482,4 +3501,94 @@ class Common_model extends CI_Model
 		$query = $this->db->get();
 		return $query->result_array();
 	}
+
+	public function countResponseTime($rId){
+	    $query = $this->db->query("
+		    SELECT AVG(TIMESTAMPDIFF(SECOND, ch1.create_time, ch2.create_time)) / 3600 AS avg_response_time_hours
+		    FROM chat ch1
+		    INNER JOIN chat ch2 
+		        ON ch1.receiver_id = ch2.sender_id 
+		        AND ch1.sender_id = ch2.receiver_id 
+		        AND ch2.create_time > ch1.create_time
+		    WHERE ch1.receiver_id = $rId 
+		    AND ch1.is_read = 1
+		    AND ch2.id = (
+		        SELECT MIN(id) 
+		        FROM chat 
+		        WHERE receiver_id = ch2.receiver_id 
+		        AND sender_id = ch2.sender_id 
+		        AND create_time > ch1.create_time
+		    )
+		");
+
+		return $query->row_array();
+	}
+
+	public function getServiceType($sIds)
+	{
+		$this->db->select('c.*');
+		$this->db->from('category c');
+		
+		if(!empty($sIds)){
+			$this->db->where_in('c.cat_id', $sIds);
+		}		
+
+		$query = $this->db->get();
+		return $query->result_array();
+	}
+
+	public function get_last_order_record($table, $id, $column, $ordType){
+		if(!empty($id)){
+			$this->db->where_in('service_id', $id);		
+			$this->db->where('status', 'completed');
+			$this->db->order_by($column, $ordType);
+			$this->db->limit(1);
+			$query = $this->db->get($table);
+			return $query->result_array();	
+		}else{
+			return [];
+		}
+	}
+
+	public function get_service_avg_rating($id){
+		$query = $this->db->query("SELECT avg(rating)as average_rating FROM `service_rating` where rate_to=$id");
+		return $query->result_array();
+	}
+
+    public function get_referral_code_rating($user_id) {
+        // Get the referral code of the specific user
+        $this->db->select('unique_id');
+        $this->db->from('users');
+        $this->db->where('id', $user_id);
+        $query = $this->db->get();
+        $result = $query->row();
+
+        if ($result) {
+            $referral_code = $result->unique_id;
+
+            // Count the number of times this referral code has been used
+            $this->db->select('COUNT(*) as total_usage');
+            $this->db->from('users');
+            $this->db->where('referral_code', $referral_code); // assuming 'referred_by' stores the referral code used during registration
+            $query = $this->db->get();
+            $usage_result = $query->row();
+
+            // Get the total number of users
+            $this->db->select('COUNT(*) as total_users');
+            $this->db->from('users');
+            $query = $this->db->get();
+            $total_users_result = $query->row();
+
+            // Calculate the rating out of 5
+            $rating = 0;
+            if ($usage_result && $total_users_result && $total_users_result->total_users > 0) {
+                $average_usage = $usage_result->total_usage / $total_users_result->total_users;
+                $rating = $average_usage * 5;
+            }
+
+            return round($rating, 2); // rounding to 2 decimal places
+        }
+
+        return 0;
+    }
 }

@@ -160,10 +160,15 @@ class My_model extends CI_Model {
 		   
 		
 	}
-	public function get_all_category($table)
+	public function get_all_category($table,$select = '')
 	{
-		$query=$this->db->query("Select * from $table where is_delete=0");
-      return $query->result_array();
+		if(empty($select)){
+			$query=$this->db->query("Select * from $table where is_delete=0");	
+		}else{
+			$query=$this->db->query("Select $select from $table where is_delete=0");
+		}
+		
+      	return $query->result_array();
 	}
 	public function get_all_category1($table)
 	{

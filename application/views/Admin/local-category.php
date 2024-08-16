@@ -110,219 +110,148 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 
 
                        <!-- Modal -->
-
-           <div class="modal fade slug-modal" id="editmyModal<?php echo $data['cat_id'];?>" role="dialog">
-
-          <div class="modal-dialog">
-            
+                       <div class="modal fade slug-modal" id="editmyModal<?php echo $data['cat_id'];?>" role="dialog">
+          	<div class="modal-dialog">
             <!-- Modal content-->
-
-        <div class="modal-content">
-
-        <div class="modal-header">
-
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-          <h4 class="modal-title">Edit Local Category</h4>
-
-        </div>
-
-      <form action="<?php echo base_url(); ?>Admin/Local_Category/edit_category?redirect_location=<?= ($locations) ? $locations['id'] : ''?>" method="post" enctype="multipart/form-data" autocomplete="off">   
-
-      <input type="hidden" name="cat_id"  value="<?php echo $data['cat_id'];?>">
-
-             	<div class="modal-body form_width100">
-						<div class="form-group">
-							<label for="email"> Select category:</label>
-							<select type="text" name="cat_parent" id="cat_parent<?php echo $data['cat_id']; ?>"  class="form-control cat-slug-edit" required onchange="create_slug(<?php echo $data['cat_id']; ?>);">
-							
-							<?php
-								$newCategory = getParent();
-								
-								foreach($newCategory as $newCategoryKey => $newCategoryVal){
-								?>
-								
-								
-									<optgroup label="<?php echo $newCategoryVal['cat_name']; ?>">
-									<?php
-									$selected = ($data['cat_parent']==$newCategoryVal['cat_id']) ? 'selected' : '';
-									?>
-									<option <?= $selected; ?> value="<?php echo $newCategoryVal['cat_id']; ?>"><?php echo $newCategoryVal['cat_name']; ?> (Main)</option>
-									<?php
-									if(!empty($newCategoryVal['child'])){
-										foreach($newCategoryVal['child'] as $childKey => $childVal){
-											
-											$selected = ($data['cat_parent']==$childVal['cat_id']) ? 'selected' : '';
-											
-											?>
-											
-											<option <?= $selected; ?> value="<?php echo $childVal['cat_id']; ?>"><?php echo $childVal['cat_name']; ?></option>
+        			<div class="modal-content">
+        				<div class="modal-header">
+          				<button type="button" class="close" data-dismiss="modal">&times;</button>
+          				<h4 class="modal-title">Edit Local Category</h4>
+        				</div>
+      					<form action="<?php echo base_url(); ?>Admin/Local_Category/edit_category?redirect_location=<?= ($locations) ? $locations['id'] : ''?>" method="post" enctype="multipart/form-data" autocomplete="off">
+      						<input type="hidden" name="cat_id"  value="<?php echo $data['cat_id'];?>">
+             			<div class="modal-body form_width100">
+										<div class="form-group">
+											<label for="email"> Select category:</label>
+											<select type="text" name="cat_parent" id="cat_parent<?php echo $data['cat_id']; ?>"  class="form-control cat-slug-edit" required onchange="create_slug(<?php echo $data['cat_id']; ?>);">
 											<?php
-										}
-										
-									}
-									?>
-									
-								</optgroup>
-								
-								<?php } ?>
-								
-								
-							</select>
-						</div>
-						<div class="form-group">
-				<label for="email">Select city:</label>
-				<select type="text" name="city" id="location<?php echo $data['cat_id']; ?>" onchange="create_slug(<?php echo $data['cat_id']; ?>);"  class="form-control loc-slug-edit" required>
-								<?php
-								$location = $this->Common_model->GetSingleData('tbl_city',array('id'=>$data['location']));
-								?>
-                          
-								<option value='<?php echo $location['id']; ?>'><?php echo $location['city_name'];?></option>
-								
-								<?php
-								$city = $this->Common_model->GetAllData('tbl_city');
-								
-								foreach($city as $Key => $value){
-									
-									$selected = ($data['location']==$value['id']) ? 'selected' : '';
-								?>
-									
-									<option <?= $selected; ?> value="<?php echo $value['id']; ?>"><?php echo $value['city_name']; ?></option>
-								
-								<?php } ?>
-								
-							</select>
-			 </div>
-			<!-- <div class="form-group">
-				<label for="email"> Category Name:</label>
-				<input type="text" name="cat_name" onkeyup="create_slug(<?php echo $data['cat_id']; ?>,this.value);" id="cat_name"  class="form-control" value="<?php echo $data['cat_name']; ?>" required >
-			 </div> -->
-			 <div class="form-group">
-				<label for="email"> Slug:</label>
-				<input type="text" name="slug" data-slug="<?=$data['slug']?>" id="slug<?php echo $data['cat_id']; ?>" class="form-control" required value="<?php echo $data['slug']; ?>"  >
-				<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
-			 </div>
-			 <div class="form-group">
-				<label for="email">Title:</label>
-				<input type="text" name="title" id="title<?php echo $data['cat_id']; ?>" class="form-control" value="<?php echo $data['title']; ?>">
-			 </div>
+												$newCategory = getParent();											
+												foreach($newCategory as $newCategoryKey => $newCategoryVal){
+												?>
+													<optgroup label="<?php echo $newCategoryVal['cat_name']; ?>">
+													<?php
+													$selected = ($data['cat_parent']==$newCategoryVal['cat_id']) ? 'selected' : '';
+													?>
+													<option <?= $selected; ?> value="<?php echo $newCategoryVal['cat_id']; ?>"><?php echo $newCategoryVal['cat_name']; ?> (Main)</option>
+													<?php
+													if(!empty($newCategoryVal['child'])){
+														foreach($newCategoryVal['child'] as $childKey => $childVal){														
+															$selected = ($data['cat_parent']==$childVal['cat_id']) ? 'selected' : '';
+															?>														
+															<option <?= $selected; ?> value="<?php echo $childVal['cat_id']; ?>"><?php echo $childVal['cat_name']; ?></option>
+															<?php
+														}													
+													}
+													?>												
+												</optgroup>											
+												<?php } ?>
+											</select>
+										</div>
+										<div class="form-group">
+											<label for="email">Select city:</label>
+											<select type="text" name="city" id="location<?php echo $data['cat_id']; ?>" onchange="create_slug(<?php echo $data['cat_id']; ?>);"  class="form-control loc-slug-edit" required>
+												<?php
+													$location = $this->Common_model->GetSingleData('tbl_city',array('id'=>$data['location']));
+												?>                          
+												<option value='<?php echo $location['id']; ?>'><?php echo $location['city_name'];?></option>
+												<?php
+													$city = $this->Common_model->GetAllData('tbl_city');								
+														foreach($city as $Key => $value){									
+														$selected = ($data['location']==$value['id']) ? 'selected' : '';
+												?>									
+												<option <?= $selected; ?> value="<?php echo $value['id']; ?>"><?php echo $value['city_name']; ?></option>								
+												<?php } ?>								
+											</select>
+				 						</div>
 
-			  <div class="form-group">
-				<label for="email">Description:</label>
-				<textarea rows="5" placeholder="" name="description" id="cat_description" class="form-control"><?php echo $data['description']; ?></textarea>
-			 </div>
-			 	 
-			<div class="form-group">
-				<label for="email">Meta Title:</label>
-				<input type="text" name="meta_title" id="meta_title" class="form-control" value="<?php echo $data['meta_title']; ?>" >
-			 </div>
+										<!-- <div class="form-group">
+											<label for="email"> Category Name:</label>
+											<input type="text" name="cat_name" onkeyup="create_slug(<?php echo $data['cat_id']; ?>,this.value);" id="cat_name"  class="form-control" value="<?php echo $data['cat_name']; ?>" required >
+										 </div> -->
+										<div class="form-group">
+											<label for="email"> Slug:</label>
+											<input type="text" name="slug" data-slug="<?=$data['slug']?>" id="slug<?php echo $data['cat_id']; ?>" class="form-control" required value="<?php echo $data['slug']; ?>"  >
+											<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
+										</div>
+										<div class="form-group">
+											<label for="email">Title:</label>
+											<input type="text" name="title" id="title<?php echo $data['cat_id']; ?>" class="form-control" value="<?php echo $data['title']; ?>">
+										</div>
+				  					<div class="form-group">
+											<label for="email">Description:</label>
+											<textarea rows="5" placeholder="" name="description" id="cat_description" class="form-control"><?php echo $data['description']; ?></textarea>
+				 						</div>			 	 
+										<div class="form-group">
+											<label for="email">Meta Title:</label>
+											<input type="text" name="meta_title" id="meta_title" class="form-control" value="<?php echo $data['meta_title']; ?>" >
+										</div>
+				 						<div class="form-group">
+											<label for="email">Meta Keywords:</label>
+											<input type="text" name="keyword" id="meta_key" class="form-control" value="<?php echo $data['keyword']; ?>" >
+										</div>
+										<div class="form-group">
+											<label for="email">Meta Description</label>
+											<textarea rows="5" placeholder="" name="meta_description" id="meta" class="form-control"><?php echo $data['meta_description']; ?></textarea>
+										</div>
+										<div class="form-group">
+											<label for="email">Footer Description:</label>
+											<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea" ><?php echo $data['footer_description']; ?></textarea>
+										</div>
+										<div class="form-group">
+											<label for="email">Thumbnail Image:</label>
+											<input type="file" name="cat_image" id="" class="form-control" accept="image/*">
+										</div>
+										<div class="form-group">
+											<?php if(!empty($data["image"])) { ?>
+											    <img style="height: 100px;width: 100px;" src="<?php echo base_url("img/category/".$data["image"]);?>">
+											    <?php } ?>
+											    <?php if(empty($data["image"])) { ?>
+											    <img style="height: 100px;width: 100px;" src="<?php echo base_url("img/default-image.jpg");?>">
+											    <?php } ?>
+										</div>
+										<div class="modal-footer">
+	            				<button  class="btn btn-default addBtn<?php echo $data['cat_id']; ?>">Update</button>
+	          					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	          				</div>
+									</div>        
+       					</form>
+      				</div>
+    				</div>
+  				</div> 
 
-			 	
-			 
-			 <div class="form-group">
-				<label for="email">Meta Keywords:</label>
-				<input type="text" name="keyword" id="meta_key" class="form-control" value="<?php echo $data['keyword']; ?>" >
-			 </div>
-			 <div class="form-group">
-				<label for="email">Meta Description</label>
-				<textarea rows="5" placeholder="" name="meta_description" id="meta" class="form-control"><?php echo $data['meta_description']; ?></textarea>
-			 </div>
-			  
-
-			 <div class="form-group">
-				<label for="email">Footer Description:</label>
-				<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea" ><?php echo $data['footer_description']; ?></textarea>
-			 </div>
-
-		<div class="form-group">
-			<label for="email">Thumbnail Image:</label>
-			<input type="file" name="cat_image" id="" class="form-control" accept="image/*">
-		</div>
-
-		<div class="form-group">
-			<?php if(!empty($data["image"])) { ?>
-			    <img style="height: 100px;width: 100px;" src="<?php echo base_url("img/category/".$data["image"]);?>">
-			    <?php } ?>
-			    <?php if(empty($data["image"])) { ?>
-			    <img style="height: 100px;width: 100px;" src="<?php echo base_url("img/default-image.jpg");?>">
-			    <?php } ?>
-		</div>
-
-
-		<div class="modal-footer">
-
-            <button  class="btn btn-default addBtn<?php echo $data['cat_id']; ?>">Update</button>  
-
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-          </div>
-
-			</div>
-        
-       </form>
-
-      </div>
-
-    </div>
-
-  </div> 
-
-
+          
         <?php
             }
            ?>
                   </tbody> 
-
                </table>
-
                </div>
-
                </div>
-
             </div>
-
          </div>
-
       </div>
-
 </section>
 </div>
 
 
 <!-- Add Modal -->
    <div class="modal fade slug-modal" id="myModal" role="dialog">
-
     <div class="modal-dialog">
-
       <div class="modal-content">
-
         <div class="modal-header">
-
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-
           <h4 class="modal-title">Add Local Category</h4>
-
         </div>
-
-
-
-       <form action="<?php echo base_url(); ?>Admin/Local_Category/add_category?redirect_location=<?= ($locations) ? $locations['id'] : ''?>" method="post" enctype="multipart/form-data" autocomplete="off">  
-
-			<div class="modal-body form_width100">
+       	<form action="<?php echo base_url(); ?>Admin/Local_Category/add_category?redirect_location=<?= ($locations) ? $locations['id'] : ''?>" method="post" enctype="multipart/form-data" autocomplete="off">
+					<div class="modal-body form_width100">
 						<div class="form-group">
-							<label for="email">Select category:</label>
-							
-							<select type="text" name="cat_parent" id="cat_parent0"  class="form-control cat-slug-edit" required onchange="create_slug(0);">
-								
-								<option value=''>Select category</option>
-								
+							<label for="email">Select category:</label>							
+							<select type="text" name="cat_parent" id="cat_parent0"  class="form-control cat-slug-edit" required onchange="create_slug(0);">								
+								<option value=''>Select category</option>								
 								<?php
-								$newCategory = getParent();
-								
+								$newCategory = getParent();								
 								foreach($newCategory as $newCategoryKey => $newCategoryVal){
 								?>
-								
-								
 									<optgroup label="<?php echo $newCategoryVal['cat_name']; ?>">
 									<option value="<?php echo $newCategoryVal['cat_id']; ?>"><?php echo $newCategoryVal['cat_name']; ?> (Main)</option>
 									<?php
@@ -332,20 +261,15 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 											<option value="<?php echo $childVal['cat_id']; ?>"><?php echo $childVal['cat_name']; ?></option>
 											<?php
 										}
-										
 									}
-									?>
-									
-								</optgroup>
-								
-								<?php } ?>
-								
+									?>									
+								</optgroup>								
+								<?php } ?>								
 							</select>
 						</div>
-
-			<div class="form-group">
-				<label for="email">Select city:</label>
-				<select type="text" name="city" id="location0" onchange="create_slug(0);" class="form-control loc-slug-edit" required>
+						<div class="form-group">
+							<label for="email">Select city:</label>
+							<select type="text" name="city" id="location0" onchange="create_slug(0);" class="form-control loc-slug-edit" required>
 								
 								<option value=''>Select city</option>
 								
@@ -363,67 +287,55 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 								<?php } ?>
 								
 							</select>
-			    </div>
-			<!-- <div class="form-group">
-				<label for="email"> Category Name:</label>
-				<input type="text" name="cat_name" onkeyup="create_slug(0,this.value);" id="cat_name"  class="form-control" required>
-			 </div> -->
-			<div class="form-group">
-				<label for="email"> Slug:</label>
-				<input type="text" name="slug" id="slug0" class="form-control" required>
-				<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
-			 </div>
-			 <div class="form-group">
-				<label for="email">Title:</label>
-				<input type="text" name="title" id="title0" class="form-control">
-			 </div>
-			 <div class="form-group">
-				<label for="email">Description:</label>
-				<textarea rows="5" placeholder="" name="description" id="cat_description" class="form-control"></textarea>
-			 </div>
-			 	 
-			<div class="form-group">
-				<label for="email">Meta Title:</label>
-				<input type="text" name="meta_title" id="meta_title" class="form-control">
-			 </div>
-			 <div class="form-group">
-				<label for="email">Meta Keywords:</label>
-				<input type="text" name="keyword" id="meta_key" class="form-control">
-			 </div>
+			    	</div>
+						<!-- <div class="form-group">
+						<label for="email"> Category Name:</label>
+						<input type="text" name="cat_name" onkeyup="create_slug(0,this.value);" id="cat_name"  class="form-control" required>
+					 </div> -->
+						<div class="form-group">
+							<label for="email"> Slug:</label>
+							<input type="text" name="slug" id="slug0" class="form-control" required>
+							<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
+						</div>
+				 		<div class="form-group">
+							<label for="email">Title:</label>
+							<input type="text" name="title" id="title0" class="form-control">
+						</div>
+						<div class="form-group">
+							<label for="email">Description:</label>
+							<textarea rows="5" placeholder="" name="description" id="cat_description" class="form-control"></textarea>
+						</div>
+				 	 
+						<div class="form-group">
+							<label for="email">Meta Title:</label>
+							<input type="text" name="meta_title" id="meta_title" class="form-control">
+						</div>
+					 	<div class="form-group">
+							<label for="email">Meta Keywords:</label>
+							<input type="text" name="keyword" id="meta_key" class="form-control">
+					 	</div>
+				 		<div class="form-group">
+							<label for="email">Meta Description:</label>
+							<textarea rows="5" placeholder="" name="meta_description" id="cat_description" class="form-control"></textarea>
+				 		</div>
+				 	 
+				 		<div class="form-group">
+							<label for="email"> Footer Description:</label>
+							<textarea rows="5" placeholder="" name="footer_description1" id="" class="form-control textarea"></textarea>
+				 		</div>
 
-			 <div class="form-group">
-				<label for="email">Meta Description:</label>
-				<textarea rows="5" placeholder="" name="meta_description" id="cat_description" class="form-control"></textarea>
-			 </div>
-			 	 
-			 <div class="form-group">
-				<label for="email"> Footer Description:</label>
-				<textarea rows="5" placeholder="" name="footer_description1" id="" class="form-control textarea"></textarea>
-			 </div>
-
-		<div class="form-group">
-				<label for="email"> Thumbnail Image:</label>
-			<input type="file" name="cat_image" id="" class="form-control" accept="image/*">
-		</div>
-
-			</div>
-
+						<div class="form-group">
+							<label for="email"> Thumbnail Image:</label>
+							<input type="file" name="cat_image" id="" class="form-control" accept="image/*">
+						</div>
+					</div>
           <div class="modal-footer">
-
             <button  class="btn btn-default addBtn0">Add</button>  
-
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
           </div>
-
-
-
-       </form>
-
+       	</form>
       </div>
-
     </div>
-
   </div> 
   <!-- Add Modal -->
 <script src="https://cloud.tinymce.com/5/tinymce.min.js?apiKey=y8edi4divxwsplcdd28rzuyx245zbzdndm22yzhuaanemki5"></script>
@@ -663,28 +575,18 @@ $('#cat_name').on('keyup' , function()
 		
 		$('#cat_ques'+Id).val(ques);
  	}
-	
-
 }
 </script>
 <script type="text/javascript">
   $(document).ready(function(){
-    $('.date-picker').datepicker( 
-              {dateFormat: 'yy-mm-dd' ,
-              minDate: "0"}
-              
-          );
-
-
-          $('.example').DataTable({
-
-"order": [],
-  
-
-
-});
+    $('.date-picker').datepicker({
+    	dateFormat: 'yy-mm-dd' ,
+      minDate: "0"
+    });
+    $('.example').DataTable({
+			"order": [],
+		});
       
-   });
-</script>
-	
-	<?php include_once('include/footer.php'); ?>
+  });
+</script>	
+<?php include_once('include/footer.php'); ?>

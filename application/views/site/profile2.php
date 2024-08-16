@@ -87,9 +87,11 @@
 											<li>
 												<i class="fa fa-map-marker"></i>
 												<?=$user_profile['city'];?>
+												
 											</li>
 											<li>
-												<i class="fa fa-calendar"></i> Member since <?=date('M Y', strtotime($user_profile['cdate']));?>
+												<i class="fa fa-calendar"></i> 
+													<?=date('M Y', strtotime($user_profile['cdate']));?>
 											</li>
 											<li>
 												<span class="btn btn-warning btn-xs"><?=$user_profile['average_rate'];?></span>
@@ -103,9 +105,9 @@
 													<i class="fa fa-star"></i>
 													<?php } } ?>
 												</span>
-												<span> (<?=$user_profile['total_reviews'];?> reviews)</span>
+												<span> <b>(<?=$user_profile['total_reviews'];?> reviews)</b></span>
 											</li>										
-										</ul>
+										</ul>										
 									</div>
 								</div>
 							</div>
@@ -489,7 +491,30 @@
 							</div>
 
 							<div id="reviews" class="w3-container sTab" style="display:none">
-								<div class="setskil-padding review-mail" id="search_data">				
+								<div class="setskil-padding review-mail" id="search_data">
+
+									<div class="rating">
+										<ul>
+											<li>
+												<p>Overall Rating</p><div class="star"><span></span> <?php echo number_format($overallRating,2); ?></div>
+											</li>
+
+											<li>
+												<p>Recommend to a friend</p>
+												<div class="star"><span></span> 
+													<?php echo $referalRating; ?>
+												</div>
+											</li>
+
+											<li>
+												<p>Service as described</p>
+												<div class="star"><span></span>
+													<?php echo !empty($serviceAvgRating[0]['average_rating']) ? number_format($serviceAvgRating[0]['average_rating'],2) : 0; ?>
+												</div>
+											</li>
+										</ul>
+									</div>
+
 			            <?php if(count($get_reviews)>0){ ?>
 			            	<div class="review-pro">
 			               <!--  <div class=" dashboard-profile edit-pro89">
@@ -502,7 +527,7 @@
 			                  ?>
 								
 													<div class="tradesman-feedback">
-													  <div class="set-gray-box">
+													  <div class="set-gray-box reviews">
 														  <p class="recent-feedback">
 																<?php if($job_title['direct_hired']==1){ ?>
 																<h4>Work for <?= $user_profile['trading_name'];?></h4>	
@@ -849,22 +874,27 @@
 	              <div class="dashboard-profile ">
 	                 <div id="msg"></div>
 	                 <h2>Contact <?php echo $user_profile['trading_name']; ?> about your job</h2>
-	                 <form method="post" id="direct_hire" enctype="multipart/form-data"  onsubmit="return direct_hiring();">
+	                 <form method="post" id="direct_hire" enctype="multipart/form-data" onsubmit="return direct_send_msg();">
 	                    <div class="from-group">
 	                       <label>Send a private message</label>
-	                       <textarea class="form-control" style="height: 120px;" name="message" required>Hi <?php echo $user_profile['trading_name']; ?>, I noticed your profile and would like to offer you my project. We can discuss any details over chat.</textarea>
+	                       <!-- <textarea class="form-control" style="height: 120px;" name="message" required>Hi <?php echo $user_profile['trading_name']; ?>, I noticed your profile and would like to offer you my project. We can discuss any details over chat.</textarea> -->
+	                       <textarea class="form-control" style="height: 120px;" id="direct_msg" name="ch_msg" required>Hi <?php echo $user_profile['trading_name']; ?>, I noticed your profile and would like to offer you my project. We can discuss any details over chat.</textarea>
 	                    </div>
 	                    <input type="hidden" name="hire_to" value="<?php echo $user_profile['id']; ?>">
+	                    <input name="post_id" id="private_post_id-footer" type="hidden" value="0">
+        							<input name="type" id="type" type="hidden" value="<?=$this->session->userdata('type'); ?>">
+        							<input type="hidden"  name="check" id="private_check" autofocus>
+        							<input name="rid" id="private_rid-footer" type="hidden" value="<?php echo $user_profile['id']; ?>">
 	                    <!-- <div class="from-group">
 	                       <label>Category</label>
 	                       <div class="Hire_b">
 	                          <select class="form-control" required name="main_cate">
 	                             <option value="">Select Category</option>
 	                             <?php
-	                                $main_categorys = $this->common_model->GetColumnName('category',array('is_delete'=>0,'cat_parent'=>0),array('cat_name','cat_id'),true);
-	                                foreach($main_categorys as $row){
-	                                	echo '<option value="'.$row['cat_id'].'">'.$row['cat_name'].'</option>';
-	                                }
+	                                //$main_categorys = $this->common_model->GetColumnName('category',array('is_delete'=>0,'cat_parent'=>0),array('cat_name','cat_id'),true);
+	                                //foreach($main_categorys as $row){
+	                                	//echo '<option value="'.$row['cat_id'].'">'.$row['cat_name'].'</option>';
+	                                //}
 	                                ?>
 	                          </select>
 	                       </div>
@@ -886,24 +916,44 @@
 	                          </div>
 	                       </div>
 	                    </div> -->
-	                    <div class="from-group"  style="margin-top: 30px;">
+
+	                    <div>
+												<span>Last Seen: </span>
+												<b><?php echo !empty($user_profile['is_active']) && $user_profile['is_active'] == 1 ? 'Online' : 'Offline'; ?></b>
+											</div>
+
+	                    <div class="from-group"  style="margin-top: 20px;">
 	                       <?php if($user_id){ ?>
 	                       <?php
 	                          $check_last_request = $this->common_model->get_single_data('tbl_jobs',array('direct_hired'=>1,'userid'=>$user_id,'awarded_to'=>$user_profile['id'],'status'=>4));
 	                          ?>
 	                       <?php if($check_last_request){ ?>
-	                       <a href="javascript:void(0);" onclick="swal('You had aleady sent a hiring request for the job Id: <?php echo $check_last_request['project_id']; ?>');" class="btn btn-primary btn-lg btn-block hire_me">Contact Me</a>
+
+	                       <!-- <a href="javascript:void(0);" onclick="swal('You had aleady sent a hiring request for the job Id: <?php echo $check_last_request['project_id']; ?>');" class="btn btn-primary btn-lg btn-block hire_me">Contact Me</a> -->
+
+	                       <a href="javascript:void(0);" onclick="direct_send_msg()" class="btn btn-primary btn-lg btn-block hire_me">Contact Me</a>
+
 	                       <?php } else { ?>
+
 	                       <button type="submit" class="btn btn-primary btn-lg btn-block hire_me">Contact Me</button>
+
 	                       <?php } ?>
 	                       <?php } else { ?>
+
 	                       <a href="<?php echo site_url().'login'; ?>" class="btn btn-primary btn-lg btn-block hire_me">Contact Me</a>
+
 	                       <?php } ?>
 	                    </div>
 	                 </form>
-	                 <p>
-	                    By clicking the button, you have read and agree to our <a href="<?php echo site_url().'terms-and-conditions'; ?>">Terms & Conditions</a> and <a href="<?php echo site_url().'privacy-policy'; ?>">Privacy Policy</a>
-	                 </p>
+	                 <!--<p>
+	                    By clicking the button, you have read and agree to our <a href="<?php //echo site_url().'terms-and-conditions'; ?>">Terms & Conditions</a> and <a href="<?php //echo site_url().'privacy-policy'; ?>">Privacy Policy</a>
+	                 </p>-->
+
+	                <div>
+										<span>Average Reponse Time: </span>
+										<b><?php echo round($responseTime['avg_response_time_hours']);?> hour</b>
+									</div>
+
 	              </div>
 	           </div>
 	           <?php } ?>
@@ -1704,6 +1754,52 @@ function init_tinymce(){
      });
      return false;
    }
+
+   function direct_send_msg(){
+    var post = 0;
+    var id = <?php echo $user_profile['id']; ?>;
+    $('#rid-footer').val(id);
+
+    $.ajax({
+      type:'POST',
+      url:site_url+'chat/send_msg',
+      data:$('#direct_hire').serialize(),
+      dataType:'JSON',
+      success:function(resp)
+      {
+        if(resp.status==1)
+        {
+          //$('#direct_msg').val('');
+
+          $.ajax({
+		        type:'POST',
+		        url:site_url+'chat/get_chats',
+		        data:{id:id,post:0},
+		        dataType:'JSON',
+		        success:function(resp) {
+		          if(resp.status==1) {
+		            $('#rid-footer').val(id);
+		            $('#userdetail').html(resp.userdetail);
+		            var oldscrollHeight = $("#usermsg").prop("scrollHeight");         
+		            $('.user_chat').html(resp.data);  
+		            var newscrollHeight = $("#usermsg").prop("scrollHeight");
+		            if (newscrollHeight > oldscrollHeight) {
+		              $("#usermsg").animate({
+		                scrollTop: newscrollHeight
+		              }, 'normal');
+		            }
+		          } else {
+		            $('#userdetail').html(resp.userdetail);
+		            $('.user_chat').html(resp.data); 
+		          }
+		        }
+		      });
+        }
+        showdiv()
+      }
+    });
+    return false;
+  }
 
   function show_hide_more(){
     $(".hide-skill").slideToggle();

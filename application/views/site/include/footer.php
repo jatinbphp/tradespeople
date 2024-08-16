@@ -503,75 +503,62 @@ $total_unread = $this->common_model->GetColumnName('chat',array('receiver_id'=>$
         <div>
           <ul id="get_chat_list" class="user_chat1">
             <?php
-            if($chat_list) {
-            foreach($chat_list as $row) { 
+              if($chat_list) {
+                foreach($chat_list as $row) {             
+                  if($row['post_id']) {
+                    $rid = ($row['sender_id']==$user_id)?$row['receiver_id']:$row['sender_id'];
+                    $get_job_details=$this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$row['post_id']),array('job_id','title','project_id','direct_hired','awarded_to'));
+                    $sender = $this->common_model->get_single_data('users',array('id'=>$rid));
             
-            if($row['post_id']) {
-            
-            $rid = ($row['sender_id']==$user_id)?$row['receiver_id']:$row['sender_id'];
-            
-            $get_job_details=$this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$row['post_id']),array('job_id','title','project_id','direct_hired','awarded_to'));
-            
-            $sender = $this->common_model->get_single_data('users',array('id'=>$rid));
-            
-            if($type == 1){
-              
-              $showName = $sender['f_name'].' '.$sender['l_name'];
-              $get_plan_bids=$this->common_model->get_single_data('user_plans',array('up_user'=>$user_id,'up_status'=>1),'up_id');  
-        
-              $get_chat_paid=$this->common_model->get_single_data('chat_paid',array('user_id'=>$user_id,'post_id'=>$row['post_id']));
-                    
-              if($get_job_details['direct_hired']==0 || ($get_plan_bids && $get_plan_bids['up_status']==1 && strtotime($get_plan_bids['up_enddate'])>=strtotime(date('Y-m-d')) || $get_plan_bids['valid_type']==1) || $get_chat_paid){
-                
-                $onclick = 'get_chat_onclick('.$rid.','.$row['post_id'].');showdiv();';
-                
-              } else {
-                
-                $onclick = 'pay_chat_first('.$rid.','.$row['post_id'].',1);';
-                
-              }
+                    if($type == 1){
+                      $showName = $sender['f_name'].' '.$sender['l_name'];
+                      $get_plan_bids=$this->common_model->get_single_data('user_plans',array('up_user'=>$user_id,'up_status'=>1),'up_id');
+                      $get_chat_paid=$this->common_model->get_single_data('chat_paid',array('user_id'=>$user_id,'post_id'=>$row['post_id']));
 
-              //$onclick = 'get_chat_onclick('.$rid.','.$row['post_id'].');showdiv();';
-            } else {
-              
-              $showName = $sender['trading_name'];
-              
-              $onclick = 'get_chat_onclick('.$rid.','.$row['post_id'].');showdiv();';
-            }
+                      if($get_job_details['direct_hired']==0 || ($get_plan_bids && $get_plan_bids['up_status']==1 && strtotime($get_plan_bids['up_enddate'])>=strtotime(date('Y-m-d')) || $get_plan_bids['valid_type']==1) || $get_chat_paid){
+                        $onclick = 'get_chat_onclick('.$rid.','.$row['post_id'].');showdiv();';
+                      } else {
+                        $onclick = 'pay_chat_first('.$rid.','.$row['post_id'].',1);';
+                      }
+                      //$onclick = 'get_chat_onclick('.$rid.','.$row['post_id'].');showdiv();';
+                    } else {
+                      $showName = $sender['trading_name'];
+                      $onclick = 'get_chat_onclick('.$rid.','.$row['post_id'].');showdiv();';
+                    }
             
-            if($get_job_details['direct_hired']==1){
-              
-              $tradesman = $this->common_model->GetColumnName('users',array('id'=>$get_job_details['awarded_to']),array('trading_name'));
-              $jobName = 'Work for '.$tradesman['trading_name'];
-            } else {
-              $jobName = $get_job_details['title'];
-            }
+                    if($get_job_details['direct_hired']==1){              
+                      $tradesman = $this->common_model->GetColumnName('users',array('id'=>$get_job_details['awarded_to']),array('trading_name'));
+                      $jobName = 'Work for '.$tradesman['trading_name'];
+                    } else {
+                      $jobName = $get_job_details['title'];
+                    }
             
-            if(strlen($jobName) > 30){
-              $jobName = substr($jobName,0,30).'...';
-            }
-                     
-            $unread = $this->common_model->get_unread_by_sid_rid($user_id,$rid,$row['post_id']);
-            
-            
+                    if(strlen($jobName) > 30){
+                      $jobName = substr($jobName,0,30).'...';
+                    }                     
+                    $unread = $this->common_model->get_unread_by_sid_rid($user_id,$rid,$row['post_id']);
             ?> 
-            <li class="other-message">
-              <a href="javascript:void(0);" onclick="<?php echo $onclick; ?>">
-                <div class="message-data"> 
-                  <?php  if($sender['profile']) { ?>
-                  <img src="<?= site_url(); ?>img/profile/<?= $sender['profile']; ?>" alt="">
-                  <?php } else{ ?>
-                  <img src="<?= site_url(); ?>img/profile/dummy_profile.jpg" alt="">
-                  <?php } ?>
-                  <div class="message me-message">
-                    <span class="message-data-name"><?php echo $showName; ?> <?php ($unread[0]['total']>0) ? '('.$unread[0]['total'].')' : ''?></span>
-                    <span class="time"><?php echo $jobName; ?></span>
-                  </div>
-                </div>
-              </a>
-            </li> 
-            <?php  } } } else  { ?>
-            <div class="alert alert-warning">We did not find any records!</div>
+                    <li class="other-message">
+                      <a href="javascript:void(0);" onclick="<?php echo $onclick; ?>">
+                        <div class="message-data"> 
+                          <?php  if($sender['profile']) { ?>
+                          <img src="<?= site_url(); ?>img/profile/<?= $sender['profile']; ?>" alt="">
+                          <?php } else{ ?>
+                          <img src="<?= site_url(); ?>img/profile/dummy_profile.jpg" alt="">
+                          <?php } ?>
+                          <div class="message me-message">
+                            <span class="message-data-name"><?php echo $showName; ?> <?php ($unread[0]['total']>0) ? '('.$unread[0]['total'].')' : ''?></span>
+                            <span class="time"><?php echo $jobName; ?></span>
+                          </div>
+                        </div>
+                      </a>
+                    </li> 
+            <?php   
+                  } 
+                } 
+              }else{
+            ?>
+                <div class="alert alert-warning">We did not find any records!</div>
             <?php  } ?>
           </ul>
         </div>
@@ -1664,8 +1651,7 @@ var loading = function(isLoading) {
   }
 
   function get_chat_onclick(id,post_id){
-    if(id && post_id){
-      
+    //if(id && post_id){
       $('#rid-footer').val(id);
       $('#post_id-footer').val(post_id);
       
@@ -1692,7 +1678,7 @@ var loading = function(isLoading) {
           }
         }
       });
-    }
+    //}
     return false;
   }
 
@@ -1702,6 +1688,8 @@ var loading = function(isLoading) {
     if(id && post_id && id > 0 && post_id > 0)
     {
       get_chat_onclick(id,post_id);
+    }else{
+      get_chat_onclick(id,0);
     }
   }
 
@@ -1958,9 +1946,6 @@ var loading = function(isLoading) {
 $(document).scroll(function() {
   checkOffset();
 });
-$(document).ready(function() {
-    $('.select2').select2();
-});
 </script>
 
 <?php /*
@@ -2179,6 +2164,41 @@ $(document).ready(function(){
 <script src="https://cdn.jsdelivr.net/npm/jquery-ui-multidatespicker@1.6.6/jquery-ui.multidatespicker.js"></script>
  
 <script type="text/javascript">
+  /*Check Logout Code Start*/
+
+  let inactivityTime = function () {
+    let time;
+    window.onload = resetTimer;
+    window.onmousemove = resetTimer;
+    window.onmousedown = resetTimer; 
+    window.ontouchstart = resetTimer; 
+    window.onclick = resetTimer;     
+    window.onkeypress = resetTimer;   
+    window.addEventListener('scroll', resetTimer, true);
+
+    function logout() {
+      $.ajax({
+        url: 'home/auto_logout', // The endpoint to log out user
+        method: 'POST',
+        success: function (response) {
+            window.location = 'login'; // Redirect to login page
+        }
+      });
+    }
+
+    function resetTimer() {
+      clearTimeout(time);
+      time = setTimeout(logout, 7200000);  // Auto logout after 30 minutes of inactivity
+    }
+  };
+
+  inactivityTime();
+
+
+  /*Check Logout Code End*/
+
+
+
   var monthNames = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
@@ -2273,7 +2293,7 @@ $(document).ready(function(){
   
   $('.category-list-slider').slick({
     dots: false,
-    infinite: true,
+    infinite: false,
     arrows: true,
     speed: 300,
     slidesToShow: 1,
@@ -2290,6 +2310,14 @@ $(document).ready(function(){
   });
   
   $('#positive_keywords').on('beforeItemAdd', function(event) {
+      var tag = event.item;
+      var regex = /^[a-zA-Z0-9\s]+$/;
+      if (!regex.test(tag)) {
+          event.cancel = true; // Cancel adding the tag
+      }
+  });
+
+  $('.area').on('beforeItemAdd', function(event) {
       var tag = event.item;
       var regex = /^[a-zA-Z0-9\s]+$/;
       if (!regex.test(tag)) {

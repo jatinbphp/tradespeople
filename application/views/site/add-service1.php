@@ -7,7 +7,7 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Service Title</label>
                     <div class="col-md-12">
-                        <input id="service" value="<?php echo $serviceData['service_name'] ?? '' ?>" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" required>
+                        <input id="service" value="<?php echo $serviceData['service_name'] ?? '' ?>" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" onkeypress="getSuggestedCategory(this.value)" required>
                     </div>
                 </div>
             </div>
@@ -37,7 +37,8 @@
                         </select>
                     </div>
                 </div>
-            </div>
+            </div>           
+
             <div class="col-sm-12 hidden" id="subcategories_div">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Sub Category</label>
@@ -49,6 +50,9 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-sm-12 mb-3 pl-5 hidden" id="suggestedCategory"></div>
+
             <div class="col-sm-12 hidden" id="service_type_div">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Service Type</label>
@@ -63,20 +67,36 @@
 
             <div class="col-sm-12">
                 <div class="form-group">
-                    <label class="col-md-12 control-label" for="">Location</label>
+                    <label class="col-md-12 control-label" for="location">Location</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md" name="location" id="city_id">
+                        <select class="form-control input-md" name="location" id="location">
                             <option value="">Select Location</option>
                             <?php $selected = $serviceData['location'] ?? '' ?>
                             <?php foreach ($cities as $city) { ?>
-                                <option <?php echo $selected == $city['city'] ? 'selected' : ''; ?> value="<?php echo $city['city']; ?>">
-                                    <?php echo $city['city']; ?>
+                                <option <?php echo $selected == $city['id'] ? 'selected' : ''; ?> value="<?php echo $city['id']; ?>">
+                                    <?php echo $city['city_name']; ?>
                                 </option>
                             <?php } ?>
                         </select>
                     </div>
                 </div>
             </div>
+
+            <div class="col-sm-12 <?php echo isset($serviceData) && !empty($serviceData['area']) ? '' : 'hidden'; ?>" id="townDiv">
+                <div class="form-group">
+                    <label class="col-md-12 control-label" for="city">City/Town</label>
+                    <div class="col-md-12">
+                        <select class="form-control input-md" name="area" id="area">
+                            <?php if(!empty($all_area)):?>
+                                <?php foreach($all_area as $area):?>
+                                    <option value="<?php echo $area; ?>" <?php echo $serviceData['area'] == $area ? 'selected' : ''; ?> ><?php echo $area; ?></option>
+                                <?php endforeach;?>
+                            <?php endif;?>    
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-sm-12">
                 <!-- Text input-->
                 <div class="form-group">
@@ -221,19 +241,15 @@
     });
 
     function changesub(){
-        console.log('Function Run');
         var checkedValues = $('.subCategory:checked').map(function() {
             return $(this).val();
         }).get();
-
-        console.log(checkedValues);
 
         $.ajax({
             url:site_url+'users/getSubCategory',
             type:"POST",
             data:{'cat_id':checkedValues,'type':2},
             success:function(data){
-                console.log('AJAX Success');
                 if(data != ""){
                     $('#service_type_div').removeClass('hidden');
                     $('#subcategories_1').empty().append(data);                        
@@ -252,4 +268,54 @@
             setTimeout(changesub, 2000);            
         <?php endif ?>
     });
+
+    function getSuggestedCategory(title){
+        $.ajax({
+            url:site_url+'users/getSuggestedCategory',
+            type:"POST",
+            data:{'title':title},
+            success:function(data){
+                if(data != ""){
+                    var categories = JSON.parse(data);
+                    var formattedOutput = '<span>Suggested categories</span><br>';
+                    categories.forEach(function(category) {
+                        formattedOutput += '<span onclick="setCategory('+category.cat_id+','+category.child_cat_id+')" style="color:#fe8a0f">'+category.cat_name +' > '+category.child_cat_name+'</span><br>';                    
+                    });
+                    
+                    $('#suggestedCategory').html(formattedOutput);
+                    $('#suggestedCategory').removeClass('hidden');
+                }else{
+                    $('#suggestedCategory').addClass('hidden');
+                }                
+            }
+        });
+    }
+
+    function setCategory(mcId, scId){
+        $('.mainCategory').val(mcId);
+        $('.mainCategory').trigger('change');
+
+        setTimeout(function() {
+            $('#subcategory' + scId).prop('checked', true);
+        }, 800);
+    }
+
+    $('#location').on('change', function(){
+        var location = $(this).val();
+         $.ajax({
+            url:site_url+'users/getArea',
+            type:"POST",
+            data:{'location':location},
+            success:function(data){
+                if(data != ""){
+                    $('#townDiv').removeClass('hidden');
+                    $('#area').empty().html(data);
+                    $('#area').val(<?php echo $serviceData['area'] ?? '' ?>);
+                }else{
+                    $('#townDiv').addClass('hidden');
+                }
+            }
+        });
+    });
+
 </script>

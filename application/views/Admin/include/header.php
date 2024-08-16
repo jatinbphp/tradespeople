@@ -641,7 +641,12 @@
                   <a href="<?php echo base_url(); ?>all_services">
                     <i class="fa fa-circle-o"></i>All Service                     
                   </a>
-                </li>                
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>location">
+                    <i class="fa fa-circle-o"></i>Location                     
+                  </a>
+                </li>
               </ul>
             </li>
           <?php }?>

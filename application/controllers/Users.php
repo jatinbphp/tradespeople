@@ -20,12 +20,12 @@ class Users extends CI_Controller
 				}
 			}
 	}
+
 	public function check_login() {
 		if(!$this->session->userdata('user_logIn')){
 			redirect('login?redirectUrl='.base64_encode($_SERVER['REDIRECT_SCRIPT_URI'].'?'.$_SERVER['QUERY_STRING']));
 		}
 	}
-
 
 	public function check_profile_content(){
 		
@@ -65,6 +65,7 @@ class Users extends CI_Controller
 		
 		echo json_encode($json);
 	}
+
 	public function marketers_payouts(){
 		$transfer_type = $_POST['transfer_type'];
 		$amount = $_POST['amount'];
@@ -635,51 +636,64 @@ class Users extends CI_Controller
   public function profile($id){
     $pagedata['user_profile']=$this->common_model->get_single_data('users',array('id'=>$id));
     if(empty($pagedata['user_profile'])) redirect ('find-tradesmen');
-    $pagedata['my_services']=$this->common_model->get_my_service('my_services',$id);
+    $pagedata['my_services']=$this->common_model->get_my_service('my_services',$id);    
+    $pagedata['responseTime']=$this->common_model->countResponseTime($id);
+    $pagedata['serviceAvgRating']=$this->common_model->get_service_avg_rating($id);
+    $pagedata['referalRating']=$this->common_model->get_referral_code_rating($id);
 
-    
+    $serviceRating = min($pagedata['serviceAvgRating'][0]['average_rating'], 5);
+	$referralRating = min($pagedata['referalRating'], 5);
+	$pagedata['overallRating'] = ($serviceRating + $referralRating) / 2;
 
+    $sIds = [];
+    foreach($pagedata['my_services'] as $ser){
+    	$sIds[] = $ser['id'];
+    }
+
+    $lastDelivery = $this->common_model->get_last_order_record('service_order', $sIds, 'id', 'DESC');
+
+    $pagedata['last_delivery_time'] = !empty($lastDelivery) && !empty($lastDelivery['status_update_time']) ? $this->common_model->time_ago($lastDelivery['status_update_time']) : '';
     $pagedata['publications']=$this->common_model->get_education('user_publication',$id);
     $pagedata['portfolio']=$this->common_model->get_education('user_portfolio',$id);
     $pagedata['category']=$this->common_model->GetAllData('category');
     $pagedata['check']=$check;
 		
-		$this->load->library('Ajax_pagination');
-		$this->load->model('search_model');
-		$perPage = 5;
-		
-		$conditions['search']['userid'] = $id;
-		
-		$totalRec = count($this->search_model->get_rating($conditions));
-		
-		$pagedata['totalRec'] = $totalRec;
-		
-		$base_url = site_url().'users/find_rating_ajax';
-		
-		$config['target']      = '#search_data';
-		$config['base_url']    = $base_url;
-		$config['total_rows']  = $totalRec;
-		$config['per_page']    = $perPage;
-		$config['link_func']   = 'searchFilter';
-		$this->ajax_pagination->initialize($config);
-		
-		$conditions['start'] = 0;
-		$conditions['limit'] = $perPage;
-		
-		$pagedata['get_reviews'] = $this->search_model->get_rating($conditions);
-		if($pagedata['user_profile']['type']==1){
-			$this->load->view('site/profile2',$pagedata);
-		} else {
-			$this->load->view('site/profile',$pagedata);
-		}
+	$this->load->library('Ajax_pagination');
+	$this->load->model('search_model');
+	$perPage = 5;
+	
+	$conditions['search']['userid'] = $id;
+	
+	$totalRec = count($this->search_model->get_rating($conditions));
+	
+	$pagedata['totalRec'] = $totalRec;
+	
+	$base_url = site_url().'users/find_rating_ajax';
+	
+	$config['target']      = '#search_data';
+	$config['base_url']    = $base_url;
+	$config['total_rows']  = $totalRec;
+	$config['per_page']    = $perPage;
+	$config['link_func']   = 'searchFilter';
+	$this->ajax_pagination->initialize($config);
+	
+	$conditions['start'] = 0;
+	$conditions['limit'] = $perPage;
+	
+	$pagedata['get_reviews'] = $this->search_model->get_rating($conditions);
+	if($pagedata['user_profile']['type']==1){
+		$this->load->view('site/profile2',$pagedata);
+	} else {
+		$this->load->view('site/profile',$pagedata);
+	}
   }
 	
 	public function show_tradesment_profile($id=null) {
 		$pagedata['user_profile']=$this->common_model->get_single_data('users',array('id'=>$id));
 		
-    $pagedata['portfolio']=$this->common_model->get_education('user_portfolio',$id);
-    // $pagedata['category']=$this->common_model->get_parent_category('category');
-    $pagedata['category']=$this->common_model->GetAllData('category');
+	    $pagedata['portfolio']=$this->common_model->get_education('user_portfolio',$id);
+	    // $pagedata['category']=$this->common_model->get_parent_category('category');
+	    $pagedata['category']=$this->common_model->GetAllData('category');
     
 
 		$this->load->library('Ajax_pagination');
@@ -830,8 +844,7 @@ class Users extends CI_Controller
 		
 		echo json_encode($json);
 
-	}
-	
+	}	
 	
 	public function find_rating_ajax_project_detail($x=null) {
 		
@@ -2326,9 +2339,12 @@ class Users extends CI_Controller
 
 	public function addServices(){
 		if($this->session->userdata('user_id')) {
-			$data['cities'] = $this->search_model->getJobCities();
+			$data['cities'] = $this->common_model->get_all_data('location',['is_delete'=>0]);
 			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
 			$sesData = $this->session->userdata('store_service1');
+
+
+
 
 			$sub_category = !empty($sesData['sub_category']) ? explode(',',$sesData['sub_category']) : [];
 			$service_type = !empty($sesData['service_type']) ? explode(',',$sesData['service_type']) : [];
@@ -2337,6 +2353,8 @@ class Users extends CI_Controller
 			$this->session->set_userdata('service_type_data', $service_type);
 
 			$data['price_per_type'] = !empty($data['category']['price_type_list']) ? explode(',', $data['category']['price_type_list']) : [];
+
+			$data['service_type'] = $this->common_model->getServiceType($service_type);
 
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$sesData['category']]);
 			$data['ex_service'] = $this->common_model->get_all_data('extra_service',['category'=>$sesData['category']]);
@@ -2405,8 +2423,8 @@ class Users extends CI_Controller
 			redirect('add-service');
 		}
 		
-		if(count($this->input->post('service_type')) < 3){
-			$this->session->set_flashdata('error',"You need to select at least 3 service types");
+		if(count($this->input->post('service_type')) > 3){
+			$this->session->set_flashdata('error',"You need to select only 3 service types");
 			$this->session->set_userdata('next_step',1);
 			redirect('add-service');
 		}
@@ -2432,7 +2450,8 @@ class Users extends CI_Controller
 		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 		$insert['description'] = trim($this->input->post('description'));
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
-		$insert['location'] = trim($this->input->post('location'));
+		$insert['location'] = $this->input->post('location');
+		$insert['area'] = $this->input->post('area');
 		$insert['image'] = $newImg;
 		$insert['status'] = 'draft';
 		$insert['category'] = $this->input->post('category');
@@ -2442,6 +2461,11 @@ class Users extends CI_Controller
 			$insert['plugins'] = implode(',', $this->input->post('plugins'));
 		} else {
 			$insert['plugins'] = '';
+		}
+
+		$run = $this->common_model->insert('my_services', $insert);
+		if($run){
+			$this->session->set_userdata('latest_service',$run);
 		}
 
 		$this->session->set_userdata('store_service1',$insert);
@@ -2479,13 +2503,32 @@ class Users extends CI_Controller
 	public function storeServices3($value=''){
 		$newExS = $this->input->post('newExS', []);
 		$this->setServiceData(['newExService' => $newExS]);
+		$latestServiceId = $this->session->userdata('latest_service');
+		$allSessionData = $this->session->userdata('service_data');
+
+		if(!empty($allSessionData['newExService']) && count($allSessionData['newExService']) > 0){
+			foreach($allSessionData['newExService']	 as $list){
+				$allTexs = $this->common_model->get_all_data('tradesman_extra_service');
+
+				$insertExs['service_id'] = $latestServiceId;
+				$insertExs['type'] = $list['type'];
+				$insertExs['category'] = $list['category'];
+				$insertExs['ex_service_id'] = $list['id'] != 0 ? $list['id'] : count($allTexs)+1;
+				$insertExs['ex_service_name'] = $list['ex_service_name'];
+				$insertExs['price'] = $list['price'];
+				$insertExs['additional_working_days'] = $list['additional_working_days'];
+
+				$this->common_model->insert('tradesman_extra_service', $insertExs);	
+			}
+		}
+
 		$this->session->set_userdata('next_step',4);
 		$this->session->set_flashdata('success',"Extra service details added successfully.");
 		redirect('add-service'); 			
 	}
 
 	public function storeServices4($value=''){
-		$step1 = $this->session->userdata('store_service1');
+		/*$step1 = $this->session->userdata('store_service1');
 		$step2 = $this->session->userdata('store_service7');
 		$step3 = $this->session->userdata('store_service3');
 		
@@ -2499,7 +2542,7 @@ class Users extends CI_Controller
 
 		if ($step3 !== null) {
 		  $insert = array_merge($insert, $step3);
-		}
+		}*/
 
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
@@ -2518,39 +2561,23 @@ class Users extends CI_Controller
 		}
 
 		$insert['video'] = $newVid;
-		$run = $this->common_model->insert('my_services', $insert);		
+		$latestServiceId = $this->session->userdata('latest_service');
+		$run = $this->common_model->update('my_services',array('id'=>$latestServiceId),$insert);
 
 		if($run){
-			$this->session->set_userdata('latest_service',$run);
-			$input['service_id'] = $run;
+			$input['service_id'] = $latestServiceId;
 			if(count($mImgs) > 0){
 				$input['type'] = 1;
 				foreach($mImgs as $imgId){					
-					$run = $this->common_model->update('service_images',array('id'=>$imgId),$input);
+					$this->common_model->update('service_images',array('id'=>$imgId),$input);
 				}
 			}
 			if(count($mDocs) > 0){
 				$input['type'] = 2;
 				foreach($mDocs as $docId){
-					$run = $this->common_model->update('service_images',array('id'=>$docId),$input);
+					$this->common_model->update('service_images',array('id'=>$docId),$input);
 				}
-			}
-
-			$allSessionData = $this->session->userdata('service_data');
-			if(!empty($allSessionData['newExService']) && count($allSessionData['newExService']) > 0){
-				foreach($allSessionData['newExService']	 as $list){
-					if(isset($list['id']) && !empty($list['id'])){
-						$insertExs['service_id'] = $run;
-						$insertExs['category'] = $list['category'];
-						$insertExs['ex_service_id'] = $list['id'];
-						$insertExs['ex_service_name'] = $list['ex_service_name'];
-						$insertExs['price'] = $list['price'];
-						$insertExs['additional_working_days'] = $list['additional_working_days'];
-
-						$this->common_model->insert('tradesman_extra_service', $insertExs);	
-					}
-				}			
-			}	
+			}			
 
 			$this->setServiceData($insert);
 		}
@@ -2593,6 +2620,7 @@ class Users extends CI_Controller
 		$insert['time_slot_2'] = $this->input->post('time_slot_2');
 		$insert['weekend_available'] = $this->input->post('weekend_available');
 		$insert['not_available_days'] = $this->input->post('not_available_days');
+		
 		$run = $this->common_model->insert('service_availability', $insert);
 
 		$input['status'] = 'approval_pending';
@@ -2653,7 +2681,7 @@ class Users extends CI_Controller
 
 			$this->setEditServiceData($serviceData);
 			$data['category'] = $this->common_model->get_parent_category('service_category',0,1);
-			$data['cities'] = $this->search_model->getJobCities();			
+			$data['cities'] = $this->common_model->get_all_data('location',['is_delete'=>0]);
 			$trades_ex_service = $this->common_model->getTradesExService($id);
 			$faqs = $this->common_model->getServiceFaqs($id);
 			$serviceAvailiblity = $this->common_model->getServiceAvailability($id);
@@ -2700,11 +2728,19 @@ class Users extends CI_Controller
 
 			$data['service_category'] = $service_category;
 
+			$data['all_area'] = $this->getArea($serviceData1['location'], $serviceData1['area'],1);
+
+			// echo '<pre>';
+			// print_r($data['all_area']);
+			// exit;
+
 			$sub_category = !empty($serviceData1['sub_category']) ? explode(',',$serviceData1['sub_category']) : [];
 			$service_type = !empty($serviceData1['service_type']) ? explode(',',$serviceData1['service_type']) : [];
 
 			$this->session->set_userdata('sub_category_data', $sub_category);
 			$this->session->set_userdata('service_type_data', $service_type);
+
+			$data['service_type'] = $this->common_model->getServiceType($service_type);
 
 			$this->load->view('site/edit-service',$data);
     	} 
@@ -2729,8 +2765,8 @@ class Users extends CI_Controller
 			redirect("edit-service/{$id}");
 		}
 
-		if(count($this->input->post('service_type')) < 3){
-			$this->session->set_flashdata('error',"You need to select at least 3 service types");
+		if(count($this->input->post('service_type')) > 3){
+			$this->session->set_flashdata('error',"You need to select only 3 service types");
 			$this->session->set_userdata('next_step',1);
 			redirect("edit-service/{$id}");
 		}
@@ -2760,6 +2796,7 @@ class Users extends CI_Controller
 		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 		$insert['description'] = trim($this->input->post('description'));
 		$insert['location'] = $this->input->post('location');
+		$insert['area'] = $this->input->post('area');
 		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
 		$insert['category'] = $this->input->post('category');
 		$insert['sub_category'] = $subCat;
@@ -2858,21 +2895,27 @@ class Users extends CI_Controller
 
 			if(!empty($allSessionData['newExService']) && count($allSessionData['newExService']) > 0){
 				foreach($allSessionData['newExService']	 as $list){
-					if(isset($list['id']) && !empty($list['id'])){
-						$insertExs['service_id'] = $id;
-						$insertExs['category'] = $list['category'];
-						$insertExs['ex_service_id'] = $list['id'];
-						$insertExs['ex_service_name'] = $list['ex_service_name'];
-						$insertExs['price'] = $list['price'];
-						$insertExs['additional_working_days'] = $list['additional_working_days'];
+					$lastTexs = end($allSessionData['trades_ex_service']);
+					$insertExs['service_id'] = $id;
+					$insertExs['type'] = $list['type'];
+					$insertExs['category'] = $list['category'];
+					$insertExs['ex_service_id'] = $list['id'] != 0 ? $list['id'] : $lastTexs['id']+1;
+					$insertExs['ex_service_name'] = $list['ex_service_name'];
+					$insertExs['price'] = $list['price'];
+					$insertExs['additional_working_days'] = $list['additional_working_days'];
 
-						$tradesExs = $this->common_model->GetSingleData('tradesman_extra_service',array('service_id'=>$id, 'ex_service_id'=>$list['id']));	
+					if($list['type'] == 1){
+						$tradesExs = $this->common_model->GetSingleData('tradesman_extra_service',array('service_id'=>$id, 'type'=>$list['type'], 'ex_service_id'=>$list['id']));
+						$whereArr = array('service_id'=>$id, 'ex_service_id'=>$list['id']);
+					}else{
+						$tradesExs = $this->common_model->GetSingleData('tradesman_extra_service',array('service_id'=>$id, 'type'=>$list['type'], 'id'=>$list['id']));
+						$whereArr = array('service_id'=>$id, 'id'=>$list['id']);	
+					}
 
-						if(!empty($tradesExs)){
-							$this->common_model->update('tradesman_extra_service',array('service_id'=>$id, 'ex_service_id'=>$list['id']),$insertExs);
-						}else{
-							$this->common_model->insert('tradesman_extra_service', $insertExs);	
-						}
+					if(!empty($tradesExs)){
+						$this->common_model->update('tradesman_extra_service',$whereArr,$insertExs);
+					}else{
+						$this->common_model->insert('tradesman_extra_service', $insertExs);	
 					}
 				}			
 			}		
@@ -3027,6 +3070,7 @@ class Users extends CI_Controller
 			$option .= '<div class="row">';
 			$jsFunction = $type == 1 ? 'onclick="return changesub($(this).val())"' : '';
 			$chkName = $type == 1 ? 'sub_category[]' : 'service_type[]';
+			$inputType = $type == 1 ? 'radio' : 'checkbox';
 
 			// $option .= '<option value="">Please Select</option>';
 			foreach($subCategory as $sCat){
@@ -3038,7 +3082,7 @@ class Users extends CI_Controller
 					$checked = in_array($sCat['cat_id'], $existSType) ? 'checked' : '';
 				}
 
-				$option .= '<div class="col-sm-6"><div class=""><label><input type="checkbox" name="'.$chkName.'" class="subCategory" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
+				$option .= '<div class="col-sm-6"><div class=""><label><input type="'.$inputType.'" name="'.$chkName.'" class="subCategory" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
 			}
 			$option .= '</div>';
 		}		
@@ -3126,6 +3170,7 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		if(!empty($serviceOrder)){
 			$input['status'] = 'completed';
+			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 			echo json_encode(['status' => 'success', 'message' => 'Order Submited']);
 		}else{
@@ -3386,5 +3431,55 @@ class Users extends CI_Controller
 	        }
 	    }
 	    return ['isValid' => true, 'message' => 'Validation passed'];
+	}
+
+	public function getSuggestedCategory(){
+		$title = $this->input->post('title');
+		$suggestedCategories = $this->common_model->get_category_detailsbyname('service_category',$title,1);
+		$catArr = [];
+		if(!empty($suggestedCategories)){
+			foreach($suggestedCategories as $sCat){
+				$childcat = $this->common_model->get_child_category($sCat['cat_id'],$title);
+				if(!empty($childcat)){
+					$catArr[] = [
+						'cat_id'=>$sCat['cat_id'],
+						'cat_name'=>$sCat['cat_name'],
+						'child_cat_id'=>$childcat['cat_id'],
+						'child_cat_name'=>$childcat['cat_name']
+					];
+				}else{
+					$catArr[] = [
+						'cat_id'=>$sCat['cat_id'],
+						'cat_name'=>$sCat['cat_name'],
+						'child_cat_id'=>'',
+						'child_cat_name'=>''
+					];
+				}
+			}
+		}
+		echo json_encode($catArr);
+	}
+
+	public function getArea($lo_Id = 0, $exist_area = '', $type = 0){
+		$lId = $lo_Id ==0 ? $this->input->post('location') : $lo_Id;
+		$location = $this->common_model->get_single_data('location',array('id'=>$lId));
+		$option = '';
+		$areaArr = [];
+		if(!empty($location)){
+			if(!empty($location['area'])){
+				$option = '<option value="">Select City/town</option>';
+				$areas = explode(',', $location['area']);
+				$areaArr = $areas;
+				foreach($areas as $area){
+					$selected = !empty($exist_area) && $exist_area == $area ? 'selected' : '';
+					$option .= '<option value="'.$area.'" '.$selected.'>'.$area.'</option>';
+				}
+			}
+		}
+		if($type == 0){
+			echo $option;
+		}else{
+			return $areaArr;
+		}		
 	}
 }

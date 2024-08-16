@@ -140,6 +140,14 @@ function initializeTagsInput() {
     });
 }
 
+$('.area').on('beforeItemAdd', function(event) {
+    var tag = event.item;
+    var regex = /^[a-zA-Z0-9\s]+$/;
+    if (!regex.test(tag)) {
+        event.cancel = true; // Cancel adding the tag
+    }
+});
+
 </script>
 <script>
 var url = window.location;

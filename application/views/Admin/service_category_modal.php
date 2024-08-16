@@ -22,14 +22,13 @@
 
 						<div class="form-group">
 							<label for="sub_category"> Sub Category:</label>
-							<select name="sub_category[]" id="sub_category" class="form-control" multiple>
-								<option value=''>Select</option>
+							<select name="sub_category[]" id="sub_category" class="form-control" multiple data-placeholder="Select">								
 							</select>
 						</div>
 
 						<div class="form-group">
 							<label for="service_type_category"> Service Type:</label>
-							<select name="service_type_category[]" id="service_type_category" class="form-control select2" multiple>
+							<select name="service_type_category[]" id="service_type_category" class="form-control select2" multiple data-placeholder="Select">
 								<option value=''>Select</option>								
 							</select>
 							<span class="text-muted">Add atleast 3 service types. Use letters and numbers only.</span>
@@ -68,7 +67,7 @@
 							</div>
 						</div>
 						
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label for="email"> Slug:</label>
 							<input type="text" name="slug" id="slug0" value="<?php echo $data['main_service']['slug']; ?>" class="form-control" required>
 							<p class="text-danger">Special characters are not allowed except dash(-) and underscore(_).</p>
@@ -102,7 +101,7 @@
 			 			<div class="form-group">
 							<label for="email"> Footer Description:</label>
 							<textarea rows="5" placeholder="" name="footer_description" id="footer_description" class="form-control textarea"><?php echo $data['main_service']['footer_description']; ?></textarea>
-			 			</div>
+			 			</div> -->
           </div>
           <div class="modal-footer">
           	<input type="hidden" value="<?php echo !empty($data['catId']) ? $data['catId'] : 0; ?>" id="service_cat_id">

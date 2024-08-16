@@ -3089,7 +3089,9 @@ class Admin extends CI_Controller
             $i++;
             $main_cate = $member->cat_name;
 
-            $action = '<button type="button" onclick="myfunction('.$member->cat_id.')" class="btn btn-success btn-xs">Edit</button> ';
+            $action = '<a href="' . base_url('category/'.$member->slug) . '" target="_blank" class="btn btn-warning btn-xs">View Category</a> ';
+
+            $action .= '<button type="button" onclick="myfunction('.$member->cat_id.')" class="btn btn-success btn-xs">Edit</button> ';
 
             $action .= '<a class="btn btn-danger btn-xs" href="' . site_url() . 'Admin/Admin/delete_service_category/' . $member->cat_id . '" onclick="return confirm(\'Are you sure! you want to delete this service category?\');">Delete</a> ';
 
@@ -3116,15 +3118,11 @@ class Admin extends CI_Controller
     public function add_service_category(){
         $json['status'] = 0;
 
-        // echo '<pre>';
-        // print_r($_POST);
-        // exit;
-
         $this->form_validation->set_rules('main_category', 'Main Category', 'required');
         $this->form_validation->set_rules('sub_category[]', 'Sub Category', 'required');
         $this->form_validation->set_rules('service_type_category[]', 'Service Type', 'required');
         // $this->form_validation->set_rules('price_type', 'Price Type', 'required');        
-        $this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']); 
+        //$this->form_validation->set_rules('slug', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']); 
         
         if ($this->form_validation->run() == false) {
             $json['msg'] = '<div class="alert alert-danger">' . validation_errors() . '</div>';
@@ -3152,17 +3150,18 @@ class Admin extends CI_Controller
                     'cat_name'           => $category['cat_name'],
                     'find_job_title'     => $category['cat_name'],
                     'title_ft'           => $category['cat_name'],
-                    'slug'               => $this->input->post('slug'),
+                    'slug'               => $category['slug'],
                     'cat_parent'         => 0,
                     'cat_create'         => date('Y-m-d h:i:s'),
-                    'cat_description'    => $this->input->post('cat_description'),
-                    'description'        => $this->input->post('description'),
+                    'cat_description'    => $category['cat_description'],
+                    'description'        => $category['description'],
+                    'cat_image'          => $category['cat_image'],
                     'price_type'         => $price_type,
                     'price_type_list'    => $price_type_list,
-                    'meta_title'         => $this->input->post('meta_title'),
-                    'meta_key'           => $this->input->post('meta_key'),
-                    'meta_description'   => $this->input->post('meta_description'),
-                    'footer_description' => $this->input->post('footer_description'),
+                    'meta_title'         => $category['meta_title'],
+                    'meta_key'           => $category['meta_key'],
+                    'meta_description'   => $category['meta_description'],
+                    'footer_description' => $category['footer_description'],
                     'is_activate'        => 1,
                 ];
 
@@ -3183,14 +3182,15 @@ class Admin extends CI_Controller
                                 'slug'               => $scat['slug'],
                                 'cat_parent'         => $result,
                                 'cat_create'         => date('Y-m-d h:i:s'),
-                                'cat_description'    => $this->input->post('cat_description'),
-                                'description'        => $this->input->post('description'),
+                                'cat_description'    => $scat['cat_description'],
+                                'description'        => $scat['description'],
+                                'cat_image'          => $scat['cat_image'],
                                 'price_type'        => $price_type,
                                 'price_type_list'    => $price_type_list,
-                                'meta_title'         => $this->input->post('meta_title'),
-                                'meta_key'           => $this->input->post('meta_key'),
-                                'meta_description'   => $this->input->post('meta_description'),
-                                'footer_description' => $this->input->post('footer_description'),
+                                'meta_title'         => $scat['meta_title'],
+                                'meta_key'           => $scat['meta_key'],
+                                'meta_description'   => $scat['meta_description'],
+                                'footer_description' => $scat['footer_description'],
                                 'is_activate'        => 1,
                             ];
 
@@ -3213,14 +3213,15 @@ class Admin extends CI_Controller
                                                 'slug'               => $sTypeCat['slug'],
                                                 'cat_parent'         => $result1,
                                                 'cat_create'         => date('Y-m-d h:i:s'),
-                                                'cat_description'    => $this->input->post('cat_description'),
-                                                'description'        => $this->input->post('description'),
+                                                'cat_description'    => $sTypeCat['cat_description'],
+                                                'description'        => $sTypeCat['description'],
+                                                'cat_image'          => $sTypeCat['cat_image'],
                                                 'price_type'        => $price_type,
                                                 'price_type_list'    => $price_type_list,
-                                                'meta_title'         => $this->input->post('meta_title'),
-                                                'meta_key'           => $this->input->post('meta_key'),
-                                                'meta_description'   => $this->input->post('meta_description'),
-                                                'footer_description' => $this->input->post('footer_description'),
+                                                'meta_title'         => $sTypeCat['meta_title'],
+                                                'meta_key'           => $sTypeCat['meta_key'],
+                                                'meta_description'   => $sTypeCat['meta_description'],
+                                                'footer_description' => $sTypeCat['footer_description'],
                                                 'is_activate'        => 1,
                                             ];
                                             $this->My_model->insert_entry('service_category', $insert_arr2);    
@@ -3278,9 +3279,9 @@ class Admin extends CI_Controller
         $this->form_validation->set_rules('service_type_category[]', 'Service Type', 'required');
         //$this->form_validation->set_rules('price_type[]', 'Price Type', 'required');        
         
-        if ($categories) {
+        /*if ($categories) {
             $this->form_validation->set_rules('slug1', 'Slug name', 'trim|required|alpha_dash|is_unique[service_category.slug]', ['is_unique' => 'This slug already exist']);
-        }
+        }*/
 
         if ($this->form_validation->run() == false) {
             $json['msg'] = '<div class="alert alert-danger">' . validation_errors() . '</div>';
@@ -3311,17 +3312,18 @@ class Admin extends CI_Controller
                     'cat_name'           => $category['cat_name'],
                     'find_job_title'     => $category['cat_name'],
                     'title_ft'           => $category['cat_name'],
-                    'slug'               => $this->input->post('slug'),
+                    'slug'               => $category['slug'],
                     'cat_parent'         => 0,
                     'cat_create'         => date('Y-m-d h:i:s'),
-                    'cat_description'    => $this->input->post('cat_description'),
-                    'description'        => $this->input->post('description'),
+                    'cat_description'    => $category['cat_description'],
+                    'description'        => $category['description'],
+                    'cat_image'          => $category['cat_image'],
                     'price_type'         => $price_type,
                     'price_type_list'    => $price_type_list,
-                    'meta_title'         => $this->input->post('meta_title'),
-                    'meta_key'           => $this->input->post('meta_key'),
-                    'meta_description'   => $this->input->post('meta_description'),
-                    'footer_description' => $this->input->post('footer_description'),
+                    'meta_title'         => $category['meta_title'],
+                    'meta_key'           => $category['meta_key'],
+                    'meta_description'   => $category['meta_description'],
+                    'footer_description' => $category['footer_description'],
                     'is_activate'        => 1,
                 ];
                 $where_array = ['cat_id' => $id];
@@ -3354,14 +3356,15 @@ class Admin extends CI_Controller
                                 'slug'               => $scat['slug'],
                                 'cat_parent'         => $id,
                                 'cat_create'         => date('Y-m-d h:i:s'),
-                                'cat_description'    => $this->input->post('cat_description'),
-                                'description'        => $this->input->post('description'),
+                                'cat_description'    => $scat['cat_description'],
+                                'description'        => $scat['description'],
+                                'cat_image'          => $scat['cat_image'],
                                 'price_type'         => $price_type,
                                 'price_type_list'    => $price_type_list,
-                                'meta_title'         => $this->input->post('meta_title'),
-                                'meta_key'           => $this->input->post('meta_key'),
-                                'meta_description'   => $this->input->post('meta_description'),
-                                'footer_description' => $this->input->post('footer_description'),
+                                'meta_title'         => $scat['meta_title'],
+                                'meta_key'           => $scat['meta_key'],
+                                'meta_description'   => $scat['meta_description'],
+                                'footer_description' => $scat['footer_description'],
                                 'is_activate'        => 1,
                             ];
 
@@ -3391,14 +3394,15 @@ class Admin extends CI_Controller
                                                 'slug'               => $sTypeCat['slug'],
                                                 'cat_parent'         => $sCatId,
                                                 'cat_create'         => date('Y-m-d h:i:s'),
-                                                'cat_description'    => $this->input->post('cat_description'),
-                                                'description'        => $this->input->post('description'),
+                                                'cat_description'    => $sTypeCat['cat_description'],
+                                                'description'        => $sTypeCat['description'],
+                                                'cat_image'          => $sTypeCat['cat_image'],
                                                 'price_type'        => $price_type,
                                                 'price_type_list'    => $price_type_list,
-                                                'meta_title'         => $this->input->post('meta_title'),
-                                                'meta_key'           => $this->input->post('meta_key'),
-                                                'meta_description'   => $this->input->post('meta_description'),
-                                                'footer_description' => $this->input->post('footer_description'),
+                                                'meta_title'         => $sTypeCat['meta_title'],
+                                                'meta_key'           => $sTypeCat['meta_key'],
+                                                'meta_description'   => $sTypeCat['meta_description'],
+                                                'footer_description' => $sTypeCat['footer_description'],
                                                 'is_activate'        => 1,
                                             ];
 
@@ -3743,5 +3747,98 @@ class Admin extends CI_Controller
             echo 0;
             exit;
         }
+    }
+
+    public function location() {
+        $result['listing']=$this->My_model->get_all_category('location');
+        $select = 'id,city_name';
+        $result['main_location']=$this->My_model->get_all_category('tbl_city',$select);
+
+        if($result['listing']==''){
+            $result['listing']  =array();     
+        }
+        $this->load->view('Admin/location',$result);
+    }
+
+    public function add_location(){
+        $json['status'] = 0;
+        $json['msg'] = '<div class="alert alert-danger">Error! something went wrong.</div>';
+        $id=$this->input->post('location_id');
+        
+        if($id){
+            $this->form_validation->set_rules('city_name','City name','required');
+        }else{
+            $this->form_validation->set_rules('city_name','City name','required|is_unique[location.city_name]');
+        }
+        
+        if ($this->form_validation->run()==false){
+            $json['msg'] = '<div class="alert alert-danger">'.validation_errors().'</div>';
+        }else{
+            $lId = $this->input->post('city_name');
+            $location = $this->Common_model->get_single_data('tbl_city',array('id'=>$lId));
+
+            $insert_arr = array(
+                'city_id' => $this->input->post('city_name'),
+                'city_name' => $location['city_name'],
+                'area' => trim($this->input->post('area')),
+                'meta_title' => $this->input->post('meta_title'),
+                'meta_key' => $this->input->post('meta_key'),
+                'meta_description' => $this->input->post('meta_description'),
+                'meta_title2' => $this->input->post('meta_title2'),
+                'meta_key2' => $this->input->post('meta_key2'),
+                'meta_description2' => $this->input->post('meta_description2'),
+                'meta_title3' => $this->input->post('meta_title3'),
+                'meta_key3' => $this->input->post('meta_key3'),
+                'meta_description3' => $this->input->post('meta_description3'),
+                'meta_title4' => $this->input->post('meta_title4'),
+                'meta_key4' => $this->input->post('meta_key4'),
+                'meta_description4' => $this->input->post('meta_description4'),
+                'tradesmen_footer_description' => $this->input->post('tradesmen_footer_description'),
+                'jobpage_footer_description' => $this->input->post('jobpage_footer_description')
+            );  
+         
+            if($id){                
+                $city_name=$this->Common_model->get_single_data('location',array('id!='=>$id,'city_id'=>$this->input->post('city_name')));
+                if($city_name){
+                    $json['msg'] = '<div class="alert alert-danger">Location name already exists</div>';
+                    $result=false;
+            }else{
+                $result=$this->Common_model->update('location',array('id'=>$id),$insert_arr);
+                    $this->session->set_flashdata('success', 'Success! Location has been updated successfully.');
+                    $json['status'] = 1;
+                }
+            }else{      
+                $result=$this->My_model->insert_entry('location',$insert_arr);
+                $this->session->set_flashdata('success', 'Success! Location has been added successfully.');
+            }
+          
+            if($result){
+                $json['status'] = 1;    
+            }
+        } 
+        //echo $this->db->last_query();
+        echo json_encode($json);
+    }
+
+    public function delete_location(){
+        $id=$this->uri->segment(4);
+        $delete=$this->Common_model->delete(array('id'=>$id),'location');   
+        if($delete){
+            $this->session->set_flashdata('success', 'Success!  Location has been deleted successfully.');
+        }else{
+            $this->session->set_flashdata('error', 'error!  something went wrong.');
+        }
+        redirect('location');
+    }
+
+    public function get_location_data(){
+        $lId = $this->input->post('lid');
+        $location = $this->Common_model->get_single_data('location',array('id'=>$lId));
+        $json['status'] = 0;
+        if(!empty($location)){
+            $json['status'] = 1;
+            $json['location'] = $location;
+        }
+        echo json_encode($json);
     }
 }

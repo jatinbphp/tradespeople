@@ -257,6 +257,7 @@ $route['approval_pending_service']        = 'Admin/Admin/approval_pending_servic
 $route['required_modification']        = 'Admin/Admin/required_modification';
 $route['approved_service']        = 'Admin/Admin/approved_service';
 $route['all_services']        = 'Admin/Admin/service_list';
+$route['location']        = 'Admin/Admin/location';
 $route['service-orders']        = 'Admin/Admin/service_orders';
 
 $route['homeowners_users']      = 'Admin/Admin/homeowners_users';
@@ -342,3 +343,4 @@ $route['edit-marketer/(:num)']  = 'Admin/Admin/edit_marketer/$1';
 $route['view-referrals/(:num)'] = 'Admin/Admin/view_referrals/$1';
 
 $route['local-category'] = 'Admin/Local_Category/local_category';
+$route['location-local-category'] = 'Admin/Location_Local_Category/location_local_category';
