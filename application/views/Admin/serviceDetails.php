@@ -28,13 +28,16 @@
 
         <tr>
           <th>Location</th>
-          <td><?php echo $service_details['location']?></td>
+          <td>
+            <?php echo !empty($service_details['area']) ? $service_details['area'].', ' : ''; ?>
+            <?php echo $location['city_name']; ?>
+          </td>
         </tr>
 
-        <tr>
+        <!-- <tr>
           <th>Price</th>
-          <td><?php echo '£'.number_format($service_details['price'],2);?></td>
-        </tr>
+          <td><?php //echo '£'.number_format($service_details['price'],2);?></td>
+        </tr> -->
 
         <tr>
           <th>Positive Keywords</th>
@@ -45,7 +48,7 @@
           <th>Category</th>
           <td>
             <?php
-              $category = $this->Common_model->get_single_data('category',array('cat_id'=>$service_details['category']));
+              $category = $this->Common_model->get_single_data('service_category',array('cat_id'=>$service_details['category']));
               echo $category['cat_name'];
             ?>
           </td>
@@ -55,7 +58,7 @@
           <th>Sub Category</th>
           <td>
             <?php
-              $sub_category = $this->Common_model->get_single_data('category',array('cat_id'=>$service_details['sub_category']));
+              $sub_category = $this->Common_model->get_single_data('service_category',array('cat_id'=>$service_details['sub_category']));
               echo $sub_category['cat_name'];
             ?>
           </td>
@@ -65,17 +68,26 @@
           <th>Service Type</th>
           <td>
             <?php
-              $service_type = $this->Common_model->get_single_data('category',array('cat_id'=>$service_details['service_type']));
-              echo $service_type['cat_name'];
+              $sType = !empty($service_details['service_type']) ? explode(',', $service_details['service_type']) : [];
+              $stName = '';
+              if(!empty($sType) && count($sType) > 0){
+                foreach($sType as $st){
+                  $service_type = $this->Common_model->get_single_data('service_category',array('cat_id'=>$st));  
+                  if(!empty($service_type)){
+                    $stName .= $service_type['cat_name'].', ';
+                  }
+                }                
+              }              
+              echo substr(trim($stName), 0, -1);
             ?>
           </td>
         </tr>
 
-        <tr>
+        <!-- <tr>
           <th>Plugins</th>
           <td>
             <?php
-              $pluginList = '';
+              /*$pluginList = '';
               if(!empty($service_details['plugins'])){
                 $plugins = explode(',', $service_details['plugins']);
                 foreach($plugins as $plug){
@@ -83,10 +95,10 @@
                   $pluginList .= $plugin_name['cat_name'].', ';
                 }
               }          
-              echo rtrim($pluginList,',');
+              echo rtrim($pluginList,',');*/
             ?>
           </td>
-        </tr>
+        </tr> -->
 
         <tr>
           <th>Image/Video</th>
@@ -159,7 +171,7 @@
     </div>   
 </div>
 
-<div id="package" class="w3-container sTab">
+<div id="package" class="w3-container sTab" style="display:none">
   <div class="table-responsive">
     <div class="row">
       <div class="col-md-6">

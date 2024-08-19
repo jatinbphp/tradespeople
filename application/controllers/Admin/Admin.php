@@ -3063,6 +3063,9 @@ class Admin extends CI_Controller
         $data['service_user'] = $this->Common_model->GetSingleData('users',['id'=>$uId]);
         $data['user_profile'] = $this->Common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
 
+        $lId = $data['service_details']['location'];
+        $data['location'] = $this->Common_model->GetSingleData('location',['id'=>$lId]);
+
         $service_type = !empty($data['service_details']['service_type']) ? explode(',',$data['service_details']['service_type']) : [];
 
         $data['service_type'] = $this->Common_model->getServiceType($service_type);

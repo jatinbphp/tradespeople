@@ -2863,14 +2863,18 @@ class Common_model extends CI_Model
 	}
 
 	function get_all_service_for_admin($table, $limit, $status = null){
-	    $query = "SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+	    $query = "SELECT ms.*, l.city_name, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
 	              FROM $table ms
 	              LEFT JOIN service_category c ON ms.category = c.cat_id
 	              LEFT JOIN users u ON ms.user_id = u.id
+	              LEFT JOIN location l ON ms.location = l.id
 	              LEFT JOIN service_rating srt ON ms.id = srt.service_id";
 
 	    if ($status !== null) {
 	        $query .= " WHERE ms.status = '$status'";
+	    }else{
+	    	$status = 'draft';
+	    	$query .= " WHERE ms.status != '$status'";
 	    }
 
 	    $query .= " GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
