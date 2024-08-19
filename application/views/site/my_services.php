@@ -58,7 +58,7 @@
                                                 </option>  
                                                 <option value="delete_all">
                                                     Delete All
-                                                </option>
+                                                </option>                                       
                                             </select>
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@
                                                         <th>Image</th>                     
                                                         <th>Service Name</th> 
                                                         <th>Date Created</th> 
-                                                        <th>Action</th>                     
+                                                        <th>Action</th>     
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -140,9 +140,6 @@ $(function () {
                 return new Date(data).toLocaleDateString() + ' ' + new Date(data).toLocaleTimeString();
             }},
             { "data": "id", "render": function(data, type, row) {
-                // return '<a class="btn btn-warning btn-sm" href="'+site_url+'edit-service/'+data+'">Edit</a>' +
-                //        ' <a class="btn btn-danger btn-sm" href="'+site_url+'delete-service/'+data+'" onclick="return confirm(\'Are you sure want to delete this service?\')">Delete</a>';
-
                 return '<div class="btn-group">'+
                             '<button type="button" class="btn btn-sm btn-default dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">'+
                                 '<span class="sr-only">Toggle Dropdown</span>'+
@@ -156,35 +153,78 @@ $(function () {
         ]
     });
 
+    $('#boottable tbody').on('change', '.serviceSwitch', function(event){
+        event.preventDefault();
+        var sId = $(this).data('id');
+        var status = 'active';
+        if ($(this).is(':checked')) {
+            var status = 'paused';
+        }
+
+        swal({
+            title: "Are you sure?",
+            text: "You want to "+status+" this service?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Update',
+            cancelButtonText: 'Cancel'
+        }, function() {
+            $.ajax({
+                url: site_url + 'users/pausedServices',
+                type: "POST",
+                data: {'servicesIds': sId, 'status': status},
+                dataType: 'json',
+                success: function(data){
+                    /*if(data.status === 'success'){
+                        swal({
+                            title: "Success",
+                            text: data.message,
+                            type: "success"
+                        });
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: data.message,
+                            type: "error"
+                        });
+                    }*/
+                    table.ajax.reload(null, false);
+                }
+            });
+        });
+    });
+
     $('#action').on('change', function(){
         var action = $(this).val();
         if(action == 'delete_all'){
-            var selectedValues = [];
-            $('.checkBoxClass:checked').each(function() {
-                selectedValues.push($(this).val());
-            });
-
-            if(selectedValues.length == 0){
-                alert('Please select at least one service');
-                return false;
-            }
-
-            $.ajax({
-                url: site_url + 'users/deleteAllServices',
-                type: "POST",
-                data: {'servicesIds': selectedValues},
-                dataType: 'json',
-                success: function(data){
-                    if(data.status == 'success'){
-                        table.ajax.reload(null, false);  // Reload DataTable without resetting the pagination
-                        alert('Selected services are deleted successfully.');
-                    } else {
-                        alert('Please select at least one service');
-                    }
-                     $('#action').val('');
-                }
-            });
+            var ajaxUrl = 'users/deleteAllServices'
         }
+
+        var selectedValues = [];
+        $('.checkBoxClass:checked').each(function() {
+            selectedValues.push($(this).val());
+        });
+
+        if(selectedValues.length == 0){
+            alert('Please select at least one service');
+            return false;
+        }
+
+        $.ajax({
+            url: site_url + ajaxUrl,
+            type: "POST",
+            data: {'servicesIds': selectedValues},
+            dataType: 'json',
+            success: function(data){
+                if(data.status == 'success'){
+                    table.ajax.reload(null, false); //Reload DataTable without resetting the pagination
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+                 $('#action').val('');
+            }
+        });
     });
 
     // Handle the "Select All" checkbox functionality

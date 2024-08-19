@@ -2284,15 +2284,25 @@ class Users extends CI_Controller
 	        $services = $this->common_model->get_my_service('my_services', $this->session->userdata('user_id'), $status);
 	        $data = [];
 
-	        foreach($services as $service) {        	 
-	          $data[] = [
-	              'id' => $service['id'],
-	              'status' => ucwords(str_replace('_',' ',$service['status'])),
-	              'image' => $service['image'],
-	              'service_name' => $service['service_name'],
-	              'created_at' => $service['created_at'],
-	              'price' => $service['price']
-	          ];
+	        foreach($services as $service) {
+	        	if(!in_array($service['status'], ['denied','approval_pending','draft'])){
+	        		$checked = $service['status'] == 'paused' ? 'checked' : '';
+	        		$statusSwitch = '<br><label class="switch">
+							<input type="checkbox" class="serviceSwitch" data-id="'.$service['id'].'" name="paused" '.$checked.' id="sp_'.$service['id'].'">
+							<span class="switch-slider round"></span>						  
+						</label>';
+	        	}else{
+	        		$statusSwitch = '';	
+	        	}
+
+	          	$data[] = [
+	            	'id' => $service['id'],
+	              	'status' => ucwords(str_replace('_',' ',$service['status'])).$statusSwitch,
+	              	'image' => $service['image'],
+	              	'service_name' => $service['service_name'],
+	              	'created_at' => $service['created_at'],
+	              	'price' => $service['price']
+	          	];
 	        }
 
 	        echo json_encode(['data' => $data]);
@@ -3169,9 +3179,21 @@ class Users extends CI_Controller
 					$this->common_model->delete(['service_id'=>$id], 'service_rating');	
 				}
 			}
-			echo json_encode(['status' => 'success']);
+			echo json_encode(['status' => 'success', 'message' => 'Selected services are deleted successfully.']);
 		}else{
-			echo json_encode(['status' => 'error', 'message' => 'No services selected']);
+			echo json_encode(['status' => 'error', 'message' => 'Please select at least one service']);
+		}
+	}
+
+	public function pausedServices(){
+		$id = $this->input->post('servicesIds');
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+		if(!empty($service)){
+			$input['status'] = $this->input->post('status');
+			$this->common_model->update('my_services',array('id'=>$id),$input);
+			echo json_encode(['status' => 'success', 'message' => 'Service status has been updated.']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Something is wrong.']);
 		}
 	}
 
