@@ -3063,6 +3063,18 @@ class Admin extends CI_Controller
         $data['service_user'] = $this->Common_model->GetSingleData('users',['id'=>$uId]);
         $data['user_profile'] = $this->Common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
 
+        $service_type = !empty($data['service_details']['service_type']) ? explode(',',$data['service_details']['service_type']) : [];
+
+        $data['service_type'] = $this->Common_model->getServiceType($service_type);
+
+        $data['package_data'] = !empty($data['service_details']['package_data']) ? json_decode($data['service_details']['package_data']) : [];
+
+        $service_category = $this->Common_model->GetSingleData('service_category',['cat_id'=>$data['service_details']['category']]);
+
+        $data['attributes'] = $this->Common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
+
+        $data['service_category'] = $service_category;
+
         $serviceDetailsView = $this->load->view('Admin/serviceDetails', $data);
         return $serviceDetailsView;        
     }

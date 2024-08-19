@@ -10600,6 +10600,12 @@ button.switch-month:hover {
     border: 1px solid #e4e5e7;
     background: transparent; 
 }
+.service-share-button {
+    padding: 0;
+}
+.service-share-button span {
+    padding: 6px 12px;
+}
 .sidebar-icons .btn-outline:hover {
     background: #f5f5f5; 
 }
@@ -10684,3 +10690,58 @@ button.switch-month:hover {
     border: 1px solid #e1e1e1;
     border-radius: 10px;
 }
+#ShareThis .modal-content {
+    padding: 45px 45px 25px;
+    text-align: center;
+    position: relative;
+}
+#ShareThis .modal-body {
+    padding: 0;
+}
+#ShareThis button.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 30px;
+}
+.sharing-title {
+    font-weight: bold;
+}
+.social-mediums-icons {
+    padding-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+.social-mediums-icons .social-medium {
+    min-width: 88px;
+    padding: 15px 0;
+}
+.social-mediums-icons .social-medium .social-medium-image {
+    height: 56px;
+    width: 56px;
+}
+.social-mediums-icons .social-medium .social-medium-title {
+    padding-top: 10px;
+    display: inline-block;
+    color: #464c5b;
+}
+.sharing-description p {
+    font-weight: normal;
+}
+.social-mediums-icons .social-medium:hover .social-medium-title {
+    text-decoration: underline;
+}
+.social-mediums-icons .social-medium:hover .social-medium-image .image-filter {
+    display: block;
+}
+.social-mediums-icons .social-medium .social-medium-image .image-filter {
+    display: none;
+}
+.social-mediums-icons .social-medium:hover .social-medium-image .background-circle {
+    fill-opacity: .1;
+}
+.modal-dialog-centered {
+    min-height: calc(100% - (1.75rem * 2));
+    display: flex;
+    align-items: center;
+ }

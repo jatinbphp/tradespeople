@@ -113,10 +113,9 @@
 							</tr>
 							<tbody>
 								<?php 
-									$stName1 = isset($service_type[0]) ? $service_type[0]['cat_name'] : '';
-									$stName2 = isset($service_type[1]) ? $service_type[1]['cat_name'] : '';
-									$stName3 = isset($service_type[2]) ? $service_type[2]['cat_name'] : '';
-
+									$stName1 = isset($service_type[0]) ? $service_type[0]['cat_name'] : 'Basic';
+									$stName2 = isset($service_type[1]) ? $service_type[1]['cat_name'] : 'Standard';
+									$stName3 = isset($service_type[2]) ? $service_type[2]['cat_name'] : 'Premium';
 									$bName = '';
 									$sName = '';
 									$pName = '';
@@ -196,9 +195,9 @@
 								<?php endif;?>	
 								<tr>
 									<?php 
-										$basicDays = isset($package_data) ? $package_data->basic->days : [];
-										$standardDays = isset($package_data) ? $package_data->standard->days : [];
-										$premiumDays = isset($package_data) ? $package_data->premium->days : [];
+										$basicDays = isset($package_data) && !empty($package_data->basic->days) ? $package_data->basic->days : 0;
+										$standardDays = isset($package_data) && !empty($package_data->standard->days) ? $package_data->standard->days : 0;
+										$premiumDays = isset($package_data) && !empty($package_data->premium->days) ? $package_data->premium->days : 0;
 									?>
 									<td>
 										<select name="package[basic][days]" class="form-control">

@@ -295,19 +295,85 @@
 											</button>
 											<span class="collect-count totalLikes"><?php echo $service_details['total_likes']; ?></span>
 										</div>
-										<button type="button" class="btn btn-outline" data-toggle="tooltip" data-placement="top" title="Share this service">
-											<svg width="16" height="16" viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path d="M11 10c-.707 0-1.356.244-1.868.653L5.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L4.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 11 10Z"></path></svg>
+										<button type="button" class="btn btn-outline service-share-button"  data-toggle="modal" data-target="#ShareThis">
+											<span data-toggle="tooltip" data-placement="top" title="Share this service">
+												<svg width="16" height="16" viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill">
+													<path d="M11 10c-.707 0-1.356.244-1.868.653L5.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L4.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 11 10Z"></path>
+												</svg>
+											</span>
 										</button>
+
+										<!-- Modal -->
+										<div class="modal fade" id="ShareThis" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered" role="document">
+												<div class="modal-content">
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													<div class="modal-body">
+														<h3 class="sharing-title">Share This Service</h3>
+														<div class="sharing-description">
+															<p>Spread the word about this Service</p>
+														</div>
+														<div class="social-mediums-icons">
+																<div class="social-medium">
+																	<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+																		<div>
+																			<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-187 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g transform="translate(13)"><use fill="#3E5A99" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><path d="M36.0548085,23.6101303 L31.1603782,23.6101303 L31.1603782,20.6914819 C31.1603782,19.5844084 31.9761166,19.2824792 32.485953,19.2824792 L35.9528412,19.2824792 L35.9528412,14.4516129 L31.1603782,14.4516129 C25.8580786,14.4516129 24.7364383,18.0747626 24.7364383,20.3895528 L24.7364383,23.6101303 L21.6774194,23.6101303 L21.6774194,28.6422827 L24.7364383,28.6422827 L24.7364383,42.7323095 L31.1603782,42.7323095 L31.1603782,28.6422827 L35.4430047,28.6422827 L36.0548085,23.6101303 Z" fill="#FFF"></path></g></g></g></g></g></svg>
+																		</div>
+																		<span class="social-medium-title">Facebook</span>
+																	</a>
+																</div>
+																<div class="social-medium">
+																	<a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+																		<div>
+																			<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-373.000000, -369.000000)"><g transform="translate(120.000000, 189.000000)"><g transform="translate(54.000000, 180.000000)"><g transform="translate(199.000000, 0.000000)"><use fill="#0677B5" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.1" fill="#000000" xlink:href="#path-1"></use><g transform="translate(14.451613, 14.451613)" fill="#FFFFFF"><polygon id="Fill-3" points="0.341578453 27.0700924 6.14841215 27.0700924 6.14841215 8.79564516 0.341578453 8.79564516"></polygon><path d="M3.24482451,6.31920138 C1.28074841,6.31920138 -0.000170789226,4.95288757 -0.000170789226,3.15960069 C-0.000170789226,1.36631381 1.28074841,-3.55271368e-15 3.24482451,-3.55271368e-15 C5.20890062,-3.55271368e-15 6.4044252,1.36631381 6.48981981,3.15960069 C6.57521443,4.86749295 5.29429523,6.31920138 3.24482451,6.31920138" id="Fill-5"></path><path d="M27.0702632,26.9848686 L21.2634295,26.9848686 L21.2634295,17.2498827 C21.2634295,14.7734389 20.4094833,13.1509412 18.3600126,13.1509412 C16.736661,13.1509412 15.7981742,14.2610712 15.3712012,15.3703472 C15.2004119,15.7973203 15.2004119,16.3105419 15.2004119,16.8229096 L15.2004119,26.9848686 L9.39357824,26.9848686 C9.39357824,26.9848686 9.47811891,10.5037082 9.39357824,8.71042134 L15.2004119,8.71042134 L15.2004119,11.2722597 C15.9689635,9.99134053 17.3352773,8.28344827 20.4094833,8.28344827 C24.2522409,8.28344827 27.0702632,10.9306813 27.0702632,16.4813311 L27.0702632,26.9848686 Z" id="Fill-6"></path></g></g></g></g></g></g></svg>
+																		</div>
+																		<span class="social-medium-title">LinkedIn</span>
+																	</a>
+																</div>
+																<div class="social-medium">
+																	<a href="https://twitter.com/intent/tweet?url=<?php echo base_url().'service/'.$service_details['slug']?>&text=Check%20this%20out!" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+																		<div>
+																			<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-280 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g transform="translate(106)"><use fill="#60A9DD" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><path d="M42.1262216,19.1290952 C41.1407756,19.6357476 39.9910886,19.9735159 38.8414016,20.057958 C39.9910886,19.2979793 40.8944141,18.1157902 41.3050166,16.6802749 C40.2374501,17.3558115 39.0056426,17.862464 37.6917146,18.2002323 C36.6241481,17.0180432 35.1459791,16.2580645 33.5035691,16.2580645 C30.38299,16.2580645 27.8372545,18.960211 27.8372545,22.3378941 C27.8372545,22.8445466 27.919375,23.266757 28.0014955,23.6889674 C23.2385065,23.4356411 19.0503609,20.9868209 16.2582639,17.3558115 C15.7655409,18.2846744 15.5191794,19.2979793 15.5191794,20.3957263 C15.5191794,22.5067783 16.5046254,24.364504 18.0649149,25.462251 C17.1615894,25.462251 16.2582639,25.1244827 15.5191794,24.7022723 L15.5191794,24.7867144 C15.5191794,27.7421871 17.4900714,30.1918518 20.1179274,30.7821019 C19.6252044,30.950986 19.1324814,31.0362725 18.6397584,31.0362725 C18.3112764,31.0362725 17.9006739,31.0362725 17.5721919,30.950986 C18.3112764,33.3998063 20.364289,35.1730899 22.9100245,35.1730899 C20.9391325,36.7774894 18.4755174,37.7916388 15.8476614,37.7916388 C15.3549384,37.7916388 14.9443359,37.7916388 14.4516129,37.7063523 C16.9973484,39.3951938 19.9536864,40.4084988 23.156386,40.4084988 C33.6678101,40.4084988 39.3341246,31.1198702 39.3341246,23.0978728 L39.3341246,22.3378941 C40.4016911,21.4090313 41.3871371,20.3957263 42.1262216,19.1290952" fill="#FFF"></path></g></g></g></g></g></svg>
+																		</div>
+																		<span class="social-medium-title">Twitter</span>
+																	</a>
+																</div>
+																<div class="social-medium">
+																	<a href="https://api.whatsapp.com/send?text=Check%20this%20out!%20<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+																		<div>
+																			<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-466 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g id="Whatsapp-hover" transform="translate(292)"><use fill="#0D9F16" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><g transform="translate(13 12)"><path d="M17.642644,28.0096291 C16.9446524,28.1278206 16.2430562,28.1906038 15.8734156,28.182968 C13.1552465,28.1749406 10.9390414,27.5685806 8.90103721,26.3405891 C8.64032262,26.1829785 8.41277082,26.1434291 8.10827611,26.2224627 C6.73831205,26.6002059 5.35851712,26.9388564 3.98645581,27.3009364 C3.69782156,27.3876059 3.67029514,27.3246922 3.74356786,27.0646838 C4.10711332,25.7656859 4.44922748,24.4743891 4.82496321,23.1907933 C4.92943256,22.8287133 4.8921408,22.5530417 4.68444736,22.2300543 C1.86547907,17.7184122 1.98410486,12.0965133 5.13909218,7.92306484 C8.41676871,3.57673432 12.8726419,1.79720379 18.2041831,2.93089011 C23.4583882,4.03351116 26.8073712,7.41107537 28.0389167,12.6161385 C29.7211091,19.7341954 24.8697074,26.8127027 17.642644,28.0096291 M30.5651873,11.8836248 C28.8668723,4.86803116 22.8061429,0.0826101053 15.4799188,-1.30526316e-05 C14.5151175,0.0157153684 13.5050288,0.0942922105 12.5066715,0.303134316 C2.28650233,2.36401432 -3.00938562,13.6474269 1.97230782,22.7577722 C2.1006334,23.0017259 2.11079197,23.1988206 2.03955095,23.4508017 C1.37721268,25.8523554 0.720904017,28.2539091 0.060597463,30.6474354 C-0.0462312896,31.0412985 -0.0462312896,31.0412985 0.349297252,30.9389659 C2.85007315,30.2854206 5.34678562,29.6395764 7.84559535,28.9783954 C8.05283002,28.9231827 8.2151704,28.9465469 8.40464397,29.0413091 C11.6232698,30.6788922 15.0135425,31.1594901 18.5636651,30.4745533 C27.0461958,28.8365133 32.5894939,20.2457933 30.5651873,11.8836248" fill="#FCFCFC"></path><path d="M19.5243964,22.7735333 C18.9730159,22.7972891 18.44713,22.6711354 17.9191469,22.5292533 C14.3709905,21.513628 11.7082674,19.3012069 9.56900529,16.3875985 C8.7605148,15.2930701 8.01153383,14.1593838 7.76255074,12.7971459 C7.46382347,11.1591712 7.93629493,9.77356905 9.16010677,8.63949116 C9.54960571,8.28511221 10.7354049,8.12789326 11.209908,8.35605326 C11.3860116,8.442788 11.4986078,8.60039853 11.571815,8.76564484 C12.0204302,9.82878168 12.4633436,10.8757333 12.9021934,11.9388701 C12.9852315,12.1436659 12.9495782,12.3404343 12.8568404,12.5451648 C12.6313203,13.0333985 12.2694133,13.4268701 11.9018044,13.8127059 C11.6232632,14.0965354 11.6111385,14.3561522 11.8167347,14.6948027 C13.0701702,16.7734343 14.8038108,18.2852554 17.0713985,19.1907164 C17.4094493,19.3245712 17.6645275,19.2773859 17.8895888,18.9940133 C18.2673562,18.5295354 18.666555,18.0647312 19.0243985,17.5845901 C19.2693182,17.2459396 19.5503499,17.1987543 19.8960687,17.3559733 C20.6454429,17.6946238 21.3944239,18.0490027 22.1437981,18.4033817 C22.3118404,18.4743227 22.4777854,18.5609922 22.6438615,18.6396343 C23.4029355,19.0177691 23.3952674,19.0254048 23.3299905,19.8599248 C23.2033034,21.4898722 21.9757558,22.2933922 20.520722,22.6948912 C20.2004979,22.7811691 19.8604154,22.7892617 19.5243964,22.7735333" fill="#FDFDFD"></path></g></g></g></g></g></g></svg>
+																		</div>
+																		<span class="social-medium-title">WhatsApp</span>
+																	</a>
+																</div>
+																<div class="social-medium">
+																	<a href="javascript:void(0)" onclick="copyToClipboard(); return false;">
+																		<div>
+																			<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-373 -556)"><g transform="translate(120 189)"><g transform="translate(54 260)"><g transform="translate(199 107)"><g class="circle-wrapper" fill="#FFF" stroke="#CCC"><circle class="background-circle" cx="28" cy="28" r="27.5" fill-opacity="0" fill="#000"></circle></g><path class="inner-image" d="M28.121892,24.7230821 C28.7203205,24.1246416 29.6823291,24.1176829 30.2824972,24.7161235 C30.8757068,25.3093451 30.8861445,26.2644145 30.2737991,26.8750326 L25.8795248,31.2711352 C25.2810963,31.8695757 24.3190877,31.8765344 23.7206592,31.2780938 C23.1257099,30.6831325 23.1152722,29.7298028 23.7276177,29.117445 L28.121892,24.7230821 Z M32.3996119,31.2085077 L30.2477048,29.0565572 L35.7014063,23.6010061 C36.2006766,23.1017257 35.9188585,21.6125829 34.6524169,20.3461157 C33.3946732,19.0883468 31.8916436,18.801304 31.402811,19.2901465 L25.942151,24.7509166 L23.7902439,22.5972264 L29.2491643,17.138196 C31.1766607,15.2106607 34.5341228,15.8508529 36.8408559,18.1593722 C39.1562871,20.47485 39.7877683,23.8202023 37.855053,25.7546962 L32.3996119,31.2085077 Z M28.0557865,31.24678 L30.2076936,33.4004702 L24.7539921,38.8542817 C22.8212768,40.7887756 19.4742524,40.1555419 17.1588212,37.8400641 C14.8520881,35.5332845 14.2101692,32.1774943 16.1376656,30.249959 L21.5983256,24.7891889 L23.7502327,26.9428791 L18.2895727,32.4036491 C17.8007401,32.8924916 18.0877771,34.3955516 19.3455207,35.6533205 C20.6119624,36.9197878 22.1028147,37.2016115 22.602085,36.7023312 L28.0557865,31.24678 Z" fill="#999"></path></g></g></g></g></g></svg>
+																		</div>
+																		<span class="social-medium-title">Copy Link</span>
+																	</a>
+																</div>
+															
+
+														</div>
+													</div>
+													
+												</div>
+											</div>
+										</div>
 									</div>
 
 									<?php 
-										$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-										$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-										$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+									$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+									$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+									$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
 
-										$basicPackageName = isset($package_data) ? $package_data->basic->name : 'Basic';
-										$standardPackageName = isset($package_data) ? $package_data->standard->name : 'Standad';
-										$premiumPackageName = isset($package_data) ? $package_data->premium->name : 'Premium';
+									$basicPackageName = isset($package_data) ? $package_data->basic->name : 'Basic';
+									$standardPackageName = isset($package_data) ? $package_data->standard->name : 'Standad';
+									$premiumPackageName = isset($package_data) ? $package_data->premium->name : 'Premium';
 									?>
 
 									<?php if($service_details['package_type'] == 1):?>
@@ -330,15 +396,15 @@
 														<?php if(!empty($attributes)): ?>
 															<?php foreach($attributes as $att):?>
 																<?php
-																	$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+																$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
 																?>
 																<?php if(in_array($att['id'], $basicAtt)):?>
-																<li>
-																	<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> 
-																	<span>
-																		<?php echo $att['attribute_name']; ?>
-																	</span>
-																</li>
+																	<li>
+																		<i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i> 
+																		<span>
+																			<?php echo $att['attribute_name']; ?>
+																		</span>
+																	</li>
 																<?php endif; ?>		
 															<?php endforeach; ?>	
 														<?php endif; ?>
@@ -384,15 +450,15 @@
 														<?php if(!empty($attributes)): ?>
 															<?php foreach($attributes as $att):?>
 																<?php
-																	$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';					
+																$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';					
 																?>
 																<?php if(in_array($att['id'], $standardAtt)):?>
-																<li>
-																	<i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i>
-																	<span>
-																		<?php echo $att['attribute_name']; ?>
-																	</span>
-																</li>
+																	<li>
+																		<i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i>
+																		<span>
+																			<?php echo $att['attribute_name']; ?>
+																		</span>
+																	</li>
 																<?php endif; ?>												
 															<?php endforeach; ?>	
 														<?php endif; ?>
@@ -442,12 +508,12 @@
 																$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
 																?>
 																<?php if(in_array($att['id'], $premiumAtt)):?>
-																<li>
-																	<i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i>
-																	<span>
-																		<?php echo $att['attribute_name']; ?>
-																	</span>
-																</li>
+																	<li>
+																		<i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i>
+																		<span>
+																			<?php echo $att['attribute_name']; ?>
+																		</span>
+																	</li>
 																<?php endif; ?>		
 															<?php endforeach; ?>	
 														<?php endif; ?>
@@ -540,114 +606,116 @@
 									<?php endif; ?>
 								</div>
 
-									<div class="about-this-sidebar">
-										<div class="row">
-											<div class="col-sm-4 text-center no-padding">
-												<div class="icon-container">
-													<i class="fa fa-paper-plane" aria-hidden="true"></i>
-												</div>
-												<div class="label-container">Delivery in</div>
-												<div class="value-container"><b><?php echo $service_details['delivery_in_days']; ?> days</b></div>
+								<div class="about-this-sidebar">
+									<div class="row">
+										<div class="col-sm-4 text-center no-padding">
+											<div class="icon-container">
+												<i class="fa fa-paper-plane" aria-hidden="true"></i>
 											</div>
-											<div class="col-sm-4 text-center no-padding">
-												<div class="icon-container">
-													<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-												</div>
-												<div class="label-container">Rating</div>
-												<div class="value-container"><b><?php echo $rating_percentage; ?>%</b> (<?php echo $service_details['total_reviews']; ?> reviews)</div>
-											</div>
-											<div class="col-sm-4 text-center no-padding">
-												<div class="icon-container">
-													<i class="fa fa-clock-o" aria-hidden="true"></i>
-												</div>
-												<div class="label-container">Response time</div>
-												<div class="value-container"><b>within a few <br/>hours</b></div>
-											</div>
+											<div class="label-container">Delivery in</div>
+											<div class="value-container"><b><?php echo $service_details['delivery_in_days']; ?> days</b></div>
 										</div>
-										<div class="views-sales">
-											<ul>
-												<li>
-													<span>Views</span>
-													<span class="value"><?php echo $service_details['total_views']; ?></span>
-												</li>
-												<li>
-													<span>Sales</span>
-													<span class="value"><?php echo $service_details['total_orders']; ?></span>
-												</li>
-												<li class="star-container pull-right">
-													<div class="widget-star-item ">
-														<a class="action-entity-star save fa fa-heart" href="javascript:void(0)" id="serviceLike" data-id="<?php echo $service_details['id']; ?>" style="color:<?php echo $service_details['is_liked'] == 1 ? '#ff0000' : '#c6c7ca'; ?>">
+
+										<div class="col-sm-4 text-center no-padding">
+											<div class="icon-container">
+												<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+											</div>
+											<div class="label-container">Rating</div>
+											<div class="value-container"><b><?php echo $rating_percentage; ?>%</b> (<?php echo $service_details['total_reviews']; ?> reviews)</div>
+										</div>
+
+										<div class="col-sm-4 text-center no-padding">
+											<div class="icon-container">
+												<i class="fa fa-clock-o" aria-hidden="true"></i>
+											</div>
+											<div class="label-container">Response time</div>
+											<div class="value-container"><b>within a few <br/>hours</b></div>
+										</div>										
+									</div>
+									<div class="views-sales">
+										<ul>
+											<li>
+												<span>Views</span>
+												<span class="value"><?php echo $service_details['total_views']; ?></span>
+											</li>
+											<li>
+												<span>Sales</span>
+												<span class="value"><?php echo $service_details['total_orders']; ?></span>
+											</li>
+											<li class="star-container pull-right">
+												<div class="widget-star-item ">
+													<a class="action-entity-star save fa fa-heart" href="javascript:void(0)" id="serviceLike" data-id="<?php echo $service_details['id']; ?>" style="color:<?php echo $service_details['is_liked'] == 1 ? '#ff0000' : '#c6c7ca'; ?>">
+													</a>
+													<span class="count-stars totalLikes"><?php echo $service_details['total_likes']; ?></span>
+												</div>
+											</li>
+										</ul>
+									</div>
+
+									<div class="member-summary">
+										<div class="summary member-summary-section">
+											<div class="member-image-container">
+												<?php 
+												if(isset($service_user['profile']) && !empty($service_user['profile'])){
+													$uprofileImg = base_url('img/profile/'.$service_user['profile']);
+												}else{
+													$uprofileImg = base_url('img/default-img.png');
+												}
+												$suserName = ($service_user['f_name'] ?? '').' '.($service_user['l_name'] ??  '');
+												?>
+												<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
+											</div>
+											<div class="member-information-container">
+												<div class="member-name-container crop">
+													<h5>
+														<a class="crop member-short-name" rel="nofollow" title="<?php echo $suserName;?>" href="<?php echo base_url('profile/'.$service_user['id']); ?>">
+															<?php echo $suserName;?>
 														</a>
-														<span class="count-stars totalLikes"><?php echo $service_details['total_likes']; ?></span>
-													</div>
-												</li>
-											</ul>
-										</div>
-
-										<div class="member-summary">
-											<div class="summary member-summary-section">
-												<div class="member-image-container">
-													<?php 
-													if(isset($service_user['profile']) && !empty($service_user['profile'])){
-														$uprofileImg = base_url('img/profile/'.$service_user['profile']);
-													}else{
-														$uprofileImg = base_url('img/default-img.png');
-													}
-													$suserName = ($service_user['f_name'] ?? '').' '.($service_user['l_name'] ??  '');
-													?>
-													<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
-												</div>
-												<div class="member-information-container">
-													<div class="member-name-container crop">
-														<h5>
-															<a class="crop member-short-name" rel="nofollow" title="<?php echo $suserName;?>" href="<?php echo base_url('profile/'.$service_user['id']); ?>">
-																<?php echo $suserName;?>
-															</a>
-														</h5>
-														<div class="member-job-title crop">
-															<?php echo $service_user['trading_name'];?>
-														</div>
+													</h5>
+													<div class="member-job-title crop">
+														<?php echo $service_user['trading_name'];?>
 													</div>
 												</div>
 											</div>
-											<div class="about member-summary-section clearfix">
-												<div class="about-container js-about-container">
-													<p><?php echo $service_user['about_business'];?></span>
-													</p>
-												</div>
-											</div>
-											<div class="location member-summary-section clearfix">
-												<div class="location-container crop">
-													<i class="fa fa-map-marker"></i>
-													<?php //echo $service_user['city'];?>
-													<?php echo !empty($service_details['area']) ? $service_details['area'].', ' : ''; ?>
-													<?php echo $service_details['city_name']; ?>
-												</div>
-												</div>
-												<div class="contact member-summary-section clearfix">
-													<a class="btn btn-warning contact-button" id="contactBtn" rel="nofollow" href="javascript:void(0)">Contact</a>
-												</div>
-											</div>
-
 										</div>
-
-										<div class="rating">
-
-											<ul>
-												<li><p>seller communication level</p><div class="star"><span></span> 4.9</div></li>
-												<li><p>Recommend to a friend</p><div class="star"><span></span> 4.9</div></li>
-												<li><p>Service as described</p><div class="star"><span></span> 5.0</div></li>
-											</ul>
+										<div class="about member-summary-section clearfix">
+											<div class="about-container js-about-container">
+												<p><?php echo $service_user['about_business'];?></span>
+												</p>
+											</div>
 										</div>
+										<div class="location member-summary-section clearfix">
+											<div class="location-container crop">
+												<i class="fa fa-map-marker"></i>
+												<?php //echo $service_user['city'];?>
+												<?php echo !empty($service_details['area']) ? $service_details['area'].', ' : ''; ?>
+												<?php echo $service_details['city_name']; ?>
+											</div>
+										</div>
+										<div class="contact member-summary-section clearfix">
+											<a class="btn btn-warning contact-button" id="contactBtn" rel="nofollow" href="javascript:void(0)">Contact</a>
+										</div>
+									</div>
 
-										<div class="order-hourlie-addons-sidebar">
-											<h2 class="title">Availability Of Seller</h2>
-											<div id="datepicker"></div>
-											<input type="hidden" name="selected_dates" id="selectedDates">
-											<div class="mt-4">
-												<select class="form-control input-md" name="time_slot" id="timeSlot">
-													<option value="">Select time slot</option>
-													<?php for ($hour = 0; $hour <= 23; $hour++) {
+								</div>
+
+								<div class="rating">
+
+									<ul>
+										<li><p>seller communication level</p><div class="star"><span></span> 4.9</div></li>
+										<li><p>Recommend to a friend</p><div class="star"><span></span> 4.9</div></li>
+										<li><p>Service as described</p><div class="star"><span></span> 5.0</div></li>
+									</ul>
+								</div>
+
+								<div class="order-hourlie-addons-sidebar">
+									<h2 class="title">Availability Of Seller</h2>
+									<div id="datepicker"></div>
+									<input type="hidden" name="selected_dates" id="selectedDates">
+									<div class="mt-4">
+										<select class="form-control input-md" name="time_slot" id="timeSlot">
+											<option value="">Select time slot</option>
+											<?php for ($hour = 0; $hour <= 23; $hour++) {
 											$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
 											$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
 											echo "<option value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
@@ -708,42 +776,42 @@
 	$('.checkbox-effect').change(function() {
 		var exPrice =  $(this).attr('data-price');
 		var exId =  $(this).attr('data-id');
-	    updateTotalPrice(exPrice, exId);
+		updateTotalPrice(exPrice, exId);
 	});
 
 	function updateTotalPrice(exPrice, exId) {
-	    $('.main_price').each(function() {
-	        var totalPrice = 0;
-	        let selectedIds = [];
-	        
-	        var mainPriceInput = $(this);
-	        var packageType = mainPriceInput.attr('id').replace('main_price_', '');
-	        var orderBtn = $('#order' + capitalizeFirstLetter(packageType) + 'Btn');
-	        var qtyInput = $('#qty_of_type_' + packageType);
-	        var servicePrice = parseFloat(mainPriceInput.val());
+		$('.main_price').each(function() {
+			var totalPrice = 0;
+			let selectedIds = [];
 
-	        var qty = qtyInput.val();
-	        if (qty != "" && qty > 0) {
-	            var mainPrice = servicePrice * qty;
-	        } else {
-	            var mainPrice = servicePrice;
-	        }
+			var mainPriceInput = $(this);
+			var packageType = mainPriceInput.attr('id').replace('main_price_', '');
+			var orderBtn = $('#order' + capitalizeFirstLetter(packageType) + 'Btn');
+			var qtyInput = $('#qty_of_type_' + packageType);
+			var servicePrice = parseFloat(mainPriceInput.val());
 
-	        $('.order-hourlie-addons .checkbox-effect:checked').each(function() {
-	            var price = $(this).attr('data-price');
-	            totalPrice += parseFloat(price);
-	            selectedIds.push($(this).data('id'));
-	        });
+			var qty = qtyInput.val();
+			if (qty != "" && qty > 0) {
+				var mainPrice = servicePrice * qty;
+			} else {
+				var mainPrice = servicePrice;
+			}
 
-	        var newPrice = parseFloat(mainPrice) + parseFloat(totalPrice);
-	        var priceText = 'Order (£' + newPrice.toFixed(2) + ')';
-	        orderBtn.val(priceText);
-	        mainPriceInput.closest('form').find('.selected_exsIds').val(selectedIds.join(','));	        
-	    });
+			$('.order-hourlie-addons .checkbox-effect:checked').each(function() {
+				var price = $(this).attr('data-price');
+				totalPrice += parseFloat(price);
+				selectedIds.push($(this).data('id'));
+			});
+
+			var newPrice = parseFloat(mainPrice) + parseFloat(totalPrice);
+			var priceText = 'Order (£' + newPrice.toFixed(2) + ')';
+			orderBtn.val(priceText);
+			mainPriceInput.closest('form').find('.selected_exsIds').val(selectedIds.join(','));	        
+		});
 	}
 
 	function capitalizeFirstLetter(string) {
-	    return string.charAt(0).toUpperCase() + string.slice(1);
+		return string.charAt(0).toUpperCase() + string.slice(1);
 	}
 
 	// document.getElementById('qty_of_type').addEventListener('input', function() {
@@ -761,7 +829,7 @@
 	// };
 
 	$(document).ready(function() {
-	    $('.orderBtn').click(function(e) {
+		$('.orderBtn').click(function(e) {
 	        e.preventDefault(); // Prevent the default button click behavior
 
 	        var packageType = $(this).data('package'); // Get the package type from the data attribute
@@ -772,28 +840,28 @@
 
 	        // Submit the form using AJAX
 	        $.ajax({
-	            url: "<?= site_url().'checkout/addToCart'; ?>", 
-	            data: formData, 
-	            type: "POST", 
-	            dataType: 'json',
-	            success: function (data) {
-	                if (data.status == 1) {
-	                    window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
-	                } else if (data.status == 2) {
-	                    swal({
-	                        title: "Login Required!",
-	                        text: "If you want to order the please login first!",
-	                        type: "warning"
-	                    }, function() {
-	                        window.location.href = '<?php echo base_url().'login'; ?>';
-	                    });        
-	                } else {
-	                    alert('Something is wrong. Please try again!!!');
-	                }            
-	            },
-	            error: function(e) {
-	                console.log(JSON.stringify(e));
-	            }
+	        	url: "<?= site_url().'checkout/addToCart'; ?>", 
+	        	data: formData, 
+	        	type: "POST", 
+	        	dataType: 'json',
+	        	success: function (data) {
+	        		if (data.status == 1) {
+	        			window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
+	        		} else if (data.status == 2) {
+	        			swal({
+	        				title: "Login Required!",
+	        				text: "If you want to order the please login first!",
+	        				type: "warning"
+	        			}, function() {
+	        				window.location.href = '<?php echo base_url().'login'; ?>';
+	        			});        
+	        		} else {
+	        			alert('Something is wrong. Please try again!!!');
+	        		}            
+	        	},
+	        	error: function(e) {
+	        		console.log(JSON.stringify(e));
+	        	}
 	        });
 	    });
 	});
@@ -999,21 +1067,48 @@
 	$('.save').on('click', function (){
 	    var sId = $(this).data('id');
 	    $.ajax({
-	      type:'POST',
-	      url:site_url+'users/updateWishlist',
-	      data:{sId:sId},
-	      dataType: 'json',
-	      success:function(response){
-	        if(response.status == 1){
-	          $('#serId_'+sId).attr('fill', '#ff0000');
-	          $('#serviceLike').css('color','#ff0000');
-	        }else{
-	          $('#serId_'+sId).attr('fill', '#b5b6ba');
-	          $('#serviceLike').css('color','#c6c7ca');
-	        }
-	        $('.totalLikes').text(response.totalLikes);
-	      }
+	    	type:'POST',
+	      	url:site_url+'users/updateWishlist',
+	      	data:{sId:sId},
+	      	dataType: 'json',
+	      	success:function(response){
+		      	if(response.status == 0){
+		      		swal({
+			            title: "Login Required!",
+			            text: "If you want to add this service into your wishlist then please login first!",
+			            type: "warning"
+			        }, function() {
+			            window.location.href = '<?php echo base_url().'login'; ?>';
+			        });
+		      	}else{
+		      		if(response.status == 1){
+			          $('#serId_'+sId).attr('fill', '#ff0000');
+			          $('#serviceLike').css('color','#ff0000');
+			        }else{
+			          $('#serId_'+sId).attr('fill', '#b5b6ba');
+			          $('#serviceLike').css('color','#c6c7ca');
+			        }
+			        $('.totalLikes').text(response.totalLikes);
+		      	}
+	      	}
 	    });
 	});
 
+	function copyToClipboard() {
+	    // Get the link from PHP
+	    var link = "<?php echo base_url().'service/'.$service_details['slug']; ?>";
+
+	    console.log(link);
+
+	    // Use the Clipboard API to copy the link
+	    navigator.clipboard.writeText(link).then(function() {
+	        // Success message
+	        alert("Link copied to clipboard!");
+	    }).catch(function(err) {
+	        // Error message
+	        console.error("Failed to copy: ", err);
+	    });
+	}
+
 </script>
+

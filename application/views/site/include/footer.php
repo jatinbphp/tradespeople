@@ -2410,11 +2410,21 @@ $(document).ready(function(){
       data:{sId:sId},
       dataType: 'json',
       success:function(response){
-        if(response.status == 1){
-          $('#serId_'+sId).addClass('liked-service');          
+        if(response.status == 0){
+          swal({
+              title: "Login Required!",
+              text: "If you want to add this service into your wishlist then please login first!",
+              type: "warning"
+          }, function() {
+              window.location.href = '<?php echo base_url().'login'; ?>';
+          });
         }else{
-          $('#serId_'+sId).removeClass('liked-service');          
-        }        
+          if(response.status == 1){
+            $('#serId_'+sId).addClass('liked-service');          
+          }else{
+            $('#serId_'+sId).removeClass('liked-service');          
+          } 
+        }      
       }
     });
   });

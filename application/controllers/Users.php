@@ -2356,9 +2356,6 @@ class Users extends CI_Controller
 			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
 			$sesData = $this->session->userdata('store_service1');
 
-
-
-
 			$sub_category = !empty($sesData['sub_category']) ? explode(',',$sesData['sub_category']) : [];
 			$service_type = !empty($sesData['service_type']) ? explode(',',$sesData['service_type']) : [];
 
@@ -3542,23 +3539,28 @@ class Users extends CI_Controller
 
     public function updateWishlist(){
     	$userid = $this->session->userdata('user_id');
-    	$sId = $this->input->post('sId');
-    	$service = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
     	$json['status'] = 0;
-    	if(!empty($service)){
-    		$wishlist = $this->common_model->GetSingleData('service_wishlist',['user_id'=>$userid,'service_id'=>$sId]); 	
-    		if(empty($wishlist)){
-    			$insert['service_id'] = $sId;
-				$insert['user_id'] = $userid;				
-				$run = $this->common_model->insert('service_wishlist', $insert);
-				$json['status'] = 1;				
-    		}else{
- 				$this->common_model->delete(['user_id'=>$userid,'service_id'=>$sId],'service_wishlist');
- 				$json['status'] = 2;
-    		}
-    		$totalLikes = $this->common_model->totalLikes($sId);
-    		$json['totalLikes'] = $totalLikes;
+    	if($userid){
+    		$sId = $this->input->post('sId');
+	    	$service = $this->common_model->GetSingleData('my_services',['id'=>$sId]);    	
+	    	if(!empty($service)){
+	    		$wishlist = $this->common_model->GetSingleData('service_wishlist',['user_id'=>$userid,'service_id'=>$sId]); 	
+	    		if(empty($wishlist)){
+	    			$insert['service_id'] = $sId;
+					$insert['user_id'] = $userid;				
+					$run = $this->common_model->insert('service_wishlist', $insert);
+					$json['status'] = 1;
+	    		}else{
+	 				$this->common_model->delete(['user_id'=>$userid,'service_id'=>$sId],'service_wishlist');
+	 				$json['status'] = 2;
+	    		}
+	    		$totalLikes = $this->common_model->totalLikes($sId);
+	    		$json['totalLikes'] = $totalLikes;
+	    	}else{
+	    		$json['status'] = 0;
+	    	}
     	}
+    	
     	echo json_encode($json);
     }
 }

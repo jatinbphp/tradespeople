@@ -7,6 +7,7 @@
 
 <div class="w3-bar w3-black" style="margin-bottom:15px;">
   <button class="btn btn-sm btn-primary" onclick="openServiceTab('service-details')">Service Details</button>
+  <button class="btn btn-sm" onclick="openServiceTab('package')">Package</button>
   <button class="btn btn-sm" onclick="openServiceTab('extra-service')">Extra Service</button>
   <button class="btn btn-sm" onclick="openServiceTab('gallery')">Gallery</button>
   <button class="btn btn-sm" onclick="openServiceTab('faqs')">FAQs</button>
@@ -158,6 +159,168 @@
     </div>   
 </div>
 
+<div id="package" class="w3-container sTab">
+  <div class="table-responsive">
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Offer Packages: <b><?php echo $service_details['package_type'] == 1 ? 'On' : 'Off'; ?></b></h4>  
+      </div>
+      <?php if($service_category['price_type'] == 1):?>
+        <div class="col-md-6 text-right">
+          <h4>How do you charge? <b><?php echo $service_details['price_per_type']; ?></b></h4>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <table id="boottable" class="table table-bordered table-striped">
+      <thead>
+            <tr>
+              <th width="33%">BASIC</th>
+              <th width="33%" class="multiplePackage">STANDARD</th>
+              <th width="33%" class="multiplePackage">PREMIUM</th>
+            </tr>
+            <tbody>
+              <?php 
+                $stName1 = isset($service_type[0]) ? $service_type[0]['cat_name'] : 'Basic';
+                $stName2 = isset($service_type[1]) ? $service_type[1]['cat_name'] : 'Standard';
+                $stName3 = isset($service_type[2]) ? $service_type[2]['cat_name'] : 'Premium';
+
+                $bName = '';
+                $sName = '';
+                $pName = '';
+
+                if(!empty(isset($package_data))){
+                  $bName = !empty($package_data->basic->name) ? $package_data->basic->name : $stName1;
+                  $sName = !empty($package_data->standard->name) ? $package_data->standard->name : $stName2;
+                  $pName = !empty($package_data->premium->name) ? $package_data->premium->name : $stName3;
+                }else{
+                  $bName = $stName1;
+                  $sName = $stName2;
+                  $pName = $stName3;
+                }
+              ?>
+              <tr>
+                <td>
+                  <b>Package Name</b>
+                  <span class="pull-right">
+                    <?php echo $bName; ?>
+                  </span>
+                </td>
+                <td class="multiplePackage">
+                  <b>Package Name</b>
+                  <span class="pull-right">
+                    <?php echo $sName; ?>
+                  </span>
+                </td>
+                <td class="multiplePackage">
+                  <b>Package Name</b>
+                  <span class="pull-right">
+                    <?php echo $pName; ?>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b>Package Description</b><br>
+                  <?php echo isset($package_data) ? trim($package_data->basic->description) : '';?>
+                </td>
+                <td class="multiplePackage">
+                  <b>Package Description</b><br>
+                  <?php echo isset($package_data) ? trim($package_data->standard->description) : '';?>
+                </td>
+                <td class="multiplePackage">
+                  <b>Package Description</b><br>
+                  <?php echo isset($package_data) ? trim($package_data->premium->description) : '';?>
+                </td>
+              </tr>
+              <?php 
+                $basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+                $standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+                $premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+              ?>
+              <?php if(!empty($attributes)):?>
+                <?php foreach($attributes as $key => $value):?>
+                  <?php 
+                    $bchecked = !empty($basicAtt) && in_array($value['id'], $basicAtt) ? 'checked' : '';
+                    $schecked = !empty($standardAtt) && in_array($value['id'], $standardAtt) ? 'checked' : '';
+                    $pchecked = !empty($premiumAtt) && in_array($value['id'], $premiumAtt) ? 'checked' : '';
+                  ?>
+                  <tr>
+                    <td>
+                      <div class="form-check" style="margin: 0;">
+                        <input class="form-check-input" type="checkbox" name="package[basic][attributes][]" value="<?php echo $value['id']?>" id="attCheckBasic<?php echo $value['id']?>" <?php echo $bchecked; ?> style="margin-right:10px;" disabled>
+                        <label class="form-check-label" for="attCheckBasic<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+                          <?php echo $value['attribute_name']?>
+                        </label>                          
+                      </div>
+                    </td>
+                    <td class="multiplePackage">
+                      <div class="form-check" style="margin: 0;">
+                        <input class="form-check-input" type="checkbox" name="package[standard][attributes][]" value="<?php echo $value['id']?>" id="attCheckStandard<?php echo $value['id']?>" <?php echo $schecked; ?> style="margin-right:10px;" disabled>
+                        <label class="form-check-label" for="attCheckStandard<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+                          <?php echo $value['attribute_name']?>
+                        </label>
+                      </div>
+                    </td>
+                    <td class="multiplePackage">
+                      <div class="form-check" style="margin: 0;">
+                        <input class="form-check-input" type="checkbox" name="package[premium][attributes][]" value="<?php echo $value['id']?>" id="attCheckPremium<?php echo $value['id']?>" <?php echo $pchecked; ?> style="margin-right:10px;" disabled>
+                        <label class="form-check-label" for="attCheckPremium<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+                          <?php echo $value['attribute_name']?>
+                        </label>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif;?>  
+              <tr>
+                <?php 
+                  $basicDays = isset($package_data) && !empty($package_data->basic->days) ? $package_data->basic->days : 0;
+                  $standardDays = isset($package_data) && !empty($package_data->standard->days) ? $package_data->standard->days : 0;
+                  $premiumDays = isset($package_data) && !empty($package_data->premium->days) ? $package_data->premium->days : 0;
+                ?>
+                <td>
+                  <b>Delivery Days</b>
+                  <?php if($basicDays > 0):?>
+                    <span class="pull-right"><?php echo $basicDays.' Days Delivery'; ?></span>
+                  <?php endif; ?>
+                </td>
+                <td class="multiplePackage"> 
+                  <b>Delivery Days</b>
+                  <?php if($standardDays > 0):?>
+                    <span class="pull-right"><?php echo $standardDays.' Days Delivery'; ?></span>
+                  <?php endif; ?>
+                </td>
+                <td class="multiplePackage">
+                  <b>Delivery Days</b>
+                  <?php if($premiumDays > 0):?>
+                    <span class="pull-right"><?php echo $premiumDays.' Days Delivery'; ?></span>
+                  <?php endif; ?>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b class="packagePrice">Price <?php echo $service_category['price_type'] == 1 ? '/ '.$service_details['price_per_type'] : ''; ?></b>
+                  
+                  <span class="pull-right"><?php echo isset($package_data) && !empty($package_data->basic->price) ? '£'.trim($package_data->basic->price) : '';?></span>
+                </td>
+                <td class="multiplePackage">
+                  <b class="packagePrice">Price <?php echo $service_category['price_type'] == 1 ? '/ '.$service_details['price_per_type'] : ''; ?></b>
+
+                  <span class="pull-right"><?php echo isset($package_data) && !empty($package_data->standard->price) ? '£'.trim($package_data->standard->price) : '';?></span>
+                </td>
+                <td class="multiplePackage">
+                  <b class="packagePrice">Price <?php echo $service_category['price_type'] == 1 ? '/ '.$service_details['price_per_type'] : ''; ?></b>
+
+                  <span class="pull-right"><?php echo isset($package_data) && !empty($package_data->premium->price) ? '£'.trim($package_data->premium->price) : '';?></span>
+                </td>
+              </tr>
+            </tbody>
+          </thead>
+    </table>
+    </div>   
+</div>
+
 <div id="extra-service" class="w3-container sTab" style="display:none">
   <div class="table-responsive">
       <table id="boottable" class="table table-bordered table-striped">
@@ -278,4 +441,20 @@
     var activeButton = document.querySelector('button[onclick="openServiceTab(\'' + tabName + '\')"]');
     activeButton.classList.add('btn-primary');
   }
+
+
+  $(document).ready(function() {
+    var package_type = <?php echo isset($service_details['package_type']) ? $service_details['package_type'] : 0; ?>;
+
+    if (package_type == 0) {
+          $('#offerPackage').prop('checked', false);
+          $('.multiplePackage').css('background-color', '#e9ecef'); // Change to desired disabled background color
+          $('.multiplePackage input, .multiplePackage textarea, .multiplePackage select').prop('disabled', true);
+      } else {
+          $('#offerPackage').prop('checked', true);
+          $('.multiplePackage').css('background-color', ''); // Reset to original background color
+          $('.multiplePackage input, .multiplePackage textarea, .multiplePackage select').prop('disabled', true);
+      }
+  });
+
 </script>
