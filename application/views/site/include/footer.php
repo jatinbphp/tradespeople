@@ -2194,11 +2194,7 @@ $(document).ready(function(){
 
   inactivityTime();
 
-
   /*Check Logout Code End*/
-
-
-
   var monthNames = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
@@ -2287,7 +2283,6 @@ $(document).ready(function(){
     slidesToScroll: 1,
     centerMode: false,
     variableWidth: true,
-
   });
 
   
@@ -2301,7 +2296,6 @@ $(document).ready(function(){
     centerMode: false,
     variableWidth: true,
     adaptiveHeight: false,
-
   });
 
 
@@ -2407,6 +2401,23 @@ $(document).ready(function(){
       $('#notAvailablMsg').show().html(sentence); // Update the availability text  
     }    
   }
+
+  $('.icon-wishlist').on('click', function (){
+    var sId = $(this).data('id');
+    $.ajax({
+      type:'POST',
+      url:site_url+'users/updateWishlist',
+      data:{sId:sId},
+      dataType: 'json',
+      success:function(response){
+        if(response.status == 1){
+          $('#serId_'+sId).addClass('liked-service');          
+        }else{
+          $('#serId_'+sId).removeClass('liked-service');          
+        }        
+      }
+    });
+  });
   
   let clip = document.querySelector(".serviceVideo") 
   // clip.addEventListener("mouseover", function (e) { 

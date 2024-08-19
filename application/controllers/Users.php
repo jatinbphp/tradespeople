@@ -3539,4 +3539,26 @@ class Users extends CI_Controller
             exit;
         }
     }
+
+    public function updateWishlist(){
+    	$userid = $this->session->userdata('user_id');
+    	$sId = $this->input->post('sId');
+    	$service = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
+    	$json['status'] = 0;
+    	if(!empty($service)){
+    		$wishlist = $this->common_model->GetSingleData('service_wishlist',['user_id'=>$userid,'service_id'=>$sId]); 	
+    		if(empty($wishlist)){
+    			$insert['service_id'] = $sId;
+				$insert['user_id'] = $userid;				
+				$run = $this->common_model->insert('service_wishlist', $insert);
+				$json['status'] = 1;				
+    		}else{
+ 				$this->common_model->delete(['user_id'=>$userid,'service_id'=>$sId],'service_wishlist');
+ 				$json['status'] = 2;
+    		}
+    		$totalLikes = $this->common_model->totalLikes($sId);
+    		$json['totalLikes'] = $totalLikes;
+    	}
+    	echo json_encode($json);
+    }
 }

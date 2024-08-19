@@ -1,14 +1,14 @@
 <?php foreach($all_services as $list): ?>
 	<?php 
 		$package_data = json_decode($list['package_data'],true);
-		$servicePrice = $package_data['basic']['price'];
+		$servicePrice = $package_data['basic']['price'];				
 	?>
 <div class="col-sm-3">
 	<div class="tradespeople-box">
 		<div class="tradespeople-box-img">
-			<div class="icon-wishlist">
-				<a href="#"></a>
-				</div>
+			<div id="serId_<?php echo $list['id']; ?>" class="icon-wishlist <?php echo $list['is_liked'] == 1 ? 'liked-service' : ''; ?>" data-id="<?php echo $list['id']; ?>">
+				<a href="javascript:void(0)"></a>
+			</div>
 			<a href="<?php echo base_url().'service/'.$list['slug']?>">
 				
 				<?php $image_path = FCPATH . 'img/services/' . ($list['image'] ?? ''); ?>

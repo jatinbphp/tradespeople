@@ -2777,27 +2777,31 @@ class Common_model extends CI_Model
 	}
 	function get_all_service($table, $limit, $search = '')
 	{
+		$user_id = $this->session->userdata('user_id');
+
 		$where_clause = "WHERE ms.status = 'active'";
 		if (!empty($search)) {
 		    $where_clause .= " AND (ms.service_name LIKE '%$search%' OR c.cat_name LIKE '%$search%' OR u.trading_name LIKE '%$search%')";
 		}
 
 		if($limit == 0){
-			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews, IF(sw.user_id IS NOT NULL, 1, 0) AS is_liked
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
+                           LEFT JOIN service_wishlist sw ON ms.id = sw.service_id AND sw.user_id = $user_id
                             $where_clause
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
                            LIMIT 500");
 		}else{
-			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews
+			$query = $this->db->query("SELECT ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews, IF(sw.user_id IS NOT NULL, 1, 0) AS is_liked
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
+                           LEFT JOIN service_wishlist sw ON ms.id = sw.service_id AND sw.user_id = $user_id
                             $where_clause
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC 
@@ -3445,6 +3449,8 @@ class Common_model extends CI_Model
 	}
 
 	public function get_service_details($table, $slug){
+		$user_id = $this->session->userdata('user_id');
+
 		$query = $this->db->query("SELECT ms.*, 
                                   c.cat_name,
                                   l.city_name,
@@ -3453,13 +3459,15 @@ class Common_model extends CI_Model
                                   AVG(srt.rating) AS average_rating, 
                                   COUNT(DISTINCT srt.id) AS total_reviews, 
                                   (SELECT COUNT(*) FROM recently_viewed_service rvs WHERE rvs.service_id = ms.id) AS total_views,
-                                  (SELECT COUNT(*) FROM service_likes serl WHERE serl.service_id = ms.id) AS total_likes,
-                                  (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders
+                                  (SELECT COUNT(*) FROM service_wishlist serl WHERE serl.service_id = ms.id) AS total_likes,
+                                  (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders,
+                                  IF(sw.user_id IS NOT NULL, 1, 0) AS is_liked
                            FROM $table ms
                            LEFT JOIN service_category c ON ms.category = c.cat_id
                            LEFT JOIN location l ON ms.location = l.id
                            LEFT JOIN users u ON ms.user_id = u.id
                            LEFT JOIN service_rating srt ON ms.id = srt.service_id
+                           LEFT JOIN service_wishlist sw ON ms.id = sw.service_id AND sw.user_id = $user_id
                            WHERE ms.slug = '$slug' AND ms.status = 'active'
                            GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
                            ORDER BY average_rating DESC");
@@ -3610,5 +3618,11 @@ class Common_model extends CI_Model
         }
 
         return 0;
+    }
+
+    public function totalLikes($sId){
+		$query = $this->db->query("SELECT COUNT(*) AS total_likes FROM service_wishlist WHERE service_id = ?", array($sId));
+		$result = $query->row();
+		return $result->total_likes;
     }
 }

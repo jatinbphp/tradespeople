@@ -46,7 +46,6 @@ class Home extends CI_Controller
     $pageData['customer_rev'] = $this->common_model->get_customer_reviews();
     $pageData['all_services']=$this->common_model->get_all_service('my_services',8);
     $pageData['all_categoty']=$this->common_model->get_parent_category('service_category',0,1);
-
     $this->load->view('site/index', $pageData);
   }
 	

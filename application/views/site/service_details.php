@@ -290,12 +290,14 @@
 								<div class="service-detail-sidebar">
 									<div class="sidebar-icons">
 										<div class="">
-											<button class="save" type="button" data-toggle="tooltip" data-placement="top" title="Save to list"><svg fill="#b5b6ba" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.4469 1.95625C12.7344 0.496875 10.1875 0.759375 8.61561 2.38125L7.99999 3.01562L7.38436 2.38125C5.81561 0.759375 3.26561 0.496875 1.55311 1.95625C-0.409388 3.63125 -0.512513 6.6375 1.24374 8.45312L7.29061 14.6969C7.68124 15.1 8.31561 15.1 8.70624 14.6969L14.7531 8.45312C16.5125 6.6375 16.4094 3.63125 14.4469 1.95625Z"></path></svg></button>
-											<span class="collect-count"><?php echo $service_details['total_likes']; ?></span>
+											<button class="save" type="button" data-toggle="tooltip" data-placement="top" title="Save to list" data-id="<?php echo $service_details['id']; ?>" >
+												<svg id="serId_<?php echo $service_details['id']; ?>" fill="<?php echo $service_details['is_liked'] == 1 ? '#ff0000' : '#b5b6ba'; ?>" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.4469 1.95625C12.7344 0.496875 10.1875 0.759375 8.61561 2.38125L7.99999 3.01562L7.38436 2.38125C5.81561 0.759375 3.26561 0.496875 1.55311 1.95625C-0.409388 3.63125 -0.512513 6.6375 1.24374 8.45312L7.29061 14.6969C7.68124 15.1 8.31561 15.1 8.70624 14.6969L14.7531 8.45312C16.5125 6.6375 16.4094 3.63125 14.4469 1.95625Z"></path></svg>
+											</button>
+											<span class="collect-count totalLikes"><?php echo $service_details['total_likes']; ?></span>
 										</div>
 										<button type="button" class="btn btn-outline" data-toggle="tooltip" data-placement="top" title="Share this service">
 											<svg width="16" height="16" viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg" fill="currentFill"><path d="M11 10c-.707 0-1.356.244-1.868.653L5.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L4.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 11 10Z"></path></svg>
-										</button>										
+										</button>
 									</div>
 
 									<?php 
@@ -345,21 +347,27 @@
 														<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
 														<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
 														<input type="hidden" name="package_type" value="basic">
-														<p class="text-left">
-															Price is based on 
-															<?php echo lcfirst($service_details['price_per_type']); ?>.
-														</p>
+
+														<?php if(!empty($service_details['price_per_type'])):?>
+															<p class="text-left">
+																Price is based on 
+																<?php echo lcfirst($service_details['price_per_type']); ?>.
+															</p>
+															<div class="row text-left mb-3">
+																<div class="col-md-8">
+																	<p>
+																		Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+																	</p>
+																</div>
+																<div class="col-md-4">
+																	<input type="number" class="form-control qty_of_type" name="qty_of_type" id="qty_of_type_basic" min="1" value="1">
+																</div>
+															</div>
+														<?php else: ?>
+															<input type="hidden" name="qty_of_type" id="qty_of_type_basic" value="1">
+														<?php endif; ?>	
 														<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>"> 
-														<div class="row text-left mb-3">
-															<div class="col-md-8">
-																<p>
-																	Number of <?php echo lcfirst($service_details['price_per_type']); ?>
-																</p>
-															</div>
-															<div class="col-md-4">
-																<input type="number" class="form-control" name="qty_of_type" class="qty_of_type" id="qty_of_type_basic" min="1" value="1">
-															</div>
-														</div>
+														
 														<input class="orderBtn btn btn-warning btn-lg " type="submit" id="orderBasicBtn" data-package="basic" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
 													</form>
 												</div>
@@ -393,21 +401,28 @@
 														<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
 														<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
 														<input type="hidden" name="package_type" value="standard">
-														<p class="text-left">
-															Price is based on 
-															<?php echo lcfirst($service_details['price_per_type']); ?>.
-														</p>
+														<?php if(!empty($service_details['price_per_type'])): ?>
+															<p class="text-left">
+																Price is based on 
+																<?php echo lcfirst($service_details['price_per_type']); ?>.
+															</p>
+
+															<div class="row text-left mb-3">
+																<div class="col-md-8">
+																	<p>
+																		Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+																	</p>
+																</div>
+																<div class="col-md-4">
+																	<input type="number" class="form-control qty_of_type" name="qty_of_type" id="qty_of_type_stndard" min="1" value="1">
+																</div>
+															</div>
+														<?php else:?>
+															<input type="hidden" name="qty_of_type" id="qty_of_type_stndard" value="1">
+														<?php endif;?>
+														
 														<input type="hidden" name="main_price" class="main_price" id="main_price_standard" value="<?php echo isset($package_data) ? $package_data->standard->price : 0;?>"> 
-														<div class="row text-left mb-3">
-															<div class="col-md-8">
-																<p>
-																	Number of <?php echo lcfirst($service_details['price_per_type']); ?>
-																</p>
-															</div>
-															<div class="col-md-4">
-																<input type="number" class="form-control" name="qty_of_type" class="qty_of_type" id="qty_of_type_stndard" min="1" value="1">
-															</div>
-														</div>
+														
 														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderStandardBtn" data-package="standard" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>)">
 													</form>
 												</div>
@@ -441,21 +456,27 @@
 														<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
 														<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
 														<input type="hidden" name="package_type" value="premium">
-														<p class="text-left">
-															Price is based on 
-															<?php echo lcfirst($service_details['price_per_type']); ?>.
-														</p>
+														<?php if(!empty($service_details['price_per_type'])): ?>
+															<p class="text-left">
+																Price is based on 
+																<?php echo lcfirst($service_details['price_per_type']); ?>.
+															</p>
+															<div class="row text-left mb-3">
+																<div class="col-md-8">
+																	<p>
+																		Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+																	</p>
+																</div>
+																<div class="col-md-4">
+																	<input type="number" class="form-control qty_of_type" name="qty_of_type" id="qty_of_type_premium" min="1" value="1">
+																</div>
+															</div>
+														<?php else: ?>
+															<input type="hidden" name="qty_of_type" id="qty_of_type_premium" value="1">
+														<?php endif; ?>
+														
 														<input type="hidden" name="main_price" class="main_price" id="main_price_premium" value="<?php echo isset($package_data) ? $package_data->premium->price : 0;?>"> 
-														<div class="row text-left mb-3">
-															<div class="col-md-8">
-																<p>
-																	Number of <?php echo lcfirst($service_details['price_per_type']); ?>
-																</p>
-															</div>
-															<div class="col-md-4">
-																<input type="number" class="form-control" name="qty_of_type" class="qty_of_type" id="qty_of_type_premium" min="1" value="1">
-															</div>
-														</div>
+														
 														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderPremiumBtn" data-package="premium" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>)">
 													</form>
 												</div>
@@ -491,21 +512,29 @@
 											<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_details['id']; ?>">
 											<input type="hidden" name="selected_exsIds" class="selected_exsIds" id="selected_exsIds">
 											<input type="hidden" name="package_type" value="basic">
-											<p class="text-left">
-												Price is based on 
-												<?php echo lcfirst($service_details['price_per_type']); ?>.
-											</p>
-											<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>"> 
-											<div class="row text-left mb-3">
-												<div class="col-md-8">
-													<p>
-														Number of <?php echo lcfirst($service_details['price_per_type']); ?>
-													</p>
+
+											<?php if(!empty($service_details['price_per_type'])):?>
+												<p class="text-left">
+													Price is based on 
+													<?php echo lcfirst($service_details['price_per_type']); ?>.
+												</p>
+
+												<div class="row text-left mb-3">
+													<div class="col-md-8">
+														<p>
+															Number of <?php echo lcfirst($service_details['price_per_type']); ?>
+														</p>
+													</div>
+													<div class="col-md-4">
+														<input type="number" class="form-control qty_of_type" name="qty_of_type" id="qty_of_type_basic" min="1" value="1">
+													</div>
 												</div>
-												<div class="col-md-4">
-													<input type="number" class="form-control" name="qty_of_type" id="qty_of_type_basic" class="qty_of_type" min="1" value="1">
-												</div>
-											</div>
+											<?php else: ?>
+												<input type="hidden" name="qty_of_type" id="qty_of_type_basic" value="1">
+											<?php endif; ?>	
+											
+											<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>">
+											
 											<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderBasicBtn" data-package="basic" value="Order (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
 										</form>
 									<?php endif; ?>
@@ -546,7 +575,11 @@
 													<span class="value"><?php echo $service_details['total_orders']; ?></span>
 												</li>
 												<li class="star-container pull-right">
-													<div class="widget-star-item "><a class="action-entity-star fa fa-heart" href="#"></a><span class=" count-stars"><?php echo $service_details['total_likes']; ?></span></div>
+													<div class="widget-star-item ">
+														<a class="action-entity-star save fa fa-heart" href="javascript:void(0)" id="serviceLike" data-id="<?php echo $service_details['id']; ?>" style="color:<?php echo $service_details['is_liked'] == 1 ? '#ff0000' : '#c6c7ca'; ?>">
+														</a>
+														<span class="count-stars totalLikes"><?php echo $service_details['total_likes']; ?></span>
+													</div>
 												</li>
 											</ul>
 										</div>
@@ -897,7 +930,7 @@
 					url: '<?= site_url().'users/sendInquiry'; ?>',
 					type: 'POST',
 					data: {'serviceId':serviceId,'message':msg},
-					dataType: 'json',                   
+					dataType: 'json',
 					success: function(result) {
 						if(result.status == 0){
 							swal({
@@ -961,6 +994,26 @@
 				$sidebar.css({"top": "0"});  
 			}    
 		});   
+	});
+
+	$('.save').on('click', function (){
+	    var sId = $(this).data('id');
+	    $.ajax({
+	      type:'POST',
+	      url:site_url+'users/updateWishlist',
+	      data:{sId:sId},
+	      dataType: 'json',
+	      success:function(response){
+	        if(response.status == 1){
+	          $('#serId_'+sId).attr('fill', '#ff0000');
+	          $('#serviceLike').css('color','#ff0000');
+	        }else{
+	          $('#serId_'+sId).attr('fill', '#b5b6ba');
+	          $('#serviceLike').css('color','#c6c7ca');
+	        }
+	        $('.totalLikes').text(response.totalLikes);
+	      }
+	    });
 	});
 
 </script>
