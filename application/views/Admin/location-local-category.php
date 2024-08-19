@@ -342,7 +342,7 @@ if(!in_array(3,$my_access)) { redirect('Admin_dashboard'); }
 
 			$.ajax({
 				type:'POST',
-				url:site_url+'Admin/slug/create_local_cate_slug/'+id,
+				url:site_url+'Admin/slug/create_location_local_cate_slug/'+id,
 				data:{
 					cat_id:cat_id,
 					location:location

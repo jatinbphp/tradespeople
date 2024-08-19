@@ -38,54 +38,72 @@ class Slug extends CI_Controller {
 		$cat_id = $this->input->post('cat_id');
 		$location_id = $this->input->post('location');
 
-
 		$category = $this->Common_model->GetColumnName('category',array('cat_id'=>$cat_id),array('slug','cat_name'));
 		$location = $this->Common_model->GetColumnName('tbl_city',array('id'=>$location_id),array('city_name'));
 
 
-
-
-		$slug = url_title($category['slug'].'-'.$location['city_name']);
-	
-		$title = $category['cat_name'].' in '.$location['city_name'];
-		
-		$slugcheck = $this->Common_model->GetColumnName('local_category',array('cat_id != '=>$id,'slug'=>$slug),array('slug'));
-		
-		$check = $this->Common_model->GetColumnName('local_category',array('cat_parent'=>$cat_id,'location'=>$location_id,'cat_id != '=>$id),array('slug'));
-		
+		$slug = url_title($category['slug'].'-'.$location['city_name']);	
+		$title = $category['cat_name'].' in '.$location['city_name'];		
+		$slugcheck = $this->Common_model->GetColumnName('local_category',array('cat_id != '=>$id,'slug'=>$slug),array('slug'));		
+		$check = $this->Common_model->GetColumnName('local_category',array('cat_parent'=>$cat_id,'location'=>$location_id,'cat_id != '=>$id),array('slug'));		
 		if($check){
 			$output['status'] = 0;
 			echo json_encode($output);
 			exit();
 		}
 
-
 		if($slugcheck){
-			
-				
 			$slug_arr = explode('-',$slugcheck['slug']);
-			$end = end($slug_arr);
-			
+			$end = end($slug_arr);			
 			if(is_numeric($end)){
-				$end = $end+1;
-				
-				$slug = $slug.'-'.$end;
-				
-			} else {
-				
+				$end = $end+1;				
+				$slug = $slug.'-'.$end;				
+			} else {				
 				$slug = $slug.'-1';
-			}
-	
+			}	
 		}
-		//echo $this->db->last_query();
-	
+		//echo $this->db->last_query();	
 		$output['slug'] = strtolower($slug);
 		$output['title'] = $title;
 		$output['status'] = 1;
 		echo json_encode($output);
 		exit();
 	}
-	
+
+	public function create_location_local_cate_slug($id=null){
+		$cat_id = $this->input->post('cat_id');
+		$location_id = $this->input->post('location');
+
+		$category = $this->Common_model->GetColumnName('service_category',array('cat_id'=>$cat_id),array('slug','cat_name'));
+		$location = $this->Common_model->GetColumnName('location',array('id'=>$location_id),array('city_name'));
+
+		$slug = url_title($category['slug'].'-'.$location['city_name']);	
+		$title = $category['cat_name'].' in '.$location['city_name'];		
+		$slugcheck = $this->Common_model->GetColumnName('location_local_category',array('cat_id != '=>$id,'slug'=>$slug),array('slug'));		
+		$check = $this->Common_model->GetColumnName('location_local_category',array('cat_parent'=>$cat_id,'location'=>$location_id,'cat_id != '=>$id),array('slug'));		
+		if($check){
+			$output['status'] = 0;
+			echo json_encode($output);
+			exit();
+		}
+
+		if($slugcheck){
+			$slug_arr = explode('-',$slugcheck['slug']);
+			$end = end($slug_arr);			
+			if(is_numeric($end)){
+				$end = $end+1;				
+				$slug = $slug.'-'.$end;				
+			} else {				
+				$slug = $slug.'-1';
+			}	
+		}
+		//echo $this->db->last_query();	
+		$output['slug'] = strtolower($slug);
+		$output['title'] = $title;
+		$output['status'] = 1;
+		echo json_encode($output);
+		exit();
+	}	
 	
 	public function create_blog_slug($id=null){
 		$value = $this->input->post('title');

@@ -3736,7 +3736,7 @@ class Admin extends CI_Controller
                 if($tradesMan){
                     $subject = "Your service status updated: “".$service['service_name']."”"; 
                     $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesMan['f_name'] .',</p>';     
-                    $html .= '<p style="margin:0;padding:10px 0px">Your service status has beedn updated</p>';
+                    $html .= '<p style="margin:0;padding:10px 0px">Your service status has been updated</p>';
                     $html .= '<p style="margin:0;padding:10px 0px">Service status is '.$newStatus.'</p>';
                     $this->Common_model->send_mail($tradesMan['email'],$subject,$html);
                 }    

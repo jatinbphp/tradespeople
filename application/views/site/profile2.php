@@ -951,7 +951,16 @@
 
 	                <div>
 										<span>Average Reponse Time: </span>
-										<b><?php echo round($responseTime['avg_response_time_hours']);?> hour</b>
+
+										<?php 
+											if(round($responseTime['avg_response_time_hours']) > 0){
+												$response = round($responseTime['avg_response_time_hours']).' hours';
+											}else{
+												$response = 'Not Responded'; 	
+											}
+										?>
+
+										<b><?php echo $response;?></b>
 									</div>
 
 	              </div>

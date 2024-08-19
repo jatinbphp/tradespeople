@@ -3316,7 +3316,7 @@ class Common_model extends CI_Model
                            FROM $table so
                            LEFT JOIN users u ON so.user_id = u.id
                            LEFT JOIN my_services ms ON ms.id = so.service_id
-                           WHERE so.status IN ('placed', 'pending') AND ms.user_id = $user_id
+                           WHERE so.status = 'active' AND ms.user_id = $user_id
                            ORDER BY so.id DESC
                            LIMIT 500");		
 		}else{
@@ -3324,7 +3324,7 @@ class Common_model extends CI_Model
                            FROM $table so
                            LEFT JOIN users u ON so.user_id = u.id
                            LEFT JOIN my_services ms ON ms.id = so.service_id
-                           WHERE so.status IN ('placed', 'pending') AND ms.user_id = $user_id
+                           WHERE so.status = 'active' AND ms.user_id = $user_id
                            ORDER BY so.id DESC
                            LIMIT $limit");	
 		}
@@ -3503,7 +3503,7 @@ class Common_model extends CI_Model
 	}
 
 	public function countResponseTime($rId){
-	    $query = $this->db->query("
+	    /*$query = $this->db->query("
 		    SELECT AVG(TIMESTAMPDIFF(SECOND, ch1.create_time, ch2.create_time)) / 3600 AS avg_response_time_hours
 		    FROM chat ch1
 		    INNER JOIN chat ch2 
@@ -3512,6 +3512,26 @@ class Common_model extends CI_Model
 		        AND ch2.create_time > ch1.create_time
 		    WHERE ch1.receiver_id = $rId 
 		    AND ch1.is_read = 1
+		    AND ch2.id = (
+		        SELECT MIN(id) 
+		        FROM chat 
+		        WHERE receiver_id = ch2.receiver_id 
+		        AND sender_id = ch2.sender_id 
+		        AND create_time > ch1.create_time
+		    )
+		");*/
+
+		$query = $this->db->query("
+		    SELECT 
+		        AVG(TIMESTAMPDIFF(SECOND, ch1.create_time, ch2.create_time)) / 3600 AS avg_response_time_hours
+		    FROM chat ch1
+		    INNER JOIN chat ch2 
+		        ON ch1.receiver_id = ch2.sender_id 
+		        AND ch1.sender_id = ch2.receiver_id 
+		        AND ch2.create_time > ch1.create_time
+		    WHERE ch1.receiver_id = $rId 
+		    AND ch1.is_read = 1
+		    AND ch1.create_time >= DATE_SUB(NOW(), INTERVAL 60 DAY)
 		    AND ch2.id = (
 		        SELECT MIN(id) 
 		        FROM chat 

@@ -2319,15 +2319,28 @@ class Users extends CI_Controller
 	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'), $status);
 	        $data = [];
 
+	        $statusArr = ['pending', 'active', 'completed', 'cancelled'];
 
 	        foreach($orders as $order) {
 	        	$date = new DateTime($order['created_at']);
+
+	        	$selected1 = $order['status'] == 'pending' ? 'selected' : '';
+	        	$selected2 = $order['status'] == 'active' ? 'selected' : '';
+	        	$selected3 = $order['status'] == 'completed' ? 'selected' : '';
+	        	$selected4 = $order['status'] == 'cancelled' ? 'selected' : '';
+
+	        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
+                            <option value="pending" '.$selected1.'>Pending</option>
+                            <option value="active" '.$selected2.'>Started</option>
+                            <option value="completed" '.$selected3.'>Completed</option>
+                            <option value="cancelled" '.$selected4.'>Cancelled</option>
+                        </select>';
 
 	          	$data[] = [
 		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name']),
 		            'created_at' => $date->format('F j, Y'),
 		            'total_price' => '£'.number_format($order['total_price'],2),
-		            'status' => ucfirst($order['status'])
+		            'status' => $status
 	          	];
 	        }
 
@@ -3482,4 +3495,48 @@ class Users extends CI_Controller
 			return $areaArr;
 		}		
 	}
+
+	public function updateStatus(){
+        $oId = $this->input->post('id');
+        $status = $this->input->post('status');
+        $userid = $this->session->userdata('user_id');
+        $order = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+
+        if(!empty($order)){
+            $update_array = [
+                'status' => $status 
+            ];
+            $where_array = ['id' => $oId];
+            $result = $this->common_model->update('service_order',array('id'=>$oId),$update_array);
+
+            if($result){
+            	/*Manage Order History*/
+                $insert1 = [
+		            'user_id' => $userid,
+		            'service_id' => $order['service_id'],
+		            'order_id' => $oId,
+		            'status' => $status,
+		        ];
+		        $this->common_model->insert('service_order_status_history', $insert1);
+
+                /*Home Owner Email Code*/
+                $homeOwner = $this->common_model->GetSingleData('users',['id'=>$order['user_id']]);
+                $service = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
+                $newStatus = ucwords(str_replace('_',' ',$status));                
+
+                if($homeOwner){
+                    $subject = "Your service order status updated for: “".$service['service_name']."”"; 
+                    $html = '<p style="margin:0;padding:10px 0px">Hi ' . $homeOwner['f_name'] .',</p>';     
+                    $html .= '<p style="margin:0;padding:10px 0px">Your order status has been updated</p>';
+                    $html .= '<p style="margin:0;padding:10px 0px">Order status is '.$newStatus.'</p>';
+                    $this->common_model->send_mail($homeOwner['email'],$subject,$html);
+                }    
+            }
+            echo 1;
+            exit;
+        }else{
+            echo 0;
+            exit;
+        }
+    }
 }

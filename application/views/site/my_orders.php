@@ -117,9 +117,35 @@ $(function () {
             { "data": "created_at"},
             { "data": "total_price"},
             { "data": "status", "render": function(data, type, row) {
-                return '<span class="btn btn-success btn-sm">'+row.status+'</span>';
+                return row.status;
             }}
         ]
     });
 });
+
+$('#boottable tbody').on('change', '.orderStatus', function (event) {
+    event.preventDefault();
+
+    var status = $(this).val();
+    var oId = $(this).data('id');
+
+    var userConfirmed = confirm('Are you sure to update a status of the order?');
+
+    if (userConfirmed) {
+        $.ajax({
+            type:'POST',
+            url:site_url+'users/updateStatus',
+            data:{id:oId,status:status},
+            success:function(response){
+                if(response == 1){
+                    window.location.reload();
+                }else{
+                    alert('Something is wrong.');
+                }
+            }
+        });
+    } else {
+        $(this).prop('selectedIndex', 0);
+    }
+  });
 </script>
