@@ -3896,6 +3896,13 @@ a:focus
     border-right: 0;
     line-height: 17px;
 }
+.tr_class td:nth-of-type(7) .nx_btn {
+    background-color: #fff;
+    color: #FF7353;
+    border-left: 1px solid #3D78CB;
+    border-right: 1px solid #3D78CB;
+    line-height: 17px;
+}
 .tr_class td i {
     font-size: 18px;
     color: #ccc;

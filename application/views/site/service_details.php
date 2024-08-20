@@ -353,7 +353,7 @@
 																		<div>
 																			<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-373 -556)"><g transform="translate(120 189)"><g transform="translate(54 260)"><g transform="translate(199 107)"><g class="circle-wrapper" fill="#FFF" stroke="#CCC"><circle class="background-circle" cx="28" cy="28" r="27.5" fill-opacity="0" fill="#000"></circle></g><path class="inner-image" d="M28.121892,24.7230821 C28.7203205,24.1246416 29.6823291,24.1176829 30.2824972,24.7161235 C30.8757068,25.3093451 30.8861445,26.2644145 30.2737991,26.8750326 L25.8795248,31.2711352 C25.2810963,31.8695757 24.3190877,31.8765344 23.7206592,31.2780938 C23.1257099,30.6831325 23.1152722,29.7298028 23.7276177,29.117445 L28.121892,24.7230821 Z M32.3996119,31.2085077 L30.2477048,29.0565572 L35.7014063,23.6010061 C36.2006766,23.1017257 35.9188585,21.6125829 34.6524169,20.3461157 C33.3946732,19.0883468 31.8916436,18.801304 31.402811,19.2901465 L25.942151,24.7509166 L23.7902439,22.5972264 L29.2491643,17.138196 C31.1766607,15.2106607 34.5341228,15.8508529 36.8408559,18.1593722 C39.1562871,20.47485 39.7877683,23.8202023 37.855053,25.7546962 L32.3996119,31.2085077 Z M28.0557865,31.24678 L30.2076936,33.4004702 L24.7539921,38.8542817 C22.8212768,40.7887756 19.4742524,40.1555419 17.1588212,37.8400641 C14.8520881,35.5332845 14.2101692,32.1774943 16.1376656,30.249959 L21.5983256,24.7891889 L23.7502327,26.9428791 L18.2895727,32.4036491 C17.8007401,32.8924916 18.0877771,34.3955516 19.3455207,35.6533205 C20.6119624,36.9197878 22.1028147,37.2016115 22.602085,36.7023312 L28.0557865,31.24678 Z" fill="#999"></path></g></g></g></g></g></svg>
 																		</div>
-																		<span class="social-medium-title">Copy Link</span>
+																		<span class="social-medium-title copyTitle">Copy Link</span>
 																	</a>
 																</div>
 															
@@ -385,13 +385,13 @@
 											</ul>
 											<div class="tab-content">
 												<div class="tab-pane active" id="Basic">
-													<h2 class="title">
+													<h2 class="title" style="font-weight: 500;">
 														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
 													</h2>
 													<p><?php echo isset($package_data) ? $package_data->basic->description : '';?></p>
-													<h4>
+													<!--<h4>
 														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery
-													</h4>
+													</h4>-->
 													<ul>
 														<?php if(!empty($attributes)): ?>
 															<?php foreach($attributes as $att):?>
@@ -439,13 +439,13 @@
 												</div>
 
 												<div class="tab-pane" id="Standard">
-													<h2 class="title">
+													<h2 class="title" style="font-weight: 500;">
 														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
 													</h2>
 													<p><?php echo isset($package_data) ? $package_data->standard->description : '';?></p>
-													<h4>
+													<!--<h4>
 														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->standard->days; ?>-day delivery
-													</h4>
+													</h4>-->
 													<ul>
 														<?php if(!empty($attributes)): ?>
 															<?php foreach($attributes as $att):?>
@@ -494,13 +494,13 @@
 												</div>
 
 												<div class="tab-pane" id="Premium">
-													<h2 class="title">
+													<h2 class="title" style="font-weight: 500;">
 														<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
 													</h2>
 													<p><?php echo isset($package_data) ? $package_data->premium->description : '';?></p>
-													<h4>
+													<!--<h4>
 														<i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->premium->days; ?>-day delivery
-													</h4>
+													</h4>-->
 													<ul>
 														<?php if(!empty($attributes)): ?>
 															<?php foreach($attributes as $att):?>
@@ -551,11 +551,11 @@
 									<?php endif; ?>
 
 									<?php if($service_details['package_type'] == 0):?>
-										<h2 class="title">
+										<h2 class="title" style="font-weight: 500;">
 											<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
 										</h2>
 										<p><?php echo isset($package_data) ? $package_data->basic->description : '';?></p>
-										<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>
+										<!--<h4><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $package_data->basic->days; ?>-day delivery</h4>-->
 										<ul>
 											<?php if(!empty($attributes)): ?>
 												<?php foreach($attributes as $att):?>
@@ -1095,19 +1095,16 @@
 	});
 
 	function copyToClipboard() {
-	    // Get the link from PHP
 	    var link = "<?php echo base_url().'service/'.$service_details['slug']; ?>";
-
-	    console.log(link);
-
-	    // Use the Clipboard API to copy the link
 	    navigator.clipboard.writeText(link).then(function() {
-	        // Success message
-	        alert("Link copied to clipboard!");
+	        $('.copyTitle').text('Link copied');	        
 	    }).catch(function(err) {
-	        // Error message
 	        console.error("Failed to copy: ", err);
 	    });
+
+	    setTimeout(function() {
+            $('#ShareThis').modal('hide');
+        }, 2000);
 	}
 
 </script>

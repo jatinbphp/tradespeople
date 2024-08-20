@@ -276,104 +276,110 @@ $settings = $this->common_model->get_all_data('admin');
 		<?php } ?> 
 		
 		<?php if($this->session->userdata('type')==2){ ?>
-    <p>
-			<a href="<?php echo base_url('edit-profile'); ?>"><span><i class="fa fa-pencil" aria-hidden="true"></i></span> My Details</a>
-		</p> 
-		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingOne">
-					<h4 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
-						 <span><i class="fa fa-list" aria-hidden="true"></i></span> My Jobs
-						</a>
-					</h4>
-				</div>
-				<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-					<div class="panel-body">
-									 
-						<p><a href="<?php echo base_url('jobs-in-progress'); ?>"> <span><i class="fa fa-user" aria-hidden="true"></i></span> Work in Progress</a></p>
-										
-						<!--p><a href="<?php echo base_url('new-jobs'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p-->
-						<p><a href="<?php echo base_url('my-account'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p>
-									 
-						<p><a href="<?php echo base_url('jobs-completed'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Completed Jobs</a></p>
-						
-						<p><a href="<?php echo base_url('jobs-rejected'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Rejected Jobs</a></p>
-									 
-						<p style="display: none;"><a href="<?php echo base_url('disputed-milestones'); ?>"> <span><i class="fa fa-users" aria-hidden="true"></i></span> Disputed Milestones</a></p>
-								 
-					</div>
-				</div>
-			</div>
-		</div>
-            
-		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingOne">
-					<h4 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-							<span><i class="fa fa-credit-card" aria-hidden="true"></i></span> Billing
-						</a>
-					</h4>
-				</div>
-				<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-					<div class="panel-body">
-						
-							<p><a href="<?php echo base_url('wallet'); ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Wallet</a></p>
-						<?php if($settings[0]['payment_method'] == 1){?>
-							<p><a href="<?php echo site_url().'save-card-list'; ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Update debit/credit card</a></p>
-						<?php }?>	
-						<!-- <p>
-								<a href="<?php echo base_url('manage-bank'); ?>"><span><i class="fa fa-bank" aria-hidden="true"></i></span> Manage Bank Account</a>
-							</p> -->
-						<p><a href="<?php echo base_url('invoices'); ?>"> <span><i class="fa fa-file-pdf-o" aria-hidden="true"></i></span> Invoice</a></p>
-                   
-						<p><a href="<?php echo base_url('transaction-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> History</a></p> 
-						
-						<p><a href="<?php echo base_url('spendamount-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> Spend History</a></p> 
-                    
-					</div>
-				</div>
-			</div>
-		</div>
-         
-		<p style="display: none;"><a href="#"><span><i class="fa fa-money" aria-hidden="true"></i></span> Deposit fund</a></p> 
-           
-		<p style="display: none;"><a href="#"><span><i class="fa fa-money" aria-hidden="true"></i></span> Create Milestone</a></p> 
-                  
-		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="display: none;">
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingOne">
-					<h4 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" aria-controls="collapse3">
-							<span><i class="fa fa-comment" aria-hidden="true"></i></span> Message
-						</a>
-					</h4>
-				</div>
-				<div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-					<div class="panel-body">
-						
-						<p><a href="#"> <span><i class="fa fa-money" aria-hidden="true"></i></span> Read</a></p>
-                      
-						<p><a href="<?php echo base_url('membership-plans'); ?>"> <span><i class="fa fa-cubes" aria-hidden="true"></i></span> Unread</a></p>
-					
-					</div>
-								
-				</div>
-            
-			</div>
-		</div>
-             
-		<p><a href="<?php echo base_url('change-password'); ?>"><span><i class="fa fa-lock" aria-hidden="true"></i></span> Password</a></p>
+			<p>
+				<a href="<?php echo base_url('my-orders'); ?>"><span><i class="fa fa-cart-plus" aria-hidden="true"></i></span> Orders</a>
+			</p>
 
-		<p><a href="<?php echo base_url('delete-account'); ?>"> <span><i class="fa fa-trash" aria-hidden="true"></i></span> Delete My Account</a></p>
+			<p>
+				<a href="<?php echo base_url('my-faviourits'); ?>"><span><i class="fa fa-th" aria-hidden="true"></i></span> Favorites</a>
+			</p>
+
+	    <p>
+				<a href="<?php echo base_url('edit-profile'); ?>"><span><i class="fa fa-pencil" aria-hidden="true"></i></span> My Details</a>
+			</p>
+
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+							 <span><i class="fa fa-list" aria-hidden="true"></i></span> My Jobs
+							</a>
+						</h4>
+					</div>
+					<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+										 
+							<p><a href="<?php echo base_url('jobs-in-progress'); ?>"> <span><i class="fa fa-user" aria-hidden="true"></i></span> Work in Progress</a></p>
+											
+							<!--p><a href="<?php echo base_url('new-jobs'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p-->
+							<p><a href="<?php echo base_url('my-account'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p>
+										 
+							<p><a href="<?php echo base_url('jobs-completed'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Completed Jobs</a></p>
+							
+							<p><a href="<?php echo base_url('jobs-rejected'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Rejected Jobs</a></p>
+										 
+							<p style="display: none;"><a href="<?php echo base_url('disputed-milestones'); ?>"> <span><i class="fa fa-users" aria-hidden="true"></i></span> Disputed Milestones</a></p>
+									 
+						</div>
+					</div>
+				</div>
+			</div>
+            
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+								<span><i class="fa fa-credit-card" aria-hidden="true"></i></span> Billing
+							</a>
+						</h4>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							
+								<p><a href="<?php echo base_url('wallet'); ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Wallet</a></p>
+							<?php if($settings[0]['payment_method'] == 1){?>
+								<p><a href="<?php echo site_url().'save-card-list'; ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Update debit/credit card</a></p>
+							<?php }?>	
+							<!-- <p>
+									<a href="<?php echo base_url('manage-bank'); ?>"><span><i class="fa fa-bank" aria-hidden="true"></i></span> Manage Bank Account</a>
+								</p> -->
+							<p><a href="<?php echo base_url('invoices'); ?>"> <span><i class="fa fa-file-pdf-o" aria-hidden="true"></i></span> Invoice</a></p>
+	                   
+							<p><a href="<?php echo base_url('transaction-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> History</a></p> 
+							
+							<p><a href="<?php echo base_url('spendamount-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> Spend History</a></p> 
+	                    
+						</div>
+					</div>
+				</div>
+			</div>
+	         
+			<p style="display: none;"><a href="#"><span><i class="fa fa-money" aria-hidden="true"></i></span> Deposit fund</a></p> 
+           
+			<p style="display: none;"><a href="#"><span><i class="fa fa-money" aria-hidden="true"></i></span> Create Milestone</a></p> 
+	                  
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="display: none;">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" aria-controls="collapse3">
+								<span><i class="fa fa-comment" aria-hidden="true"></i></span> Message
+							</a>
+						</h4>
+					</div>
+					<div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							
+							<p><a href="#"> <span><i class="fa fa-money" aria-hidden="true"></i></span> Read</a></p>
+	                      
+							<p><a href="<?php echo base_url('membership-plans'); ?>"> <span><i class="fa fa-cubes" aria-hidden="true"></i></span> Unread</a></p>
+						
+						</div>
+									
+					</div>
+	            
+				</div>
+			</div>
              
-		<!--p><a href="<?php echo base_url('my_reviews'); ?>"><span><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span> Reviews</a></p--> 
+			<p><a href="<?php echo base_url('change-password'); ?>"><span><i class="fa fa-lock" aria-hidden="true"></i></span> Password</a></p>
+
+			<p><a href="<?php echo base_url('delete-account'); ?>"> <span><i class="fa fa-trash" aria-hidden="true"></i></span> Delete My Account</a></p>
+             
+			<!--p><a href="<?php echo base_url('my_reviews'); ?>"><span><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span> Reviews</a></p--> 
               
-		<p style="display: none;"><a href="#"><span><i class="fa fa-envelope-o" aria-hidden="true"></i></span> My ticket</a></p> 
-          
-		 
-         
+			<p style="display: none;"><a href="#"><span><i class="fa fa-envelope-o" aria-hidden="true"></i></span> My ticket</a></p>
 		<?php } ?>
 		
 		<p><a href="<?php echo base_url('inbox'); ?>"><span><i class="fa fa-comment" aria-hidden="true"></i></span> Messenger</a></p>

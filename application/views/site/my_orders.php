@@ -59,7 +59,6 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
                                                 </tbody>
                                             </table>
                                         <?php }else{ ?>
@@ -105,10 +104,10 @@ $(function () {
                     if (row.service_name.file.endsWith('.mp4')) {
                         return '<video class="mr-4" width="100" controls autoplay><source src="'+site_url+'img/services/'+row.service_name.file+'" type="video/mp4">Your browser does not support the video tag.</video>';
                     } else {
-                        return '<img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="50">';
+                        return '<img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="100">';
                     }
                 } else {
-                    return '<img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
+                    return '<img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="100">';
                 }
             }},
             { "data": "service_name", "render": function(data, type, row) {
@@ -148,4 +147,36 @@ $('#boottable tbody').on('change', '.orderStatus', function (event) {
         $(this).prop('selectedIndex', 0);
     }
   });
+
+$('#boottable tbody').on('click', '.orderAgain', function (event) {
+    var oId = $(this).data('id');
+    swal({
+        title: "Confirm Order",
+        text: "Are you sure you want to place this order?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Place Order',
+        cancelButtonText: 'Cancel'
+    }, function() {        
+        $.ajax({
+          type:'POST',
+          url:site_url+'users/orderAgain',
+          data:{oId:oId},
+          dataType: 'json',
+          success:function(response){
+            if(response.status == 0){
+              swal({
+                  title: "Login Required!",
+                  text: "If you want to again placed this order then please login first!",
+                  type: "warning"
+              }, function() {
+                  window.location.href = '<?php echo base_url().'login'; ?>';
+              });
+            }else{
+              window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
+            }      
+          }
+        });
+    });    
+});
 </script>

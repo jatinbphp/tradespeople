@@ -233,6 +233,7 @@ $route['addons']                                 = 'addon/index';
 $route['make-addon-payment/(:any)']              = 'addon/make_addon_payment/$1';
 $route['my-services']              				 = 'Users/my_services';
 $route['my-orders']              				 = 'Users/my_orders';
+$route['my-faviourits']              				 = 'Users/my_faviourits';
 $route['add-service']              	 	         = 'Users/addServices';
 $route['add-service2']                           = 'Users/addServices2';
 $route['add-service3']                           = 'Users/addServices3';

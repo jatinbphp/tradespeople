@@ -3360,23 +3360,17 @@ class Common_model extends CI_Model
 			$statusWhere = 'AND so.status = "'.$status.'"';
 		}
 
-		if($limit != 0){
-			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
+		$dataLimit = $limit != 0 ? $limit : 500;
+		$tblPrefix = $this->session->userdata('type') == 1 ? 'ms' : 'so';
+
+		$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
                	FROM $table so
-               	LEFT JOIN users u ON so.user_id = u.id
                	LEFT JOIN my_services ms ON ms.id = so.service_id
-               	WHERE ms.user_id = $user_id $statusWhere
+               	LEFT JOIN users u ON ms.user_id = u.id
+               	WHERE $tblPrefix.user_id = $user_id $statusWhere
                	ORDER BY so.id DESC
-               	LIMIT $limit");		
-		}else{
-			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
-               	FROM $table so
-               	LEFT JOIN users u ON so.user_id = u.id
-               	LEFT JOIN my_services ms ON ms.id = so.service_id
-               	WHERE ms.user_id = $user_id $statusWhere
-               	ORDER BY so.id DESC
-               	LIMIT 500");	
-		}
+               	LIMIT $dataLimit");	
+
 		return $query->result_array();
 	}
 
@@ -3391,21 +3385,24 @@ class Common_model extends CI_Model
 	}
 
 	public function getTotalStatusOrder($user_id){
+		$tblPrefix = $this->session->userdata('type') == 1 ? 's' : 'so';
+
 		$query = $this->db->query("
 			    SELECT
 			    	COUNT(*) AS total_all,
 			        SUM(CASE WHEN so.status IN ('placed', 'pending') THEN 1 ELSE 0 END) AS total_placed,
 			        SUM(CASE WHEN so.status = 'active' THEN 1 ELSE 0 END) AS total_active,
-			        SUM(CASE WHEN so.status = 'complete' THEN 1 ELSE 0 END) AS total_completed,
-			        SUM(CASE WHEN so.status = 'cancel' THEN 1 ELSE 0 END) AS total_cancelled
+			        SUM(CASE WHEN so.status = 'completed' THEN 1 ELSE 0 END) AS total_completed,
+			        SUM(CASE WHEN so.status = 'cancelled' THEN 1 ELSE 0 END) AS total_cancelled,
+			        SUM(CASE WHEN so.status = 'delivered' THEN 1 ELSE 0 END) AS total_delivered
 			    FROM
 			        service_order so
 			    JOIN
 			        my_services s ON so.service_id = s.id
 			    WHERE
-			        s.user_id = $user_id");
+			        $tblPrefix.user_id = $user_id");
 
-			return $query->row_array();
+		return $query->row_array();
 	}
 
 	public function getTotalStatusService($user_id){
@@ -3551,25 +3548,7 @@ class Common_model extends CI_Model
 	}
 
 	public function countResponseTime($rId){
-	    /*$query = $this->db->query("
-		    SELECT AVG(TIMESTAMPDIFF(SECOND, ch1.create_time, ch2.create_time)) / 3600 AS avg_response_time_hours
-		    FROM chat ch1
-		    INNER JOIN chat ch2 
-		        ON ch1.receiver_id = ch2.sender_id 
-		        AND ch1.sender_id = ch2.receiver_id 
-		        AND ch2.create_time > ch1.create_time
-		    WHERE ch1.receiver_id = $rId 
-		    AND ch1.is_read = 1
-		    AND ch2.id = (
-		        SELECT MIN(id) 
-		        FROM chat 
-		        WHERE receiver_id = ch2.receiver_id 
-		        AND sender_id = ch2.sender_id 
-		        AND create_time > ch1.create_time
-		    )
-		");*/
-
-		$query = $this->db->query("
+	    $query = $this->db->query("
 		    SELECT 
 		        AVG(TIMESTAMPDIFF(SECOND, ch1.create_time, ch2.create_time)) / 3600 AS avg_response_time_hours
 		    FROM chat ch1
@@ -3664,5 +3643,20 @@ class Common_model extends CI_Model
 		$query = $this->db->query("SELECT COUNT(*) AS total_likes FROM service_wishlist WHERE service_id = ?", array($sId));
 		$result = $query->row();
 		return $result->total_likes;
+    }
+
+    public function get_my_favorite($table, $userId){
+    	$query = $this->db->query("SELECT ms.*, c.cat_name, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews, swl.id AS wishlist_id, swl.user_id as suser_id, u.trading_name, u.profile, 
+    		IF(swl.user_id IS NOT NULL, 1, 0) AS is_liked
+			FROM $table ms
+           	LEFT JOIN service_category c ON ms.category = c.cat_id
+           	LEFT JOIN service_rating srt ON ms.id = srt.service_id
+           	LEFT JOIN service_wishlist swl ON ms.id = swl.service_id
+           	LEFT JOIN users u ON ms.user_id = u.id
+           	WHERE swl.user_id = $userId
+           	GROUP BY ms.id
+           	ORDER BY ms.id DESC 
+           	LIMIT 500");
+		return $query->result_array();    	
     }
 }

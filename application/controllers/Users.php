@@ -618,6 +618,7 @@ class Users extends CI_Controller
 			//$data['progress']=$this->get_progress_data();
 			$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
 			$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
+			$data['active_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),'completed',0);
 			$this->load->view('site/my_account',$data);
 		}
 	}
@@ -2316,7 +2317,7 @@ class Users extends CI_Controller
 		if($this->session->userdata('user_id')) {
 			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),$status,0);
 			$data['totalStatusOrder'] = $this->common_model->getTotalStatusOrder($this->session->userdata('user_id'));
-			$data['statusArr'] = ['placed', 'active', 'completed', 'cancelled', 'all'];
+			$data['statusArr'] = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'all'];
 			$this->load->view('site/my_orders',$data);
 		} else {
 			redirect('login');
@@ -2329,22 +2330,31 @@ class Users extends CI_Controller
 	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'), $status);
 	        $data = [];
 
-	        $statusArr = ['pending', 'active', 'completed', 'cancelled'];
+	        $statusArr = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'all'];
 
 	        foreach($orders as $order) {
 	        	$date = new DateTime($order['created_at']);
 
-	        	$selected1 = $order['status'] == 'pending' ? 'selected' : '';
-	        	$selected2 = $order['status'] == 'active' ? 'selected' : '';
-	        	$selected3 = $order['status'] == 'completed' ? 'selected' : '';
-	        	$selected4 = $order['status'] == 'cancelled' ? 'selected' : '';
+	        	if($this->session->userdata('type') == 1){
+	        		$selected1 = $order['status'] == 'pending' ? 'selected' : '';
+		        	$selected2 = $order['status'] == 'active' ? 'selected' : '';
+		        	$selected3 = $order['status'] == 'completed' ? 'selected' : '';
+		        	$selected3 = $order['status'] == 'delivered' ? 'selected' : '';
+		        	$selected4 = $order['status'] == 'cancelled' ? 'selected' : '';
 
-	        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
-                            <option value="pending" '.$selected1.'>Pending</option>
-                            <option value="active" '.$selected2.'>Started</option>
-                            <option value="completed" '.$selected3.'>Completed</option>
-                            <option value="cancelled" '.$selected4.'>Cancelled</option>
-                        </select>';
+		        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
+	                            <option value="pending" '.$selected1.'>Pending</option>
+	                            <option value="active" '.$selected2.'>Started</option>
+	                            <option value="completed" '.$selected3.'>Completed</option>
+	                            <option value="cancelled" '.$selected4.'>Cancelled</option>
+	                        </select>';
+	        	}else{
+	        		if($order['status'] == 'completed'){
+	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';	
+	        		}else{
+	        			$status = '<label class="badge bg-dark p-3">'.ucfirst($order['status']).'</label>';
+	        		}	        		
+	        	}
 
 	          	$data[] = [
 		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name']),
@@ -3584,5 +3594,47 @@ class Users extends CI_Controller
     	}
     	
     	echo json_encode($json);
+    }
+
+    public function orderAgain(){
+    	$userid = $this->session->userdata('user_id');
+    	$json['status'] = 0;
+    	if($userid){
+			$oId = $this->input->post('oId');
+	    	$order = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+	    	if(!empty($order)){
+	    		$exIds = '';
+	    		$oldExIds = !empty($order['ex_services']) ? explode(',', $order['ex_services']) : [];
+	    		if(count($oldExIds) > 0){
+	    			foreach($oldExIds as $exs){
+	    				$exId = explode('-', $exs);
+	    				$exIds .= $exId[0].',';
+	    			}
+	    		}
+
+	    		$insert['user_id'] = $userid;
+				$insert['service_id'] = $order['service_id'];
+				$insert['package_type'] = $order['package_type'];
+				$insert['service_qty'] = $order['service_qty'];
+				$insert['ex_service_ids'] = substr(trim($exIds), 0, -1);
+
+				$newCart = $this->common_model->insert('cart', $insert);
+	    		if($newCart){
+	    			$this->session->set_userdata('latest_cartId',$newCart);
+	    			$json['status'] = 1;
+	    		}
+	    	}
+    	}    	
+    	echo json_encode($json);
+    }
+
+    public function my_faviourits($value=''){
+ 		if($this->session->userdata('user_id')) {
+			$data['my_favourites']=$this->common_model->get_my_favorite('my_services',$this->session->userdata('user_id'));
+
+			$this->load->view('site/my_favorite',$data);
+		} else {
+			redirect('login');
+		}   	
     }
 }

@@ -1,9 +1,13 @@
+<?php 
+	$className = isset($is_wishlist) && $is_wishlist == 1 ? 'col-sm-4' : 'col-sm-3';
+	
+?>
 <?php foreach($all_services as $list): ?>
 	<?php 
 		$package_data = json_decode($list['package_data'],true);
 		$servicePrice = $package_data['basic']['price'];				
 	?>
-<div class="col-sm-3">
+<div class="<?php echo $className; ?>">
 	<div class="tradespeople-box">
 		<div class="tradespeople-box-img">
 			<div id="serId_<?php echo $list['id']; ?>" class="icon-wishlist <?php echo $list['is_liked'] == 1 ? 'liked-service' : ''; ?>" data-id="<?php echo $list['id']; ?>">
