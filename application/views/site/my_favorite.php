@@ -12,7 +12,7 @@
             	<div class="col-sm-9">
                     <div class="mjq-sh">
                         <h2>
-                            <strong>My Faviourit Services</strong>                            
+                            <strong>My Favourite Services</strong>                            
                         </h2>                        
                     </div>
                     <div class="row mt-4">

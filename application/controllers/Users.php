@@ -2443,9 +2443,12 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
+		$this->form_validation->set_rules('area','City/Town','required');
 		$this->form_validation->set_rules('category','Category','required');
 		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
 		$this->form_validation->set_rules('service_type[]','Service Type','required');
+		$this->form_validation->set_rules('positive_keywords','Positive Keywords','required');
+		$this->form_validation->set_rules('image','Image/Video','required');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2785,15 +2788,17 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
+		$this->form_validation->set_rules('area','City/Town','required');
 		$this->form_validation->set_rules('category','Category','required');
-		$this->form_validation->set_rules('sub_category[]','Subcategory','required');
+		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
 		$this->form_validation->set_rules('service_type[]','Service Type','required');
+		$this->form_validation->set_rules('positive_keywords','Positive Keywords','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
 			$this->session->set_userdata('update_next_step',1);
 			redirect("edit-service/{$id}");
-		}
+		}		
 
 		if(count($this->input->post('service_type')) > 3){
 			$this->session->set_flashdata('error',"You need to select only 3 service types");
@@ -2811,6 +2816,19 @@ class Users extends CI_Controller
 			if ($this->upload->do_upload('image')) {
 				$profile=$this->upload->data("file_name");
 				$newImg = $profile;
+			}
+		}else{
+			$serviceData = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+			if(!empty($serviceData)){
+				if(empty($serviceData['image'])){
+					$this->form_validation->set_rules('image','Image/Video','required');
+			
+					if ($this->form_validation->run()==false) {
+						$this->session->set_flashdata('error',validation_errors());
+						$this->session->set_userdata('update_next_step',1);
+						redirect("edit-service/{$id}");
+					}
+				}
 			}
 		}
 

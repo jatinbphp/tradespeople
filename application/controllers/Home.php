@@ -2383,8 +2383,6 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$sId = $data['service_details']['id'];
 		$uId = $data['service_details']['user_id'];
 
-		$sDetails = $this->common_model->get_service_details('my_services',$sId);
-
 		$category = $data['service_details']['category'];
 
 		$ip_address = $this->input->ip_address();
@@ -2414,10 +2412,11 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 			foreach($peopleViews as $rview){
 				$exPids[] = $rview['service_id'];
 			}
-		}		
-
+		}
+		
 		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exIds);
 		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exPids);
+		$data['similar_service']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,'',$sId);
 
 		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
@@ -2429,6 +2428,9 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
 
 		$data['package_data'] = !empty($data['service_details']['package_data']) ? json_decode($data['service_details']['package_data']) : [];
+
+		$data['referalRating']=$this->common_model->get_referral_code_rating($uId);
+		$data['serviceAvgRating']=$this->common_model->get_service_avg_rating($uId);
 
 		$attributesArray = [];
 		foreach ($data['package_data'] as $value) {

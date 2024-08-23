@@ -281,7 +281,7 @@ $settings = $this->common_model->get_all_data('admin');
 			</p>
 
 			<p>
-				<a href="<?php echo base_url('my-faviourits'); ?>"><span><i class="fa fa-th" aria-hidden="true"></i></span> Favorites</a>
+				<a href="<?php echo base_url('my-faviourits'); ?>"><span><i class="fa fa-th" aria-hidden="true"></i></span> Favourites</a>
 			</p>
 
 	    <p>

@@ -2257,6 +2257,13 @@ $(document).ready(function(){
     <?php endif; ?>
   });
 
+  $('#datepickerAvailability').datepicker({
+    minDate: 0,
+    onSelect: function(dateText, inst) {
+        $('#selectedDates').val(dateText);
+    }
+  });
+
   $('.slider-for').slick({
     slidesToShow: 1,
     slidesToScroll: 1,

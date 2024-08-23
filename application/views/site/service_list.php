@@ -48,7 +48,7 @@
 					<?php
 						$totalChr = strlen($list['description']);
 						if($totalChr > 120 ){
-							echo substr($list['description'], 0, 120).'...';		
+							echo substr($list['description'], 0, 120).'...';
 						}else{
 							echo $list['description'];
 						}

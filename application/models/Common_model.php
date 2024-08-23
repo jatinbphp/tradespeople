@@ -2887,7 +2887,7 @@ class Common_model extends CI_Model
 
 
 
-	public function getServiceByCategoriesId($categoryId, $step, $sIds='')
+	public function getServiceByCategoriesId($categoryId, $step, $sIds='', $exceptId = '')
 	{
 		$this->db->select('ms.*, c.cat_name, u.trading_name, u.profile, AVG(srt.rating) AS average_rating, COUNT(srt.rating) AS total_reviews');
 		$this->db->from('my_services ms');
@@ -2913,6 +2913,10 @@ class Common_model extends CI_Model
 
 		if(!empty($sIds)){
 			$this->db->where_in('ms.id', $sIds);
+		}
+
+		if(!empty($exceptId)){
+			$this->db->where('ms.id !=', $exceptId);
 		}		
 
 		$this->db->group_by('ms.id, c.cat_name, u.trading_name, u.profile');

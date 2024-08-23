@@ -38,6 +38,8 @@ class Checkout extends CI_Controller
 		$insert['package_type'] = $package_type;
 		$insert['service_qty'] = $this->input->post('qty_of_type');
 		$insert['ex_service_ids'] = $this->input->post('selected_exsIds');
+		$insert['date'] = date('Y-m-d', strtotime($this->input->post('date')));
+		$insert['time'] = $this->input->post('time');
 		$newCart = $this->common_model->insert('cart', $insert);
 
 		if($newCart){
@@ -285,6 +287,8 @@ class Checkout extends CI_Controller
 			$insert['transaction_id'] = $transactionid ?? '';
 			$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';
 			$insert['status'] = 'placed';
+			$insert['date'] = date('Y-m-d', strtotime($cartData['date']));
+			$insert['time'] = $cartData['time'];
 			$newOrder = $this->common_model->insert('service_order', $insert);
 
 			if($newOrder){
