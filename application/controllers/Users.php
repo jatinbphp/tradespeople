@@ -2448,8 +2448,8 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('category','Category','required');
 		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
 		$this->form_validation->set_rules('service_type[]','Service Type','required');
-		$this->form_validation->set_rules('positive_keywords','Positive Keywords','required');
-		$this->form_validation->set_rules('image','Image/Video','required');
+		$this->form_validation->set_rules('positive_keywords[]','Positive Keywords','required');
+		//$this->form_validation->set_rules('image','Image/Video','required');
 				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2463,7 +2463,7 @@ class Users extends CI_Controller
 			redirect('add-service');
 		}
 
-		$newImg = '';
+		/*$newImg = '';
 		if($_FILES['image']['name']){ 
 			$config['upload_path']="img/services";
 			$config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|avi|wmv|mkv';
@@ -2473,7 +2473,7 @@ class Users extends CI_Controller
 				$profile=$this->upload->data("file_name");
 				$newImg = $profile;
 			} 
-		}
+		}*/
 
 		$subCat = !empty($this->input->post('sub_category')) ? implode(',', $this->input->post('sub_category')) : '';
 
@@ -2483,10 +2483,10 @@ class Users extends CI_Controller
 		$insert['service_name'] = $this->input->post('service_name');
 		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
 		$insert['description'] = trim($this->input->post('description'));
-		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
+		$insert['positive_keywords'] = implode(',', $this->input->post('positive_keywords'));
 		$insert['location'] = $this->input->post('location');
 		$insert['area'] = $this->input->post('area');
-		$insert['image'] = $newImg;
+		//$insert['image'] = $newImg;
 		$insert['status'] = 'draft';
 		$insert['category'] = $this->input->post('category');
 		$insert['sub_category'] = $subCat;
@@ -2577,20 +2577,32 @@ class Users extends CI_Controller
 		if ($step3 !== null) {
 		  $insert = array_merge($insert, $step3);
 		}*/
-		
+
+		$this->form_validation->set_rules('image','Image/Video','required');
 		$this->form_validation->set_rules('video', 'Video', 'callback_check_video_size');
-		
+				
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
 			$this->session->set_userdata('next_step',4);
 			redirect('add-service');
 		}
 
+		$newImg = '';
+		if($_FILES['image']['name']){ 
+			$config['upload_path']="img/services";
+			$config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|avi|wmv|mkv';
+			$config['encrypt_name']=true;
+			$this->load->library("upload",$config);
+			if ($this->upload->do_upload('image')) {
+				$profile=$this->upload->data("file_name");
+				$newImg = $profile;
+			} 
+		}
+
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
 
 		$newVid = '';
-
 		if($_FILES['video']['name']){ 
 			$config['upload_path']="img/services";
 			$config['allowed_types'] = 'mp4|avi|wmv|mkv';
@@ -2602,6 +2614,7 @@ class Users extends CI_Controller
 			} 
 		}
 
+		$insert['image'] = $newImg;
 		$insert['video'] = $newVid;
 		$latestServiceId = $this->session->userdata('latest_service');
 		$run = $this->common_model->update('my_services',array('id'=>$latestServiceId),$insert);
@@ -2671,8 +2684,6 @@ class Users extends CI_Controller
 		$this->session->set_userdata('next_step',8);
 		$this->session->set_flashdata('success',"Service availability details added successfully.");
 		redirect('add-service');
-	
-		
 	}
 
 	public function storeServices7($value=''){
@@ -2825,6 +2836,8 @@ class Users extends CI_Controller
 			$data['service_type'] = $this->common_model->getServiceType($service_type);
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 
+			$data['suggestion'] = ['bathroom','test','reparing','123','456','789'];
+
 			$this->load->view('site/edit-service',$data);
     	} 
 	}
@@ -2834,7 +2847,6 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
@@ -2842,7 +2854,7 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('category','Category','required');
 		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
 		$this->form_validation->set_rules('service_type[]','Service Type','required');
-		$this->form_validation->set_rules('positive_keywords','Positive Keywords','required');
+		$this->form_validation->set_rules('positive_keywords[]','Positive Keywords','required');
 		
 		if ($this->form_validation->run()==false) {
 			$this->session->set_flashdata('error',validation_errors());
@@ -2857,8 +2869,8 @@ class Users extends CI_Controller
 		}
 
 		$insert = [];
-		$newImg = '';
-		if($_FILES['image']['name']){ 
+		/*$newImg = '';
+		if($_FILES['image']['name']){
 			$config['upload_path']="img/services";
 			$config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|avi|wmv|mkv';
 			$config['encrypt_name']=true;
@@ -2884,7 +2896,7 @@ class Users extends CI_Controller
 
 		if($newImg){
 			$insert['image'] = $newImg;
-		}
+		}*/
 
 		$subCat = !empty($this->input->post('sub_category')) ? implode(',', $this->input->post('sub_category')) : '';
 
@@ -2895,7 +2907,7 @@ class Users extends CI_Controller
 		$insert['description'] = trim($this->input->post('description'));
 		$insert['location'] = $this->input->post('location');
 		$insert['area'] = $this->input->post('area');
-		$insert['positive_keywords'] = trim($this->input->post('positive_keywords'));
+		$insert['positive_keywords'] = implode(',', $this->input->post('positive_keywords'));
 		$insert['category'] = $this->input->post('category');
 		$insert['sub_category'] = $subCat;
 		$insert['service_type'] = $sType;
@@ -2969,8 +2981,37 @@ class Users extends CI_Controller
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
 
-		$newVid = '';
 
+		$newImg = '';
+		if($_FILES['image']['name']){
+			$config['upload_path']="img/services";
+			$config['allowed_types'] = 'jpeg|gif|jpg|png|mp4|avi|wmv|mkv';
+			$config['encrypt_name']=true;
+			$this->load->library("upload",$config);
+			if ($this->upload->do_upload('image')) {
+				$profile=$this->upload->data("file_name");
+				$newImg = $profile;
+			}
+		}else{
+			$serviceData = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+			if(!empty($serviceData)){
+				if(empty($serviceData['image'])){
+					$this->form_validation->set_rules('image','Image/Video','required');
+			
+					if ($this->form_validation->run()==false) {
+						$this->session->set_flashdata('error',validation_errors());
+						$this->session->set_userdata('update_next_step',1);
+						redirect("edit-service/{$id}");
+					}
+				}
+			}
+		}
+
+		if($newImg){
+			$insert['image'] = $newImg;
+		}
+
+		$newVid = '';
 		if($_FILES['video']['name']){ 
 			$config['upload_path']="img/services";
 			$config['allowed_types'] = 'mp4|avi|wmv|mkv';
@@ -3187,10 +3228,24 @@ class Users extends CI_Controller
 		exit;
 	}
 
+	public function removeServiceVideo(){
+		$sid = $this->input->post('sId');
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$sid]);
+		if(!empty($service)){
+			unlink('img/services/'.$service['video']);
+			$insert['video'] = '';
+			$this->common_model->update('my_services', ['id'=>$sid], $insert);
+			$serviceData = $this->common_model->GetSingleData('my_services',['id'=>$sid]);
+			$this->setServiceData($serviceData);
+		}
+		exit;
+	}
+
 	public function deleteServices($id=""){
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$id]);
 		if(!empty($service)){
 			unlink('img/services/'.$service['image']);
+			unlink('img/services/'.$service['video']);
 			$service_images=$this->common_model->get_service_image('service_images',$id);
 			if(!empty($service_images)){
 				foreach($service_images as $list){
@@ -3762,9 +3817,9 @@ class Users extends CI_Controller
     }
 	
 	public function getPositiveKeywords(){
-		$keywords = $oId = $_GET['keyword'];
+		$keywords = $_GET['term'];
 		$suggestions = $this->common_model->get_keyword_suggestions($keywords);
-		echo json_encode($suggestions);
+		return $suggestions;		
 	}
 	
 	public function check_video_size() {
@@ -3778,4 +3833,6 @@ class Users extends CI_Controller
 		}
 		return true;
 	}
+
+
 }

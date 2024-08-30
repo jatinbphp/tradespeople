@@ -1944,7 +1944,7 @@ class Common_model extends CI_Model
 		return $result;
 	}
 
-	public function make_all_image($mainImg, $sliderImgs)
+	public function make_all_image($mainImg, $mainVideo, $sliderImgs)
 	{
 		$slider = '';
 		$image_path = FCPATH . 'img/services/' . $mainImg;
@@ -1960,16 +1960,39 @@ class Common_model extends CI_Model
 			}
 
 			if($is_video){
-				$slider .= '<div><video controls autoplay src="'.$main_image.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
+				$slider .= '<div><video controls src="'.$main_image.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
 			}
+		}
+
+		$video_path = FCPATH . 'img/services/' . $mainVideo;
+		if(isset($mainVideo) && file_exists($video_path)){
+			$main_video = base_url('img/services/').$mainVideo;
+
+			$slider .= '<div><video controls src="'.$main_video.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
 		}
 
 		if(count($sliderImgs)){
 			foreach($sliderImgs as $img){
 				$sliderImgPath = FCPATH . 'img/services/' . $img['image'];
+				// if(isset($img['image']) && file_exists($sliderImgPath)){
+				// 	$slider_mage = base_url('img/services/').$img['image'];
+				// 	$slider .= '<div><img src="'.$slider_mage.'" class="img-responsive"></div>';
+				// }
+
 				if(isset($img['image']) && file_exists($sliderImgPath)){
+					$mime_type = get_mime_by_extension($sliderImgPath);
+		            $is_image = strpos($mime_type, 'image') !== false;
+		            $is_video = strpos($mime_type, 'video') !== false;
+
 					$slider_mage = base_url('img/services/').$img['image'];
-					$slider .= '<div><img src="'.$slider_mage.'" class="img-responsive"></div>';
+
+					if ($is_image){
+						$slider .= '<div><img src="'.$slider_mage.'" class="img-responsive"></div>';
+					}
+
+					if($is_video){
+						$slider .= '<div><video controls src="'.$slider_mage.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
+					}
 				}
 			}
 		}
@@ -3688,7 +3711,7 @@ class Common_model extends CI_Model
 				$keywords = explode(',', $row['positive_keywords']);
 				foreach ($keywords as $key) {
 					if (stripos($key, $keyword) !== false) {
-						$suggestions[] = ['value' => trim($key)];
+						$suggestions[] = trim($key);
 					}
 				}
 			}

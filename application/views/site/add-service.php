@@ -192,7 +192,7 @@
             image.onload = function () {
                 var height = this.height;
                 var width = this.width;
-                var html = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="padding-left:30px">'+
+                var html = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="padding-left:15px">'+
                                 '<div class="boxImage imgUp">'+
                                     '<div class="imagePreviewPlus">'+
                                         '<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
@@ -202,7 +202,7 @@
                 $('#imgpreview').html('').html(html);
             };
         } else if (fileType === 'video') {
-            var html = '<div class="col-md-4 col-sm-6 col-xs-12" style="padding-left:30px">'+
+            var html = '<div class="col-md-4 col-sm-6 col-xs-12" style="padding-left:15px">'+
                             '<div class="videoPreviewPlus">'+
                                 '<video controls autoplay>'+
                                     '<source src="'+e.target.result+'" type="'+file.type+'">'+

@@ -1773,8 +1773,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  setInterval(function(){ user_list_refresher(); }, 5000);
+  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  //setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
@@ -2176,9 +2176,9 @@ $(document).ready(function(){
 
 <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js">  
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.3.1/typeahead.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-ui-multidatespicker@1.6.6/jquery-ui.multidatespicker.js"></script>
  
 <script type="text/javascript">
@@ -2323,54 +2323,6 @@ $(document).ready(function(){
     adaptiveHeight: false,
   });
 	
-$(document).ready(function() {
-    var suggestions = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote: {
-            url: site_url + 'users/getPositiveKeywords?keyword=%QUERY',
-            wildcard: '%QUERY',
-            transform: function(response) {
-                console.log('Raw response:', response); // Debug raw response
-                return response.map(function(item) {
-                    return { value: item.value };
-                });
-            }
-        }
-    });
-
-    suggestions.initialize().done(function() {
-        console.log('Bloodhound initialized');
-    }).fail(function() {
-        console.log('Failed to initialize Bloodhound');
-    });
-
-    $('#positive_keywords').tagsinput({
-        maxTags: 5,
-        typeaheadjs: {
-            name: 'suggestions',
-            displayKey: 'value',
-            valueKey: 'value',
-            source: suggestions.ttAdapter()
-        }
-    });
-});
-
-
-
-
-  /*$('#positive_keywords').tagsinput({
-     maxTags: 5
-  });*/
-  
-  $('#positive_keywords').on('beforeItemAdd', function(event) {
-      var tag = event.item;
-      var regex = /^[a-zA-Z0-9\s]+$/;
-      if (!regex.test(tag)) {
-          event.cancel = true; // Cancel adding the tag
-      }
-  });
-
   $('.area').on('beforeItemAdd', function(event) {
       var tag = event.item;
       var regex = /^[a-zA-Z0-9\s]+$/;

@@ -35,12 +35,12 @@
 							<div class="service-detail-slider">						
 								<div class="slider slider-for">
 									<?php
-									echo $this->common_model->make_all_image($service_details['image'], $service_images);										
+									echo $this->common_model->make_all_image($service_details['image'], $service_details['video'], $service_images);										
 									?>
 								</div>
 								<div class="slider slider-nav">
 									<?php
-									echo $this->common_model->make_all_image($service_details['image'], $service_images);										
+									echo $this->common_model->make_all_image($service_details['image'], $service_details['video'], $service_images);										
 									?>									
 								</div>
 							</div>
@@ -208,6 +208,83 @@
 									<button type="button" class="btn btn-warning mt-3" id="loadReview">Load More Review</button>
 								</div>
 							<?php endif;?>
+
+							<?php if($service_details['package_type'] == 1):?>
+								<div class="container">
+									<div class="compare-packages">
+										<h2 class="title">Compare packages</h2>
+										<div class="gig-page-packages-table">
+											<table>
+												<tbody>
+													<tr class="package-type">
+														<th class="package-row-label">Package</th>
+														<th class="package-type-price">
+															<div class="price-wrapper">
+																<p class="price">
+																	<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+																</p>
+															</div>
+															<b class="type">Basic</b>
+														</th>
+														<th class="package-type-price">
+															<div class="price-wrapper">
+																<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?></p>
+															</div>
+															<b class="type">Standard</b>
+														</th>
+														<th class="package-type-price">
+															<div class="price-wrapper">
+																<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?></p>
+															</div>
+															<b class="type">Premium</b>
+														</th>
+													</tr>
+													<tr class="delivery-time">
+														<td class="package-row-label">Delivery Time</td>
+														<td><?php echo $package_data->basic->days; ?> Days</td>
+														<td><?php echo $package_data->standard->days; ?> Days</td>
+														<td><?php echo $package_data->premium->days; ?> Days</td>
+													</tr>
+													<?php 
+													$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+													$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+													$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+													?>
+													<?php if(!empty($attributes)): ?>
+													<?php foreach($attributes as $att):?>
+													<?php 
+
+													$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+													$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
+													$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
+
+													?>
+													<tr>
+														<td><?php echo $att['attribute_name']; ?></td>
+														<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
+														<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
+														<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
+													</tr>
+													<?php endforeach; ?>	
+													<?php endif; ?>
+													<tr class="select-package">
+														<td class="package-row-label">Total</td>
+														<td>
+															Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+														</td>
+														<td>
+															Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
+														</td>
+														<td>
+															Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+								<?php endif; ?>
 
 							
 						</div>
@@ -842,82 +919,7 @@
 		</div>
 	</div>
 	
-	<?php if($service_details['package_type'] == 1):?>
-	<div class="container" id="comparePackage">
-		<div class="compare-packages">
-			<h2 class="title">Compare packages</h2>
-			<div class="gig-page-packages-table">
-				<table>
-					<tbody>
-						<tr class="package-type">
-							<th class="package-row-label">Package</th>
-							<th class="package-type-price">
-								<div class="price-wrapper">
-									<p class="price">
-										<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
-									</p>
-								</div>
-								<b class="type">Basic</b>
-							</th>
-							<th class="package-type-price">
-								<div class="price-wrapper">
-									<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?></p>
-								</div>
-								<b class="type">Standard</b>
-							</th>
-							<th class="package-type-price">
-								<div class="price-wrapper">
-									<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?></p>
-								</div>
-								<b class="type">Premium</b>
-							</th>
-						</tr>
-						<tr class="delivery-time">
-							<td class="package-row-label">Delivery Time</td>
-							<td><?php echo $package_data->basic->days; ?> Days</td>
-							<td><?php echo $package_data->standard->days; ?> Days</td>
-							<td><?php echo $package_data->premium->days; ?> Days</td>
-						</tr>
-						<?php 
-						$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-						$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-						$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-						?>
-						<?php if(!empty($attributes)): ?>
-						<?php foreach($attributes as $att):?>
-						<?php 
-
-						$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
-						$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
-						$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
-
-						?>
-						<tr>
-							<td><?php echo $att['attribute_name']; ?></td>
-							<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
-							<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
-							<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
-						</tr>
-						<?php endforeach; ?>	
-						<?php endif; ?>
-						<tr class="select-package">
-							<td class="package-row-label">Total</td>
-							<td>
-								Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
-							</td>
-							<td>
-								Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
-							</td>
-							<td>
-								Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-	<?php endif; ?>
+	
 
 	<?php if(!empty($browse_history)): ?>
 		<div class="container mt-5" id="browseHistory">
@@ -1272,9 +1274,7 @@
 		var $peopleHistory = $("#peopleHistory");
 		var $footer = $("#footer");
 
-		if($comparePackage.length) {
-			var $footerOffsetTop = $("#comparePackage").offset().top; 
-		else if ($browseHistory.length) {
+		if ($browseHistory.length) {
 			var $footerOffsetTop = $("#browseHistory").offset().top; 
 		}else if ($peopleHistory.length) {
 			var $footerOffsetTop = $("#peopleHistory").offset().top; 

@@ -9828,8 +9828,8 @@ button.switch-month:hover {
 }
 .summary-feature-article a {
     display: flex;
-    justify-content: space-between;
-    gap:20px;
+    /*justify-content: space-between;*/
+    gap:10px;
     color: #464c5b;
 }
 .summary-feature-article img {
@@ -10826,4 +10826,9 @@ input:checked + .switch-slider:before {
 .similar-service{
     border-bottom: 2px solid #f3f8fd;
     margin-bottom: 10px;
+}
+
+.serviceBtn{
+	display: flex;
+    justify-content: center;
 }

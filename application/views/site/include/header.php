@@ -158,7 +158,7 @@ if($check_budget && $check_budget['status']==0){
 <script type="text/javascript" >
 	var site_url='<?php echo base_url(); ?>';
 	var selectedDate = undefined;
-	var serviceOperationType = 'edit';
+	var serviceOperationType = 'edit';	
 </script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -166,6 +166,7 @@ if($check_budget && $check_budget['status']==0){
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.fancybox.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/scripts.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/owl.carousel.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/jquery.validate.js"></script>
 <!-- <script type="text/javascript" src="<?php echo base_url(); ?>js/tagify.js"></script> -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4GTdudcf_UQnKPmPW4QKt82kel3Fhd6c&amp;libraries=places"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/geocomplete/1.7.0/jquery.geocomplete.min.js"></script>
@@ -197,6 +198,9 @@ $(document).ready(function(){
     }(document)
 </script> -->
 <style type="text/css">
+.error{
+	color: #ff0000;
+}
 .head{
 	padding:5px 15px;
 	border-radius: 3px 3px 0px 0px;

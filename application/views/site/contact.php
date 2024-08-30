@@ -115,7 +115,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                  <div class="g-recaptcha" data-type="image" data-sitekey="6Lfvi7IZAAAAABKCAhUwDjsYtsrJOHh4c52W34PB" required="required">
+                  <div class="g-recaptcha" data-type="image" data-sitekey="" required="required">
                   </div>
                   <p id="captchmsg" ></p>
                 </div>

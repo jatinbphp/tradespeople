@@ -1,4 +1,4 @@
-<form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
+<form action="<?= $url; ?>" method="post" id="formStep1" enctype="multipart/form-data">  
     <div class="edit-user-section">
         <!-- <div class="msg"><?= $this->session->flashdata('msg');?></div> -->
         <div class="row">
@@ -84,7 +84,19 @@
                         Positive Keywords
                     </label>
                     <div class="col-md-12">
-                        <input id="positive_keywords" value="<?php echo $serviceData['positive_keywords'] ?? '' ?>" name="positive_keywords"  placeholder="Positive Keywords" class="form-control input-md" data-role="tagsinput" type="text" value="">
+                       <!--  <input id="tag1" value="<?php// echo $serviceData['positive_keywords'] ?? '' ?>" name="positive_keywords"  placeholder="Positive Keywords" class="form-control input-md" type="text" value=""> -->
+
+                        <?php
+                            $positiveKeywords = !empty($serviceData['positive_keywords']) ? explode(',', $serviceData['positive_keywords']) : [];
+                        ?>
+
+                        <select id="positive_keywords" name="positive_keywords[]" multiple="multiple" class="form-control input-md" style="width:100%">
+                            <?php if(!empty($positiveKeywords)): ?>
+                                <?php foreach($positiveKeywords as $pk):?>
+                                    <option value="<?php echo $pk; ?>" selected><?php echo $pk; ?></option>
+                                <?php endforeach;?>
+                            <?php endif;?>    
+                        </select>
                         <span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
                     </div>
                 </div>
@@ -95,7 +107,7 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Service Title</label>
                     <div class="col-md-12">
-                        <input id="service" value="<?php echo $serviceData['service_name'] ?? '' ?>" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" onkeypress="getSuggestedCategory(this.value)" required>
+                        <input id="service" value="<?php echo $serviceData['service_name'] ?? '' ?>" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" onkeypress="getSuggestedCategory(this.value)">
                     </div>
                 </div>
             </div>
@@ -111,7 +123,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <!-- <div class="col-sm-6">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">
                         Upload Image/Video (Optional)
@@ -124,10 +136,10 @@
                         <input type="hidden" name="service_image_old" value="" >
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         
-        <div class="row" id="imgpreview">
+        <!--<div class="row" id="imgpreview1">
             <?php $image_path = FCPATH . 'img/services/' . ($serviceData['image'] ?? ''); ?>
             <?php if (file_exists($image_path) && $serviceData['image']): ?>
                 <?php
@@ -171,7 +183,7 @@
                 </div>
     <?php endif; ?>
 <?php endif; ?>
-</div>
+</div>-->
 </div>
 
 <div class="edit-user-section gray-bg">
@@ -188,6 +200,80 @@
     //     var priceType = $(this).val();
     //     $('#priceLabel').text('How much do you charge per '+priceType.toLowerCase()+'?');
     // });
+
+    $(document).ready(function(){
+        $('#positive_keywords').select2({
+            tags: true, // Allow creating new tags
+            ajax: {
+                url: site_url+'users/getPositiveKeywords',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    console.log(params);
+                    return {
+                        term: params.term // The term being typed in the input
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                id: item, // ID of the item
+                                text: item // Display text
+                            };
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2, // Minimum length of characters before triggering the autocomplete
+            placeholder: 'Positive Keywords',
+            maximumSelectionLength: 5 
+        }).on('select2:selecting', function(e) {
+            // Regular expression to allow only letters and numbers
+            var regex = /^[a-zA-Z0-9]+$/;
+            var newTag = e.params.args.data.id; // Get the tag being created or selected
+
+            if (!regex.test(newTag)) {
+                // If the tag does not match the regex, prevent it from being added
+                e.preventDefault();
+                alert('Please use letters and numbers only.');
+            }
+        });
+
+
+        $("#formStep1").validate({
+            rules: {
+                service_name: "required",
+                description: "required",
+                location: "required",
+                area: "required",
+                category: "required",
+                'sub_category[]': "required",
+                'service_type[]': "required",
+                positive_keywords: "required",
+            },
+            messages: {
+                service_name: "Please enter service name",
+                description: "Please enter description",
+                location: "Please enter location",               
+                area: "Please enter area",               
+                category: "Please enter category",               
+                'sub_category[]': "Please enter sub category",               
+                'service_type[]': "Please enter service type",               
+                positive_keywords: "Please enter positive keywords",               
+            },
+            errorPlacement: function(error, element) {
+                if (element.attr("name") == "sub_category[]") {
+                    error.insertAfter("#subcategories");
+                } else if (element.attr("name") == "service_type[]") {
+                    error.insertBefore("#subcategories_1");
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });     
+    });
 
     var subCategory = 1;
     var serviceType = 1;
