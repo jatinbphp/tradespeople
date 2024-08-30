@@ -5,19 +5,8 @@ class Bids extends CI_Controller
 {
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('common_model');
-		$this->words = array('gmail.com','yahoo.com','yahoo','gmail','skype','hotmail','live','phone numbers','phone number','outlook','icloud mail','yahoo! mail','yahoo mail','aol mail','gmx','yandex','mail','lycos','protonmail','proton mail','tutanota','zoho mail','zohomail','077','074','020','0','1','2','3','4','5','6','7','8','9','@','www','http://','https://','.com','.uk','.co.uk','.gov.uk','.me.uk','.ac.uk','.org.uk','.Itd.uk','.mod.uk ','.mil.uk','.net.uk','.nic.uk','.nhs.uk','.pic.uk','.sch.uk','.pic.uk:','.info','.io','.cloud','.online','.ai','.net','.org');
-		if($this->session->userdata('user_id')){	
-			$user_id = $this->session->userdata('user_id');
-			if(!empty($user_id)){
-				$user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-				if(empty($user_profile)){
-					$this->session->sess_destroy();
-					redirect('login');
-				}
-			}
-		}
+		date_default_timezone_set('Europe/London');
+		$this->load->model('common_model');	
 	}
 
   public function send_resend_request($id) {
@@ -63,8 +52,8 @@ class Bids extends CI_Controller
 		} else {
 			echo json_encode(array('status'=>0));
 		}
-		
 	}
+
   public function update_bid($post_id) {
     $this->form_validation->set_rules('bid_amount','Quote Amount','required');
     $this->form_validation->set_rules('delivery_days','Project Delivered in','required');
@@ -73,24 +62,6 @@ class Bids extends CI_Controller
       $json['status'] = 0;
       $json['msg'] = '<div class="alert alert-danger">' .validation_errors() . '</div>';
     } else {
-    	/*-------------Detect Contact Detail In Proposal Description Code Start-------------*/
-
-			$propose_description = $this->input->post('propose_description');
-			foreach ($this->words as $url) {				
-				if (strpos($propose_description, $url) !== FALSE) {
-					$json['block_word'] = $url;
-					$json['status'] = 7; break;
-				}
-			}
-
-			if($json['status'] == 7){
-				$json['msg'] = 'Contact detail detected. Remove it and use the chat feature to contact the client.';
-				echo json_encode($json);
-				exit;	
-			}
-
-			/*-------------Detect Contact Detail In Proposal Description Code End-------------*/    	
-
       $insert['bid_amount']=$this->input->post('bid_amount');
       $insert['delivery_days']=$this->input->post('delivery_days');
       $insert['propose_description']=$this->input->post('propose_description');
@@ -104,9 +75,9 @@ class Bids extends CI_Controller
 				$post_data = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$data['job_id']),array('title', 'userid'));
 
 				$post_by_user = $this->common_model->GetColumnName('users',array('id'=>$post_data['userid']),'');
-// echo "<pre>"; print_r($post_by_user); exit;
+			// echo "<pre>"; print_r($post_by_user); exit;
 				/*
-	$isAlreadyEarnRefferedUser = $this->common_model->get_single_data("referrals_earn_list", array("user_id"=>$post_data['userid'], 'earn_amount'=>""));
+				$isAlreadyEarnRefferedUser = $this->common_model->get_single_data("referrals_earn_list", array("user_id"=>$post_data['userid'], 'earn_amount'=>""));
 				if ($isAlreadyEarnRefferedUser) {
 					 
 				}
@@ -169,42 +140,24 @@ class Bids extends CI_Controller
     echo json_encode($json);
   }
 
-  public function apply_post() {
-		 
+  public function apply_post() {		 
 		$user_id = $this->session->userdata('user_id');
 		$get_users=$this->common_model->get_single_data('users',array('id'=>$user_id));
 		$setting = $this->common_model->get_all_data('admin');
 		if($get_users['u_email_verify']==1){
-			if($setting[0]['payment_method'] == 0 && empty($get_users['about_business'])){
+			if($setting[0]['payment_method'] == 0){
+				if(empty($get_users['about_business'])){
 					$json['status'] = 0;
-					$profileUrl = site_url().'edit-profile';
-					$json['msg'] = '<div class="alert alert-danger">You can\'t submit a quote until you\'ve completed your profile. <a href="'.$profileUrl.'">Click here to complete it.</a></div>';
-			}else {
+					$json['msg'] = '<div class="alert alert-danger">You can\'t submit a quote until you\'ve completed your profile.</div>';
+				}
+			}else{
 				$this->form_validation->set_rules('bid_amount','Quote Amount','required');
 				$this->form_validation->set_rules('delivery_days','Project Delivered in','required');
 				$this->form_validation->set_rules('propose_description','Describe Proposal','required');
 				if ($this->form_validation->run()==false) {
 					$json['status'] = 0;
 					$json['msg'] = '<div class="alert alert-danger">' .validation_errors() . '</div>';
-				} else {
-					/*-------------Detect Contact Detail In Proposal Description Code Start-------------*/
-
-					$propose_description = $this->input->post('propose_description');
-					foreach ($this->words as $url) {				
-						if (strpos($propose_description, $url) !== FALSE) {
-							$json['block_word'] = $url;
-							$json['status'] = 7; break;
-						}
-					}
-
-					if($json['status'] == 7){
-						$json['msg'] = 'Contact detail detected. Remove it and use the chat feature to contact the client.';
-						echo json_encode($json);
-						exit;	
-					}
-
-					/*-------------Detect Contact Detail In Proposal Description Code End-------------*/
-
+				} else  {
 					$job_id = $this->input->post('post_id');
 					$get_jobs = $this->common_model->get_job_details($job_id);
 					$get_commision=$this->common_model->get_commision();
@@ -275,10 +228,9 @@ class Bids extends CI_Controller
 								}
 							}else{
 								$check = true;
-								/*$json['status'] = 1;*/
+								$json['status'] = 1;
 							}
 						}
-
 						/*success code here*/
 						if($check){
 							$bid_by = $user_id;
@@ -297,45 +249,10 @@ class Bids extends CI_Controller
 
 							if($calculate_ref){
 								// earn referral 
-								$settings = $this->common_model->get_all_data('admin');
-								if($settings[0]['payment_method'] == 1){
-									$this->common_model->earn_refer_to_tradsman($bid_by); //checking tradesmen invited
-									$this->common_model->earn_refer_to_homeowner($posted_by);//checking homeowner invited	
-								}								
+								$this->common_model->earn_refer_to_tradsman($bid_by); //checking tradesmen invited
+								$this->common_model->earn_refer_to_homeowner($posted_by);//checking homeowner invited
 							}
 							$get_post_user=$this->common_model->get_single_data('users',array('id'=>$get_jobs[0]['userid']));
-							
-
-							$notArr = [];
-							$notArr['title'] = 'New Quote';
-							$notArr['message'] = 'You´ve got a new quote from '.$get_users['trading_name'];
-							$notArr['link'] = site_url().'proposals/?post_id='.$job_id;
-							$notArr['user_id'] = $get_jobs[0]['userid'];
-							$notArr['behalf_of'] = $bid_by;
-							$this->common_model->AndroidNotification($notArr);
-
-							$OneSignalNoti = [];
-							$OneSignalNoti['title'] = 'New Quote';
-							$OneSignalNoti['message'] = 'You´ve got a new quote from '.$get_users['trading_name'];
-							$OneSignalNoti['is_customer'] = true;
-							$OneSignalNoti['user_id'] = $get_jobs[0]['userid'];
-							/*$OneSignalNoti['pushdata']['message_type'] = 'recieved_quote';
-							$OneSignalNoti['pushdata']['link'] = site_url().'proposals/?post_id='.$job_id; //in push data array you can send any data
-							$OneSignalNoti['pushdata']['customer_id'] = $get_jobs[0]['userid'];
-							$OneSignalNoti['pushdata']['job_id'] = $job_id; 
-							$OneSignalNoti['pushdata']['tradesmen_id'] = $bid_by;*/
-
-							$OneSignalNoti['pushdata']['action'] = 'add_quote';
-							$OneSignalNoti['pushdata']['other_user_id'] = $bid_by;
-							$OneSignalNoti['pushdata']['user_id'] = $get_jobs[0]['userid'];
-							$OneSignalNoti['pushdata']['action_id'] = $job_id; 
-							
-							
-							//print_r($OneSignalNoti);
-							$return = $this->common_model->OneSignalNotification($OneSignalNoti);
-							//print_r($return);
-
-							$insertn = [];
 							$insertn['nt_userId']=$get_jobs[0]['userid'];
 							// $insertn['nt_message']='<a href="'.site_url().'profile/'.$get_users['id'].'">'.$get_users['trading_name'].'</a> has placed a quote on <a href="'.site_url().'proposals/?post_id='.$job_id.'">'.$get_jobs[0]['title'].'</a>';
 							$insertn['nt_message']='You´ve got a new quote from '.$get_users['trading_name'] .'. <a href="'.site_url().'proposals/?post_id='.$job_id.'">View quote!</a>';
@@ -345,17 +262,14 @@ class Bids extends CI_Controller
 							$insertn['nt_update'] = date('Y-m-d H:i:s');
 							$insertn['job_id'] = $job_id;
 							$insertn['posted_by'] = $bid_by;
-							$insertn['action']=$OneSignalNoti['pushdata']['action'];
-							$insertn['action_id']=$OneSignalNoti['pushdata']['action_id'];
-							$insertn['action_json']=json_encode($OneSignalNoti['pushdata']);
 							$run2 = $this->common_model->insert('notification',$insertn);
-							
+
 							if($update_wallet && $setting[0]['payment_method'] == 1){
 								$update['u_wallet']=$get_users['u_wallet']-$credit_amount;
 								$runs = $this->common_model->update('users',array('id'=>$user_id),$update);
 								
 								$transactionid = md5(rand(1000,999).time());
-								$tr_message='£'.$credit_amount.' has been debited to your wallet for placing a quote on <a href="'.site_url().'proposals/?post_id='.$job_id.'">'.$get_jobs[0]['title'].'.</a>';
+								$tr_message='£'.$credit_amount.' has been debited from your wallet for placing a quote on <a href="'.site_url().'proposals/?post_id='.$job_id.'">'.$get_jobs[0]['title'].'</a> on date '.date('d-m-Y h:i:s A');
 								$data1 = array(
 									'tr_userid'=>$user_id, 
 									'tr_amount'=>$credit_amount,
@@ -421,9 +335,7 @@ class Bids extends CI_Controller
 								}
 							}
 							$json['status'] = 1;
-							$_SESSION['quote_success'] = '<p class="alert alert-success">Thank you for submitting your quote. The homeowner will review it and get back shortly.</p>';
-							/*$this->session->set_flashdata('quote_success', '<p class="alert alert-success">Thank you for submitting your quote. The homeowner will review it and get back shortly.</p>');
-							print_r($_SESSION);*/
+							$this->session->set_flashdata('success1', '<p class="alert alert-success">Thank you for submitting your quote. The homeowner will review it and get back shortly.</p>');
 						}
 						/*success code here*/
 
@@ -432,15 +344,15 @@ class Bids extends CI_Controller
 						$check = false;
 						$json['msg'] = '<div class="alert alert-danger">Please login to place quote.</div>';
 					}
-				}				
-			}			
+				}
+			}
 		} else {
 			$json['status'] = 0;
       $json['msg'] = '<div class="alert alert-danger">You can\'t submit a quote until you\'ve verified your email address.</div>';
 		}
 		echo json_encode($json);
   }
-	
+
 	public function get_profile_loop($user_id=null,$job_id=null,$price=null,$sender=null){
 		
 		$userdata = $this->common_model->GetColumnName('users', array('id' => $user_id),array('trading_name','city','county','cdate','total_reviews','average_rate','profile'));
@@ -539,7 +451,7 @@ class Bids extends CI_Controller
 
 							$transactionid = md5(rand(1000,999).time());
 							
-							$tr_message='£'.$credit_amount.' has been debited to your wallet for placing a quote on <a href="'.site_url().'proposals/?post_id='.$job_id.'">'.$get_jobs[0]['title'].'.</a>';
+							$tr_message='£'.$credit_amount.' has been debited from your wallet for placing a quote on <a href="'.site_url().'proposals/?post_id='.$job_id.'">'.$get_jobs[0]['title'].'</a> on date '.date('d-m-Y h:i:s A');
 							
 							$data1 = array(
 								'tr_userid'=>$this->session->userdata('user_id'), 
@@ -744,3 +656,4 @@ class Bids extends CI_Controller
 		echo json_encode($json);
 	}
 }
+?>

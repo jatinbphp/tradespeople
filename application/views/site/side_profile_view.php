@@ -65,13 +65,11 @@
                       <div class="dashboard-profile">
                         
                       </div> 
-
 											<?php if(!empty($user_profile['about_business'])){?>
 												<div class="about_dmodal">
 													<p><?=$user_profile['about_business']; ?></p>
 					              </div>
 											<?php }?>
-
 											<div class="dashboard-prot edit-pro89 slidergg setskil-padding">
 												<div class="row dashboard-profile">
 													<div class="col-sm-12">

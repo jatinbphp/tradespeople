@@ -68,7 +68,8 @@
 										</li>
 										<li>
 											<i class="fa fa-map-marker"></i>
-											<?=$user_profile['city'];?>
+											<!-- <?=$user_profile['city'];?>, <?=$user_profile['county'];?> -->
+                                            <?=$user_profile['city'];?>
 										</li>
 										<li>
 											<i class="fa fa-calendar"></i> Member since <?=date('M Y', strtotime($user_profile['cdate']));?>

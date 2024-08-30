@@ -185,7 +185,10 @@
 										<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
 	            					<?php endif; ?>
 									
-									<p><?php echo $service_details['service_name']; ?></p>
+									<span>
+										<h4 style="margin-top:0px;"><b><?php echo $service_details['service_name']; ?></b></h4>
+                                    	<p class="text-muted"><?php echo $package_description; ?></p>
+									</span>
 								</a>
 							</div>
 							<ul>
@@ -210,7 +213,7 @@
 								<?php endif; ?>
 								<li>
 									<p>Service fee <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
-									<b class="price">
+									<b>
 										<span id="serviceFee"><?php echo '£'.number_format($service_fee,2)?></span>
 									</b>
 								</li>
@@ -231,14 +234,24 @@
 										<?php echo '£'.number_format($mainTotalPrice,2); ?>
 									</b>	
 								</li>
+								<?php if(!empty($delivery_date)): ?>
+								<li style="font-size:14px;">
+									<p>Delivered By</p>
+									<b style="color:#4B8024">
+										<?php echo $delivery_date; ?>
+									</b>	
+								</li>
+								<?php endif; ?>
 							</ul>
 							
 							<input type="hidden" name="pay_intent" id="pay_intent">
-
+ 
 							<div class="form-group" style="margin-top:15px;">
 								<div class="row">
-									<div class="col-sm-12 text-center">
-										<button class="btn btn-warning btn-lg" type="button" id="checkoutBtn">Checkout</button>
+									<div class="col-sm-12 text-center">										
+										<button class="btn btn-warning btn-lg" type="button" id="checkoutBtn">
+												Checkout											
+										</button>
 									</div>
 								</div>
 							</div>

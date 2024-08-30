@@ -209,80 +209,7 @@
 								</div>
 							<?php endif;?>
 
-							<?php if($service_details['package_type'] == 1):?>	
-								<div class="compare-packages">
-									<h2 class="title">Compare packages</h2>
-									<div class="gig-page-packages-table">
-										<table>
-											<tbody>
-												<tr class="package-type">
-													<th class="package-row-label">Package</th>
-													<th class="package-type-price">
-														<div class="price-wrapper">
-															<p class="price">
-																<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
-															</p>
-														</div>
-														<b class="type">Basic</b>
-													</th>
-													<th class="package-type-price">
-														<div class="price-wrapper">
-															<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?></p>
-														</div>
-														<b class="type">Standard</b>
-													</th>
-													<th class="package-type-price">
-														<div class="price-wrapper">
-															<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?></p>
-														</div>
-														<b class="type">Premium</b>
-													</th>
-												</tr>
-												<tr class="delivery-time">
-													<td class="package-row-label">Delivery Time</td>
-													<td><?php echo $package_data->basic->days; ?> Days</td>
-													<td><?php echo $package_data->standard->days; ?> Days</td>
-													<td><?php echo $package_data->premium->days; ?> Days</td>
-												</tr>
-												<?php 
-												$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-												$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-												$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-												?>
-												<?php if(!empty($attributes)): ?>
-													<?php foreach($attributes as $att):?>
-														<?php 
-
-														$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
-														$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
-														$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
-
-														?>
-														<tr>
-															<td><?php echo $att['attribute_name']; ?></td>
-															<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
-															<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
-															<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
-														</tr>
-													<?php endforeach; ?>	
-												<?php endif; ?>
-												<tr class="select-package">
-													<td class="package-row-label">Total</td>
-													<td>
-														Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
-													</td>
-													<td>
-														Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
-													</td>
-													<td>
-														Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
-							<?php endif; ?>
+							
 						</div>
 
 						<div class="col-sm-4">
@@ -316,9 +243,9 @@
 									<?php if($service_details['package_type'] == 1):?>
 										<div class="sidebar-tabs">
 											<ul  class="nav nav-pills">
-												<li class="active"><a href="#Basic" data-toggle="tab"><?php echo $basicPackageName?></a></li>
-												<li><a href="#Standard" data-toggle="tab"><?php echo $standardPackageName?></a></li>
-												<li><a href="#Premium" data-toggle="tab"><?php echo $premiumPackageName?></a></li>
+												<li class="active packageTypes" data-days="<?php echo $package_data->basic->days; ?>"><a href="#Basic" data-toggle="tab"><?php echo $basicPackageName?></a></li>
+												<li class="packageTypes" data-days="<?php echo $package_data->standard->days; ?>"><a href="#Standard" data-toggle="tab"><?php echo $standardPackageName?></a></li>
+												<li class="packageTypes" data-days="<?php echo $package_data->premium->days; ?>"><a href="#Premium" data-toggle="tab"><?php echo $premiumPackageName?></a></li>
 											</ul>
 											<div class="tab-content">
 												<div class="tab-pane active" id="Basic">
@@ -570,7 +497,7 @@
 												<i class="fa fa-paper-plane" aria-hidden="true"></i>
 											</div>
 											<div class="label-container">Delivery in</div>
-											<div class="value-container"><b><?php echo $service_details['delivery_in_days']; ?> days</b></div>
+											<div class="value-container"><b id="delivery_in_days"><?php echo $package_data->basic->days; ?> days</b></div>
 										</div>
 
 										<div class="col-sm-4 text-center no-padding">
@@ -634,11 +561,18 @@
 												</div>
 											</div>
 										</div>
-										<div class="about member-summary-section clearfix">
-											<div class="about-container js-about-container">
-												<p><?php echo $service_user['about_business'];?>
+										<div class="about member-summary-section clearfix" style="border:1px solid #e1e1e1; padding:.625rem">
+											<div class="about-container js-about-container" id="aboutUsText" style="border:0; padding:0">
+												<p>
+													<?php echo substr($service_user['about_business'], 0, 215);?>
 												</p>
 											</div>
+											<p class="text-primary mb-0" style="margin-top: 6px; cursor: pointer;" id="readMoreAboutUs">
+												Read More
+											</p>
+											<p class="text-primary mb-0" style="margin-top: 6px; display:none; cursor: pointer;" id="readLessAboutUs">
+												Read Less
+											</p>
 										</div>
 										<div class="location member-summary-section clearfix">
 											<div class="location-container crop">
@@ -657,6 +591,10 @@
 								<div class="rating">
 									<ul>
 										<li>
+											<p>Overall Rating</p>
+											<div class="star"><span></span> <?php echo number_format($overallRating,1); ?></div>
+										</li>
+										<li>
 											<p>Seller communication level</p>
 											<div class="star">
 												<span></span> 
@@ -672,9 +610,10 @@
 										</li>
 										<li>
 											<p>Service as described</p>
+											
 											<div class="star">
 												<span></span> 
-												<?php echo !empty($serviceAvgRating[0]['average_rating']) ? number_format($serviceAvgRating[0]['average_rating'],2) : 0; ?>
+												<?php echo number_format($serviceAvgRating[0]['average_rating'],1); ?>
 											</div>
 										</li>
 									</ul>
@@ -683,16 +622,18 @@
 								<div class="about-this-sidebar">
 									<div class="member-summary">
 										<div class="about member-summary-section clearfix">
-											<div class="about-container js-about-container">
-												<p><b>How it works</b></p>
-												<p style="margin-top: 10px;">
-													You buy an offer and your payment is held in escrow.
-													You contact the Trades People Hub and specify your requirments.
-													Work is delivered
-													If you are happy you release the money to the Trades People Hub.
+											<h4><b>How it works</b></h4>
+											<div class="about-container js-about-container" style="background: #F1F1F1;">
+												<div id="howItWorkText">
+													<p style="margin-top: 10px;">
+														Our platform operates much like purchasing a product on Amazon or eBay. Services or gigs are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.
+													</p>
+												</div>	
+												<p class="text-primary" style="margin-top: 6px; cursor: pointer;" id="readMoreHowItWork">
+													Read More
 												</p>
-												<p style="margin-top: 6px;">
-													<a href="#">Read More</a>
+												<p class="text-primary" style="margin-top: 6px; display:none; cursor: pointer;" id="readLessHowItWork">
+													Read Less
 												</p>
 											</div>
 										</div>										
@@ -854,7 +795,7 @@
 
 	<!-- Social Media Modal -->
 	<div class="modal fade" id="sellerAvailabilityModal" tabindex="-1" role="dialog" aria-labelledby="sellerAvailabilityTitle" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
@@ -886,27 +827,104 @@
 						    }?>
 						</select>
 					</div>												
-					<div style="padding: 10px 0;">
+					<!--<div style="padding: 10px 0;">
 						<span>
 							Lorem Ipsum is simply dummy text of the printing and typesetting industry.
 						</span>
-					</div>
+					</div>-->
 					<div id="notAvailablMsg" style="border-top:1px solid #b0c0d3; padding: 10px 0; display: none;">
 					</div>
 					<input type="hidden" id="packageType">
-					<input class="btn btn-warning btn-lg col-md-12" type="button" id="openChat" value="Select & Continue">
+					<input class="btn btn-warning btn-lg col-md-12 mt-4" type="button" id="openChat" value="Select & Continue">
 					</div>
 				</div>											
 			</div>
 		</div>
 	</div>
+	
+	<?php if($service_details['package_type'] == 1):?>
+	<div class="container" id="comparePackage">
+		<div class="compare-packages">
+			<h2 class="title">Compare packages</h2>
+			<div class="gig-page-packages-table">
+				<table>
+					<tbody>
+						<tr class="package-type">
+							<th class="package-row-label">Package</th>
+							<th class="package-type-price">
+								<div class="price-wrapper">
+									<p class="price">
+										<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+									</p>
+								</div>
+								<b class="type">Basic</b>
+							</th>
+							<th class="package-type-price">
+								<div class="price-wrapper">
+									<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?></p>
+								</div>
+								<b class="type">Standard</b>
+							</th>
+							<th class="package-type-price">
+								<div class="price-wrapper">
+									<p class="price"><?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?></p>
+								</div>
+								<b class="type">Premium</b>
+							</th>
+						</tr>
+						<tr class="delivery-time">
+							<td class="package-row-label">Delivery Time</td>
+							<td><?php echo $package_data->basic->days; ?> Days</td>
+							<td><?php echo $package_data->standard->days; ?> Days</td>
+							<td><?php echo $package_data->premium->days; ?> Days</td>
+						</tr>
+						<?php 
+						$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+						$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+						$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+						?>
+						<?php if(!empty($attributes)): ?>
+						<?php foreach($attributes as $att):?>
+						<?php 
+
+						$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+						$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
+						$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
+
+						?>
+						<tr>
+							<td><?php echo $att['attribute_name']; ?></td>
+							<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
+							<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
+							<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
+						</tr>
+						<?php endforeach; ?>	
+						<?php endif; ?>
+						<tr class="select-package">
+							<td class="package-row-label">Total</td>
+							<td>
+								Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>
+							</td>
+							<td>
+								Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>
+							</td>
+							<td>
+								Order <?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<?php endif; ?>
 
 	<?php if(!empty($browse_history)): ?>
-		<div class="container" id="browseHistory">
+		<div class="container mt-5" id="browseHistory">
+			<h2 class="title">
+				Your Browsing History
+			</h2>
 			<div class="row">
-				<h2 class="title">
-					Your Browsing History
-				</h2>
 				<?php
 				$data['all_services'] = $browse_history;
 				$this->load->view('site/service_list',$data);
@@ -917,10 +935,10 @@
 
 	<?php if(!empty($people_history)): ?>
 		<div class="container" id="peopleHistory">
+			<h2 class="title">
+				People Who Viewed This Service Also Viewed
+			</h2>
 			<div class="row">
-				<h2 class="title">
-					People Who Viewed This Service Also Viewed
-				</h2>
 				<?php
 				$data['all_services'] = $people_history;
 				$this->load->view('site/service_list',$data);
@@ -1249,11 +1267,14 @@
 	});
 
 	$(document).ready(function() {
+		var $comparePackage = $("#comparePackage");
 		var $browseHistory = $("#browseHistory");
 		var $peopleHistory = $("#peopleHistory");
 		var $footer = $("#footer");
 
-		if ($browseHistory.length) {
+		if($comparePackage.length) {
+			var $footerOffsetTop = $("#comparePackage").offset().top; 
+		else if ($browseHistory.length) {
 			var $footerOffsetTop = $("#browseHistory").offset().top; 
 		}else if ($peopleHistory.length) {
 			var $footerOffsetTop = $("#peopleHistory").offset().top; 
@@ -1325,6 +1346,39 @@
             $('#ShareThis').modal('hide');
         }, 2000);
 	}
-
-</script>
-
+	
+	$('#readMoreHowItWork').on('click', function(){
+		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services or gigs are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p><p style="margin-top: 10px;">The process is straightforward: simply click the buy button, select the desired date and time for the service, make your payment, and submit any necessary details. Your payment is securely held in escrow until the job is completed.</p><p style="margin-top: 10px;">Once the task is finished and you are completely satisfied with the results, you can release the payment to the professional by accepting the delivery.</p>';					   
+		$('#howItWorkText').empty().html(howToWork);
+		$(this).hide();
+		$('#readLessHowItWork').show();
+	});
+	
+	$('#readLessHowItWork').on('click', function(){
+		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services or gigs are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p>';					   
+		$('#howItWorkText').empty().html(howToWork);
+		$(this).hide();
+		$('#readMoreHowItWork').show();
+	});
+	
+	$('#readMoreAboutUs').on('click', function(){
+		var aboutUs = `<?php echo $service_user['about_business'];?>`;
+		console.log(aboutUs);
+		$('#aboutUsText').empty().html(aboutUs);
+		$(this).hide();
+		$('#readLessAboutUs').show();
+	});
+	
+	$('#readLessAboutUs').on('click', function(){
+		var aboutUs = `<?php echo substr($service_user['about_business'], 0, 215);?>`;
+		console.log(aboutUs);
+		$('#aboutUsText').empty().html(aboutUs);
+		$(this).hide();
+		$('#readMoreAboutUs').show();
+	});
+	
+	$('.packageTypes').on('click', function(){
+		var days = $(this).data('days');
+		$('#delivery_in_days').text(days+' days');
+	});
+</script>												

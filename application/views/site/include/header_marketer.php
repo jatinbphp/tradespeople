@@ -28,16 +28,6 @@ $show_buget = 1;
 if($check_budget && $check_budget['status']==0){
 	$show_buget = 0;
 }
-if(!$this->session->userdata('user_id') && $this->input->cookie('user_id'))
-{
-	$this->session->set_userdata('user_logIn',true);
-	$this->session->set_userdata('type',$this->input->cookie('type'));
-	$this->session->set_userdata('user_id',$this->input->cookie('user_id'));
-	$this->session->set_userdata('email',$this->input->cookie('email'));
-	$u_name = $this->input->cookie('f_name').' '.$this->input->cookie('l_name');
-	$this->session->set_userdata('u_name',$u_name);
-
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">

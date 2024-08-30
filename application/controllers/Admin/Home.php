@@ -4,9 +4,8 @@ class Home extends CI_Controller
 {
 	public function __construct() {
 		parent::__construct(); 
-		//date_default_timezone_set('UTC');
+		date_default_timezone_set('UTC');
 		$this->load->model('Common_model');
-		$this->load->model('My_model');
 		error_reporting(0);
 
 	}

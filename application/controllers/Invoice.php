@@ -3,17 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Invoice extends CI_Controller
 {
 	public function __construct() {
-		parent::__construct();
+		parent::__construct(); 
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
-		$user_id = $this->session->userdata('user_id');
-		if(!empty($user_id)){
-			$user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-			if(empty($user_profile)){
-				$this->session->sess_destroy();
-				redirect('login');
-			}
-		}
 	}
 	
 	public function auto_update_paln($id){

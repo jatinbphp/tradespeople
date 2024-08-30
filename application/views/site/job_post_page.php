@@ -150,7 +150,7 @@ if($check_budget && $check_budget['status']==0){
 										<div class="form-group">
 											<label class="col-md-12 control-label"> <b>Postcode for the job </b></label> 
 											<div class="col-md-12">
-											<p>To find for instance conservatory installers near you we need to know where the job is.</p> 
+											<p>To find conservatory installers near you we need to know where the job is.</p> 
 												<input type="text" class="form-control input-lg" name="post_code" id="post_code">	
 												<div class="msg2 alert alert-danger" style="display: none; margin-top:10px;">Please provide postcode.</div>
 												<p class="text-danger postcode-err" style="display:none;">Please enter valid UK postcode</p>
@@ -300,13 +300,6 @@ if($check_budget && $check_budget['status']==0){
 									  </div>
 									  <br>
 									</div>
-									<div class="form-group">
-						              	<label class="col-md-12 control-label"> Referral Code</label> 
-						              	<div class="col-md-12">
-						                	<input type="text" placeholder="If someone referred you, enter their code" id="referred_by" value="<?=$this->session->userdata('referred_by')?>" name="referred_by" class="form-control input-lg">
-						                	<p class="text-danger reffer-err" style="display:none;">Wrong Referal Code</p>
-						              	</div>
-						            </div>
 
 
 
@@ -323,7 +316,7 @@ if($check_budget && $check_budget['status']==0){
 									<div class="term-acc">
 										<label for="tncCheckbox0">
 											<input type="checkbox" name="checkboxes" id="tncCheckbox" value="1" required>
-										 I have read and understood the <a href="<?php echo base_url('privacy-policy'); ?>">Privacy Notice</a> and <a href="<?php echo base_url('cookie-policy'); ?>" >Cookie Policy</a>.</label>
+										</label> I have read and understood the <a href="<?php echo base_url('privacy-policy'); ?>">Privacy Notice</a> and <a href="<?php echo base_url('cookie-policy'); ?>" >Cookie Policy</a>.
 									</div>
 				
 									<div class="col-md-12 nopadding">
@@ -878,13 +871,7 @@ if(lower==false || upper==false || number==false || len==false){
 				$('#post_code').focus();
 				$('.signup_btn').html('Save and Continue');
 				$('.signup_btn').prop('disabled',false);
-			} else if(resp.status==10) {
-				
-				$('.reffer-err').show();
-				$('.signup_btn').html('Save and Continue');
-				$('.signup_btn').prop('disabled',false);
-				
-			}else if(resp.status==3){
+			} else if(resp.status==3){
 				
 				window.location.href="#div_3";
 				$('.msg1-11').show();

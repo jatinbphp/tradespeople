@@ -2,9 +2,6 @@
 if(isset($_GET['referral']) && !empty($_GET['referral'])){
 	$this->session->set_userdata('referred_by',$_GET['referral']);
 	$this->session->set_userdata('referred_link',$_SERVER['REDIRECT_SCRIPT_URI']);
-
-	$this->input->set_cookie('referred_by',$_GET['referral'],43200*60);
-	$this->input->set_cookie('referred_link',$_SERVER['REDIRECT_SCRIPT_URI'],43200*60);
 }
 if($this->session->userdata('user_id')){
 	$user_id=$this->session->userdata('user_id');
@@ -12,18 +9,6 @@ if($this->session->userdata('user_id')){
 	/*if($user_data['u_email_verify']==0) {
 		redirect('email-verify');
 	}*/
-}
-if(!$this->session->userdata('user_id') && $this->input->cookie('user_id'))
-{
-	$this->session->set_userdata('user_logIn',true);
-	$this->session->set_userdata('type',$this->input->cookie('type'));
-	$this->session->set_userdata('user_id',$this->input->cookie('user_id'));
-	$this->session->set_userdata('email',$this->input->cookie('email'));
-	$u_name = $this->input->cookie('f_name').' '.$this->input->cookie('l_name');
-	$this->session->set_userdata('u_name',$u_name);
-
-	$this->session->set_userdata('referred_by',$this->input->cookie('referral'));
-	$this->session->set_userdata('referred_link',$this->input->cookie('REDIRECT_SCRIPT_URI'));
 }
 
 ?>

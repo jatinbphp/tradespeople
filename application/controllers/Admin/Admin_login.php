@@ -12,7 +12,6 @@ class Admin_login extends CI_Controller {
 		//$this->lang->load('message','english');
 		$this->load->model('Admin_model');
 			$this->load->model('Common_model');
-			$this->load->model('My_model');
 		$this->check_login();
 	}
 	public function check_login() {

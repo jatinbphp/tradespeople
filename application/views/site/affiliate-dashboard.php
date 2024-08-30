@@ -112,7 +112,6 @@ margin:0px 10px
 
 	}
 </style>
-<?php $unique_id = $this->session->unique_id; ?>
 	<div class="acount-page membership-page affiliate-page">
 		<div class="container">
 			<!-- <div id="sidebar-button"><span><i class="fa fa-bars" aria-hidden="true"></i></span></div> -->
@@ -159,10 +158,8 @@ margin:0px 10px
 								<!-- <p class="marketers_menu contact-us-menu" attr-value="contact_us" style="cursor:pointer">
 									<a><span><i class="fa fa-home" aria-hidden="true"></i></span>Contact Us</a>
 								</p> -->
-
 								<p class="marketers_menu" attr-value="support_center" style="cursor:pointer">
-									<a href="<?= base_url('Support/tickets') ?>"><i class="fa fa-envelope" aria-hidden="true"></i>
-										 <span>Support center</span> <span style="background:red;color:#fff; width: 30px" class="badge" id="support_msg_unread"></span></a>
+									<a href="<?= base_url('Support/tickets') ?>"><span><i class="fa fa-home" aria-hidden="true"></i></span>Support center</a>
 								</p>
 							</div>
 						</div>	 
@@ -205,13 +202,13 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 										<div class="col-lg-7 p-0">
 										   <label style="position: absolute;right: 6px;top: -22px; font-size: 14px;font-weight: bold;">Copy</label>
 											<span type="text" placeholder="" value="" name="" class="form-control input-md" style="font-size:11px;height:100%;">
-												<?= $value212; ?>/?referral=<?= $unique_id; ?></span> 
-											<input type="hidden" id="shared_url_hm_<?= 'h'.$key212 ?>" value="<?= $value212; ?>/?referral=<?= $unique_id; ?>">
+												<?= $value212; ?>/?referral=<?= $user_id; ?></span> 
+											<input type="hidden" id="shared_url_hm_<?= 'h'.$key212 ?>" value="<?= $value212; ?>/?referral=<?= $user_id; ?>">
 											<button style="padding:0px 4px" class="btn copied_url" attr-id="shared_url_hm_<?= 'h'.$key212; ?>"   data-toggle="popover" data-content="Copied!" data-placement="top" data-trigger="focus"><i class="fa fa-clipboard" aria-hidden="true"></i></button> 
 										</div>
 										<div class="col-lg-5 reffer-share">
 										<span><strong>Share on</strong></span>
-							            <div class="a2a_kit a2a_kit_size_32 a2a_default_style" data-a2a-url="<?= $value212; ?>?referral=<?= $unique_id; ?>" data-a2a-title=" -">
+							            <div class="a2a_kit a2a_kit_size_32 a2a_default_style" data-a2a-url="<?= $value212; ?>?referral=<?= $user_id; ?>" data-a2a-title=" -">
 							                <a class="a2a_button_facebook"></a>
 							                <a class="a2a_button_twitter"></a>
 							                <a class="a2a_button_email"></a>
@@ -253,13 +250,13 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 										<div class="col-lg-7 p-0">	
 										<label style="position: absolute;right: 6px;top: -22px; font-size: 14px;font-weight: bold;">Copy</label>
 											<span type="text" placeholder="" value="" name="" class="form-control input-md" style="font-size:11px;height:100%;">
-												<?= $value212; ?>/?referral=<?= $unique_id; ?></span> 
-											<input type="hidden" id="shared_url_hm_<?= 't'.$key212 ?>" value="<?= $value212; ?>/?referral=<?= $unique_id; ?>"> 
+												<?= $value212; ?>/?referral=<?= $user_id; ?></span> 
+											<input type="hidden" id="shared_url_hm_<?= 't'.$key212 ?>" value="<?= $value212; ?>/?referral=<?= $user_id; ?>"> 
 											<button style="padding:0px 4px" class="btn copied_url" attr-id="shared_url_hm_<?= 't'.$key212; ?>"    data-toggle="popover" data-content="Copied!" data-placement="top" data-trigger="focus"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
 										</div>
 										<div class="col-lg-5 reffer-share">
 											<span><strong>Share on</strong></span>
-								            <div class="a2a_kit a2a_kit_size_32 a2a_default_style" data-a2a-url="<?= $value212; ?>?referral=<?= $unique_id; ?>" data-a2a-title=" -">
+								            <div class="a2a_kit a2a_kit_size_32 a2a_default_style" data-a2a-url="<?= $value212; ?>?referral=<?= $user_id; ?>" data-a2a-title=" -">
 								                <a class="a2a_button_facebook"></a>
 								                <a class="a2a_button_twitter"></a>
 								                <a class="a2a_button_email"></a>
@@ -295,16 +292,8 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 										
 										<th>Customer Name</th> 
 										<th>Customer Type</th>
-										<th>Signup Date</th>										
-										<th>
-											<?php 
-					                            if($paymentSettings[0]['payment_method'] == 1){
-					                                echo 'Provided/Received Quotes';
-					                            }else{
-					                                echo 'Milestone Released(£)';
-					                            }
-					                        ?>											
-										</th>
+										<th>Signup Date</th>
+										<th>Provided/Received Quotes</th>
 										<!-- <th>Job Posted</th> -->
 										<th>Earnings</th>
 										<!-- <th>Referred Link</th> -->
@@ -355,7 +344,7 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 										<div class="form-group">
 											<label class="col-md-12 control-label" for="">First Name*</label>  
 											<div class="col-md-12">
-												<input id="f_name" name="f_name" placeholder="First Name" class="form-control input-md f_name" <?php echo ($user_profile['type']==3) ? 'readonly' : ''; ?> type="text" value="<?php echo $user_profile['f_name']; ?>">
+												<input id="f_name" name="f_name" placeholder="First Name" class="form-control input-md f_name" <?php echo ($user_profile['type']==1) ? 'readonly' : ''; ?> type="text" value="<?php echo $user_profile['f_name']; ?>">
                                         
 											</div>
 										</div>
@@ -365,7 +354,7 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 										<div class="form-group">
 											<label class="col-md-12 control-label" for="">Last Name*</label>  
 											<div class="col-md-12">
-												<input id="l_name" <?php echo ($user_profile['type']==3) ? 'readonly' : ''; ?> name="l_name" placeholder="Last Name" class="form-control input-md" type="text" value="<?php echo $user_profile['l_name']; ?>">
+												<input id="l_name" <?php echo ($user_profile['type']==1) ? 'readonly' : ''; ?> name="l_name" placeholder="Last Name" class="form-control input-md" type="text" value="<?php echo $user_profile['l_name']; ?>">
                                         
 											</div>
 										</div>
@@ -469,7 +458,7 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 													<div class="form-group">
 														<label class="col-md-12 control-label" for="">Email*</label>  
 															<div class="col-md-12">
-															<input type="text" value="<?php echo $user_profile['email']; ?>" id="email" name="email" class="form-control input-md" readonly>
+															<input type="text" value="<?php echo $user_profile['email']; ?>" id="email" name="email" class="form-control input-md">
 															
 														</div>
 													</div>        
@@ -510,10 +499,10 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 							<!-- Cashout............. -->
 							<?php
 							  if(isset($balance_amount)){
-							  	// $credit_amounts = $balance_amount[0]->balance;
-							  	$credit_amounts = $balance_amount->referral_earning;
+							  	// $credit_amount = $balance_amount[0]->balance;
+							  	$credit_amount = $balance_amount->referral_earning;
 							  }if(empty($balance_amount)){
-							  	$credit_amounts = '0';
+							  	$credit_amount = '0';
 							  }
 							?>
 							<div class="col-sm-9 custom_cla balance_cashout" style="display:none;background-color: white;">
@@ -525,7 +514,7 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 								<div class="col-lg-4 ">
 								<div class="referar-earnings-wallet">
 								<div class="Wallet_1 well wel-main">
-								<h3 class="text text-center"> <i class="fa fa-money"></i> Balance <span><i class="fa fa-gbp"></i><?php echo $credit_amounts; ?></span> </h3>
+								<h3 class="text text-center"> <i class="fa fa-money"></i> Balance <span><i class="fa fa-gbp"></i><?php echo $credit_amount; ?></span> </h3>
 								</div>
 								</div>
 								</div>
@@ -809,9 +798,9 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 	  <div class="cashout-popup">
         <div class="modal-header"><div style="padding:5px;"><i class="fa fa-times-circle fa-3 cashout_close" aria-hidden="true" style="text-align: right;float: right;font-size: 17px;color: #3d78cb;cursor: pointer;"></i></div></div>
 		<div class="modal-body">  
-		<p class="text-center">Available Balance: £<?php echo $credit_amounts;?></p>
+		<p class="text-center">Available Balance: £<?php echo $credit_amount;?></p>
 		  <input type="text" placeholder="Enter Amount to Cashout" value="" name="" class="form-control input-md text-center marketer_cashout_value">
-		  <input type="hidden"class="balance_marketer" value="<?php echo $credit_amounts;?>">
+		  <input type="hidden"class="balance_marketer" value="<?php echo $credit_amount;?>">
 		  <input type="hidden"class="balance_min" value="<?php echo $min_cashout?>">
 		  <p class="text-center"></p>
 		  <!-- <p class="text-center">If you want to cash out,it must reach £<?php echo $min_cashout; ?></p> -->
@@ -841,13 +830,14 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 					  <input type="radio" style="width: 10%;margin-top: 18px;" name="account_details" value="Bank Transfer">
 					  <label>Send Payout to <?php echo $marketers_account_info->wd_bank;   $account = (string)$marketers_account_info->wd_account; echo ' *********'.substr($account, -5); ?> </label>
 					</div>
-				<?php }elseif(isset($settings) && $settings['payment_method']=='paypal' && $marketers_account_info->paypal_email_address!==''){ $b = 1; $paypal_email_address=$marketers_account_info->paypal_email_address; 
-
+				<?php }elseif(isset($settings) && $settings['payment_method']=='paypal'){ $b = 1; $paypal_email_address=$marketers_account_info->paypal_email_address; 
 				?>
 					<div class="row" style="text-align: left;margin-top:0px;">
 					  <input type="radio" style="width: 10%;" class="paypal_details" name="account_details" value="Paypal Transfer">
 					  <label>Send Payout to Paypal <?php echo $paypal_email_address?></label>
 					</div>
+			<?php }else{  ?>
+				<p class="account_settings" style="cursor:pointer;margin-top: 10px;text-align: left;margin-left: 124px;">Please fill the Bank Account details</p>
 			<?php } ?>
 
 
@@ -858,11 +848,8 @@ $settingss = $this->db->where('id', 1)->get('admin_settings')->row();
 			<input type="hidden" class="p_sort_code" value="<?php echo $payout_sort_code?>">
 			<input type="hidden" class="p_account_number" value="<?php echo $payout_account_number; ?>">
 			<input type="hidden" class="p_bank_name" value="<?php echo $payout_bank_name; ?>">
-			<p class="text-center" id="payErr" style="color:red;"></p>
-		  <?php }else{  ?>
-				<p class="account_settings" style="cursor:pointer;margin-top: 10px;text-align: left;margin-left: 124px;"><a href="javascript:void(0)">Please fill the Bank Account details</a></p>
-			<?php } ?>
-		  	
+		  <?php } ?>
+		  	<p class="text-center" id="payErr" style="color:red;"></p>
 			<div class="modal-footer">
 				<button class="btn btn-primary marketer_cashout_request">SUBMIT</button>
 			</div>  
@@ -996,10 +983,12 @@ $(function () {
 				alert('Please fill the account details');
 			}else{
 				if(amount == ''){
+				// alert('Please Enter Cashout Amount');
 				$('#payErr').text('Please Enter Cashout Amount');
 
 				}else{
 					if(balance == '0'){
+						// alert('There is no balance to cashout');
 						$('#payErr').text('There is no balance to cashout');
 						return;
 					}else{
@@ -1049,7 +1038,7 @@ $(function () {
 		                        }
 							}
 						}else{
-									$('#payErr').text('If you want to cash out,it must reach £'+min_amount+'');
+									$('#payErr').text('If you want to cash out,it must reach '+min_amount+'');
 
 							// alert('If you want to cash out,it must reach '+min_amount+'');
 						}
@@ -1279,41 +1268,19 @@ $(function () {
 		btn.onclick = function() {
 		  modal.style.display = "block";
 		}
-		
+		// window.onclick = function(event) {
+		//     if (event.target == modal_wallet) {
+		//     modal_wallet.style.display = "none";
+		//   }
+		//   if (event.target == modal) {
+		//     modal.style.display = "none";
+		//   }
+		  
+		// }
  });
 </script>
 <script> 
-	setInterval(function() {
-		support_msg_unread();
-	}, 1500);
-
-
-	function support_msg_unread() {
-		jQuery.ajax({
-			url:"<?= base_url('users/support_msg_unread'); ?>",
-			type:'get',
-			dataType:'json',
-			cache:false,
-			success:function(res){
-				if(res.unreadMessages){
-					jQuery('#support_msg_unread').css('display', 'block');
-					jQuery('#support_msg_unread').text(res.unreadMessages);
-				}else{
-					jQuery('#support_msg_unread').css('display', 'none');
-				}
-			}
-		});
-	}
-
-
-
-
-
     jQuery(document).ready(function(){
-    	
-    	
-
-
         jQuery(document).on('click','.pending_table',function(){
             jQuery('#pending_table').show();
             jQuery('#approved_table').hide();

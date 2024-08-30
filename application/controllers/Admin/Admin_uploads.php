@@ -6,7 +6,6 @@ class Admin_uploads extends MY_Controller {
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model("upload_model");
-		$this->load->model('My_model');
 		$this->check_login();
 		require_once('application/libraries/ConvertApi/autoload.php');
 	}

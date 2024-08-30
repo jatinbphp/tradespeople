@@ -208,39 +208,31 @@ if($this->session->userdata('type')==2){
 				<!-- <p>Enter you deposit details so we can identify your payment and finish the deposit faster. Please take a receipt or reference number from your bank after deposit amount</p> -->
 				</div>
 			</div>
-			
-			<?php 
-				$hide = isset($_GET['bank-transfer']) && $_GET['bank-transfer'] == 1 ? 'none' : 'block';
-			?>
-			<div id="formDiv" style="display:<?php echo $hide; ?>">
-				<div class="form-group bank_bg">
-						<div class="form-group">
-							<label>Amount:</label>
-							<input type="number" class="form-control" name="bank_amount" id="bank_amount" value="<?php echo (isset($_GET['amount']) && $_GET['amount'] >= $setting['p_min_d']) ?$_GET['amount'] : $setting['p_min_d']; ?>" step="any" onkeyup="countCommision(this.value)">
-						</div>
-						<div class="form-group">
-							<label>Full name:</label>
-							<input type="text" name="bank_account_name" placeholder="Bank account name you are depositing from" required class="form-control" value="<?=$user_profile['f_name'] ." " .$user_profile['l_name']; ?>"> 
-						</div>
-						<div class="form-group">
-							<label>Date of deposit:</label>
-							<input type="date" name="date_of_deposit" placeholder="Date of deposit" required class="form-control"> 
-						</div>
-						<div class="form-group">
-							<label>Diposit reference(reciept or reference number):</label>
-							<input type="text" readonly name="reference" placeholder="Diposit reference" required value="<?php echo $username.'-'.$Trxn; ?>" class="form-control"> 
-						</div>
-				</div>		
-				<div class="form-group bank_bg">
-					<p>Note: Any transaction fees charged by your bank will be deducted from the total transfer amount. Funds will be credited to your balance on the next bussiness day after the funds are received by bank. If you have any questions please <a href="<?php echo site_url().'contact' ?>">contact us</a></p>
-				</div>
-			
-				<div class="form-group text-center">
-					<!-- <button class="btn btn-primary btn_prop">Submit</button> -->
-					<button class="btn btn-warning btn_prop" id="bankBtn">Submit</button>
-					<br><span id="adminCommision" style="font-size:11px; font-style: italic;"></span>
-				</div>	
+			<div class="form-group bank_bg">
+					<div class="form-group">
+						<label>Amount:</label>
+						<input type="number" class="form-control" name="bank_amount" id="bank_amount" value="<?php echo (isset($_GET['amount']) && $_GET['amount'] >= $setting['p_min_d']) ?$_GET['amount'] : $setting['p_min_d']; ?>" step="any">
+					</div>
+					<div class="form-group">
+						<label>Full name:</label>
+						<input type="text" name="bank_account_name" placeholder="Bank account name you are depositing from" required class="form-control" value="<?=$user_profile['f_name'] ." " .$user_profile['l_name']; ?>"> 
+					</div>
+					<div class="form-group">
+						<label>Date of deposit:</label>
+						<input type="date" name="date_of_deposit" placeholder="Date of deposit" required class="form-control"> 
+					</div>
+					<div class="form-group">
+						<label>Diposit reference(reciept or reference number):</label>
+						<input type="text" readonly name="reference" placeholder="Diposit reference" required value="<?php echo $username.'-'.$Trxn; ?>" class="form-control"> 
+					</div>
 			</div>		
+			<div class="form-group bank_bg">
+				<p>Note: Any transaction fees charged by your bank will be deducted from the total transfer amount. Funds will be credited to your balance on the next bussiness day after the funds are received by bank. If you have any questions please <a href="<?php echo site_url().'contact' ?>">contact us</a></p>
+			</div>
+			
+			<div class="form-group">
+				<button class="btn btn-primary btn_prop">Submit</button>
+			</div>
 		</form>
 		
 	</div>
@@ -356,28 +348,12 @@ if(isset($_REQUEST['bank-transfer']) && !empty($_REQUEST['bank-transfer'])){ ?>
   ?>
 
   var amounts = $('#amount').val();
-  var mainAmt = 0;
+
   function show_bannk_transfer_tab(){
     var bank_amount = $('#amount').val();
-    var commision = parseFloat(<?php echo $bank_processing_fee; ?>);
-	  var newAmt = (bank_amount * commision) / 100;
-	  var mainAmt = parseFloat(bank_amount) + parseFloat(newAmt);
-	  
     $('#bank_amount').val(bank_amount);
-    $('#bankBtn').html('Confirm & Transfer <i class="fa fa-gbp"></i>'+ mainAmt.toFixed(2));
-    $('#adminCommision').html('<i class="fa fa-gbp"></i>'+newAmt.toFixed(2)+' bank transfer fee included');
     $('.nav-tabs a[href="#menu1"]').tab('show');
-    $('#formDiv').show();
   }
-
-  function countCommision(amt) {
-  	var commision = parseFloat(<?php echo $bank_processing_fee; ?>);
-	  var newAmt = (amt * commision) / 100;
-	  var mainAmt = parseFloat(amt) + parseFloat(newAmt);
-	  $('#bankBtn').html('Confirm & Transfer <i class="fa fa-gbp"></i>'+ mainAmt.toFixed(2));
-    $('#adminCommision').html('<i class="fa fa-gbp"></i>'+newAmt.toFixed(2)+' bank transfer fee included');
-  }
-
    function BankTransfer(){
    	$.ajax({
    		type:'POST',
@@ -391,7 +367,8 @@ if(isset($_REQUEST['bank-transfer']) && !empty($_REQUEST['bank-transfer'])){ ?>
    		success:function(res){
    			if(res.status==1){
    				window.location.href = site_url+"wallet/?bank-transfer=1";
-   			} else {   				
+   			} else {
+   				
    				$('.btn_prop').prop('disabled',false);
    				$('.btn_prop').html('Submit');
    				$('.brmsg').html(res.msg)

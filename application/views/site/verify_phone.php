@@ -18,10 +18,7 @@ include ("include/header.php");
            
 						<form method="post" id="signup" enctype="multipart/form-data" onsubmit="return submit_verify_phone();">
 							<!--p>We send job lead notifications via text mesage and email. As such, we need to verify your phone number.</p-->
-							<!-- <p>We've just sent you a text message containing a 4 digit code. Please enter it below.</p> -->
-
-              <p>We've just sent you an SMS containing a 4 digit code to <span id="userPhoneNo"><?php echo $user_data['phone_no'];?></span> <a href="javascript:void(0);" data-toggle="modal" data-target="#updatePhoneModal" style="color: #3d78cb;">Edit</a>. Please enter it below.</p>
-
+							<p>We've just sent you a text message containing a 4 digit code. Please enter it below.</p>
 							<div class="input_very">
 								<span><input class="form-control quantity" type="text" name="first" maxlength="1"></span>
 								<span><input class="form-control quantity" type="text" name="second" maxlength="1"></span>
@@ -42,32 +39,6 @@ include ("include/header.php");
             
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="updatePhoneModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Update Phone No.</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="col-md-12 control-label"> Phone number *</label>
-          <div class="col-md-12 input-group">
-            <span class="input-group-addon">+44</span>
-            <input type="text" class="form-control input-lg" name="phone_no" id="phone_no" value="" required>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="updatePhone">Update</button>
       </div>
     </div>
   </div>
@@ -113,28 +84,6 @@ include ("include/header.php");
     });
     return false;
   }
-
-  $('#updatePhone').on('click', function(){
-    var phone_no = $('#phone_no').val();
-    $.ajax({
-      type:'POST',
-      url:site_url+'home/update_phone/',
-      data: {
-        'phone_no' : phone_no
-      },
-      success:function(resp){
-        $('#updatePhoneModal').modal('hide');
-        if(resp == 1){
-          $('#userPhoneNo').html(phone_no);
-          swal("Success", "Your phone number has been updated successfully. And We've just sent you an SMS containing a 4 digit code to "+phone_no, "success");
-        }else if(resp == 2){
-          swal("Error", "This phone number "+phone_no+" is already registered.", "error");
-        }else{
-          swal("Error", "Something is wrong.", "error");
-        }
-      }
-    });
-  });
 
   $('input.quantity').on('keyup', function(e) {
     // console.log(e.which);

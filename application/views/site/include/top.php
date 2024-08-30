@@ -1,12 +1,10 @@
 <?php
 $page_name=$this->uri->segment(1);
+$post_id=$_REQUEST['post_id']; 
 
-if(!isset($post_id) && $this->uri->segment(1)!='dispute') {
-	$post_id=$_REQUEST['post_id']; 
-	if(!$post_id && $this->uri->segment(3)){ 
-		$post_id=$this->uri->segment(3); 
-	} 
-}
+if($this->uri->segment(3)){ 
+	$post_id=$this->uri->segment(3); 
+} 
 
 if($post_id){
 	$get_job_detail=$this->common_model->get_single_data('tbl_jobs',array('job_id'=>$post_id,'is_delete'=>0));
@@ -25,9 +23,7 @@ if($post_id){
 	$review_close_date = date('Y-m-d', strtotime($get_job_detail['update_date']. ' + '.$review_days.' days'));
 
 	$datesss= date('Y-m-d', strtotime($get_job_detail['c_date']. ' + '.$closed_date.' days')); 
-	
-	$admin= $this->common_model->get_single_data('admin',['id'=>1]); 
-	$exp_date= date('Y-m-d H:i:s', strtotime($get_job_detail['c_date']. ' + '.$admin['waiting_time_accept_offer'].' days')); 
+			 
 	$get_post_bid=$this->common_model->get_post_bids('tbl_jobpost_bids',$post_id,$user_data['id']);
 		
 	$get_post_bids=$this->common_model->get_post_bidss('tbl_jobpost_bids',$post_id,$user_data['id']);
@@ -64,20 +60,19 @@ if($post_id){
 	<div class="container">
 		<div class="top_manin_he1">
 			
-			<?php $get_total_bidd=$this->common_model->get_single_data('tbl_jobpost_bids',['job_id'=>$get_job_detail['job_id']]); ?>
+			
 			<h3 class="pull-left"><?php echo $get_job_detail['title']; ?></h3>
             
 			<?php 
-			//print_r($get_job_detail);
+			
 			if($page_name=='details' || $page_name=='proposals' || $page_name=='files' || $page_name=='task' || $page_name=='reviews' || $page_name=='details' || $page_name=='payments' || $page_name=='dispute')  { ?>
         <button class="btn btn-primary pull-right top-project-status">
 				
-				
-				<?php if(($get_job_detail['status']==3 || $get_job_detail['status']==1 || $get_job_detail['status']==0) && empty($get_total_bidd)) { ?>
+				<?php if(($get_job_detail['status']==3 || $get_job_detail['status']==1 || $get_job_detail['status']==0) && (date('Y-m-d')<$datesss)){ ?>
 					
 				OPEN
 					
-				<?php }else if(($get_job_detail['status']==4)){ ?>
+				<?php }else if(($get_job_detail['status']==4) && (date('Y-m-d') < $datesss)){ ?>
 				
 				AWAITING ACCEPTANCE
 				
@@ -85,59 +80,36 @@ if($post_id){
 				
 				COMPLETED
 				
-				<?php }else if(($get_job_detail['status']==7)){ ?>
+				<?php }else if(($get_job_detail['status']==7) && (date('Y-m-d')<$datesss)){ ?>
 				
 				ACCEPTED
 				
-				<?php }else if(($get_job_detail['status']!=3 || $get_job_detail['status']!=4 || $get_job_detail['status']!=5 || $get_job_detail['status']!=7) && empty($get_total_bidd) && (date('Y-m-d') > $exp_date)){ ?>
+				<?php }else if(date('Y-m-d')>=$datesss){ ?>
 				
 				CLOSED
 				
-				<?php }else if($get_job_detail['status']==6 || $get_job_detail['status']==10 && (date('Y-m-d') < $datesss)){ ?>
+				<?php }else if($get_job_detail['status']==6 || $get_job_detail['status']==10){ ?>
 				
 				DISPUTE
 				
 				<?php }else if($get_job_detail['status']==8){ ?>
 				
 				REJECTED
-
-				<?php }else if(date('Y-m-d') < $exp_date){ ?>
-								
-					Open
 				
-				<?php } else if ($get_total_bidd) { ?>
-
-					Open
 				<?php }  ?>
-
 				
 				</button>
 			<?php } ?>
 		</div>
         
 		<div class="liskk2">
-			<?php if($page_name=='details' || $page_name=='proposals' || $page_name=='files' || $page_name=='task' || $page_name=='reviews' || $page_name=='details' || $page_name=='payments' || $page_name=='dispute' || $page_name=='proposals_edit')  { ?>
+			<?php if($page_name=='details' || $page_name=='proposals' || $page_name=='files' || $page_name=='task' || $page_name=='reviews' || $page_name=='details' || $page_name=='payments' || $page_name=='dispute')  { ?>
 				<ul class="ul_set">
 				
 					<li <?php if($page_name=='details'){ ?>class="active"<?php } ?>><a href="<?php echo base_url('details?post_id='.$post_id); ?>">Details</a></li>
 					
 					<li <?php if($page_name=='proposals'){ ?>class="active"<?php } ?>><a href="<?php echo base_url('proposals?post_id='.$post_id); ?>">Quotes</a></li>
-					
-					<?php if((count($get_post_bid)>0 && $get_post_bid[0]['status']==0) && ($get_job_detail['status']!=4 && $get_job_detail['status']!=7 && $get_job_detail['status']!=5)){  ?>
-						<!-- <li <?php if($page_name=='proposals_edit'){ ?>class="active"<?php } ?>><a href="<?php echo base_url('proposals_edit?post_id='.$post_id); ?>">Edit</a></li> -->
-						<li class="dropdown">
-							<a href="" class="dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">More</a>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-
-								<li <?php if($page_name=='proposals_edit'){ ?>class="active"<?php } ?>><a href="<?php echo base_url('proposals_edit?post_id='.$post_id); ?>">Edit</a></li>
-								
-								<li role="presentation"><a href="<?php echo site_url('posts/delete_bid/'.$get_post_bid[0]['id'].'/'.$post_id); ?>" onclick="return confirm('Are you sure! you want to retract your quote?');" role="menuitem">Retract</a></li>
-								
-							</ul>
-						</li>
-
-
-					<?php } ?>
+							
 					<?php if(count($get_post_bid)>0){ 
 					
 						if($get_post_bid[0]['status']==3 || $get_post_bid[0]['status']==4 || $get_post_bid[0]['status']==7 || $get_post_bid[0]['status']==5 || $get_post_bid[0]['status']==10){ ?> 
@@ -214,15 +186,9 @@ if($post_id){
 					} ?>
 										
 					<?php if($this->session->userdata('type')==2){ ?>
-					<?php $tbl_bids = $this->common_model->get_single_data('tbl_jobpost_bids',['job_id'=>$post_id]); ?>
-					<?php if(empty($tbl_bids)) {
-						 
-					?>
-					<?php if($get_job_detail['status']==0 || $get_job_detail['status']==1 || $get_job_detail['status']==3 || $get_job_detail['status']==8 || $get_job_detail['status']==9){
-						//echo $datesss;
-						//echo date('Y-m-d');
-						//print_r($get_job_detail);
-					?>
+					
+					<?php if($get_job_detail['status']==0 || $get_job_detail['status']==1 || $get_job_detail['status']==3 || $get_job_detail['status']==8 || $get_job_detail['status']==9){ ?>
+					
 					<li class="dropdown">
 						<a href="" class="dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">More</a>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
@@ -231,15 +197,15 @@ if($post_id){
 							
 							<li role="presentation"><a href="<?php echo site_url('posts/delete_post/'.$post_id); ?>" onclick="return confirm('Are you sure! you want to delete this post?');" role="menuitem" href="#">Delete</a></li>
 							
-							<?php if(strtotime(date('Y-m-d')) > strtotime($datesss)){ ?>
+							<?php if(date('Y-m-d') > $datesss){ ?>
 							
-							<li role="presentation"><a href="<?php echo site_url().'newPost/repost/'.$post_id.'/'.$page_name; ?>" onclick="return confirm('Are you sure you want to repost job')" role="menuitem">Repost</a></li>
+							<li role="presentation"><a href="<?php echo site_url().'newPost/repost/'.$post_id.'/'.$page_name; ?>" role="menuitem" href="#">Repost</a></li>
 							
 							<?php } ?>
 						</ul>
 					</li>
 					
-					<?php } } ?>
+					<?php } ?>
 					<?php } else { ?>
 						<?php if($get_post_bid){ ?>
 						
@@ -247,7 +213,7 @@ if($post_id){
 					
 						<?php } else { ?>
 						
-							<?php if((date('Y-m-d H:i:s')>=$datesss) && $get_post_bid[0]['status']==0 && $get_job_detail['status']!=7 && $get_job_detail['status']!=5 && $get_job_detail['status']!=4 && $get_job_detail['direct_hired']==0){ ?>
+							<?php if($get_post_bid[0]['status']==0 && $get_job_detail['status']!=7 && $get_job_detail['status']!=5 && $get_job_detail['status']!=4 && $get_job_detail['hiring_type']==0){ ?>
 							
 							<li class="dropdown">
 								<a href="" class="dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">More</a>

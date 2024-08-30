@@ -47,8 +47,8 @@
 		
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
-			<div class="col-sm-12">
-				<button type="submit" class="btn btn-primary submit_btn">Continue</button>
+			<div class="col-sm-12 serviceBtn">
+				<button type="submit" class="btn btn-warning submit_btn">Continue</button>
 			</div>                                 
 		</div>
 	</div>                        

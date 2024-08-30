@@ -498,7 +498,6 @@ function refresh_messages(){
 $('.inner-body').animate({ scrollTop: 20000000 }, "slow");
 $(function(){
 	$(".DataTable").DataTable({
-    ordering:false,
 		stateSave: true,
 		lengthChange: false,
 		searching: false,

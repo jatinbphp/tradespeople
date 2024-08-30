@@ -53,32 +53,6 @@
 					Encourage buyer to choose your service by featuring a variety of your work.
 				</span>
 				<hr>
-				<div class="" id="video-div" style="border-bottom:1px solid #b0c0d3;">
-					<h4>
-						Get image guidelines
-					</h4>
-					<label class="col-md-12 control-label" for="" style="padding: 0;">
-						Video (one only)
-					</label>
-					<span>
-						Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
-					</span>
-
-					<div id="imageContainer1" class="file-upload-btn imgUp">
-						<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
-						<div class="btn-text">Drag & drop video or <span>Browser</span></div>
-						<input type="file" name="video" id="videoprofile" class="form-control input-md" accept="video/*" onchange="return seeVideoPreview();">
-					</div>
-					<div id="videoPreview">
-						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
-							<?php $video_path = FCPATH . 'img/services/' . ($serviceData['video'] ?? ''); ?>
-							<?php if(file_exists($video_path) && $video_path): ?>
-								<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px; height:113px;"></video>
-							<?php endif; ?>	
-						<?php endif; ?>	
-					</div>
-				</div>
-				
 				<div id="image-div" style="margin-top: 10px; border-bottom:1px solid #b0c0d3;">
 					<label class="col-md-12 control-label" for="" style="padding: 0;">
 						Images (up to 3)
@@ -115,6 +89,32 @@
 								</div>		
 							<?php endforeach ?>
 						<?php endif; ?>
+					</div>
+				</div>
+				
+				<div class="" id="video-div" style="border-bottom:1px solid #b0c0d3;">
+					<h4>
+						Get image guidelines
+					</h4>
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Video (one only)
+					</label>
+					<span>
+						Capture buyer attention with a video that showcase your service. Please choose a video shorter than 75 seconds and smaller than 60MB.
+					</span>
+
+					<div id="imageContainer1" class="file-upload-btn imgUp">
+						<img src="<?php echo base_url()?>img/upload-video.png" alt="Click to select image">
+						<div class="btn-text">Drag & drop video or <span>Browser</span></div>
+						<input type="file" name="video" id="videoprofile" class="form-control input-md" accept="video/*" onchange="return seeVideoPreview();">
+					</div>
+					<div id="videoPreview">
+						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
+							<?php $video_path = FCPATH . 'img/services/' . ($serviceData['video'] ?? ''); ?>
+							<?php if(file_exists($video_path) && $video_path): ?>
+								<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px; height:113px;"></video>
+							<?php endif; ?>	
+						<?php endif; ?>	
 					</div>
 				</div>
 				
@@ -159,8 +159,8 @@
 	</div>
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
-			<div class="col-sm-12">
-				<button type="submit" class="btn btn-primary submit_btn">Continue</button>
+			<div class="col-sm-12 serviceBtn">
+				<button type="submit" class="btn btn-warning submit_btn">Continue</button>
 			</div>                                 
 		</div>
 	</div>

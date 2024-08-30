@@ -90,6 +90,7 @@
 							<li class="<?php echo ($active == 5) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step5">FAQs</a></li>
 
 							<li class="<?php echo ($active == 6) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step6">Availability</a></li>
+							<li class="<?php echo ($active == 8) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step8">Profile</a></li>
 						</ul>
 						<div class="tab-content">
 							<div id="step1" class="tab-pane fade <?php echo ($active == 1) ? 'active in' : '' ?>">
@@ -118,6 +119,10 @@
 							
 							<div id="step6" class="tab-pane fade <?php echo ($active == 6) ? 'active in' : '' ?>">
 								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices6/{$id}"]); ?>
+							</div>
+							
+							<div id="step8" class="tab-pane fade <?php echo ($active == 8) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service8', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices8/{$id}"]); ?>
 							</div>
 						</div>
 					</div>

@@ -10,12 +10,7 @@ $step1 = $this->session->userdata('signup_step1');
 <style type="text/css">
 	#pass_content{ color: red; }
 	#cnf_err_content{ color: red; }
-	.pac-container:after {
-	    background-image: none !important;
-	    height: 0px;
-	}
 </style>
-<link href="<?php echo base_url(); ?>css/address_search.css" type="text/css" rel="stylesheet"/>
 <!-- how-it-work -->
 <div class="start-sign">
 	<div class="container">  
@@ -80,53 +75,36 @@ $step1 = $this->session->userdata('signup_step1');
 								<input type="text" class="form-control input-lg" name="trading_name" value="<?php echo ($step1)?$step1['trading_name']:'';?>" id="trading_name" required>	
 							</div>
 						</div>
-						<div class="search-address-section">
-							<div class="form-group">
-								<label class="col-md-12 control-label"> Search for your address </label>  
-								<div class="col-md-12">
-									<input type="text" class="form-control input-lg" name="search_address" value="" id="search_address" placeholder="Postcode or street address" required>	
-									<div>
-										<a href="javascript:void(0);" onclick="showManuallyAddress()" style="font-size: 16px;">Enter address manually</a>
-										<br>
-										<!--<span id="addressMsg" class="text-danger" style="display: none;"></span>-->
-									</div>
-								</div>
+
+            <div class="form-group">
+              <label class="col-md-12 control-label"> Postcode *</label> 
+              <div class="col-md-12">
+                <input type="text" placeholder="Postcode" id="postcode" value="<?php echo ($step1)?$step1['postal_code']:'';?>" name="postal_code" class="form-control input-lg" required onblur="check_postcode(this.value);">
+
+               <input type="hidden" id="latitude" value="<?php echo ($step1)?$step1['latitude']:'';?>" name="latitude" class="form-control input-lg">
+
+               <input type="hidden" id="longitude" value="<?php echo ($step1)?$step1['longitude']:'';?>" name="longitude" class="form-control input-lg">
+
+                <p class="text-danger postcode-err" style="display:none;">Please enter valid UK postcode</p>
+              </div>
+            </div>
+
+						<div class="form-group">
+							<label class="col-md-12 control-label"> Town/City *</label>  
+							<div class="col-md-12" style="margin-top: 5px;">
+								<input type="text" value="<?php echo ($step1)?$step1['city']:'';?>" placeholder="Town/City" name="locality" id="e_city" class="form-control input-lg"  required>
 							</div>
 						</div>
-						<div class="manually-address-section" style="display: none;">
-							<span id="addressMsg" class="text-danger" style="display: none;"></span>
-							<div>
-								<a href="javascript:void(0);" onclick="showSearchAddress()" style="font-size: 16px;">Search for the address</a>
-							</div>
-				            <div class="form-group">
-				              <label class="col-md-12 control-label"> Postcode *</label> 
-				              <div class="col-md-12">
-				                <input type="text" placeholder="Postcode" id="postcode" value="<?php echo ($step1)?$step1['postal_code']:'';?>" name="postal_code" class="form-control input-lg" onblur="check_postcode();">
-
-				               <input type="hidden" id="latitude" value="<?php echo ($step1)?$step1['latitude']:'';?>" name="latitude" class="form-control input-lg">
-
-				               <input type="hidden" id="longitude" value="<?php echo ($step1)?$step1['longitude']:'';?>" name="longitude" class="form-control input-lg">
-
-				                <p class="text-danger postcode-err" style="display:none;">Please enter valid UK postcode</p>
-				              </div>
-				            </div>
-
-							<div class="form-group">
-								<label class="col-md-12 control-label"> Town/City *</label>  
-								<div class="col-md-12" style="margin-top: 5px;">
-									<input type="text" value="<?php echo ($step1)?$step1['city']:'';?>" placeholder="Town/City" name="locality" id="e_city" class="form-control input-lg">
-								</div>
-							</div>
+					
 						
-							
-							
-							<div class="form-group">
-								<label class="col-md-12 control-label"> Address *</label>  
-								<div class="col-md-12">
-									<input type="text" name="e_address" id="geocomplete" class="form-control input-lg" value="<?php echo ($step1)?$step1['e_address']:'';?>" placeholder="Enter an address">
-								</div>
+						
+						<div class="form-group">
+							<label class="col-md-12 control-label"> Address *</label>  
+							<div class="col-md-12">
+								<input type="text" name="e_address" id="geocomplete" class="form-control input-lg" value="<?php echo ($step1)?$step1['e_address']:'';?>" placeholder="Enter an address" required>
 							</div>
 						</div>
+						
 						
 						<!--<div class="row">
 							<div class="col-sm-12">
@@ -134,8 +112,7 @@ $step1 = $this->session->userdata('signup_step1');
 									<label class="col-md-12 control-label"> County *</label>  
 									<div class="col-md-12">
 										<select class="form-control input-lg" required name="country" id="country11">
-											<option value=""></option>
-											
+											<option value=""></option>											
 											<?php
 											foreach($country as $key => $val){
 												$selected = ($step1 && $step1['county'] == $val['region_name']) ? 'selected' : '';
@@ -146,8 +123,7 @@ $step1 = $this->session->userdata('signup_step1');
 								
 									</div>
 								</div>
-							</div>
-							
+							</div>							
 						</div>-->
 						
 						<div class="form-group">
@@ -200,13 +176,7 @@ $step1 = $this->session->userdata('signup_step1');
 						  </div>
 						  <br>
 						</div>
-						<div class="form-group">
-			              	<label class="col-md-12 control-label"> Referral Code </label> 
-			              	<div class="col-md-12">
-			                	<input type="text" placeholder="If someone referred you, enter their code" id="referred_by" value="<?=$this->session->userdata('referred_by')?>" name="referred_by" class="form-control input-lg">
-			                	<p class="text-danger reffer-err" style="display:none;">Wrong Referal Code</p>
-			              	</div>
-			            </div>
+						
 						
 						<div class="form-group">
 							<div class="col-md-12">
@@ -217,9 +187,7 @@ $step1 = $this->session->userdata('signup_step1');
 							</div>
 						</div>
 						<div class="term-acc">
-							<label for="tncCheckbox0">
-								<input type="checkbox" name="checkboxes1" id="checkboxes-1" value="1" required> I have read and understood the <a href="<?php echo base_url('privacy-policy'); ?>">Privacy Notice</a> and <a href="<?php echo base_url('cookie-policy'); ?>">Cookie Policy</a>.
-							</label>
+							<p><input type="checkbox" name="checkboxes1" id="checkboxes-1" value="1" required> I have read and understood the <a href="<?php echo base_url('privacy-policy'); ?>">Privacy Notice</a> and <a href="<?php echo base_url('cookie-policy'); ?>">Cookie Policy</a>.</p>
 						</div>
 						<div class="start-btn text-center">
 							<button type="submit" class="btn btn-warning btn-lg signup_btn">Save and Continue</button>
@@ -234,121 +202,31 @@ $step1 = $this->session->userdata('signup_step1');
 <?php 
 //$this->session->unset_userdata('some_name');
 ?>
-<!-- <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsMVoMDDvhOfRet3mdorvpmTRErqVJd7c&libraries=places&callback=initAutocomplete">
-</script> -->
 
 
-<script type="text/javascript" src="<?php echo base_url(); ?>js/address_search.js"></script>
-<script>
-    var options = {
-        //key: 'FE94-PT27-TC96-DA52', // 'JG55-UR47-XY47-TT22',
-        key: '<?php echo $settings[0]['search_api_key']; ?>',
-        search: { countries: 'GB' },
-        manualEntryItem: true,
-    }
-    var fields = [
-        { field: "Search", element: "search_address", mode: pca.fieldMode.SEARCH },
-        { field: "Line1", element: "geocomplete", mode: pca.fieldMode.POPULATE  },
-       // { field: "Line2", element: "questions_line2", mode: pca.fieldMode.POPULATE },
-        { field: "City", element: "e_city", mode: pca.fieldMode.POPULATE },
-        { field: "PostalCode", element: "postcode", mode: pca.fieldMode.POPULATE },
-       // { field: "Id", element: "questions_addressId", mode: pca.fieldMode.POPULATE },
-    ];
-    var control = new pca.Address(fields, options);
-    control.listen("load", function() {
-        initManualToggle()
-    })
 
-    function initManualToggle() {
-        var DATA_ATTR = 'data-address-mode';
-        console.log("call initi");
-        // var manualBtn = document.getElementById('js-manual-entry-btn');
-        // var searchBtn = document.getElementById('js-search-entry-btn');
-        // var manualAddressToggle = document.getElementById('js-address-manual-toggle');
-        // var radiusInput = document.getElementById('js-radius-input');
+<script type="text/javascript">
+	$(function () {
+        $(".signup_btn").click(function () {
+            var password = $("#password").val();
+            var confirmPassword = $("#cnf_password").val();
+            if (password != confirmPassword) {
+                $('#cnf_err_content').text("Passwords do not match.");
+                return false;
+            }
+             $('#cnf_err_content').text("");
 
-        // radiusInput.classList.add('is-hidden');
-   
-        console.log("call initi 2");
-        /*function showRadiusInput() {
-            radiusInput.classList.remove('is-hidden')
-        }
-        var isListeningToPostCodeInput = false;
-        function listenForPostCodeInput() {
-            if( isListeningToPostCodeInput ) return;
-            document.getElementById('questions_postcode').addEventListener('input', function(e) {
-                console.log('event')
-                if (e.target.value.length >= 5) {
-                  showRadiusInput();
-                }
-            });
-            isListeningToPostCodeInput = true;
-        }
-
-        function manualMode() {
-            manualAddressToggle.setAttribute(DATA_ATTR, 'manual');
-            listenForPostCodeInput();
-        }
-        function searchMode() {
-            manualAddressToggle.setAttribute(DATA_ATTR, 'search');
-        }
-        function filledMode() {
-            manualAddressToggle.setAttribute(DATA_ATTR, 'filled');
-              console.log("filledd");
-            showRadiusInput();
-        }
-
-        if (manualAddressToggle.getElementsByClassName('error').length > 0 || document.getElementById('questions_line1').value !== '') {
-            filledMode();
-        } else {
-            searchMode();
-        }*/
-
-        control.listen('manual', function() {
-            console.log("call manual");
-            showManuallyAddress();
-        })
-        control.listen("populate", function() {
-           console.log("call populate");
-            $(".manually-address-section").show();
-		  	$(".manually-address-section a").hide();
-		  	$(".search-address-section a").hide();
-		  	check_postcode();
+            return true;
         });
+    });
 
-        // manualBtn.addEventListener('click', function(e) {
-        //     e.preventDefault();
-        //     manualMode();
-        // })
-        // searchBtn.addEventListener('click', function(e) {
-        //     e.preventDefault();
-        //     searchMode();
-        // })
 
-    };
-
-    function showManuallyAddress() {
-		$(".search-address-section").hide()
-		$(".manually-address-section").show();
-		$("input[name='search_address']").removeAttr("required");
-		$("input[name='postal_code']").addAttr("required");
-		$("input[name='locality']").addAttr("required");
-		$("input[name='e_address']").addAttr("required");
-	}
-
-	function showSearchAddress() {
-		$(".manually-address-section").hide();
-		$(".search-address-section").show();
-		$("input[name='search_address']").addAttr("required");
-	}
 </script>
 
 
-
 <script>
-function check_postcode(){
-	var postcode = $("#postcode").val();
+function check_postcode(postcode){
+
 	$.ajax({
 		type:'POST',
 		url:site_url+'home/check_postcode',
@@ -374,29 +252,33 @@ function check_postcode(){
 }
 
 function signup(){
-	var err_text_msg='';
+ var err_text_msg='';
 
-	var lower;
-	var upper;
-	var number;
-	// var spec;
-	var len;
+		var lower;
+		var upper;
+		var number;
+		// var spec;
+		var len;
+
 		
     var myInput = document.getElementById("password");
-	var lowerCaseLetters = /[a-z]/g;
-	if (myInput.value.match(lowerCaseLetters)) { lower = true; } else {
-		lower = false;
+		var lowerCaseLetters = /[a-z]/g;
+		if (myInput.value.match(lowerCaseLetters)) { lower = true; } else {
+   		lower = false;
 
-	}	
+		}	
 
-	var upperCaseLetters = /[A-Z]/g;
+		var upperCaseLetters = /[A-Z]/g;
    	if (myInput.value.match(upperCaseLetters)) { upper = true; } else {
    		upper = false;
-   	}
+
+   }
 
    var numbers = /[0-9]/g;
    if (myInput.value.match(numbers)) { number = true; } else {
    		number = false;
+
+
    }
 
    // var special = /[!@#$%^&*_=+-]/g;
@@ -404,41 +286,25 @@ function signup(){
    // 		spec = false;
    // }
 
-	if (myInput.value.length >= 6) { 
-		len = true;
-	} else {
-		len = false;
-	}
+		if (myInput.value.length >= 6) { 
+			len = true;
+		} else {
+   		len = false;
 
-	if(lower==false || upper==false || number==false || len==false){
-	  document.getElementById("pass_content").style.display = "block";
-	 // err_text_msg = "Must contain atleast 6 characters with atleast one lowercase, uppercase and special character."; 
-		err_text_msg = "Must contain at least 6 characters with at least one lowercase, uppercase and number.";
-		$('#pass_content').text(err_text_msg);
-	  return false;
-	}else{
-	  err_text_msg='';
-	  document.getElementById("pass_content").style.display = "none";
-	}
+		}
 
-	var postcode = $('#postcode').val();
-	if(postcode == ""){
-		$('#addressMsg').html('You must enter address manually');
-		$('#addressMsg').show();
-		$(".search-address-section").hide()
-		$(".manually-address-section").show();
+		if(lower==false || upper==false || number==false || len==false){
+		  document.getElementById("pass_content").style.display = "block";
+		 // err_text_msg = "Must contain atleast 6 characters with atleast one lowercase, uppercase and special character."; 
+			err_text_msg = "Must contain at least 6 characters with at least one lowercase, uppercase and number."; 
 
-		$("#postcode").prop('required',true);
-		$("#e_city").prop('required',true);
-		$("#geocomplete").prop('required',true);
+   		$('#pass_content').text(err_text_msg);
+		  return false;
+		}else{
+		  err_text_msg='';
+		  document.getElementById("pass_content").style.display = "none";
+		}
 
-		
-		$('html, body').animate({
-	        scrollTop: $('.manually-address-section').offset().top
-	    }, 'slow');
-
-		return false;
-	}
 
 	$.ajax({
 		type:'POST',
@@ -460,12 +326,6 @@ function signup(){
 				$('#postcode').focus();
 				
 				
-				$('.signup_btn').html('Save and Continue');
-				$('.signup_btn').prop('disabled',false);
-				
-			}else if(resp.status==10) {
-				
-				$('.reffer-err').show();
 				$('.signup_btn').html('Save and Continue');
 				$('.signup_btn').prop('disabled',false);
 				

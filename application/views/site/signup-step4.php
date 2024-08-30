@@ -48,12 +48,11 @@ include ("include/header1.php");
             <div class="sing-body" id="about_business11" tabindex='1'>
               <p> Please tell the customers about your business, experience and quality of your work.<br>
 							It's the first thing users reads about you, so it's essential to make sure it is well written.</p>
-             
+              
               <textarea class="form-control" name="about_business" id="about_business" rows="14"><?=$about_business;?></textarea>
               <div class="text-right"><small class="text-danger">Minimum 100 Characters</small></div>
               <div class="custom_err alert alert-danger" style="display:none;">About your business field can't be empty.</div>
-              <!-- <div class="msg1-11 text-danger" style="display: none; margin-top:10px;">Please don't include contact details or your website in this section.</div> -->
-              <div class="msg1-11 text-danger" style="display: none; margin-top:10px;">Contact detail detected. Remove it to continue.</div>
+              <div class="msg1-11 text-danger" style="display: none; margin-top:10px;">Please don't include contact details or your website in this section.</div>
               <hr>
             </div>
             <div class="sing-top">
@@ -197,14 +196,12 @@ include ("include/header1.php");
           //window.location.href = site_url+'email-verify';
           window.location.href = site_url+'signup-step7';
         } else if(resp.status==2){	
-					//$('.msg1-11').show();
-          swal("", "Contact detail detected. Remove it to continue.", "error");
+					$('.msg1-11').show();
 					$('#about_business11').focus();
 					$('.signup_btn').html('Save and Continue');
           $('.signup_btn').prop('disabled',false);
 				} else if(resp.status==3){	
-					//$('.msg1-12').show();
-          swal("", "Contact detail detected. Remove it to continue.", "error");
+					$('.msg1-12').show();
 					$('#qualificationBox').focus();
 					$('.signup_btn').html('Save and Continue');
           $('.signup_btn').prop('disabled',false);

@@ -16,17 +16,6 @@ class Search extends CI_Controller
         $this->perPage  = 10;
         $this->perPage2 = 6;
         error_reporting(0);
-        if($this->session->userdata('user_id')){
-            $user_id = $this->session->userdata('user_id');
-            if(!empty($user_id)){
-                $user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-                if(empty($user_profile)){
-                    $this->session->sess_destroy();
-                    redirect('login');
-                }
-            }
-        }
     }
 
     public function find_tradesman_ajax($cat_name = null, $cate_id = null)
@@ -150,7 +139,7 @@ class Search extends CI_Controller
 					<div class="pull-right">
 						<span class="from-group">
 							<i class="fa fa-map-marker"></i>
-							' . $get['city'] . '
+							'.$get['city'].'
 
 						</span>
 
@@ -269,10 +258,9 @@ class Search extends CI_Controller
         $conditions['search']['location'] = (isset($_REQUEST['location']) && !empty($_REQUEST['location'])) ? $_REQUEST['location'] : '';
 
         $conditions['search']['cate_id']   = ($category_details) ? $category_details['cat_id'] : '';
-        $searchCategoryId                  = $conditions['search']['cate_id'];
         $conditions['search']['city_name'] = ($city_name) ? $city_name : '';
-        $searchCityName                    = $conditions['search']['city_name'];
-        $totalRec                          = count($this->search_model->get_tradesmem($conditions));
+
+        $totalRec = count($this->search_model->get_tradesmem($conditions));
 
         $pagedata['totalRec'] = $totalRec;
 
@@ -300,28 +288,21 @@ class Search extends CI_Controller
         //echo $this->db->last_query();
         $pagedata['category_details']    = $category_details;
         $pagedata['city_data']           = $city_data;
-        $pagedata['searchCategoryId']    = $searchCategoryId;
-        $pagedata['searchCityName']      = $searchCityName;
         $pagedata['local_category_data'] = $local_category_data;
         //$pagedata['last']=$this->db->last_query();
         $pagedata['find_trades'] = $this->common_model->GetColumnName('other_content', ['id' => 1]);
         $this->load->view('site/category_details', $pagedata);
     }
-    public function index($cat_name = null, $cityname = null)
+    public function index($cat_name = null)
     {
         $pagedata = [];
 
-        $url_segement2 = trim($this->uri->segment(2));
+        $url_segement2 = $this->uri->segment(2);
 
         if ($url_segement2) {
             $cat_name = $url_segement2;
         }
 
-        $url_segement3 = $this->uri->segment(3);
-
-        if ($url_segement3) {
-            $searchCity = $url_segement3;
-        }
         $city_data = false;
 
         $city_name = (isset($_REQUEST['location']) && !empty($_REQUEST['location'])) ? $_REQUEST['location'] : '';
@@ -348,7 +329,6 @@ class Search extends CI_Controller
         $conditions['search']['search1']     = (isset($_REQUEST['search1']) && !empty($_REQUEST['search1'])) ? $_REQUEST['search1'] : '';
 
         $conditions['search']['location'] = (isset($_REQUEST['location']) && !empty($_REQUEST['location'])) ? $_REQUEST['location'] : '';
-        $conditions['search']['city']     = ($searchCity) ? $searchCity : '';
 
         $totalRec             = count($this->search_model->getRows($conditions));
         $pagedata['totalRec'] = $totalRec;
@@ -367,9 +347,8 @@ class Search extends CI_Controller
 
         $pagedata['all_jobs']   = $this->search_model->getRows($conditions);
         $pagedata['city_data2'] = $city_data;
-        $pagedata['searchCity'] = ($searchCity) ? $searchCity : '';
-        $pagedata['cities']     = $this->search_model->getJobCities();
         $pagedata['find_job']   = $this->common_model->GetColumnName('other_content', ['id' => 2]);
+
         $pagedata['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 
         $this->load->view('site/search_post', $pagedata);
@@ -388,7 +367,6 @@ class Search extends CI_Controller
         }
 
         $category_id = $this->input->post('category_id');
-        $city_id     = $this->input->post('city_id');
         $location    = $this->input->post('location');
         $amount1     = $this->input->post('amount1');
         $amount2     = $this->input->post('amount2');
@@ -400,9 +378,6 @@ class Search extends CI_Controller
 
         if (!empty($location)) {
             $conditions['search']['location'] = $location;
-        }
-        if (!empty($city_id)) {
-            $conditions['search']['city'] = $city_id;
         }
         /*
         if(!empty($amount1)){
@@ -435,6 +410,7 @@ class Search extends CI_Controller
         if ($check_budget && $check_budget['status'] == 0) {
             $show_budget = 0;
         }
+        $user_profile = $this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 
         if (count($all_jobs) > 0) {
             foreach ($all_jobs as $row) {

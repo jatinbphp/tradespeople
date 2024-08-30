@@ -121,8 +121,7 @@ html {
 							<div class="row fixed3">
 
 							<?php 
-								//echo '<pre>'; print_r($logged_user_profile);
-							if($logged_user_profile['free_trial_taken']==0){
+							if($user_data['free_trial_taken']==0){
 								$where1['is_free'] = 1;
 							}
 									
@@ -135,7 +134,7 @@ html {
 							foreach ($get_all_packages as $p) {
 								
 							$today = date('Y-m-d');
-							$where = "up_status = 1 and DATE(up_enddate) >= DATE('".$today."') and up_user = '".$logged_user_profile['id']."' and up_plan = '".$p['id']."'";
+							$where = "up_status = 1 and DATE(up_enddate) >= DATE('".$today."') and up_user = '".$user_profile['id']."' and up_plan = '".$p['id']."'";
 							$check = $this->common_model->get_single_data('user_plans',$where);
 							
 							if($active_plan==0 && $check){
@@ -173,26 +172,32 @@ html {
 												
 												?>
 												<i class="fa fa-gbp"></i> <?php echo $p['amount']; ?>/<?php echo $show_day;?>
-												<?php
-													if($logged_user_profile['free_trial_taken']==0){													
-														$show_arr1 = explode(' ',$p['free_plan_exp']);
-														$show_day1 = end($show_arr1);
-														$show_num2 = $show_arr1[0];												
-														$show_day1 = strtolower($show_day1);												
-														if($show_num2 > 1){
-															$show_day1 = $show_num2.' '.$show_day1;
-														} else {
-															if($show_day1=='days'){
-																$show_day1 = $show_num2.' '.'day';
-															} else if($show_day1=='months'){
-																$show_day1 = $show_num2.' '.'month';
-															} else if($show_day1=='weeks'){
-																$show_day1 = 'week';
-															}
-														}
+												<?php if($user_data['free_trial_taken']==0){
+
+												$show_arr1 = explode(' ',$p['free_plan_exp']);
+
+												$show_day1 = end($show_arr1);
+												$show_num2 = $show_arr1[0];
+												
+												$show_day1 = strtolower($show_day1);
+												
+												if($show_num2 > 1){
+													$show_day1 = $show_num2.' '.$show_day1;
+												} else {
+													if($show_day1=='days'){
+														$show_day1 = $show_num2.' '.'day';
+													} else if($show_day1=='months'){
+														$show_day1 = $show_num2.' '.'month';
+													} else if($show_day1=='weeks'){
+														$show_day1 = 'week';
+													}
+												}
+												
+												
+									
 												?>
-													<span class="price_cross123"><?php echo $show_day1; ?> Free Trial</span>
-													<!--span class="price_cross"><i class="fa fa-gbp"></i> <?php //echo $p['amount']; ?></span-->
+												<span class="price_cross123"><?php echo $show_day1; ?> Free Trial</span>
+												<!--span class="price_cross"><i class="fa fa-gbp"></i> <?php //echo $p['amount']; ?></span-->
 												<?php } ?>
 											</h1>
 											<ul class="ul_set">
@@ -230,16 +235,17 @@ html {
 											</ul>
 											<br>	
 											<!-- Sctipt bay   -->
-											<div class="text-center">											
-												<?php if($setting['payment_method'] == 1){?>
-													<button type="button" onclick="show_lates_stripe_popup(<?= $p['amount']; ?>,<?= $p['amount']; ?>,2,<?= $p['id']; ?>);" class="btn btn-warning">Upgrade</button>
-												<?php }else{
-													if($user_data['free_trial_taken']==1){ ?>
+											<div class="text-center">
+											
+												<?php if($user_data['free_trial_taken']==1){ ?>
 													<button type="button" onclick="show_lates_stripe_popup(<?= $p['amount']; ?>,<?= $p['amount']; ?>,2,<?= $p['id']; ?>);" class="btn btn-warning">Upgrade</button>
 												<?php } else { ?>
 													<button type="button" onclick="select_plan(<?= $p['id']; ?>);" class="btn btn-warning">Start Free Trial</button>
-												<?php } }?>
+												<?php } ?>
+												
+				
 											</div>
+
 										</div>
 									</div>
 								</div>
@@ -247,7 +253,7 @@ html {
 								<div class="alert alert-warning">Currently plans are not available</div>
 								<?php } ?>
                 <?php
-                  if($logged_user_profile['free_trial_taken'] == 0 && $logged_user_profile['is_pay_as_you_go'] == 0){
+                  if($user_data['free_trial_taken'] == 0 && $user_data['is_pay_as_you_go'] == 0){
                 ?>
                     <div class="col-sm-4">
                       <div class="box_member plan_div" id="plan_div0">

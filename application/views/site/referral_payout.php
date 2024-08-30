@@ -118,11 +118,11 @@
                 
             </div>
         </div>
-        <?php //if($this->session->userdata('type')==2){ ?>
+        <?php if($this->session->userdata('type')==2){ ?>
         <div style="padding:20px 0px;">
-          <a href="<?= base_url('manage-bank'); ?>" class="btn btn-block" type="button" style="color: #007bff; background-color: transparent; background-image: none; border: 2px solid #007bff; font-weight: bold;">Edit payment method</a>
+          <a href="<?= base_url('manage-bank'); ?>" class="btn btn-block" type="button" style="color: #007bff; background-color: transparent; background-image: none;     border: 2px solid #007bff; font-weight: bold;">Edit payment method</a>
         </div>
-        <?php //} ?>
+        <?php } ?>
     </section>
 
 

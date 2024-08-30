@@ -4,20 +4,11 @@ class Subcription_plan extends CI_Controller
 {
 	public function __construct() {
 		parent::__construct();
-		$this->check_login();;
+		$this->check_login();
+		// date_default_timezone_set('UTC');
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
 		require_once('application/libraries/stripe-php-7.49.0/init.php');
-		if($this->session->userdata('user_id')){
-			$user_id = $this->session->userdata('user_id');
-			if(!empty($user_id)){
-				$user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-				if(empty($user_profile)){
-					$this->session->sess_destroy();
-					redirect('login');
-				}
-			}
-		}
 	}
 	
 	public function check_login() {

@@ -507,7 +507,6 @@ function send_message(e){
   }
 
 let totalMessages = 0;
-
 function refresh_messages(){
 	$.ajax({
 		type:'post',
@@ -515,14 +514,13 @@ function refresh_messages(){
 		data:{},
 		dataType:'json',
 		success:function(response){
-      console.log(response.messages);
 			if(totalMessages != response.totalMessages && response.admin_chat_id != 0){
 				// $("#append_messages").html(response.messages);
-				var oldscrollHeight = $("#append_messages").prop("scrollHeight");
-				$("#append_messages").html(response.messages);
-				var newscrollHeight = $("#append_messages").prop("scrollHeight");
+				var oldscrollHeight = $(".msg_history").prop("scrollHeight");
+				$(".msg_history").html(response.newMessages);
+				var newscrollHeight = $(".msg_history").prop("scrollHeight");
 				if (newscrollHeight > oldscrollHeight) {
-					$("#append_messages").animate({
+					$(".msg_history").animate({
 						scrollTop: newscrollHeight
 					}, 'normal');
 				}
@@ -530,9 +528,7 @@ function refresh_messages(){
 		}
 	});
 } 
- let load_messages  = setInterval(function(){
-    refresh_messages();
-  }, 1500);
+
 $('.inner-body').animate({ scrollTop: 20000000 }, "slow");
 
 </script>

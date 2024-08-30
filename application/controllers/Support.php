@@ -7,18 +7,8 @@ class Support extends CI_Controller
 		parent::__construct();
 		$this->db->query("set sql_mode = ''");
 		$this->load->model('common_model');
+		date_default_timezone_set('Europe/London');
 		$this->perPage = 10;
-    if($this->session->userdata('user_id')){
-      $user_id = $this->session->userdata('user_id');
-      if(!empty($user_id)){
-        $user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-        if(empty($user_profile)){
-          $this->session->sess_destroy();
-          redirect('login');
-        }
-      }
-    }
 	}
 
   public function check_login() {
@@ -59,7 +49,8 @@ class Support extends CI_Controller
     // $this->common_model->update('admin_chat_details', $whereUnread, $updateRead);
 
     $where['user_id'] = $this->session->userdata('user_id');
-    $adminChats = $this->common_model->newgetRows('admin_chats', $where, 'id');
+    $adminChats = $this->common_model->newgetRows('admin_chats', $where,'id');
+
     foreach($adminChats as $key => $adminChat){
       $whereChat['admin_chat_id'] = $adminChat['id'];
       $admin_chat_details = $this->common_model->newgetRows('admin_chat_details', $whereChat, 'id');

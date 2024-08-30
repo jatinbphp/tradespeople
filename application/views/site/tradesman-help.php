@@ -139,7 +139,7 @@
 								<!-- account panel -->
 							
 								<!-- Panel-->
-								<?php if($setting[0]['payment_method'] == 1){?>	
+								<?php if($setting[0]['payment_method'] == 1){?>			
 									<div class="panel panel-default">
 										<div class="panel-heading" role="tab" id="headingFour">
 											<h4 class="panel-title">
@@ -160,7 +160,6 @@
 									</div>
 								<?php }?>
 								<!-- Panel-->
-
 								<div class="panel panel-default">
 									<div class="panel-heading" role="tab" id="headingSix">
 										<h4 class="panel-title">
@@ -1172,27 +1171,20 @@ function open_possition(main,content){
 	$('.Common-Head').hide();
 	$('.Common-Body').hide();
 	$('.Common-Content').hide();
-	<?php if($setting[0]['payment_method'] == 0){?>
-		console.log('out');
-		if(main == 'Memberships'){
-			$('.'+main+'-Head').hide();
-			$('.'+main+'-Body').hide();
-		}else{
-			$('.'+main+'-Head').show();
-			$('.'+main+'-Body').show();
-		}
-		if(content == 'Memberships-1' || content == 'Memberships-2'){
-			$('.Content-'+content).hide();
-		}else{
-			$('.Content-'+content).show();
-		}
-	<?php }else{?>
-		console.log('in---->'+main+'-Head');
-
+	if(main == 'Memberships'){
+		$('.'+main+'-Head').hide();
+		$('.'+main+'-Body').hide();	
+	}else{
 		$('.'+main+'-Head').show();
-		$('.'+main+'-Body').show();
-		$('.Content-'+content).show();
-	<?php }?>
+		$('.'+main+'-Body').show();	
+	}
+
+	if(content == 'Memberships-1' || content == 'Memberships-2'){
+		$('.Content-'+content).hide();	
+	}else{
+		$('.Content-'+content).show();	
+	}	
+	
 	window.location.href='#'+content;
 }
 
@@ -1202,7 +1194,6 @@ $(document).ready(function(){
 		$('#Memberships-1').remove();
 		$('#Memberships-2').remove();
 	<?php }?>
-	
 	var textss = window.location.hash.substr(1);
 	if(textss){
 		var res = textss.split("-");

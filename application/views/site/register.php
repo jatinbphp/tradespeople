@@ -6,7 +6,7 @@
 			  <div class="owl-stage">
 				  <div class="owl-item active">
 					  <div class="item">
-							<div class="set-slide" style="background: url(<?=base_url()?>img/register-im.png);">
+							<div class="set-slide" style="background: url(img/register-im.png);">
 							   <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 740 650" version="1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 								  <polygon opacity="0.9" fill="#FFFFFF" points="0 0 740 0 700 650 0 650"></polygon>
 							   </svg>
@@ -105,7 +105,7 @@
 		<div class="row">
 			<div class="col-sm-4">
 				<div class="set-need set-post">
-					<img src="<?=base_url()?>img/countless_job.png">
+					<img src="img/countless_job.png">
 				</div>
 			</div>
 			<div class="col-sm-8">	
@@ -142,7 +142,7 @@
 			</div>
 			<div class="col-sm-4">
 				<div class="set-need set-post">
-					<img src="<?=base_url()?>img/your_back.png">
+					<img src="img/your_back.png">
 				</div>
 			</div>
 		</div>
@@ -153,51 +153,24 @@
    <!-- section 2 -->
    <!-- section 3 -->
    <?php if($settings[0]['payment_method'] == 1){?>
-		  <div class="how-need reg-3 left-img">
+	   <div class="how-need reg-3 left-img">
 				<div class="container">
-					<div class="row">
-					<div class="col-sm-10 col-sm-offset-1">	
-					<div class="row">
-						<div class="col-sm-4">
-							<div class="set-need set-post">
-								<img src="<?=base_url()?>img/Pay_as.png">
-							</div>
-						</div>
-						<div class="col-sm-8">	
-							<div class="pad_us1">
-								<div class="need-text">
-								<div class="need-box">
-								<h1 class="head-home">Pay as you go option</h1>
-								<p>Unlike other sites that charge a compulsory monthly fee regardless of time, we offer a pay-as-you-go option that allows you to pick what works best for you; this pricing model means you only pay when you want. You have complete flexibility – there are no contracts or long-term commitments.</p>
-								</div>
-							</div>
-							</div>
-						</div>
-					</div>
-					</div>
-					</div>
-				</div>
-			</div>
-   <!-- section 3 -->
-   <!-- section 4 -->
-	  <div class="how-30_day reg-4 right-img">
-			<div class="container">
 				<div class="row">
 				<div class="col-sm-10 col-sm-offset-1">	
 				<div class="row">
+					<div class="col-sm-4">
+						<div class="set-need set-post">
+							<img src="img/Pay_as.png">
+						</div>
+					</div>
 					<div class="col-sm-8">	
 						<div class="pad_us1">
 							<div class="need-text">
 							<div class="need-box">
-							<h1 class="head-home">30-day free trial </h1>
-							<p>We are confident about our service; as a result, we’re offering a free trial to enable you to try our service for free, and with no financial commitments. With this, you can be accustomed to our platform, decide if it’s right for you and pick what works best for you.</p>
+							<h1 class="head-home">Pay as you go option</h1>
+							<p>Unlike other sites that charge a compulsory monthly fee regardless of time, we offer a pay-as-you-go option that allows you to pick what works best for you; this pricing model means you only pay when you want. You have complete flexibility – there are no contracts or long-term commitments.</p>
 							</div>
 						</div>
-						</div>
-					</div>
-					<div class="col-sm-4">
-						<div class="set-need set-post">
-							<img src="<?=base_url()?>img/30DAY.png">
 						</div>
 					</div>
 				</div>
@@ -205,7 +178,35 @@
 				</div>
 			</div>
 		</div>
+	   <!-- section 3 -->
+	   <!-- section 4 -->
+	   <div class="how-30_day reg-4 right-img">
+			<div class="container">
+			<div class="row">
+			<div class="col-sm-10 col-sm-offset-1">	
+			<div class="row">
+				<div class="col-sm-8">	
+					<div class="pad_us1">
+						<div class="need-text">
+						<div class="need-box">
+						<h1 class="head-home">30-day free trial </h1>
+						<p>We are confident about our service; as a result, we’re offering a free trial to enable you to try our service for free, and with no financial commitments. With this, you can be accustomed to our platform, decide if it’s right for you and pick what works best for you.</p>
+						</div>
+					</div>
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="set-need set-post">
+						<img src="img/30DAY.png">
+					</div>
+				</div>
+			</div>
+			</div>
+			</div>
+		</div>
+		</div>
    <!-- section 4 -->
+
 
 		<div class="white-reg  Start_30_Da" >
 			<div class="container">
@@ -219,7 +220,7 @@
 				</div>
 			</div>
 		</div>
-	<?php }?>	
+		<?php }?>
    <!-- section 5 -->
    <div class="how-need reg-4 left-img" >
 	<div class="container">
@@ -228,7 +229,7 @@
 		<div class="row">
 			<div class="col-sm-4">
 				<div class="set-need set-post">
-					<img src="<?=base_url()?>img/payment-done.png">
+					<img src="img/payment-done.png">
 				</div>
 			</div>
 			<div class="col-sm-8">	
@@ -276,14 +277,14 @@
         <section class="row breath">
             <div class="col-md-6">
                 <div class="testblock">Whenever I have last minute cancellations or some time to spare, Tradespeople hub has always found me jobs that fill my schedule</div>
-                <div class="clientblock"> <img src="<?=base_url()?>img/testimonial_1.png" alt=".">
+                <div class="clientblock"> <img src="img/testimonial_1.png" alt=".">
                     <p><strong>Johnathan Doe</strong>
                         <!--<br> Founder and CEO of <a href="#">Company Inc</a>--></p>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="testblock">Tradespeople hub is a life-saver.They've saved me from  the high cost associated with advertising and promoting my business online</div>
-                <div class="clientblock"> <img src="<?=base_url()?>img/testimonial_2.png" alt=".">
+                <div class="clientblock"> <img src="img/testimonial_2.png" alt=".">
                     <p><strong>Michael Slats</strong>
                         <!--<br> Project Lead at <a href="#">Envato.com</a>--></p>
                 </div>
@@ -304,22 +305,22 @@
 		<div class="row">
 			<div class="col-sm-3">
 				<div class="team-member">
-					<img src="<?=base_url()?>img/team1.png">
+					<img src="img/team1.png">
 				</div>
 			</div>
 			<div class="col-sm-3">
 				<div class="team-member">
-					<img src="<?=base_url()?>img/team2.png">
+					<img src="img/team2.png">
 				</div>
 			</div>
 			<div class="col-sm-3">
 				<div class="team-member">
-					<img src="<?=base_url()?>img/team3.png">
+					<img src="img/team3.png">
 				</div>
 			</div>
 			<div class="col-sm-3">
 				<div class="team-member">
-					<img src="<?=base_url()?>img/team4.png">
+					<img src="img/team4.png">
 				</div>
 			</div>
 		</div>

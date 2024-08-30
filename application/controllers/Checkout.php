@@ -97,7 +97,8 @@ class Checkout extends CI_Controller
 		$data['userCardData'] = $this->getCardData($uId);
 		$data['package_type'] = $cartData['package_type'];
 		$data['package_price'] = $package_data[$cartData['package_type']]['price'];
-
+		$data['package_description'] = $package_data[$cartData['package_type']]['description'];
+		$data['delivery_date'] = $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']);
 		$this->load->view('site/checkout',$data);
 	}
 

@@ -3,26 +3,6 @@
         <!-- <div class="msg"><?= $this->session->flashdata('msg');?></div> -->
         <div class="row">
             <div class="col-sm-12">
-                <!-- Text input-->
-                <div class="form-group">
-                    <label class="col-md-12 control-label" for="">Service Title</label>
-                    <div class="col-md-12">
-                        <input id="service" value="<?php echo $serviceData['service_name'] ?? '' ?>" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" onkeypress="getSuggestedCategory(this.value)" required>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label class="col-md-12 control-label" for="">
-                        About Your Service 
-                    </label>
-                    <div class="col-md-12">
-                        <textarea class="form-control input-md" name="description" id="description" placeholder="Description" rows="10"><?php echo $serviceData['description'] ?? '' ?></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Main Category</label>
                     <div class="col-md-12">
@@ -108,7 +88,27 @@
                         <span class="text-muted">5 tags maximum. Use letters and numbers only.</span>
                     </div>
                 </div>
-            </div>            
+            </div>
+			
+			 <div class="col-sm-12">
+                <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-12 control-label" for="">Service Title</label>
+                    <div class="col-md-12">
+                        <input id="service" value="<?php echo $serviceData['service_name'] ?? '' ?>" name="service_name" placeholder="Service Title" class="form-control input-md" type="text" onkeypress="getSuggestedCategory(this.value)" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-12 control-label" for="">
+                        About Your Service 
+                    </label>
+                    <div class="col-md-12">
+                        <textarea class="form-control input-md" name="description" id="description" placeholder="Description" rows="10"><?php echo $serviceData['description'] ?? '' ?></textarea>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -176,8 +176,8 @@
 
 <div class="edit-user-section gray-bg">
     <div class="row nomargin">
-        <div class="col-sm-12">
-            <button type="submit" class="btn btn-primary submit_btn">Continue</button>
+        <div class="col-sm-12 serviceBtn">
+            <button type="submit" class="btn btn-warning submit_btn">Continue</button>
         </div>                                 
     </div>
 </div>                        
@@ -267,7 +267,23 @@
             $('.mainCategory').trigger('change');
             setTimeout(changesub, 2000);            
         <?php endif ?>
+		
+		$(document).on('change', '.serviceCheck', function() {
+			disabledCheckedBox();
+		});
     });
+	
+	function disabledCheckedBox() {
+	  // Count the number of checked checkboxes
+	  var checkedCount = $('.serviceCheck:checked').length;
+
+	  // Disable or enable checkboxes based on the count
+	  if (checkedCount >= 3) {
+		$('.serviceCheck:not(:checked)').attr('disabled', true);
+	  } else {
+		$('.serviceCheck').attr('disabled', false);
+	  }
+	}
 
     function getSuggestedCategory(title){
         $.ajax({
@@ -317,5 +333,4 @@
             }
         });
     });
-
 </script>

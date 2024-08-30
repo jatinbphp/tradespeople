@@ -199,7 +199,6 @@ padding-top:25px;
  // if($this->session->userdata('type')==1){
 $settings = $this->db->where('id', 1)->get('admin_settings')->row();
 $settings2 = $this->db->where('id', 2)->get('admin_settings')->row();
-$paymentSettings = $this->common_model->get_all_data('admin');
 //print_r($settings);
  if($settings->banner == 'enable'){
 	 ?>
@@ -233,31 +232,27 @@ $paymentSettings = $this->common_model->get_all_data('admin');
 </div>
 </div>
 </div>
-
     <?php if($this->session->userdata('type')==1){?>
         <div class="col-lg-8  earn-bnts">
             <p>
                 <?php if($admin_settings[0]['payment_method'] == 1){?>
-                    <button id="myBtn_wallet" class="btn btn-warning btn-lg">Add to wallet</button>
+                    <button id="myBtn_wallet"class="btn btn-warning btn-lg">Add to wallet</button>
                 <?php }?>
                 <button id="myBtn" class="btn btn-warning btn-lg">Cash out</button>
             </p>
-            <!-- <p>Add your referral earnings to your wallet and use it to quote a job. </p> -->
-            <p>Add your earning to your wallet and use it to pay for job or withdraw it. If you want to cashout your earning must reach £<?php echo $min_cashout?>. <a href="<?php echo base_url('payout-request-list'); ?>"> View Payment</a> </p>
+            <p>Add your referral earnings to your wallet and use it to quote a job. </p>
         </div>
     <?php }?>
 
     <?php if($this->session->userdata('type')==2){?>
         <div class="col-lg-8  earn-bnts">
             <p>
-                <button id="myBtn_wallet" class="btn btn-warning btn-lg">Add to wallet</button>
+                <button id="myBtn_wallet"class="btn btn-warning btn-lg">Add to wallet</button>
                 <button id="myBtn" class="btn btn-warning btn-lg">Cash out</button>
             </p>
             <p>Add your earning to your wallet and use it to pay for job or withdraw it. If you want to cashout your earning must reach £<?php echo $min_cashout?>. <a href="<?php echo base_url('payout-request-list'); ?>"> View Payment</a> </p>
         </div>
     <?php }?>
-
-
 </div>
 </section>
 <div class="user-right-side">
@@ -272,15 +267,7 @@ $paymentSettings = $this->common_model->get_all_data('admin');
                     <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Job Title: activate to sort column ascending" style="width: 53.8889px;">Name</th>
                     <th style="width: 119.889px;" class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Category: activate to sort column ascending">User Type</th>
                     <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Posted By: activate to sort column ascending" style="width: 60.8889px;">Signed-up</th>
-                    <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Budget: activate to sort column ascending" style="width: 43.8889px;">
-                        <?php 
-                            if($paymentSettings[0]['payment_method'] == 1){
-                                echo 'Quote Provide/Received';
-                            }else{
-                                echo 'Milestone Released(£)';
-                            }
-                        ?>
-                    </th>
+                    <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Budget: activate to sort column ascending" style="width: 43.8889px;">Quote Provide/Received</th>
                     <th style="width: 96.8889px;" class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Postcode / Distance: activate to sort column ascending">Job Posted</th>
                     <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 37.8889px;">Earnings</th>
                     <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 37.8889px;">Referred Link</th> -->
@@ -380,7 +367,7 @@ $paymentSettings = $this->common_model->get_all_data('admin');
                             <input type="radio" name="account_details" value="Bank Transfer"> Send Payout to <?php echo $account_info->wd_bank; ?> bank <?php echo $account_info->wd_account; ?>
                         </label>
                     <?php }
-                        if($account_info->paypal_email_address!=''){
+                        if($account_info->wd_account!=''){
                             $b = 1; $paypal_email_address=$account_info->paypal_email_address; ?>
                                 <label class="radio-inline">
                                     <input type="radio" class="paypal_details" name="account_details" value="Paypal Transfer"> Send Payout to Paypal <?php echo $paypal_email_address?>
@@ -443,14 +430,11 @@ var btn = document.getElementById("myBtn");
 var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal 
-if(btn_wallet){
-	btn_wallet.onclick = function() {
-	  modal_wallet.style.display = "block";
-	}
+btn_wallet.onclick = function() {
+  modal_wallet.style.display = "block";
 }
 
 btn.onclick = function() {
-	console.log("d");
   modal.style.display = "block";
 }
 

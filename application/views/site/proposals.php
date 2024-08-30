@@ -50,8 +50,8 @@ var type = <?= $this->session->userdata('type'); ?>;
 				$col_sm_8 = 'col-sm-8';
 			} else {
       ?>
-        <!-- <div class="col-sm-1">
-        </div> -->
+        <div class="col-sm-1">
+        </div>
       <?php
 				$col_sm_8 = 'col-sm-10';
 			}
@@ -59,13 +59,6 @@ var type = <?= $this->session->userdata('type'); ?>;
 			<div class="<?php echo $col_sm_8; ?>">
 				<?php echo $this->session->flashdata('msg');  ?>
 				<?php echo $this->session->flashdata('msg2');  ?>
-
-				<?php 
-					if(!empty($_SESSION['quote_success'])){
-						echo $_SESSION['quote_success'];	
-					}
-				?>
-
 				<?php echo $this->session->flashdata('success1');  ?>
 				<?php if($this->session->flashdata('error1')) { ?>
 				<p class="alert alert-danger"><?php echo $this->session->flashdata('error1'); ?></p>
@@ -654,13 +647,8 @@ $(function(){
 									<?php } ?>
 																		
 									<?php if($a['status']==3){ ?>
-									<?php $today = date('Y-m-d H:i:s'); ?>
-									<?php $awarded_time = date('Y-m-d H:i:s',strtotime($a['awarded_date'])); ?>
-									<?php $revoke_time = date('Y-m-d  H:i:s',strtotime($awarded_time.'+24 hours')); ?>
-									
-									<?php if(strtotime($today) > strtotime($revoke_time) && $a['status'] != 7) { ?>
-									<a  class="btn btn-warning" href="<?php echo site_url('newPost/reject_award_homeowner/'.$a['id'].'/'.$a['job_id']); ?>" onclick="return confirm('Are you sure you want to cancel this awarded?');">Revoke </a>
-									<?php } ?> 
+										
+									<a  class="btn btn-warning" href="<?php echo site_url('newPost/reject_award_homeowner/'.$a['id'].'/'.$a['job_id']); ?>" onclick="return confirm('Are you sure you want to cancel this awarded?');">Revoke </a> 
 										
 									<?php if($a['hiring_type']==1){ ?>
 										
@@ -2095,9 +2083,6 @@ $('#View_profileman').on('hidden.bs.modal', function () {
 <script>
 $('.count_un_msg<?php echo $_GET['chat']; ?>').parent().click();
 </script>
-<?php 
-} 
-$_SESSION['quote_success'] = "";
- ?>
+<?php } ?>
 
 

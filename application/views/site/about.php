@@ -1,6 +1,5 @@
 <?php include ("include/header.php") 
 ?>
-
 <div class="home-page">
    <div class="home-demo first-home">
       <div class="owl-carousel banner-slider">
@@ -16,7 +15,7 @@
                            <div class="col-sm-7">
                               <div class="slice-text slice-text_home">
                                  <p class="nomargin headHead1">Connecting Homeowners To Dedicated Tradespeople</p>
-									<p>We´re the UK most reputable platform for connecting homeowner to tradespeople. We make the process of paying, finding and hiring local traders secure, seamless and stress-free.</p> 
+																 <p>We´re the UK most reputable platform for connecting homeowner to tradespeople. We make the process of paying, finding and hiring local traders secure, seamless and stress-free.</p> 
                               </div>
                            </div>
                         </div>

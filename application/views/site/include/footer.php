@@ -12,6 +12,23 @@
     font-size:18px;
     font-weight:500;
 }
+	
+.tt-menu {
+    width: 100%; /* Make the dropdown the same width as the input */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.tt-suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.tt-suggestion:hover {
+    background-color: #f0f0f0;
+}	
 </style>
 <div class="modal fade viewaccount"  role="dialog">
     <div class="modal-dialog">
@@ -2161,6 +2178,7 @@ $(document).ready(function(){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js">  
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.3.1/typeahead.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-ui-multidatespicker@1.6.6/jquery-ui.multidatespicker.js"></script>
  
 <script type="text/javascript">
@@ -2304,11 +2322,46 @@ $(document).ready(function(){
     variableWidth: true,
     adaptiveHeight: false,
   });
+	
+$(document).ready(function() {
+    var suggestions = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote: {
+            url: site_url + 'users/getPositiveKeywords?keyword=%QUERY',
+            wildcard: '%QUERY',
+            transform: function(response) {
+                console.log('Raw response:', response); // Debug raw response
+                return response.map(function(item) {
+                    return { value: item.value };
+                });
+            }
+        }
+    });
+
+    suggestions.initialize().done(function() {
+        console.log('Bloodhound initialized');
+    }).fail(function() {
+        console.log('Failed to initialize Bloodhound');
+    });
+
+    $('#positive_keywords').tagsinput({
+        maxTags: 5,
+        typeaheadjs: {
+            name: 'suggestions',
+            displayKey: 'value',
+            valueKey: 'value',
+            source: suggestions.ttAdapter()
+        }
+    });
+});
 
 
-  $('#positive_keywords').tagsinput({
-      maxTags: 5
-  });
+
+
+  /*$('#positive_keywords').tagsinput({
+     maxTags: 5
+  });*/
   
   $('#positive_keywords').on('beforeItemAdd', function(event) {
       var tag = event.item;
@@ -2368,7 +2421,13 @@ $(document).ready(function(){
         <?php if(isset($is_detail)): ?>
             sentence = "<span>Request for: <span class='text-info pull-right'>" + formattedDates.join(", ") + " from " + timeSlot + " to " + toTimeSlot + "</span></span>";
         <?php else: ?>
-            sentence = "<span>Not available on: <span class='text-info pull-right'>" + formattedDates.join(", ") + " from " + timeSlot + " to " + toTimeSlot + "</span></span>";
+			console.log(formattedDates);
+			if(formattedDates != "undefined NaNth to NaNth"){
+				sentence = "<span>Not available on: <span class='text-info pull-right'>From " + formattedDates.join(", ") + " " + timeSlot + " to " + toTimeSlot + "</span></span>";
+			}else{
+				sentence = "<span>Not available: <span class='text-info pull-right'>From " + timeSlot + " to " + toTimeSlot + "</span></span>";
+			}
+            
         <?php endif; ?>
     }
     return sentence;

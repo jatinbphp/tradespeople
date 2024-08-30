@@ -4,10 +4,9 @@ class Gen_html extends CI_Controller
 {
 	public function __construct() {
 		parent::__construct(); 
-		//date_default_timezone_set('Europe/London');
+		date_default_timezone_set('Europe/London');
 		$this->load->helper(array('form', 'url'));
 		$this->load->model('Common_model');
-		$this->load->model('My_model');
 		$this->check_login();
 		error_reporting(0);
 

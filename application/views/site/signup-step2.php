@@ -91,6 +91,7 @@ function signup2(){
 			success:function(resp){
 				if(resp.status==1){
 					//window.location.href = site_url+'email-verify';
+					// window.location.href = site_url + 'signup-step3';
 					window.location.href = site_url + 'signup-step4';
 				} else {
 					//alert('please select cetegory!');

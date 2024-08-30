@@ -356,20 +356,20 @@
 							</div>
 						</div>
 
-						<?php if($setting[0]['payment_method'] == 1){?>
+						<?php //if($setting[0]['payment_method'] == 1){?>
 							<!--<li>
 								<div class="title">Payment method</div>
 								<?php
-								$Payment_method = $this->common_model->GetColumnName('billing_details',array('user_id'=>$user_data['id']),array('is_payment_verify'));
-								if($Payment_method && $Payment_method['is_payment_verify'] == 1){ ?>
+								//$Payment_method = $this->common_model->GetColumnName('billing_details',array('user_id'=>$user_data['id']),array('is_payment_verify'));
+								//if($Payment_method && $Payment_method['is_payment_verify'] == 1){ ?>
 									<i class="fa fa-check" aria-hidden="true"></i>
 									<div class="sub-title">Verified</div>
-								<?php }else{ ?>
+								<?php //}else{ ?>
 									<i class="fa fa-times" aria-hidden="true"></i>
-									<div class="sub-title"><a href="<?php echo base_url('billing-info/?verify=1'); ?>">Payment Method</a></div>
-								<?php } ?>
+									<div class="sub-title"><a href="<?php //echo base_url('billing-info/?verify=1'); ?>">Payment Method</a></div>
+								<?php //} ?>
 							</li>-->
-						<?php }?>
+						<?php //}?>
 						
 					</ul>
 				</div>
@@ -596,7 +596,7 @@
 					<h2><strong>Active Orders</strong> </h2>
 				</div> 
 
-				<div class="row mb-5" id="OrderList">
+				<div class="row" id="OrderList">
 					<div class="col-sm-12">
 						<?php if(!empty($all_active_order) && count($all_active_order)): ?>
 							<div class="row">
@@ -670,7 +670,7 @@
 					<h2><strong>Recently Vied Services</strong> </h2>
 				</div>
 
-				<div class="row mb-5" id="recentlyView">
+				<div class="row" id="recentlyView">
 					<div class="col-sm-12">
 						<?php if(!empty($recently_viewed) && count($recently_viewed)): ?>
 							<div class="row">

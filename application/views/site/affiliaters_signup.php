@@ -139,7 +139,7 @@
 							<div class="col-md-12">
 							<label for="checkboxes-0">
 							  <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1" required>
-							   I agree to the <a href="<?php echo base_url('terms-and-conditions#Tac21'); ?>">Terms & Conditions</a>
+							   I agree to the <a href="<?php echo base_url('terms-and-conditions'); ?>">Terms & Conditions</a>
 							</label>
 							</div>
 						</div>

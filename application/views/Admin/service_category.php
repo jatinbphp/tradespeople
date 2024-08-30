@@ -509,7 +509,7 @@ if(!in_array(22,$my_access)) { redirect('Admin_dashboard'); }
                 $('#service_type_category').append(newOptions); // Append the new options
 
                 // Retain the previously selected options
-                $('#service_type_category').val(retainedOptions).trigger('change');
+                //$('#service_type_category').val(retainedOptions).trigger('change');
             } else {
                 $('#service_type_category').empty(); // Clear if no data
             }

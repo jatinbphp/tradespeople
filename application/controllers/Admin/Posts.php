@@ -4,10 +4,9 @@ class Posts extends CI_Controller
 {
 	public function __construct() {
 		parent::__construct(); 
-		//date_default_timezone_set('Europe/London');
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
 		$this->load->model('search_model');
-		$this->load->model('My_model');
 		$this->check_login();
 		$this->words = array('gmail.com','yahoo.com','yahoo','gmail','skype','hotmail','live','phone numbers','phone number','outlook','icloud mail','yahoo! mail','yahoo mail','aol mail','gmx','yandex','mail','lycos','protonmail','proton mail','tutanota','zoho mail','zohomail');
 		error_reporting(0);

@@ -109,7 +109,7 @@
                   <td><?php echo $lists['job_id']; ?></td>
                   <td><?php echo $lists['reason']; ?></td>
                   <td><a href="<?php echo base_url('details?post_id=' . $lists['job_id']) ?>" target="_blank"><i class="fa fa-eye"></i></a></td>
-                  <td><a href="javascript:void(0)" onclick="deleteJobReport(<?php echo $lists['id'] ?>,<?php echo $lists['job_id'] ?>)"><i class="fa fa-trash"></i></a></td>
+                  <td><a href="javascript:void(0)" onclick="deleteJobReport(<?php echo $lists['id'] ?>)"><i class="fa fa-trash"></i></a></td>
                 </tr>
             <?php }?>
               </tbody>
@@ -130,14 +130,13 @@
 <?php include_once 'include/footer.php';?>
 
 <script type="text/javascript">
-	function deleteJobReport(id,job_id) {
+	function deleteJobReport(id) {
 		if(confirm('Are you sure you want to remove?')){
 			$.ajax({
 				type:'POST',
 				url:site_url+'Admin/admin/remove_report_job',
 				data:{
 					id:id,
-                    job_id:job_id,
 				},
 				success:function(res){
 					toastr.success('Report job successfully deleted');

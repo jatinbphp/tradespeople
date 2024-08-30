@@ -105,15 +105,7 @@ foreach($settings as $setting){
 										<div class="col-sm-12">
 											<!-- Text input-->
 											<div class="form-group">
-												<label class="col-md-7 control-label" for="">
-													<?php 
-														if($paymentSettings[0]['payment_method'] == 0){
-															echo 'Minimum Milestone Release';
-														}else{
-															echo 'No. of quotes a job must receives to earn';
-														}
-													?>
-												</label>  
+												<label class="col-md-7 control-label" for="">No. of quotes a job must receives to earn</label>  
 												<div class="col-md-5">
 													<input  name="min_quotes_received_m" placeholder="" class="form-control input-md" type="number" step="1" min="0" value="<?php echo $min_quotes_received_homeowner_m;?>" required >
                                         
@@ -126,15 +118,7 @@ foreach($settings as $setting){
 										<div class="col-sm-12">
 											<!-- Text input-->
 											<div class="form-group">
-												<label class="col-md-7 control-label" for="">
-													<?php 
-														if($paymentSettings[0]['payment_method'] == 0){
-															echo 'Amount to earn after milestore release';
-														}else{
-															echo 'Amount to earn after job post receive quotes';
-														}
-													?>
-												</label>
+												<label class="col-md-7 control-label" for="">Amount to earn after job post receive quotes</label>  
 												<div class="col-md-5">
 													<div class="input-group">
 														<span class="input-group-addon">£</span>
@@ -155,15 +139,7 @@ foreach($settings as $setting){
 										<div class="col-sm-12">
 											<!-- Text input-->
 											<div class="form-group">
-												<label class="col-md-7 control-label" for="">
-													<?php 
-														if($paymentSettings[0]['payment_method'] == 0){
-															echo 'Minimum Milestone Release';
-														}else{
-															echo 'No. of quotes a trade must provide to earn';
-														}
-													?>
-												</label>
+												<label class="col-md-7 control-label" for="">No. of quotes a trade must provide to earn</label>  
 												<div class="col-md-5">
 													<input  name="min_quotes_approved_m" placeholder="" class="form-control input-md" type="number" step="1" min="0" value="<?php echo $min_quotes_approved_tradsman_m;?>" required >
                                         
@@ -176,15 +152,7 @@ foreach($settings as $setting){
 										<div class="col-sm-12">
 											<!-- Text input-->
 											<div class="form-group">
-												<label class="col-md-7 control-label" for="">
-													<?php 
-														if($paymentSettings[0]['payment_method'] == 0){
-															echo 'Amount to earn after milestone release';
-														}else{
-															echo 'Amount to receive after a trade provide quotes';
-														}
-													?>
-												</label>
+												<label class="col-md-7 control-label" for="">Amount to receive after a trade  provide quotes</label>  
 												<div class="col-md-5">
 													<div class="input-group">
 														<span class="input-group-addon">£</span>

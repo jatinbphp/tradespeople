@@ -2,11 +2,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Cron extends CI_Controller
 {
-	public $common_model;
-	public $show_budget;
-	public $db;
 	public function __construct() {
-		parent::__construct();
+		parent::__construct(); 
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
 		//error_reporting(0);
 		
@@ -25,73 +23,86 @@ class Cron extends CI_Controller
 	public function cron(){
 		//$this->auto_upgrade_plan();
 		
-		//$this->update_awarded_job();
+		$this->update_awarded_job();
 		$this->send_mail_to_repost();
 		//$this->common_model->send_mail('anil.webwiders@gmail.com','test','test');
 	}
 
 	public function update_ticket_status()
-  	{
+  {
   	
-	    $tecketsList = $this->common_model->get_all_data('admin_chats', ['ticket_status'=>0]);
-	    
+    $tecketsList = $this->common_model->get_all_data('admin_chats', ['ticket_status'=>0]);
+    
 
-	  	foreach ($tecketsList as $key => $ticket) {
-		    $chats = $this->common_model->GetSingleData('admin_chat_details', array('admin_chat_id' => $ticket['id']), 'id', 'desc');
-		    if(!empty($chats)){
+  	foreach ($tecketsList as $key => $ticket) {
+	    $chats = $this->common_model->GetSingleData('admin_chat_details', array('admin_chat_id' => $ticket['id']), 'id', 'desc');
+	    if(!empty($chats)){
 
-		    	if($chats['is_admin']==1){
-		    		$time = date('Y-m-d H:i:s');
-		    	
-		    		$expaire = date('Y-m-d H:i:s', strtotime($chats['create_time'].' + 48 hours'));
-		    		if(strtotime($time) > strtotime($expaire)){
+	    	if($chats['is_admin']==1){
+	    		$time = date('Y-m-d H:i:s');
+	    	
+	    		$expaire = date('Y-m-d H:i:s', strtotime($chats['create_time'].' + 48 hours'));
+	    		if(strtotime($time) > strtotime($expaire)){
 
-		    			$user =  $this->common_model->GetSingleData('users', array('id' => $chats['receiver_id']));
+	    			$user =  $this->common_model->GetSingleData('users', array('id' => $chats['receiver_id']));
 
-		    			$this->common_model->update('admin_chats', array('id' => $ticket['id']), ['ticket_status'=>1]);
+	    			$this->common_model->update('admin_chats', array('id' => $ticket['id']), ['ticket_status'=>1]);
 
-						$subject = 'Your support ticket is now closed : '.$ticket['ticket_id'];
-						$content = '<p style="margin:0;padding:10px 0px">Hi ' .$user['f_name'] .',</p>';
-						$content .= '<p style="margin:0;padding:10px 0px">A solution was proposed for your support ticket '.$ticket['ticket_id'].' few days ago.</p>';
-						$content .= '<p style="margin:0;padding:10px 0px">As we have not received a response, we have now closed the ticket. However should you require further assistance, please create a new support ticket.</p>';
+					$subject = 'Your support ticket is now closed : '.$ticket['ticket_id'];
+					$content = '<p style="margin:0;padding:10px 0px">Hi ' .$user['f_name'] .',</p>';
+					$content .= '<p style="margin:0;padding:10px 0px">A solution was proposed for your support ticket '.$ticket['ticket_id'].' few days ago.</p>';
+					$content .= '<p style="margin:0;padding:10px 0px">As we have not received a response, we have now closed the ticket. However should you require further assistance, please create a new support ticket.</p>';
 
-						if($user['type']==1){ //tradsman
-						$content .= '<p style="margin:0;padding:10px 0px">Visit our tradespeople help page or contact our customer service if you have any specific questions using our service.</p>';
-						}else if($user['type']==2){ //homeowner
-						$content .= '<p style="margin:0;padding:10px 0px">Visit our homeowner help page or contact our customer service if you have any specific questions using our service.</p>';
-						}else if($user['type']==3){ //affiliate
-							$content .= '<p style="margin:0;padding:10px 0px">Contact our customer service if you have any specific questions using our service.</p>';
-						}
+					if($user['type']==1){ //tradsman
+					$content .= '<p style="margin:0;padding:10px 0px">Visit our tradespeople help page or contact our customer service if you have any specific questions using our service.</p>';
+					}else if($user['type']==2){ //homeowner
+					$content .= '<p style="margin:0;padding:10px 0px">Visit our homeowner help page or contact our customer service if you have any specific questions using our service.</p>';
+					}
 
-						$this->common_model->send_mail($user['email'], $subject, $content);
+					$this->common_model->send_mail($user['email'], $subject, $content);
 
 
-		    		}
+	    		}
 
 
-		    	}
+	    	}
 
-	  		
+  		
 
 
-		    }
-	  		
-	  	}
-
-		// exit('test');
-
+	    }
+  		
   	}
+
+// exit('test');
+
+  }
 	
+	public function test(){
+		
+		/*$jobs = $this->common_model->GetColumnName('tbl_jobs',null,array('job_id','post_code'),true);
+		foreach($jobs as $key => $row){
+			$check_postcode = $this->common_model->check_postalcode($row['post_code']);
+			$insert = array();
+			
+			$insert['longitude'] = $check_postcode['longitude'];
+			$insert['latitude'] = $check_postcode['latitude'];
+			$insert['city'] = $check_postcode['primary_care_trust'];
+			$insert['address'] = $check_postcode['address'];
+			$insert['country']  = $check_postcode['country'];
+			
+			$this->common_model->update('tbl_jobs',array('job_id'=>$row['job_id']),$insert); 
+		}
+	*/
+	}
 	
 	public function send_post_job_email(){
 		
 		//echo '<pre>';
 		$jobs = $this->common_model->GetColumnName('tbl_jobs',array('is_email_sent'=>0,'direct_hired'=>0),null,true); 
-
 		if(!empty($jobs)){
-
 			foreach($jobs as $key => $row){
-
+				
 				$job_id = $row['job_id'];
 				$user_id = $row['userid'];
 				$title = $row['title'];
@@ -121,7 +132,6 @@ class Cron extends CI_Controller
 				
 				$post_code2 = str_replace(" ","",$post_code1);
 				
-
 				if($longitude && $latitude){
 
 					// if($check_postcode['status']==1)
@@ -138,8 +148,7 @@ class Cron extends CI_Controller
 					if($run->num_rows() > 0){
 						
 						$trades = $run->result_array();
-						
-						print_r($trades);
+					
 					
 						//$this->load->model('send_sms');
 
@@ -156,8 +165,35 @@ class Cron extends CI_Controller
 						$shortLink = $respSLJ->url->shortLink;
 						
 						//$sms = $userdataaa['f_name']." ".$userdataaa['l_name']." posted a new job. View & Quote now! \r\n".$shortLink."\r\n\r\nTradespeoplehub.co.uk";
-						$this->common_model->update('tbl_jobs',array('job_id'=>$job_id),array('is_email_sent'=>1)); 
+						
 						foreach($trades as $key => $value){
+							
+							/*$insertn = array(); 
+							$insertn['nt_userId']=$value['id'];
+							$insertn['nt_message']= $userdataaa['f_name'].' '.$userdataaa['l_name'].' posted a new job. <a href="'.site_url().'details/?post_id='.$json['job_id'].'">View & Quote now!</a>';
+							$insertn['nt_satus']=0;
+							$insertn['nt_create']=date('Y-m-d H:i:s');
+							$insertn['nt_update']=date('Y-m-d H:i:s');
+							$insertn['job_id']=$json['job_id'];
+							$run2 = $this->common_model->insert('notification',$insertn);
+							
+							$today_sms = $this->common_model->get_data_count('daily_sms_records',array('date'=>date('Y-m-d'),'user_id'=>$value['id']),'id');
+							
+							if($today_sms <= 0){
+								$has_sms_noti = $this->common_model->check_sms_notification($value['id']);
+								
+								if($has_sms_noti){
+									
+									//$delivered = $this->send_sms->send_india($has_sms_noti['phone_no'],$sms);
+									$delivered = $this->send_sms->send($has_sms_noti['phone_no'],$sms);
+									if($delivered){
+										
+										$this->common_model->update('user_plans',array('up_user'=>$value['id']),array('used_sms_notification'=>$has_sms_noti['used_sms_notification']));
+										
+										$this->common_model->insert('daily_sms_records',array('user_id'=>$value['id'],'date'=>date('Y-m-d')));
+									}
+								}
+							}*/
 							
 							$subject = "New ".$cateName['cat_name']." Job Posted: ".$city.": Quote now!";
 							
@@ -177,12 +213,11 @@ class Cron extends CI_Controller
 							
 							$html .= '<br><br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 							
-							//$sent = $this->common_model->send_mail($value['email'],$subject,$html);
 							$sent = $this->common_model->send_mail($value['email'],$subject,$html);
-							
+						
 						}
 					}
-					
+					$this->common_model->update('tbl_jobs',array('job_id'=>$job_id),array('is_email_sent'=>1)); 
 				}
 			}
 		}
@@ -200,6 +235,7 @@ class Cron extends CI_Controller
 			
 		}
 	}
+	
 	
 	public function provide_feedback_reminder_homeowner(){
 		
@@ -296,8 +332,7 @@ class Cron extends CI_Controller
 	}
 	
 	public function create_milestone_reminder(){
-		//$where = "total_milestone_amount = 0 and (status=7 or status = 3)";
-		$where = "(status=7 or status = 3)";
+		$where = "total_milestone_amount = 0 and (status=7 or status = 3)";
 		$posts = $this->common_model->GetColumnName('tbl_jobpost_bids',$where,array('job_id','awarded_date','bid_amount','delivery_days'),true);
 		//echo '<pre>'; print_r($posts); echo '</pre>';
 		if(count($posts) >= 0){
@@ -305,7 +340,6 @@ class Cron extends CI_Controller
 			foreach($posts as $list) {
 				
 				$job_data = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$list['job_id']),array('job_id','userid','title','awarded_to','awarded_time'));
-				
 				
 				$awarded_date = date('Y-m-d H:i:s',strtotime($job_data['awarded_time']));
 				
@@ -395,7 +429,7 @@ class Cron extends CI_Controller
 						$status = 7;
 					}
 				}
-				 
+				
 				if($check){
 					
 					$homeOwner = $this->common_model->GetColumnName('users', array('id' =>$job_data['userid']),array('f_name','l_name','email'));
@@ -417,15 +451,12 @@ class Cron extends CI_Controller
 					
 					$html .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
 					
-					if($homeOwner) {
-						$runs1=$this->common_model->send_mail($homeOwner['email'],$subject,$html);
-						
-						$this->common_model->insert('last_email_records',array('user'=>$job_data['userid'],'type'=>$status,'reference_id'=>$job_data['job_id'],'last_date'=>date('Y-m-d H:i:s')));
-					}
+					$runs1=$this->common_model->send_mail($homeOwner['email'],$subject,$html);
 					
+					$this->common_model->insert('last_email_records',array('user'=>$job_data['userid'],'type'=>$status,'reference_id'=>$job_data['job_id'],'last_date'=>date('Y-m-d H:i:s')));
 					
 				}
-				
+			
 			}
 		}
 	}
@@ -472,12 +503,9 @@ class Cron extends CI_Controller
 							$html .= '<br><p style="margin:0;padding:10px 0px">We suggest not making decisions on price alone. Read their profiles, previous works and feedback to help you decide who to hire.</p>';
 							
 							$html .= '<br><p style="margin:0;padding:10px 0px">Visit our Homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($homeOwner)
-							{
-								$runs1=$this->common_model->send_mail($homeOwner['email'],$subject,$html);
-								$this->common_model->insert('last_email_records',array('user'=>$list['userid'],'type'=>6,'reference_id'=>$list['job_id'],'last_date'=>date('Y-m-d H:i:s')));
-							}
 							
+							$runs1=$this->common_model->send_mail($homeOwner['email'],$subject,$html);
+							$this->common_model->insert('last_email_records',array('user'=>$list['userid'],'type'=>6,'reference_id'=>$list['job_id'],'last_date'=>date('Y-m-d H:i:s')));
 						}			
 					}
 				}
@@ -517,10 +545,10 @@ class Cron extends CI_Controller
 					</tr>';
 		return $html;
 	}
-		
+	
+	
 	public function job_post_reminder_if_visited(){
 		$today = date('Y-m-d');
-		$setting = $this->common_model->get_all_data('admin');
 	
 		$yesterday = date('Y-m-d',strtotime($today.' -7 day'));
 		
@@ -590,9 +618,8 @@ class Cron extends CI_Controller
 						$html .= '</table>';
 						
 						$html .= '<br><br><p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
-						if($setting[0]['payment_method'] == 1){
-							$sent = $this->common_model->send_mail($trade['email'],$subject,$html);	
-						}						
+						
+						$sent = $this->common_model->send_mail($trade['email'],$subject,$html);
 					}
 					}
 				}
@@ -615,7 +642,7 @@ class Cron extends CI_Controller
 		$sql = "SELECT `id`, `f_name`, `l_name`, `email` FROM `users` WHERE `type` = 1 AND `free_trial_taken` = 0 AND `u_email_verify` = 1 AND `is_pay_as_you_go` = 0 AND cdate <= '".$newTime."'";
 		
 		$query = $this->db->query($sql);
-		$setting = $this->common_model->get_all_data('admin');
+		
 		if($query->num_rows() > 0){
 			
 			$data = $query->result_array();
@@ -624,7 +651,7 @@ class Cron extends CI_Controller
 				
 				$last_email_records = $this->common_model->GetColumnName('last_email_records',array('user'=>$value['id'],'type'=>3,'reference_id'=>0),array('last_date','id'));
 			
-				if($last_email_records==false){
+				if($last_email_records==false){ 
 				
 					$this->common_model->insert('last_email_records',array('user'=>$value['id'],'type'=>3,'reference_id'=>0,'last_date'=>date('Y-m-d H:i:s')));
 				
@@ -636,38 +663,40 @@ class Cron extends CI_Controller
 					
 					$html .= '<p style="margin:0;padding:10px 0px">Don\'t miss the chance to grow your business by completing your free trial sign up today. It merely takes a few minutes to complete. </p>';
 					
+					
 					$html .= '<br><div style="text-align:center"><a href="'.site_url().'membership-plans" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Complete Your Free Trial Now</a></div><br>';
 					
 					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-					if($value)
-					{
-						if($setting[0]['payment_method'] == 1){
-							$sent = $this->common_model->send_mail($value['email'],$subject,$html);
-						}
-					}
+					
+					$sent = $this->common_model->send_mail($value['email'],$subject,$html);
+					
+					
 				}
 			}
+			
 		}
+		
 	}
-
+	
 	public function check_disput_reply12(){
 		$today = date('Y-m-d H:i:s');
 		//$today = date('Y-m-d H:i:s');
 		//$newTime = date('Y-m-d H:i:s',strtotime($today.' +59 min'));
 		$newTime2 = date('Y-m-d H:i:s',strtotime($today.' +59 second'));
 		
-		//$sql = "select tbl_dispute.ds_id, (select dct_id from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$newTime2."') and DATE(end_time) >= DATE('".$newTime."')) as dct_id from tbl_dispute where ds_status = 0 and (select count(dct_id) from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$newTime2."') and DATE(end_time) >= DATE('".$newTime."')) > 0";is_reply_pending
+		//$sql = "select tbl_dispute.ds_id, (select dct_id from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$newTime2."') and DATE(end_time) >= DATE('".$newTime."')) as dct_id from tbl_dispute where ds_status = 0 and (select count(dct_id) from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$newTime2."') and DATE(end_time) >= DATE('".$newTime."')) > 0";
 		
-	// $sql = "select tbl_dispute.ds_id, (select dct_id from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$today."')) as dct_id from tbl_dispute where ds_status = 0 and (select count(dct_id) from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$today."')) > 0";
+		$sql = "select tbl_dispute.ds_id, (select dct_id from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$today."')) as dct_id from tbl_dispute where ds_status = 0 and (select count(dct_id) from disput_conversation_tbl where disput_conversation_tbl.dct_disputid = tbl_dispute.ds_id and is_reply_pending=1 and DATE(end_time) <= DATE('".$today."')) > 0";
 		
 		$query = $this->db->query($sql);
-
+		
 		if($query->num_rows()>0){
 			foreach($query->result_array() as $key => $value){
 				
+				//echo '<pre>';print_r($value);echo '</pre>';die;
+				
 				$conversation = $this->common_model->get_single_data('disput_conversation_tbl',array('dct_id'=>$value['dct_id']));
 				$disput = $this->common_model->get_single_data('tbl_dispute',array('ds_id'=>$value['ds_id']));
-				
 				if($conversation['message_to']==$disput['ds_buser_id']){
 					$favorId = $disput['ds_puser_id'];
 					$massage = 'Dispute is resolved because homeowner do not reply of dispute.';
@@ -676,10 +705,9 @@ class Cron extends CI_Controller
 					$massage = 'Dispute is resolved because tradesman do not reply of dispute.';
 				}
 				
-				
-				$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$value['ds_id']."'","tbl_milestones.*",true);
+				$milestone = $this->common_model->get_single_data('tbl_milestones',array('id'=>$disput['mile_id']));
 					
-				$job_id = $disput['ds_job_id'];
+				$job_id = $milestone['post_id'];
 
 				$tradesman = $disput['ds_buser_id'];
 					
@@ -687,88 +715,49 @@ class Cron extends CI_Controller
 					
 				$dispute_ids = $disput['ds_id'];
 					
+				$mile_id = $disput['mile_id'];
 
-				$home = $this->common_model->GetColumnName('users',array('id'=>$homeowner),array('f_name','id','l_name','email','trading_name','u_wallet'));
-					
-				$trades = $this->common_model->GetColumnName('users',array('id'=>$tradesman),array('f_name','id','l_name','email','trading_name','u_wallet','withdrawable_balance'));
-
-				$favo = $this->common_model->GetColumnName('users',array('id'=>$favorId),array('f_name','l_name','email','trading_name','u_wallet'));
-
-				if($tradesman==$favorId){
-					$lose_user  = $home;
-				} else {
-					$lose_user  = $trades;
-				}
-
-				//$run = $this->common_model->update_data('disput_conversation_tbl',array('dct_id'=>$value['dct_id']),array('dct_isfinal'=>1));
-
-				$favo_usename = ($favo['type']==1) ? $favo['trading_name'] : $favo['f_name'].' '.$favo['l_name'];
-				$lost_username = ($lose_user['type']==1) ? $lose_user['trading_name'] : $lose_user['f_name'].' '.$lose_user['l_name'];
-				
-				
-
-				$message1 = '<p>Dispute has been resolved and is now closed.</p><p>Reason: Failure for '.$lost_username.' to pay the arbitration fee within the time limit provided has closed the dispute in favor of '.$favo_usename.'. </p>';
-
-				$insert = [];
-				$insert['dct_disputid']=$dispute_ids;
-				$insert['dct_userid']=-1;
-				$insert['dct_msg']=$message1;
-				$insert['dct_isfinal']=1;
-
-				//echo '<pre>';print_r($insert);echo '</pre>';continue;
-
-				$run = $this->common_model->insert('disput_conversation_tbl',$insert);	
+				$run = $this->common_model->update_data('disput_conversation_tbl',array('dct_id'=>$value['dct_id']),array('dct_isfinal'=>1));	
 					
 				if($run){
-
-					foreach($milestones as $milestone){
-						$bid_update = [];
-						$bid_update['status'] = 6;
-						$where = "id = '" . $milestone['id'] . "'";
-			
-						$this->common_model->update('tbl_milestones', $where, $bid_update);
-					}
+						
+					$bid_update['status']=6;  
+						
+					$where = "id = '".$mile_id."' and status = '5'";
+						
+					$this->common_model->update('tbl_milestones',$where,$bid_update);
 						
 					$disput_update['ds_status']=1;
 					$disput_update['ds_favour']=$favorId;
 
+					$run1 = $this->common_model->update('tbl_dispute',array('ds_id'=>$dispute_ids),$disput_update);
 						
+					$home = $this->common_model->GetColumnName('users',array('id'=>$homeowner),array('f_name','id','l_name','email','trading_name','u_wallet'));
 					
+					$trades = $this->common_model->GetColumnName('users',array('id'=>$tradesman),array('f_name','id','l_name','email','trading_name','u_wallet','withdrawable_balance'));
+					
+					$favo = $this->common_model->GetColumnName('users',array('id'=>$favorId),array('f_name','l_name','email','trading_name','u_wallet'));
 					
 					$openedBy = $this->common_model->GetColumnName('users',array('id'=>$disput['disputed_by']),array('f_name','l_name','email','trading_name','u_wallet'));
 					
-					
-					/*if ($disput['last_offer_by'] == $trades['id'] && $disput['tradesmen_offer']) {
-						$amount = $disput['tradesmen_offer'];
-					} else if ($disput['last_offer_by'] == $home['id'] && $disput['homeowner_offer']) {
-						$amount = $disput['homeowner_offer'];
-					} else {
-						$amount = $disput['total_amount'];
-					}*/
-
-					$amount = $disput['total_amount'];
-
-					$disput_update['agreed_amount'] = $amount;
-					$disput_update['caseCloseStatus'] = 1;
-
-					$run1 = $this->common_model->update('tbl_dispute',array('ds_id'=>$dispute_ids),$disput_update);
-
+					$amount = $milestone['milestone_amount'];
 					
 					$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time','commision'));
 					
-					$get_job_post = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$job_id),array('title'));
+					$get_job_post = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$milestone['post_id']),array('title'));
 							
 					if($tradesman==$favorId){
 								
 						$commision=$setting['commision'];
 								
-						$get_post_job = $this->common_model->GetColumnName('tbl_jobpost_bids',array('id'=>$milestones[0]['bid_id']),array('paid_total_miles','bid_amount','id','bid_by','job_id','posted_by','job_id','job_id','id'));				
+						$get_post_job = $this->common_model->GetColumnName('tbl_jobpost_bids',array('id'=>$milestone['bid_id']),array('paid_total_miles','bid_amount','id','bid_by','job_id','posted_by','job_id','job_id'));
+					
 						
 								
 						$pamnt = $get_post_job['paid_total_miles'];
 						$final_amount = $pamnt + $amount;
 								
-						$sql3 = "update tbl_jobpost_bids set paid_total_miles = '".$final_amount."' where id = '".$get_post_job['id']."'";
+						$sql3 = "update tbl_jobpost_bids set paid_total_miles = '".$final_amount."' where id = '".$milestone['bid_id']."'";
 						$this->db->query($sql3);
 
 
@@ -782,13 +771,11 @@ class Cron extends CI_Controller
 						//$update1['u_wallet']=$u_wallet+$amounts;
 						$update1['withdrawable_balance']=$withdrawable_balance+$amounts;
 							
-						foreach($milestones as $milestone){
-							$this->common_model->update('tbl_milestones',array('id'=>$milestone['id']),array('is_dispute_to_traders'=>1,'admin_commission'=>$commision));
-						}
+						$this->common_model->update('tbl_milestones',array('id'=>$mile_id),array('is_dispute_to_traders'=>1,'admin_commission'=>$commision));
 								
 						if($final_amount >= $get_post_job['bid_amount']) {
 									
-							$runss12 = $this->common_model->update_data('tbl_jobs',array('job_id'=>$job_id),array('status'=>5));
+							$runss12 = $this->common_model->update_data('tbl_jobs',array('job_id'=>$milestone['post_id']),array('status'=>5));
 									
 							$runss123 = $this->common_model->update_data('tbl_jobpost_bids',array('id'=>$get_post_job['id']),array('status'=>4));
 									
@@ -820,11 +807,7 @@ class Cron extends CI_Controller
 							
 							$html .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
 							
-							if($home)
-							{
-								$runs1=$this->common_model->send_mail($home['email'],$subject,$html);
-							}
-							
+							$runs1=$this->common_model->send_mail($home['email'],$subject,$html);
 							/*mail to homeOwner*/
 							
 							
@@ -834,18 +817,14 @@ class Cron extends CI_Controller
 							
 							$html .= '<p style="margin:0;padding:10px 0px">Hi '.$trades['f_name'].',</p>';
 							
-							$html .= '<p style="margin:0;padding:10px 0px">Congratulations for completing the job “'.$post_title.'”! Your milestone payments has now been released and can be withdrawn. </p>';
+							$html .= '<p style="margin:0;padding:10px 0px">Congratulations for completing the job “'.$post_titlepost_title.'”! Your milestone payments has now been released and can be withdrawn. </p>';
 							$html .= '<p style="margin:0;padding:10px 0px">Please leave feedback for '.$home['f_name'].' to help other Tradespeoplehub members know what it was like to work with them.</p>';
 							
 							$html .= '<div style="text-align:center"><a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none"> Leave feedback</a></div>';
 							
 							$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 							
-							if($trades)
-							{
-								$runs1=$this->common_model->send_mail($trades['email'],$subject,$html);
-							}
-							
+							$runs1=$this->common_model->send_mail($trades['email'],$subject,$html);
 									
 							$insertn1['nt_userId']=$get_post_job['posted_by'];
 							$insertn1['nt_message']='Congratulation this project has been completed successfully. You have released all the milestone amount of <a href="'.site_url().'payments/?post_id='.$get_post_job['job_id'].'"> '.$post_title.'</a> project and this project has been completed. Now you can go for rating by <a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'">clicking here</a>.';
@@ -879,11 +858,12 @@ class Cron extends CI_Controller
 								
 					}
 							
-					
+					$runss1 = $this->common_model->update_data('users',array('id'=>$favorId),$update1);
+						
+					$jon_name = $this->common_model->update_data('users',array('id'=>$favorId),$update1);
 							
 					$transactionid = md5(rand(1000,999).time());
-					//$tr_message= '£'.$amounts.' has been credited to your wallet as the <a href="'. site_url('dispute/'.$value['ds_id']).'">Dispute Case ID: '.$disput['caseid'].'</a> in favour of you and £'.$amounts.' was decided in your favour.';
-					$tr_message= '£'.$amounts.' credited to your wallet as Case ID: '.$disput['caseid'].' was decided in your favour.';
+					$tr_message= 'Dispute team has resolved the <a href="'. site_url('dispute/'.$mile_id.'/'.$job_id).'">'.$milestone['milestone_name'].' milestone dispute</a> in favour of you and £'.$amounts.' has been credited in your wallet</b>';
 					$data1 = array(
 						'tr_userid'=>$favorId, 
 						'tr_amount'=>$amounts,
@@ -895,83 +875,9 @@ class Cron extends CI_Controller
 						'tr_update' =>date('Y-m-d H:i:s')
 					);
 					$this->common_model->insert('transactions',$data1);
-
-					$checkStepIn = $this->common_model->GetColumnName('ask_admin_to_step', array('user_id' => $favorId,'dispute_id'=>$value['ds_id']), array('amount'));
-					if($checkStepIn){
-
-						$disput_update111['caseCloseStatus'] = 3;
-
-						$this->common_model->update('tbl_dispute',array('ds_id'=>$dispute_ids),$disput_update111);
-
-						$data1 = array(
-							'tr_userid' => $favorId,
-							'tr_amount' => $checkStepIn['amount'],
-							'tr_type' => 1,
-							'tr_transactionId' => md5(rand(1000, 999) . time()),
-							'tr_message' => '£' . $checkStepIn['amount'] . ' arbitration fee has been credited to your wallet for winning the dispute.',
-							'tr_status' => 1,
-							'tr_created' => date('Y-m-d H:i:s'),
-							'tr_update' => date('Y-m-d H:i:s')
-						);
-						$this->common_model->insert('transactions', $data1);
-
-						$update1['u_wallet']=$update1['u_wallet']+$checkStepIn['amount'];
-						if(isset($update1['withdrawable_balance'])){
-							$update1['withdrawable_balance']=$update1['withdrawable_balance']+$checkStepIn['amount'];
-						}
-
-						$insertn = [];
-						$insertn['nt_userId'] = $disput['ds_puser_id'];
-						
-						$insertn['nt_message'] = 'Milestone payment dispute has automatically closed as the arbitration fee wasn\'t paid before the deadline. <a href="'.site_url().'dispute/'.$disput['ds_id'].'">View & Respond</a>';
-			
-						$insertn['nt_satus'] = 0;
-						$insertn['nt_apstatus'] = 2;
-						$insertn['nt_create'] = date('Y-m-d H:i:s');
-						$insertn['nt_update'] = date('Y-m-d H:i:s');
-						$insertn['job_id'] = $disput['ds_job_id'];
-						$insertn['posted_by'] = $disput['ds_puser_id'];
-						$this->common_model->insert('notification', $insertn);
-							
-						$insertn = [];
-						$insertn['nt_userId'] = $disput['ds_buser_id'];
-						
-						$insertn['nt_message'] = 'Milestone payment dispute has automatically closed as the arbitration fee wasn\'t paid before the deadline. <a href="'.site_url().'dispute/'.$disput['ds_id'].'">View Now</a>';
-			
-						$insertn['nt_satus'] = 0;
-						$insertn['nt_apstatus'] = 2;
-						$insertn['nt_create'] = date('Y-m-d H:i:s');
-						$insertn['nt_update'] = date('Y-m-d H:i:s');
-						$insertn['job_id'] = $disput['ds_job_id'];
-						$insertn['posted_by'] = $disput['ds_puser_id'];
-						$this->common_model->insert('notification', $insertn);
-
-						if($trades['id']!=$favorId){
-							$subject = "Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
-							$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $trades['f_name'] . '</p>';
-							$contant .= '<br><p style="margin:0;padding:10px 0px">The milestone dispute between you and '.$home['f_name'].' '.$home['l_name'].' has automatically closed because we didn\'t receive your arbitration before '. date('d-m-y h:i A',strtotime($conversation['end_time'])) .'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
-							$contant .= '<br><p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
-							$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-							$this->common_model->send_mail($trades['email'], $subject, $contant); //send to trademen
-						}
-						
-
-						if($home['id']!=$favorId){
-							$subject = "Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
-							$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $home['f_name'] . '</p>';
-							$contant .= '<br><p style="margin:0;padding:10px 0px">The milestone dispute between you and '.$trades['trading_name'].' has automatically closed because we did not receive your arbitration before '. date('d-m-y h:i A',strtotime($conversation['end_time'])) .'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
-							$contant .= '<br><p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
-							$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
-							$this->common_model->send_mail($home['email'], $subject, $contant); // send to home
-						}
-					}
-
-					$this->common_model->update_data('users',array('id'=>$favorId),$update1);
-
-
 					
 					$insertn4['nt_userId']=$home['id'];
-					$insertn4['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$value['ds_id']).'">View outcome!</a>';
+					$insertn4['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$mile_id.'/'.$job_id).'">View outcome!</a>';
 							
 					$insertn4['nt_satus']=0;
 					$insertn4['nt_apstatus']=0;
@@ -982,7 +888,7 @@ class Cron extends CI_Controller
 					$this->common_model->insert('notification',$insertn4);
 					
 					$insertn5['nt_userId']=$trades['id'];
-					$insertn5['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$value['ds_id']).'">View outcome!</a>';
+					$insertn5['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$mile_id.'/'.$job_id).'">View outcome!</a>';
 							
 					$insertn5['nt_satus']=0;
 					$insertn5['nt_apstatus']=0;
@@ -991,77 +897,48 @@ class Cron extends CI_Controller
 					$insertn5['job_id']=$job_id;
 					$insertn5['posted_by']=0;
 					$this->common_model->insert('notification',$insertn5);
-
-
-					if($trades['id']==$favorId){ //when tradesmen paid fee and homeowner not paid
 							
 							
-						if($trades)
-						{
-							$subject =" Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
-						
-							$contant .= '<p style="margin:0;padding:10px 0px">Hi '.$trades['f_name'].',</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">The milestone dispute between you and '.$home['f_name'].' '.$home['l_name'].' has automatically closed as we didn\'t receive '.$home['f_name'].' '.$home['l_name'].' arbitration fees before '.date('d M Y h:i:s A',strtotime($conversation['end_time'])).'. Any funds associated with this payment that were previously unavailable are now available.</p>';
-							
-							//$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$amount.'</p>';
-							//$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$disput['dct_msg'].'</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-							$this->common_model->send_mail($trades['email'],$subject,$contant);
-						}
-						
-						if($home)
-						{
-							$subject ="Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
-							$contant = '<p style="margin:0;padding:10px 0px">Hi '.$home['f_name'].',</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">The milestone dispute between you and '.$trades['trading_name'].' has automatically closed because we did not receive your arbitration fees before '.date('d M Y',strtotime($conversation['end_time'])).'. Any funds associated with this payment that were previously made available, are now unavailable.</p>';
-							
-							//$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$amount.'</p>';
-							//$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$disput['dct_msg'].'</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
-						
-							$this->common_model->send_mail($home['email'],$subject,$contant);
-						}
-
-					} else { //when tradesmen not paid fee and homeowner paid
-
-						if($trades)
-						{
-							$subject ="Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
-						
-							$contant = '<p style="margin:0;padding:10px 0px">Hi '.$trades['f_name'].',</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">The milestone dispute between you and '.$home['f_name'].' '.$home['l_name'].' has automatically closed as we didn\'t receive your arbitration fees before '.date('d M Y h:i:s A',strtotime($conversation['end_time'])).'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
-							
-							//$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$amount.'</p>';
-							//$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$disput['dct_msg'].'</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-							$this->common_model->send_mail($trades['email'],$subject,$contant);
-						}
-						
-						if($home)
-						{
-							$subject ="Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
-							$contant = '<p style="margin:0;padding:10px 0px">Hi '.$home['f_name'].',</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">The milestone dispute between you and '.$trades['trading_name'].' has automatically closed as we did not receive '.$trades['trading_name'].' arbitration fees before '.date('d M Y',strtotime($conversation['end_time'])).'. Any funds associated with this payment that were previously made unvailable, are now available.</p>';
-							
-							//$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$amount.'</p>';
-							//$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$disput['dct_msg'].'</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
-							$contant .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
-						
-							$this->common_model->send_mail($home['email'],$subject,$contant);
-						}
-
+					$subject ="Milestone payment dispute has been automatically closed, Job: ".$get_job_post['title'];
+			
+					$contant = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Milestone dispute closed automatically! </p>';
+					
+					if($conversation['message_to']==$tradesman){
+						$ename = 'you didn\'t';
+					} else {
+						$ename = 'homeowner does\'t';
 					}
 					
+					$contant .= '<p style="margin:0;padding:10px 0px">Hi '.$trades['f_name'].',</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">The case which homeowner '.$openedBy['f_name'].' opened concerning a milestone payment to you has automatically closed because '.$ename.' respond before '.date('d M Y h:i:s A',strtotime($conversation['end_time'])).'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$amount.'</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$disput['dct_msg'].'</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
+
+					$this->common_model->send_mail($trades['email'],$subject,$contant);
+					
+					$contant = '<p style="margin:0;padding:10px 0px">Milestone dispute closed automatically! </p>';
+					
+					if($conversation['message_to']==$homeowner){
+						$ename = 'you didn\'t';
+					} else {
+						$ename = 'trademen does\'t';
+					}
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">Hi '.$home['f_name'].',</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">The case which '.$openedBy['f_name'].' opened concerning a milestone payment to you has automatically closed because '.$ename.' respond before '.date('d M Y',strtotime($conversation['end_time'])).'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$amount.'</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$disput['dct_msg'].'</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
+
+					$this->common_model->send_mail($home['email'],$subject,$contant);
 							
 					//$this->release_milestone($job_id,$dispute_finel_user);
 				}
@@ -1095,7 +972,7 @@ class Cron extends CI_Controller
 				if($last_email_records==false){
 				
 					$disput = $this->common_model->get_single_data('tbl_dispute',array('ds_id'=>$value['ds_id']));
-					$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$value['ds_id']."'","tbl_milestones.*",true);
+					$milestone = $this->common_model->get_single_data('tbl_milestones',array('id'=>$disput['mile_id']));
 					
 					if($conversation['message_to']==$disput['ds_buser_id']){
 						$favorId = $disput['ds_puser_id'];
@@ -1103,16 +980,17 @@ class Cron extends CI_Controller
 						$favorId = $disput['ds_buser_id'];
 					}
 					
-					$job_id = $disput['ds_job_id'];
+					$job_id = $milestone['post_id'];
 					
-			
+					$mile_id = $disput['mile_id'];
+				
 					$favo = $this->common_model->GetColumnName('users',array('id'=>$favorId),array('f_name','l_name','type','trading_name'));
 					
 					$userdata = $this->common_model->GetColumnName('users',array('id'=>$user_id),array('f_name','l_name','email','type'));
 					
 					$get_job_post = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$job_id),array('title'));
 					
-					
+					$mile_data = $this->common_model->GetColumnName('tbl_milestones',array('id'=>$mile_id),array('milestone_amount'));
 					
 					if($userdata['type']==1){
 					
@@ -1125,19 +1003,15 @@ class Cron extends CI_Controller
 						$html .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$favo['f_name'].' '.$favo['l_name'].' has responded to your claim on the milestone payment dispute, but have not yet got your reply on their viewpoint. </p>';
 						
 						$html .= '<p style="margin:0;padding:5px 0px">Job: '.$get_job_post['title'].'</p>';
-
-						$html .= '<p style="margin:0;padding:5px 0px">Milestone Dispute Amount: £'.$disput['total_amount'].'</p>';
+						$html .= '<p style="margin:0;padding:5px 0px">Milestone Dispute Amount: £'.$mile_data['milestone_amount'].'</p>';
 						
 						$html .= '<p style="margin:0;padding:10px 0px">Your participation is essential to the claims process. If we don\'t receive a response from you before '.date('d-m-Y H:i:s',strtotime($conversation['end_time'])).' this case will be closed and decided in the '.$favo['f_name'].' favour. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
 						
 						$html .= '<br><div style="text-align:center"><a href="'.site_url().'payments/?post_id='.$job_id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View & Respond Now</a></div><br>';
 						
 						$html .= '<p style="margin:0;padding:10px 0px">Visit our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
-						if($userdata)
-						{
-							$runs1=$this->common_model->send_mail($userdata['email'],$subject,$html);
-						}
 						
+						$runs1=$this->common_model->send_mail($userdata['email'],$subject,$html);
 					
 					} else {
 						
@@ -1150,7 +1024,7 @@ class Cron extends CI_Controller
 						$html .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$favo['trading_name'].' has responded to your claim on the milestone payment dispute, but have not yet got your reply on their viewpoint.</p>';
 						
 						$html .= '<p style="margin:0;padding:0px 0px">Job: '.$get_job_post['title'].'</p>';
-						$html .= '<p style="margin:0;padding:0px 0px">Milestone Dispute Amount: £'.$disput['total_amount'].'</p>';
+						$html .= '<p style="margin:0;padding:0px 0px">Milestone Dispute Amount: £'.$mile_data['milestone_amount'].'</p>';
 						
 						$html .= '<p style="margin:0;padding:10px 0px">Your participation is essential to the claims process. If we don\'t receive a response from you before '.date('d-m-Y H:i:s',strtotime($conversation['end_time'])).'  this case will be closed and decided in the '.$favo['trading_name'].'  favour. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
 						
@@ -1158,11 +1032,7 @@ class Cron extends CI_Controller
 						
 						$html .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
 						
-						if($userdata)
-						{
-							$runs1=$this->common_model->send_mail($userdata['email'],$subject,$html);
-						}
-						
+						$runs1=$this->common_model->send_mail($userdata['email'],$subject,$html);
 						
 					}
 					
@@ -1175,7 +1045,7 @@ class Cron extends CI_Controller
 	}
 	
 	public function send_miles_notifications(){
-		//die;
+		die;
 		$bids = $this->common_model->GetColumnName('tbl_jobpost_bids',array('miles_noti_status_to_home'=>0,'status'=>7),array('update_date','posted_by','id','miles_noti_status_by_trades','job_id'),true);
 		
 		$current = date('Y-m-d H:i:s');
@@ -1206,11 +1076,7 @@ class Cron extends CI_Controller
 					
 						$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Release milestone</p><p style="margin:0;padding:10px 0px">Release the milestone for the job <a href="'.site_url().'payments/?post_id='.$bid['job_id'].'"> '.$post_data['title'].'</a>.<p><a href="'.site_url().'reviews/?post_id='.$bid['job_id'].'">click here</a> to release milestone now.</p></p><div style="text-align:center"><a href="'.site_url().'payments/?post_id='.$bid['job_id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Open job now</a></div>';
 						
-						if($has_email_noti)
-						{
-							$sent = $this->common_model->send_mail($has_email_noti['email'],$subject,$html);
-						}
-						
+						$sent = $this->common_model->send_mail($has_email_noti['email'],$subject,$html);
 					}
 					
 					$update['update_date'] = date('Y-m-d H:i:s');
@@ -1224,40 +1090,40 @@ class Cron extends CI_Controller
 		}
 	}
 
-  	public function auto_upgrade_plan(){
-   		$today = date('Y-m-d'); //Y-m-d 23:
+  public function auto_upgrade_plan(){
+    $today = date('Y-m-d'); //Y-m-d 23:
 	
-	    $today = date('Y-m-d',strtotime($today.' +5 minutes'));
-			
-		/*$myfile = fopen("cronFiles/".$today."-auto_upgrade_plan.txt", "w") or die("Unable to open file!");
+    $today = date('Y-m-d',strtotime($today.' +5 minutes'));
+		
+		$myfile = fopen("cronFiles/".$today."-auto_upgrade_plan.txt", "w") or die("Unable to open file!");
 		$currentTime = date('Y-m-d H:i:s');
 		$txt = ' / '.$currentTime;
 		$txt .= date('Y-m-d H:i:s',strtotime($currentTime.' +5 minutes'));
 		fwrite($myfile, $txt);
-		fclose($myfile);*/
+		fclose($myfile);
 
 		
-	    // $plans = $this->common_model->newgetRows('user_plans',"auto_update = 1 and DATE(up_enddate) < DATE('".$today."')");
-	    $this->db->query("SET sql_mode = ''");
-	    $plans = $this->db->where("auto_update", 1);
-	    //$this->db->where('up_user', 11);
-	    $this->db->where('DATE(up_enddate)  <', $today);
-	    $this->db->order_by('up_id', 'desc');
-	    $this->db->group_by('up_user');
-	    $plans = $this->db->get('user_plans');
-	    $plans = $plans->result_array();
+    // $plans = $this->common_model->newgetRows('user_plans',"auto_update = 1 and DATE(up_enddate) < DATE('".$today."')");
+    $this->db->query("SET sql_mode = ''");
+    $plans = $this->db->where("auto_update", 1);
+    //$this->db->where('up_user', 11);
+    $this->db->where('DATE(up_enddate)  <', $today);
+    $this->db->order_by('up_id', 'desc');
+    $this->db->group_by('up_user');
+    $plans = $this->db->get('user_plans');
+    $plans = $plans->result_array();
 
 		//echo '<pre>'; 
 		//echo '<pre>'; print_r($plans); exit();
-    	if(count($plans)>0){
-      		require_once('application/libraries/stripe-php-7.49.0/init.php');
+    if(count($plans)>0){
+      require_once('application/libraries/stripe-php-7.49.0/init.php');
 			$secret_key = $this->config->item('stripe_secret');
 			
 			\Stripe\Stripe::setApiKey($secret_key);
 
-      		foreach($plans as $key => $value){
+      foreach($plans as $key => $value){
 
-      		// echo '<pre>'; print_r($value);  continue;
+      	// echo '<pre>'; print_r($value);  continue;
 				
 				$last_email_records = $this->common_model->GetColumnName('last_email_records',array('user'=>$value['up_user'],'type'=>21),array('last_date','id','reference_id'));
 			
@@ -1302,7 +1168,12 @@ class Cron extends CI_Controller
 						}
 					}
 					
-			 $user_data = $this->common_model->GetColumnName('users',array('id'=>$value['up_user']),array('f_name','l_name','email','id','u_wallet'));
+			
+				
+				
+					
+
+					$user_data = $this->common_model->GetColumnName('users',array('id'=>$value['up_user']),array('f_name','l_name','email','id','u_wallet'));
 					
 					//print_r($value) ;
 					//print_r($user_data) ;
@@ -1342,7 +1213,7 @@ class Cron extends CI_Controller
 									$this->common_model->update('users',array('id'=>$user_data['id']),array('u_wallet'=>$wallet));
 									//insert in transactions history
 									$insert['tr_userid'] = $user_data['id'];
-									$insert['tr_message'] = 'Your subcription plan of amount £'.$plan_detail['amount'].' has been renewed and you have been rewarded £'.$plan_detail['reward_amount'].' of '.$plan_detail['package_name']. 'plan.';
+									$insert['tr_message'] = 'Your subcription plan of amount <i class="fa fa-gbp"></i>'.$plan_detail['amount'].' has been renewed and you have been rewarded <i class="fa fa-gbp"></i>'.$plan_detail['reward_amount'].' of '.$plan_detail['package_name']. 'plan.';
 									$insert['tr_amount'] = $plan_detail['amount'];
 									$insert['tr_transactionId'] = $traId;
 									$insert['tr_status'] = $status;
@@ -1351,7 +1222,7 @@ class Cron extends CI_Controller
 									$insert['tr_paid_by']='Stripe';
 								}else{
 									$insert['tr_userid'] = $user_data['id'];
-									$insert['tr_message'] = 'Your subcription plan of amount £'.$plan_detail['amount'].' has been renewed';
+									$insert['tr_message'] = 'Your subcription plan of amount <i class="fa fa-gbp"></i>'.$plan_detail['amount'].' has been renewed';
 									$insert['tr_amount'] = $plan_detail['amount'];
 									$insert['tr_transactionId'] = $traId;
 									$insert['tr_status'] = $status;
@@ -1413,11 +1284,7 @@ class Cron extends CI_Controller
 								$html .= '<p style="margin:0;padding:10px 0px">Now maybe a good time to upgrade to a higher plan so you can enjoy more awesome features.</p>';
 								$html .= '<p style="margin:0;padding:10px 0px">View our Tradesperson Help page or contact our customer services if you have any specific questions using our service.</p>';
 
-								if($user_data)
-								{
-									$sent = $this->common_model->send_mail($user_data['email'],$subject,$html);
-								}
-								
+								$sent = $this->common_model->send_mail($user_data['email'],$subject,$html);
 								
 								$this->common_model->delete(array('user'=>$value['up_user'],'type'=>21),'last_email_records');
 							}
@@ -1463,11 +1330,7 @@ class Cron extends CI_Controller
 							$html .= '<a href="'.site_url().'billing-info/?verify=1" style="margin-left: 25%; background-color:#fe8a0f;color:#fff;padding:5px 15px; text-align:center; line-height:25px; border-radius:3px; font-size:12px; text-decoration:none">Update Payment Info </a>';
 							$html .= '<p style="margin:0;padding:10px 0px">View our Tradesperson Help page or contact our customer services if you have any specific questions using our service.</p>';
 
-							if($user_data)
-							{
-								$sent = $this->common_model->send_mail($user_data['email'], $subject, $html);
-							}
-							
+							$sent = $this->common_model->send_mail($user_data['email'], $subject, $html);
 
 							$nt_message = 'Unable to renew your monthly subscription plan. <a href="'.site_url().'billing-info/?verify=1">Please update your card!</a>';
 							$this->common_model->insert_notification($user_data['id'],$nt_message);
@@ -1487,11 +1350,11 @@ class Cron extends CI_Controller
 				
 				
 			}
-    	}
-  	}
+    }
+  }
 
 	public function send_payment_verification_remiders(){
-		//die;
+		die;
 		$where = "type = 1 and u_email_verify = 1 and (select count(id) from billing_details where billing_details.user_id = users.id) = 0";
 		
 		$users = $this->common_model->GetColumnName('users',$where,array('f_name','l_name','email'),true);
@@ -1505,25 +1368,21 @@ class Cron extends CI_Controller
 			<p style="margin:0;padding:10px 0px">Hello '.$name.', this is mail to inform you that your payment method documents are still unverified.</p>
 			<p style="margin:0;padding:10px 0px">For the better experience with Tradespeople Hub	 verify your payment method as soon as possible and enjoy your free trial.</p>';
 			
-			if($email)
-			{
-				$this->common_model->send_mail($email,$subject,$html);
-			}
-			
+			$this->common_model->send_mail($email,$subject,$html);
 						
 		}
 		
 	}
 
-  	public function send_document_verification_remiders(){
+  public function send_document_verification_remiders(){
     
 		//$where = "type = 1 and u_email_verify = 1 and (is_phone_verified = 0 or u_status_insure = 0 or u_status_add = 0 or u_id_card_status = 0)";
 		$where = "type = 1 and free_trial_taken = 0 and u_wallet = 0 and is_pay_as_you_go = 0 and u_id_card_status = 0 and u_email_verify = 1";
 		
 
-    	$users = $this->common_model->GetColumnName('users',$where,array('id','f_name','l_name','email','is_phone_verified','u_email_verify','u_status_insure','u_status_add','u_id_card_status'),true);
+    $users = $this->common_model->GetColumnName('users',$where,array('id','f_name','l_name','email','is_phone_verified','u_email_verify','u_status_insure','u_status_add','u_id_card_status'),true);
 
-    	foreach($users as $key => $value){
+    foreach($users as $key => $value){
 			
 			$last_email_records = $this->common_model->GetColumnName('last_email_records',array('user'=>$value['id'],'type'=>24),array('last_date','id','reference_id'));
 			
@@ -1583,11 +1442,7 @@ class Cron extends CI_Controller
 
 				$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
 
-				if($email)
-				{
-					$this->common_model->send_mail($email, $subject, $html);
-				}
-				
+				$this->common_model->send_mail($email, $subject, $html);
 				
 			 
 				if($last_email_records){
@@ -1597,8 +1452,8 @@ class Cron extends CI_Controller
 					$this->common_model->insert('last_email_records',array('user'=>$value['id'],'type'=>24,'reference_id'=>1,'last_date'=>date('Y-m-d H:i:s')));
 				}
 			}
-    	}
-  	}
+    }
+  }
 
 	public function send_mail_to_repost(){
 		$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('closed_date'));
@@ -1649,11 +1504,7 @@ class Cron extends CI_Controller
 						
 						$html .= '<br><p style="margin:0;padding:10px 0px">Visit our homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
 						
-						if($homeOwner)
-						{
-							$this->common_model->send_mail($homeOwner['email'],$subject,$html);
-						}
-						
+						$this->common_model->send_mail($homeOwner['email'],$subject,$html);
 						
 						$this->common_model->insert('last_email_records',array('user'=>$list['userid'],'type'=>5,'reference_id'=>$list['job_id'],'last_date'=>date('Y-m-d H:i:s')));
 						
@@ -1685,7 +1536,7 @@ class Cron extends CI_Controller
 		$newTime3 = date('Y-m-d',strtotime($today.' -3 days'));
 		
 		$get_all_job = $this->common_model->get_all_data('tbl_dispute',array('ds_status'=>0));
-
+		
 		if(count($get_all_job) > 0){
 		
 			foreach($get_all_job as $key => $row){
@@ -1693,7 +1544,6 @@ class Cron extends CI_Controller
 				$dipute_by = $row['disputed_by'];
 				
 				$dipute_to = ($dipute_by==$row['ds_buser_id'])?$row['ds_puser_id']:$row['ds_buser_id']; 
-				
 				 
 				$create_date = date('Y-m-d',strtotime($row['ds_create_date']));
 				
@@ -1701,83 +1551,22 @@ class Cron extends CI_Controller
 				
 				$check = $this->common_model->get_single_data('disput_conversation_tbl',array('dct_disputid'=>$row['ds_id'],'dct_userid'=>$dipute_to));
 				
-				
-
-				if(!$check){
-
+				if($check==false){
 					
 					$DisputeBy=$this->common_model->GetColumnName('users',array('id'=>$dipute_by),array('f_name','l_name','email','trading_name','u_wallet'));
 					
 					$DisputeTo=$this->common_model->GetColumnName('users',array('id'=>$dipute_to),array('f_name','l_name','email','trading_name','u_wallet','type'));
-
 					
-					$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$row['ds_id']."'","tbl_milestones.*",true);
+					$milestone = $this->common_model->GetColumnName('tbl_milestones',array('id'=>$row['mile_id']),array('post_id','milestone_amount','milestone_name'));
 					
-					$job_id = $row['ds_job_id'];
+					$job_id = $milestone['post_id'];
 					
 					$get_job_post = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$job_id),array('title'));
-
-					if(strtotime($newTime1) == strtotime($create_date)){
-						if($DisputeTo['type']==1){
+					
+					if($newTime1 == $create_date){
 						
-							$subject ="Reminder: Your response to the Milestone Payment Dispute is required.";
-				
-							//$contant = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Milestone dispute closed automatically!</p>';
-							
-							$contant = '<p style="margin:0;padding:10px 0px">Reminder - Your Milestone Payment to '.$DisputeBy['f_name'].' is being Disputed and requires your response!</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Hi '.$DisputeTo['f_name'].',</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$DisputeBy['f_name'].' opened a dispute on your Milestone payment.</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$row['total_amount'].'</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$row['ds_comment'].'</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Your participation is essential to the claims process. If we don\'t receive a response from you before '.date('d M Y h:i:s A',strtotime($replyTime)).' this case will be closed and decided in the '.$DisputeBy['f_name'].' favour.</p>';
-							
-							$contant .= '<br><div style="text-align:center"><a href="'.site_url().'payments/?post_id='.$job_id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View & Respond Now</a></div><br>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within '.date('d M Y h:i:s A',strtotime($replyTime)).' will result in closing this case and deciding in the '.$DisputeBy['f_name'].'.  Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p><br>';
-							
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($DisputeTo)
-							{
-								$send = $this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
-
-							}
-							
-						} else {
-							
-							$subject ="Reminder: Your response to the Milestone Payment Dispute is required.";
-			
-							//$contant = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Milestone dispute closed automatically!</p>';
-							
-							$contant = '<p style="margin:0;padding:10px 0px">Your Milestone Payment to '.$DisputeBy['trading_name'].' is being Disputed and requires your response!</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Hi '.$DisputeTo['f_name'].',</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$DisputeBy['trading_name'].' opened a dispute on your Milestone payment.</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$row['total_amount'].'</p>';
-							
-							//$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$row['ds_comment'].'</p>';
-							
-							$contant .= '<p style="margin:0;padding:10px 0px">Your participation is essential to the claims process. If we don\'t receive a response from you before '.date('d M Y h:i:s A',strtotime($replyTime)).' this case will be closed and decided in favour of '.$DisputeBy['trading_name'].'. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
-							
-							$contant .= '<br><div style="text-align:center"><a href="'.site_url().'payments/?post_id='.$job_id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View & Respond Now</a></div><br>';
-							
 						
-							$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($DisputeTo)
-							{
-								$send = $this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
-							}
-						}
-						
-					} 
-					if(strtotime($newTime2) == strtotime($create_date)){
+					} else if($newTime2 == $create_date){
 						
 						if($DisputeTo['type']==1){
 						
@@ -1791,7 +1580,7 @@ class Cron extends CI_Controller
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$DisputeBy['f_name'].' opened a dispute on your Milestone payment.</p>';
 							
-							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$row['total_amount'].'</p>';
+							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$milestone['milestone_amount'].'</p>';
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$row['ds_comment'].'</p>';
 							
@@ -1803,10 +1592,8 @@ class Cron extends CI_Controller
 							
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($DisputeTo)
-							{
-								$send = $this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
-							}
+
+							$this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
 							
 						} else {
 							
@@ -1820,7 +1607,7 @@ class Cron extends CI_Controller
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$DisputeBy['trading_name'].' opened a dispute on your Milestone payment.</p>';
 							
-							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$row['total_amount'].'</p>';
+							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$milestone['milestone_amount'].'</p>';
 							
 							//$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$row['ds_comment'].'</p>';
 							
@@ -1830,16 +1617,12 @@ class Cron extends CI_Controller
 							
 						
 							$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($DisputeTo)
-							{
-								$send = $this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
-							}
+
+							$this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
 						}
 						
-					}
-					if(strtotime($newTime3) == strtotime($create_date)){
+					} else if($newTime3 == $create_date){
 						
-						$DisputeTo=$this->common_model->GetColumnName('users',array('id'=>$dipute_to),array('f_name','l_name','email','trading_name','u_wallet','type'));
 						if($DisputeTo['type']==1){
 						
 							$subject = "Final Reminder: Action required for Milestone Payment Dispute, “".$get_job_post['title']."”";
@@ -1852,7 +1635,7 @@ class Cron extends CI_Controller
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$DisputeBy['f_name'].' opened a dispute on the Milestone payment.</p>';
 							
-							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$row['total_amount'].'</p>';
+							$contant .= '<p style="margin:0;padding:10px 0px">Milestone Dispute Amount: £'.$milestone['milestone_amount'].'</p>';
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">Dispute Reason: '.$row['ds_comment'].'</p>';
 							
@@ -1864,10 +1647,8 @@ class Cron extends CI_Controller
 							
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($DisputeTo)
-							{
-								$send = $this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
-							}
+
+							$this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
 						
 						} else {
 							$subject = "Reminder: Your response to the Milestone Payment Dispute is required.";
@@ -1881,7 +1662,7 @@ class Cron extends CI_Controller
 							$contant .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$DisputeBy['trading_name'].' opened a dispute on your Milestone payment.</p>';
 							
 							$contant .= '<p style="margin:0;padding:0px 0px">Job: '.$get_job_post['title'].'</p>';
-							$contant .= '<p style="margin:0;padding:0px 0px">Milestone Dispute Amount: £'.$row['total_amount'].'</p>';
+							$contant .= '<p style="margin:0;padding:0px 0px">Milestone Dispute Amount: £'.$milestone['milestone_amount'].'</p>';
 							
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">Your participation and response is essential to the claims process. If we don\'t receive a response from you before '.date('d M Y h:i:s A',strtotime($replyTime)).' this case will be closed and decided in favour of '.$DisputeBy['trading_name'].'. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
@@ -1891,361 +1672,14 @@ class Cron extends CI_Controller
 							
 							
 							$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($DisputeTo)
-							{
-								$send = $this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
-							}
-							
+
+							$this->common_model->send_mail($DisputeTo['email'],$subject,$contant);
 						}
 					}
-
 				}
 			}
 		}
 	}
-	
-  public function check_disput_arbitration(){
-	$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('arbitration_fee_deadline','commision'));
-	
-	  $today = date('Y-m-d H:i:s');
-	  
-	 $newTime = date('Y-m-d H:i:s',strtotime($today.' -'.$setting['arbitration_fee_deadline'].' days'));
-	 
-	  $get_all_job = $this->common_model->get_all_data('tbl_dispute',array('ds_status'=>0));
-	  
-	  if(count($get_all_job) > 0){
-		
-		foreach($get_all_job as $key => $row){
-			
-            $dipute_by = $row['disputed_by'];
-				
-		    $dipute_to = $row['dispute_to']; 
-				
-		   $replyTime = date('Y-m-d H:i:s',strtotime($create_date.' +'.$setting['arbitration_fee_deadline'].' days'));
-			
- //   $check = $this->common_model->get_single_data('disput_conversation_tbl',array('dct_disputid'=>$row['ds_id'],'dct_userid'=>$dipute_to));
- //echo $this->db->last_query();
-//print_r($check);			
-			
-	$get_all_abbri = $this->common_model->get_all_data('disput_conversation_tbl',array('dct_disputid'=>$row['ds_id'],'dct_userid'=>'-1','is_reply_pending'=>1,'dct_isfinal'=>0));		
-// $this->db->last_query();
-//print_r($get_all_abbri);	
-//	die();
-			if(count($get_all_abbri)==1){
-				foreach($get_all_abbri as $key => $res){
-                 $create_date = date('Y-m-d H:i:s',strtotime($res['dct_created']));
-
-			  $milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$row['ds_id']."'","tbl_milestones.*",true);
-	
-$dispute = $this->common_model->get_single_data('tbl_dispute', array('ds_id' => $res['dct_disputid']));
-				
-				if(strtotime($newTime) > strtotime($create_date)){
-					   
-					    $job_id = $row['ds_job_id'];
-                        
-					 	$tradesman = $row['ds_buser_id'];
-						
-						$homeowner = $row['ds_puser_id'];
-						
-						$dispute_ids = $row['ds_id'];
-						
-						$dispute_finel_user = $dipute_by;
-					
-                        $home = $this->common_model->get_userDataByid($homeowner);
-			             $trades = $this->common_model->get_userDataByid($tradesman);
-			             $favo = $this->common_model->get_userDataByid($dispute_finel_user);
-						
-					 //print_r($dispute); die();
-			$trdname = ($trades['trading_name']!='') ? $trades['trading_name'] : $trades['f_name'] . ' ' . $trades['l_name'];		
-                    if($dipute_by==$tradesman){
-						$massage = 'Dispute resolved and decided in the favour of '.$trdname.' as '.$home['f_name'].' '.$home['l_name'].' failed to pay the arbitration before the deadline.';
-						} else {
-							$massage = 'Dispute resolved and decided in the favour of '.$home['f_name'].' '.$home['l_name'].' as '.$trdname.' failed to pay the arbitration before the deadline.';
-						}
-
-		$insert['dct_disputid'] = $dispute_ids;
-		$insert['dct_userid'] = 0;
-		$insert['dct_msg'] = $massage;
-		$insert['dct_isfinal'] = 1;
-
-		$run = $this->common_model->insert('disput_conversation_tbl', $insert);
-
-		if ($run) {
-
-			foreach ($milestones as $milestone) {
-				$bid_update = [];
-				$bid_update['status'] = 6;
-				$where = "id = '" . $milestone['id'] . "'";
-
-				$this->common_model->update('tbl_milestones', $where, $bid_update);
-			}
-
-            $disput_update['ds_status'] = 1;
-			$disput_update['ds_favour'] = $dispute_finel_user;
-
-            $amount = $dispute['total_amount'];
-			
-            $disput_update['agreed_amount'] = $amount;
-			$disput_update['caseCloseStatus'] = 4;
-			
-            $get_post_job = $this->common_model->get_single_data('tbl_jobpost_bids', array('id' => $milestones[0]['bid_id']));
-
-			$run1 = $this->common_model->update('tbl_dispute', array('ds_id' => $dispute_ids), $disput_update);
-		
-		
-			
-           if ($trades['id'] == $dispute_finel_user) {
-
-				$get_commision = $this->common_model->get_single_data('admin', array('id' => 1));
-
-				$commision = $get_commision['commision'];
-
-			 	$get_job_details = $this->common_model->get_single_data('tbl_jobs', array('job_id' => $job_id));
-
-				$pamnt = $get_post_job['paid_total_miles'];
-				$final_amount = $pamnt + $amount;
-
-				$sql3 = "update tbl_jobpost_bids set paid_total_miles = '" . $final_amount . "' where id = '" . $milestone['bid_id'] . "'";
-				$this->db->query($sql3);
-
-
-				$total = ($amount * $commision) / 100;
-
-				$amounts = $amount - $total;
-
-				$u_wallet = $trades['u_wallet'];
-				//$update1['u_wallet']=$u_wallet+$amounts;
-
-				$withdrawable_balance = $trades['withdrawable_balance'];
-				$update1['withdrawable_balance'] = $withdrawable_balance + $amounts;
-
-				foreach ($milestones as $milestone) {
-
-					$this->common_model->update('tbl_milestones', array('id' => $milestone['id']), array('is_dispute_to_traders' => 1, 'admin_commission' => $commision));
-				}
-			   
-			   
-			 	$total_milestone =  $this->common_model->get_total_milestone($job_id);
-            $completed_milestone =  $this->common_model->get_completed_milestone($job_id);
-if($total_milestone==$completed_milestone){
-	$runss12 = $this->common_model->update_data('tbl_jobs',array('job_id'=>$job_id),array('status'=>5));
-	$runss123 = $this->common_model->update_data('tbl_jobpost_bids',array('id'=>$get_post_job['id']),array('status'=>4)); 
-}
-  
-
-
-				if ($final_amount >= $get_post_job['bid_amount']) {
-
-					$post_title = $get_job_details['title'];
-					
-                //         $update_jobs['status'] = 5;
-	//$runss12 = $this->common_model->update_data('tbl_jobs', array('job_id' => $job_id), $update_jobs);
-    
-//	$update_bids['status'] = 4;		
-//	$runss123 = $this->common_model->update_data('tbl_jobpost_bids', array('id' => $get_post_job['id']), $update_bids); 
-
-					
-					$subject = "Congratulations on Completing the Job: “" . $post_title . "”";
-
-					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Congratulations! Job completed and Milestone payment released.</p>';
-
-					$html .= '<p style="margin:0;padding:10px 0px">Hi ' . $trades['f_name'] . ',</p>';
-
-					$html .= '<p style="margin:0;padding:10px 0px">Congratulations for completing the job “' . $post_title . '”! Your milestone payments has now been released and can be withdrawn. </p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Please leave feedback for ' . $home['f_name'] . ' to help other Tradespeoplehub members know what it was like to work with them.</p>';
-
-					$html .= '<div style="text-align:center"><a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none"> Leave feedback</a></div>';
-
-					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-					$runs1 = $this->common_model->send_mail($trades['email'], $subject, $html, null, null, 'support');
-
-
-					$subject = "Congratulations on Job Completion: “" . $post_title . "”";
-
-					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Congratulations! Your Job completed and Milestone payments released.</p>';
-
-					$html .= '<p style="margin:0;padding:10px 0px">Hi ' . $home['f_name'] . ',</p>';
-
-					$html .= '<p style="margin:0;padding:10px 0px">Congratulations! Your Job “' . $post_title . '”! completed successfully and milestone payments released to ' . $trades['trading_name'] . '.</p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Please leave feedback to ' . $trades['trading_name'] . ' to help other Tradespeoplehub members know what it was like to work with them.</p>';
-
-					$html .= '<div style="text-align:center"><a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Leave feedback</a></div>';
-
-					$html .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-					$runs1 = $this->common_model->send_mail($home['email'], $subject, $html, null, null, 'support');
-
-
-					$insertn1['nt_userId'] = $get_post_job['posted_by'];
-					// $insertn1['nt_message']='Congratulation this project has been completed successfully.You have released all the milestone amount of <a href="'.site_url().'payments/?post_id='.$get_post_job['job_id'].'"> '.$post_title.'</a> project and this project has been completed. Now you can go for rating by <a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'">clicking here</a>.';
-					$insertn1['nt_message'] = 'Congratulations! Your job has been completed. <a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '">Rate ' . $trades['trading_name'] . '!</a>';
-
-					$insertn1['nt_satus'] = 0;
-					$insertn1['nt_apstatus'] = 2;
-					$insertn1['nt_create'] = date('Y-m-d H:i:s');
-					$insertn1['nt_update'] = date('Y-m-d H:i:s');
-					$insertn1['job_id'] = $get_post_job['job_id'];
-					$insertn1['posted_by'] = 0;
-					$action_id 	 =    $get_post_job['job_id'] ;
-					$action      =	'Dispute_closed';
-                    $title       =	'Dispute Close';	
-                    $sender_id      =   $tradesman;
-                    $receive_id 	=	$homeowner;
-					$action_data	=	array('user_id'=>$sender_id, 'other_user_id'=>$receive_id, 'job_id'=>$action_id, 'action_id'=>$action_id, 'action'=>$action);
-					$action_json = json_encode($action_data);
-					$insertn1['action_json'] = $action_json;
-					$insertn1['action'] = $action;
-                    $insertn1['action_id'] = $action_id; 
-					$this->common_model->insert('notification', $insertn1);
-
-					$insertn2['nt_userId'] = $get_post_job['bid_by'];
-					$insertn2['nt_message'] = 'Congratulations for your recent job completion! Please rate <a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '">' . $home['f_name'] . ' ' . $home['l_name'] . '.</a>';
-
-					$insertn2['nt_satus'] = 0;
-					$insertn2['nt_apstatus'] = 2;
-					$insertn2['nt_create'] = date('Y-m-d H:i:s');
-					$insertn2['nt_update'] = date('Y-m-d H:i:s');
-					$insertn2['job_id'] = $get_post_job['job_id'];
-					$insertn2['posted_by'] = 0;
-					$action_id 	 =    $get_post_job['job_id'] ;
-					$action      =	'Dispute_closed';
-                    $title       =	'Dispute Close';	
-                    $sender_id      =   $homeowner;
-                    $receive_id 	=	$tradesman;
-					$action_data	=	array('user_id'=>$sender_id, 'other_user_id'=>$receive_id, 'job_id'=>$action_id, 'action_id'=>$action_id, 'action'=>$action);
-					$action_json = json_encode($action_data);
-					$insertn2['action_json'] = $action_json;
-					$insertn2['action'] = $action;
-                    $insertn2['action_id'] = $action_id; 
-					$this->common_model->insert('notification', $insertn2);
-				}
-			} else {
-
-				$amounts = $amount;
-				$u_wallet = $home['u_wallet'];
-				$update1['u_wallet'] = $u_wallet + $amounts;
-			}
-			
-           $transactionid = md5(rand(1000, 999) . time());
-			$tr_message = '£' . $amounts . ' credited to your wallet as <a href="' . site_url('dispute/' . $dispute_ids) . '">Case ID: ' . $dispute['caseid'] . '</a> dispute was decided in your favour.';
-			$data1 = array(
-				'tr_userid' => $dispute_finel_user,
-				'tr_amount' => $amounts,
-				'tr_type' => 1,
-				'tr_transactionId' => $transactionid,
-				'tr_message' => $tr_message,
-				'tr_status' => 1,
-				'tr_created' => date('Y-m-d H:i:s'),
-				'tr_update' => date('Y-m-d H:i:s')
-			);
-			$this->common_model->insert('transactions', $data1);
-
-			$checkStepIn = $this->common_model->GetColumnName('ask_admin_to_step', array('user_id' => $dispute_finel_user,'dispute_id'=>$dispute_ids), array('amount'));
-			if($checkStepIn){
-				$data1 = array(
-					'tr_userid' => $dispute_finel_user,
-					'tr_amount' => $checkStepIn['amount'],
-					'tr_type' => 1,
-					'tr_transactionId' => md5(rand(1000, 999) . time()),
-					'tr_message' => '£' . $checkStepIn['amount'] . ' arbitration fee has been credited to your wallet for winning the dispute.',
-					'tr_status' => 1,
-					'tr_created' => date('Y-m-d H:i:s'),
-					'tr_update' => date('Y-m-d H:i:s')
-				);
-				$this->common_model->insert('transactions', $data1);
-				$update1['u_wallet']=$update1['u_wallet']+$checkStepIn['amount'];
-				if(isset($update1['withdrawable_balance'])){
-					$update1['withdrawable_balance']=$update1['withdrawable_balance']+$checkStepIn['amount'];
-				}
-				
-			}
-
-			$this->common_model->update_data('users', array('id' => $dispute_finel_user), $update1);
-
-			$job = $this->common_model->GetColumnName('tbl_jobs', array('job_id' => $job_id), array('title'));
-
-
-			$insertn4['nt_userId'] = $home['id'];
-			$insertn4['nt_message'] = 'Milestone payment dispute decided. <a href="' . site_url('dispute/' . $dispute_ids) . '">View outcome!</a>';
-
-			$insertn4['nt_satus'] = 0;
-			$insertn4['nt_apstatus'] = 0;
-			$insertn4['nt_create'] = date('Y-m-d H:i:s');
-			$insertn4['nt_update'] = date('Y-m-d H:i:s');
-			$insertn4['job_id'] = $job_id;
-			$insertn4['posted_by'] = 0;
-			$insertn4['action'] =	'dispute_close';
-            $action_id 		=    $job_id;
-			$insertn4['action_id'] = $action_id;
-			$title_push     =	'Dispute Close';
-			$sender_id      =   $home['id'];
-			$receive_id     =  $dispute_finel_user;
-			$action_data	=	array('user_id'=>$sender_id, 'other_user_id'=>$receive_id, 'job_id'=>$job_id, 'action_id'=>$action_id, 'action'=>'dispute_close');
-			$insertn4['action_json']=json_encode($action_data);
-			
-			$this->common_model->insert('notification', $insertn4);
-
-			$insertn5['nt_userId'] = $trades['id'];
-			$insertn5['nt_message'] = 'Milestone payment dispute decided. <a href="' . site_url('dispute/' . $dispute_ids) . '">View outcome!</a>';
-
-			$insertn5['nt_satus'] = 0;
-			$insertn5['nt_apstatus'] = 0;
-			$insertn5['nt_create'] = date('Y-m-d H:i:s');
-			$insertn5['nt_update'] = date('Y-m-d H:i:s');
-			$insertn5['job_id'] = $job_id;
-			$insertn5['posted_by'] = 0;
-			
-            $insertn5['action'] =	'dispute_close';
-            $action_id 		=    $job_id;
-			$insertn5['action_id'] = $action_id;
-			$title_push     =	'Dispute Close';
-			$sender_id      =   $trades['id'];
-			$receive_id     =  $dispute_finel_user;
-			$action_data	=	array('user_id'=>$sender_id, 'other_user_id'=>$receive_id, 'job_id'=>$job_id, 'action_id'=>$action_id, 'action'=>'dispute_close');
-			$insertn5['action_json']=json_encode($action_data);
-
-			$this->common_model->insert('notification', $insertn5);
-
-			$subject = "We've decided on the Milestone Payment Dispute & Closed the case: “" . $get_job_details['title'] . "”";
-
-			$traing_name = ($favo['type'] == 1) ? $favo['trading_name'] : $favo['f_name'] . ' ' . $favo['f_name'];
-
-			$html = '<br><p style="margin:0;padding:10px 0px">Hi, ' . $home['f_name'] . '</p>';
-			$html .= '<br><p style="margin:0;padding:10px 0px">We\'ve completed our review on the milestone dispute and decided in favour of the ' . $traing_name . '. We have therefore returned the Milestone payment to them and close the case.</p>';
-
-			$html .= '<p style="margin:0;padding:10px 0px">Returned amount: £' . $amount . '</p>';
-			$html .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and closed case can\'t be reopened.</p>';
-
-			$html .= '<br><div style="text-align:center"><a href="' . site_url('dispute/' . $dispute_ids) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View reason</a></div><br>';
-
-			$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-			$this->common_model->send_mail($home['email'], $subject, $html, null, null, 'support');
-
-			$html = '<br><p style="margin:0;padding:10px 0px">Hi, ' . $trades['f_name'] . '</p>';
-			$html .= '<br><p style="margin:0;padding:10px 0px">We\'ve completed our review on the milestone dispute and decided in favour of the ' . $favo['f_name'] . ' ' . $favo['l_name'] . '. We have therefore returned the Milestone payment to them and close the case.</p>';
-
-			$html .= '<p style="margin:0;padding:10px 0px">Returned  amount: £' . $amount . '</p>';
-			$html .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and closed case can\'t be reopened.</p>';
-
-			$html .= '<br><div style="text-align:center"><a href="' . site_url('dispute/' . $dispute_ids) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Request milestone release</a></div><br>';
-
-			$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-			$this->common_model->send_mail($trades['email'], $subject, $html, null, null, 'support');
-
-            echo "Success";
-					
-			     }
-				}
-			}
-			}
-		 }
-	  }
-	
-  }
-
 	
 	public function check_disput_reply(){
 		$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time','commision'));
@@ -2260,32 +1694,24 @@ if($total_milestone==$completed_milestone){
 		if(count($get_all_job) > 0){
 		
 			foreach($get_all_job as $key => $row){
-
-				//echo '<pre>';print_r($row); echo '</pre>';
 				
 				$dipute_by = $row['disputed_by'];
 				
-				$dipute_to = $row['dispute_to']; 
+				$dipute_to = ($dipute_by==$row['ds_buser_id'])?$row['ds_puser_id']:$row['ds_buser_id']; 
 				
 				$create_date = date('Y-m-d H:i:s',strtotime($row['ds_create_date']));
 				
 				$replyTime = date('Y-m-d H:i:s',strtotime($create_date.' +'.$setting['waiting_time'].' days'));
 				
 				$check = $this->common_model->get_single_data('disput_conversation_tbl',array('dct_disputid'=>$row['ds_id'],'dct_userid'=>$dipute_to));
-				//echo $this->db->last_query();
-
-				if(!$check){
+				
+				if($check==false){
 					
-					$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$row['ds_id']."'","tbl_milestones.*",true);
-					//echo '<br> Current Time: '.$today.'<br> Expire TIme: '.$newTime.'<br> Created At: '.$create_date;
-					//echo '<pre>';print_r($row); echo '</pre>';
-						
+					$milestone = $this->common_model->get_single_data('tbl_milestones',array('id'=>$row['mile_id']));
 					
-					if(strtotime($newTime) > strtotime($create_date)){
-						//echo '<br> Expired <hr>';
-						//continue;
+					if($newTime > $create_date){
 						
-						$job_id = $row['ds_job_id'];
+						$job_id = $milestone['post_id'];
 
 						$tradesman = $row['ds_buser_id'];
 						
@@ -2299,67 +1725,52 @@ if($total_milestone==$completed_milestone){
 						$trades=$this->common_model->get_userDataByid($tradesman);
 						$favo=$this->common_model->get_userDataByid($dispute_finel_user);
 						
-					
+						$mile_id = $row['mile_id'];
+						
 						if($dipute_by==$tradesman){
-							$massage = 'Dispute resolved as '.$home['f_name'].' failed to respond within '.$setting['waiting_time'].' days.';
+							$massage = 'Dispute resolved as '.$home['f_name'].' failed to respond within four days.';
 						} else {
-							$massage = 'Dispute resolved as '.$trades['f_name'].' failed to respond within '.$setting['waiting_time'].' days.';
+							$massage = 'Dispute resolved as  '.$trades['f_name'].' failed to respond within four days.';
 						}
 						
 						$insert['dct_disputid']=$dispute_ids;
 						$insert['dct_userid']=0;
 						$insert['dct_msg']=$massage;
 						$insert['dct_isfinal']=1;
-							
+						$insert['mile_id']=$mile_id;	
 
 						$run = $this->common_model->insert('disput_conversation_tbl',$insert);	
 						
 						if($run){
-
-							foreach($milestones as $milestone){
-								$bid_update = [];
-								$bid_update['status'] = 6;
-								$where = "id = '" . $milestone['id'] . "'";
-					
-								$this->common_model->update('tbl_milestones', $where, $bid_update);
-							}
 							
+							$bid_update['status']=6;  
+							
+							$where="id = '".$mile_id."' and status = '5'";
+							
+							$this->common_model->update('tbl_milestones',$where,$bid_update);
 							
 							
 							$disput_update['ds_status']=1;
 							$disput_update['ds_favour']=$dispute_finel_user;
 
-							
-							$get_job_post = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$job_id));
-								
-							
-							/*if ($row['last_offer_by'] == $trades['id'] && $row['tradesmen_offer']) {
-								$amount = $row['tradesmen_offer'];
-							} else if ($row['last_offer_by'] == $home['id'] && $row['homeowner_offer']) {
-								$amount = $row['homeowner_offer'];
-							} else {
-								$amount = $row['total_amount'];
-							}*/
-
-							$amount = $row['total_amount'];
-
-							$disput_update['agreed_amount'] = $amount;
-							$disput_update['caseCloseStatus'] = 1;
-
 							$run1 = $this->common_model->update('tbl_dispute',array('ds_id'=>$dispute_ids),$disput_update);
+							
+							$get_job_post = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$milestone['post_id']));
+								
+							$amount = $milestone['milestone_amount'];
 								
 							if($trades['id']==$dispute_finel_user){
 									
 								$commision=$setting['commision'];
 									
-								$get_post_job = $this->common_model->get_single_data('tbl_jobpost_bids',array('id'=>$milestones[0]['bid_id']));
+								$get_post_job = $this->common_model->get_single_data('tbl_jobpost_bids',array('id'=>$milestone['bid_id']));
 						
 								
 									
 								$pamnt = $get_post_job['paid_total_miles'];
 								$final_amount = $pamnt + $amount;
 									
-								$sql3 = "update tbl_jobpost_bids set paid_total_miles = '".$final_amount."' where id = '".$get_post_job['id']."'";
+								$sql3 = "update tbl_jobpost_bids set paid_total_miles = '".$final_amount."' where id = '".$milestone['bid_id']."'";
 								$this->db->query($sql3);
 
 
@@ -2371,22 +1782,14 @@ if($total_milestone==$completed_milestone){
 								
 								$update1['u_wallet']=$u_wallet+$amounts;
 								
-								foreach($milestones as $milestone){
-									$this->common_model->update('tbl_milestones',array('id'=>$milestone['id']),array('is_dispute_to_traders'=>1));
-								}
-								
-                               $total_milestone =  $this->common_model->get_total_milestone($job_id);
-							   $completed_milestone =  $this->common_model->get_completed_milestone($job_id);
-								
-                              if($total_milestone==$completed_milestone){
-								  
-								 $runss12 = $this->common_model->update_data('tbl_jobs',array('job_id'=>$job_id),array('status'=>5));
-										
-									$runss123 = $this->common_model->update_data('tbl_jobpost_bids',array('id'=>$get_post_job['id']),array('status'=>4)); 
-					
-							  }
+							
+								$this->common_model->update('tbl_milestones',array('id'=>$mile_id),array('is_dispute_to_traders'=>1));
 									
 								if($final_amount >= $get_post_job['bid_amount']) {
+										
+									$runss12 = $this->common_model->update_data('tbl_jobs',array('job_id'=>$milestone['post_id']),array('status'=>5));
+										
+									$runss123 = $this->common_model->update_data('tbl_jobpost_bids',array('id'=>$get_post_job['id']),array('status'=>4));
 										
 									$post_title=$get_job_post['title'];
 										
@@ -2417,13 +1820,8 @@ if($total_milestone==$completed_milestone){
 									
 									$html .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
 									
-									if($home)
-									{
-										$runs1=$this->common_model->send_mail($home['email'],$subject,$html);
-									}
-									
+									$runs1=$this->common_model->send_mail($home['email'],$subject,$html);
 									/*mail to homeOwner*/
-
 									
 									$subject = 'Congratulations on Completing the Job:'.$post_title;
 			
@@ -2438,16 +1836,12 @@ if($total_milestone==$completed_milestone){
 									
 									$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 									
-									if($trades)
-									{
-										$runs1=$this->common_model->send_mail($trades['email'],$subject,$html);
-									}
-									
+									$runs1=$this->common_model->send_mail($trades['email'],$subject,$html);
 										
 
 									$insertn1['nt_userId']=$get_post_job['posted_by'];
 									// $insertn1['nt_message']='Congratulation this project has been completed successfully.You have released all the milestone amount of <a href="'.site_url().'payments/?post_id='.$get_post_job['job_id'].'"> '.$post_title.'</a> project and this project has been completed. Now you can go for rating by <a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'">clicking here</a>.';
-                  					$insertn1['nt_message'] = 'Congratulations! Your job has been completed. <a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'">Rate ' .$trades['trading_name'] .'!</a>';
+                  $insertn1['nt_message'] = 'Congratulations! Your job has been completed. <a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'">Rate ' .$trades['trading_name'] .'!</a>';
 												
 									$insertn1['nt_satus']=0;
 									$insertn1['nt_apstatus']=2;
@@ -2478,11 +1872,12 @@ if($total_milestone==$completed_milestone){
 									
 							}
 								
-							
+							$runss1 = $this->common_model->update_data('users',array('id'=>$dispute_finel_user),$update1);
+								
+							$jon_name = $this->common_model->update_data('users',array('id'=>$dispute_finel_user),$update1);
 								
 							$transactionid = md5(rand(1000,999).time());
-							//$tr_message= 'Dispute team has resolved the <a href="'. site_url('dispute/'.$row['ds_id']).'">'.$milestone['milestone_name'].' milestone dispute</a> in favour of you and £'.$amounts.' has been credited in your wallet</b>';
-							$tr_message= '£'.$amounts.' credited to your wallet as Case ID: '.$row['caseid'].' was decided in your favour.';
+							$tr_message= 'Super Admin has resolved the <a href="'. site_url('dispute/'.$mile_id.'/'.$job_id).'">'.$milestone['milestone_name'].' milestone dispute</a> in favour of you and £'.$amounts.' has been credited in your wallet</b>';
 							$data1 = array(
 								'tr_userid'=>$dispute_finel_user, 
 								'tr_amount'=>$amounts,
@@ -2494,64 +1889,9 @@ if($total_milestone==$completed_milestone){
 								'tr_update' =>date('Y-m-d H:i:s')
 							);
 							$this->common_model->insert('transactions',$data1);
-
-							$checkStepIn = $this->common_model->GetColumnName('ask_admin_to_step', array('user_id' => $dispute_finel_user,'dispute_id'=>$dispute_ids), array('amount'));
-							if($checkStepIn){
-
-								$disput_update111['caseCloseStatus'] = 3;
-
-								$this->common_model->update('tbl_dispute',array('ds_id'=>$dispute_ids),$disput_update111);
-
-
-								$data1 = array(
-									'tr_userid' => $dispute_finel_user,
-									'tr_amount' => $checkStepIn['amount'],
-									'tr_type' => 1,
-									'tr_transactionId' => md5(rand(1000, 999) . time()),
-									'tr_message' => '£' . $checkStepIn['amount'] . ' arbitration fee has been credited to your wallet for winning the dispute.',
-									'tr_status' => 1,
-									'tr_created' => date('Y-m-d H:i:s'),
-									'tr_update' => date('Y-m-d H:i:s')
-								);
-								$this->common_model->insert('transactions', $data1);
-
-								$update1['u_wallet']=$update1['u_wallet']+$checkStepIn['amount'];
-								if(isset($update1['withdrawable_balance'])){
-									$update1['withdrawable_balance']=$update1['withdrawable_balance']+$checkStepIn['amount'];
-								}
-
-
-								$insertn = [];
-								$insertn['nt_userId'] = $row['ds_puser_id'];
-								
-								$insertn['nt_message'] = 'Milestone payment dispute has automatically closed as the arbitration fee wasn\'t paid before the deadline. <a href="'.site_url().'dispute/'.$row['ds_id'].'">View & Respond</a>';
-					
-								$insertn['nt_satus'] = 0;
-								$insertn['nt_apstatus'] = 2;
-								$insertn['nt_create'] = date('Y-m-d H:i:s');
-								$insertn['nt_update'] = date('Y-m-d H:i:s');
-								$insertn['job_id'] = $row['ds_job_id'];
-								$insertn['posted_by'] = $row['ds_puser_id'];
-								$this->common_model->insert('notification', $insertn);
-									
-								$insertn = [];
-								$insertn['nt_userId'] = $row['ds_buser_id'];
-								
-								$insertn['nt_message'] = 'Milestone payment dispute has automatically closed as the arbitration fee wasn\'t paid before the deadline. <a href="'.site_url().'dispute/'.$row['ds_id'].'">View Now</a>';
-					
-								$insertn['nt_satus'] = 0;
-								$insertn['nt_apstatus'] = 2;
-								$insertn['nt_create'] = date('Y-m-d H:i:s');
-								$insertn['nt_update'] = date('Y-m-d H:i:s');
-								$insertn['job_id'] = $row['ds_job_id'];
-								$insertn['posted_by'] = $row['ds_puser_id'];
-								$this->common_model->insert('notification', $insertn);
-							}
-
-							$this->common_model->update_data('users',array('id'=>$dispute_finel_user),$update1);
 							
 							$insertn4['nt_userId']=$home['id'];
-							$insertn4['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$row['ds_id']).'">View outcome!</a>';
+							$insertn4['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$mile_id.'/'.$job_id).'">View outcome!</a>';
 									
 							$insertn4['nt_satus']=0;
 							$insertn4['nt_apstatus']=0;
@@ -2559,18 +1899,10 @@ if($total_milestone==$completed_milestone){
 							$insertn4['nt_update']=date('Y-m-d H:i:s');   
 							$insertn4['job_id']=$job_id;
 							$insertn4['posted_by']=0;
-							$insertn4['action_id']=$job_id;
-							$action 		=	'Dispute_closed';
-                            $action_id 		=    $job_id ;
-                            $title 			=	'Dispute closed';
-							$insertn4['action'] = $action;
-							$receive_id 	=	$row['ds_puser_id'];
-						    $action_data=array('user_id'=>$home['id'], 'other_user_id'=>$receive_id, 'job_id'=>$job_id, 'action_id'=>$action_id, 'action'=>$action);
-                            $insertn4['action_json']=json_encode($action_data);
 							$this->common_model->insert('notification',$insertn4);
 							
 							$insertn5['nt_userId']=$trades['id'];
-							$insertn5['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$row['ds_id']).'">View outcome!</a>';
+							$insertn5['nt_message']='Milestone payment dispute closed & decided. <a href="'.site_url('dispute/'.$mile_id.'/'.$job_id).'">View outcome!</a>';
 									
 							$insertn5['nt_satus']=0;
 							$insertn5['nt_apstatus']=0;
@@ -2578,14 +1910,6 @@ if($total_milestone==$completed_milestone){
 							$insertn5['nt_update']=date('Y-m-d H:i:s');   
 							$insertn5['job_id']=$job_id;
 							$insertn5['posted_by']=0;
-							$insertn5['action_id']=$job_id;
-							$action 		=	'Dispute_closed';
-                            $action_id 		=    $job_id ;
-                            $title 			=	'Dispute closed';
-							$insertn5['action'] = $action;
-							$receive_id 	=	$row['ds_buser_id'];
-						    $action_data=array('user_id'=>$trades['id'], 'other_user_id'=>$receive_id, 'job_id'=>$job_id, 'action_id'=>$action_id, 'action'=>$action);
-                            $insertn5['action_json']=json_encode($action_data);
 							$this->common_model->insert('notification',$insertn5);
 							
 							if($home['id']==$dispute_finel_user){
@@ -2604,11 +1928,7 @@ if($total_milestone==$completed_milestone){
 								$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
 								$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 
-								if($trades)
-								{
-									$runs1 = $this->common_model->send_mail($trades['email'],$subject,$contant);
-								}
-								
+								$this->common_model->send_mail($trades['email'],$subject,$contant);
 								
 								$subject = "Milestone payment dispute opened by you has been closed automatically, Job: ".$get_job_post['title'];
 								
@@ -2623,12 +1943,7 @@ if($total_milestone==$completed_milestone){
 								$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
 								$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
 
-								if($home)
-								{
-									$runs1 = $this->common_model->send_mail($home['email'],$subject,$contant);
-								}
-								
-
+								$this->common_model->send_mail($home['email'],$subject,$contant);
 								
 							} else {
 								
@@ -2646,11 +1961,7 @@ if($total_milestone==$completed_milestone){
 								$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
 								$contant .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 
-								if($trades)
-								{
-									$runs1 = $this->common_model->send_mail($trades['email'],$subject,$contant);
-								}
-								
+								$this->common_model->send_mail($trades['email'],$subject,$contant);
 								
 								$subject ="Milestone payment dispute opened by ".$trades['trading_name']." has been closed automatically, Job: ".$get_job_post['title'];
 								
@@ -2665,11 +1976,7 @@ if($total_milestone==$completed_milestone){
 								$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
 								$contant .= '<p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
 
-								if($home)
-								{
-									$runs1 = $this->common_model->send_mail($home['email'],$subject,$contant);
-								}
-								
+								$this->common_model->send_mail($home['email'],$subject,$contant);
 								
 							}
 							
@@ -2686,12 +1993,11 @@ if($total_milestone==$completed_milestone){
 	
 	public function update_awarded_jobremider(){
 
-		$this->update_awarded_job();
 		$this->update_ticket_status();
 		
 		$today = date('Y-m-d H:i:s');
 		
-		$newTime = date('Y-m-d H:i:s',strtotime($today.' -3 hour'));
+		$newTime = date('Y-m-d',strtotime($today.' -3 hour'));
 		
 		$get_all_job = $this->common_model->get_all_data('tbl_jobs',array('status'=>4,'awarded_to != '=>0));
 	
@@ -2715,7 +2021,7 @@ if($total_milestone==$completed_milestone){
 						
 						$update_date = date('Y-m-d H:i:s',strtotime($row['update_date']));
 					
-						if(strtotime($newTime) >= strtotime($update_date)){
+						if($newTime >= $update_date){
 						
 							$check = true;
 							
@@ -2744,11 +2050,8 @@ if($total_milestone==$completed_milestone){
 							
 							$html .= '<p style="margin:0;padding:10px 0px">If you have any question regarding the offer, don\'t hesitate to contact '.$home['f_name'].' through the chat section of the job page.</p>';
 							$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($tradeMen)
-							{
-								$runs1=$this->common_model->send_mail($tradeMen['email'],$subject,$html);
-							}
 							
+							$runs1=$this->common_model->send_mail($tradeMen['email'],$subject,$html);
 							
 						}	else {
 							
@@ -2768,11 +2071,8 @@ if($total_milestone==$completed_milestone){
 							
 							$html .= '<p style="margin:0;padding:10px 0px">If you have any question regarding the offer, don\'t hesitate to contact '.$home['f_name'].' through the chat section of the job page.</p>';
 							$html .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-							if($tradeMen)
-							{
-								$runs1=$this->common_model->send_mail($tradeMen['email'],$subject,$html);
-							}
 							
+							$runs1=$this->common_model->send_mail($tradeMen['email'],$subject,$html);
 							
 						}	
 						
@@ -2793,54 +2093,26 @@ if($total_milestone==$completed_milestone){
 		
 		//$reminder_day = $setting
 		
-		$today = date('Y-m-d H:i:s');
+		$today = date('Y-m-d');
 		
-		$newTime = date('Y-m-d H:i:s',strtotime($today.' -24 hours'));
-	  $newTime = date('Y-m-d H:i:s',strtotime($newTime.' -'.$setting['waiting_time_accept_offer'].' days'));
-
-		//08-02-2023 //2
-
+		$newTime = date('Y-m-d',strtotime($today.' -'.$setting['waiting_time_accept_offer'].' days'));
 		//$newTime2 = date('Y-m-d',strtotime($today.' -'.$setting['waiting_time'].' days'));
 		
 		$get_all_job = $this->common_model->get_all_data('tbl_jobs',array('status'=>4,'awarded_to != '=>0));
-
 		if(count($get_all_job) > 0){
 			foreach($get_all_job as $key => $row){
-				
+
 				$bid_data = $this->common_model->get_single_data('tbl_jobpost_bids',array('job_id'=>$row['job_id'],'status'=>3,'bid_by'=>$row['awarded_to']));
-				
+			
 				if($bid_data){
 					
-					  $update_date = date('Y-m-d H:i:s',strtotime($row['awarded_time']));
-					//09-01-2023
-
-					//echo 'update_date = '.$update_date." /n";
-					///echo 'newTime = '.$newTime." /n";
-                    if(strtotime($newTime) >= strtotime($update_date)){
-                       
-						$homeOwner = $this->common_model->get_single_data('users',array('id'=>$row['userid']));
-						//echo '<pre>'; print_r($row); print_r($homeOwner); echo '<pre>'; die();
-						if(!$homeOwner){
-							//$this->common_model->delete(array('job_id'=>$row['job_id']),'tbl_jobs'); 
-							//$this->common_model->delete(array('job_id'=>$row['job_id']),'tbl_jobpost_bids'); 
-							//$this->common_model->delete(array('post_id'=>$row['job_id']),'tbl_milestones'); 
-							//$this->common_model->delete(array('post_id'=>$row['job_id']),'chat'); 
-							//$this->common_model->delete(array('post_id'=>$row['job_id']),'chat_paid'); 
-							//$this->common_model->delete(array('job_id'=>$row['job_id']),'job_files'); 
-							//$this->common_model->delete(array('job_id'=>$row['job_id']),'visit_job'); 
-							//$this->common_model->delete(array('job_id'=>$row['job_id']),'review_invitation'); 
-							//$this->common_model->delete(array('rt_postid'=>$row['job_id']),'rating_table'); 
-							//$this->common_model->delete(array('ds_job_id'=>$row['job_id']),'tbl_dispute'); 
-							continue;
-						}
-
+					$update_date = date('Y-m-d',strtotime($row['awarded_time']));
+					
+					if($newTime > $update_date){
 						
+						$homeOwner = $this->common_model->get_single_data('users',array('id'=>$row['userid']));
 		
 						$tradeMen = $this->common_model->get_single_data('users',array('id'=>$row['awarded_to']));
-
-						$tradingName = ($tradeMen) ? $tradeMen['trading_name'] : 'Anonymous';
-						$tradingProfile = ($tradeMen) ? site_url().'profile/'.$tradeMen['id'] : 'javascript:;';
-
 						
 						if($bid_data['total_milestone_amount'] > 0){
 	
@@ -2851,7 +2123,7 @@ if($total_milestone==$completed_milestone){
 							
 							$transactionid = md5(rand(1000,999).time());
 							
-							$tr_message = '£'.$bid_data['total_milestone_amount'].' has been credited to your wallet as  <a href="'.$tradingProfile.'">'.$tradingName.'</a> did not respond to your <a href="'.site_url().'details/?post_id='.$row['job_id'].'">'.$row['title'].'</a> job offer.';
+							$tr_message = '£'.$bid_data['total_milestone_amount'].' has been credited to your wallet.  <a href="'.site_url().'profile/'.$tradeMen['id'].'">'.$tradeMen['trading_name'].'</a> had not accept your proposal for <a href="'.site_url().'details/?post_id='.$row['job_id'].'">'.$row['title'].'</a>';
 						 
 							$data1 = array(
 								'tr_userid'=>$homeOwner['id'], 
@@ -2869,7 +2141,7 @@ if($total_milestone==$completed_milestone){
 						} 
 
 						// $insertn['nt_message'] = 'Your <a href="'.site_url().'details/?post_id='.$row['job_id'].'">job offer</a> has expired as '.$tradeMen['trading_name'].' failed to respond.';
-						$insertn['nt_message'] = $tradingName . ' didn´t respond to your offer. Post the job <a href="' .site_url('post-job') .'" >here.</a>';
+						$insertn['nt_message'] = $tradeMen['trading_name'] . ' didn´t respond to your offer. Post the job <a href="' .site_url('post-job') .'" >here.</a>';
 								
 						$insertn['nt_userId']=$homeOwner['id'];
 						$insertn['nt_satus']=0;
@@ -2879,23 +2151,19 @@ if($total_milestone==$completed_milestone){
 						$insertn['posted_by']=$homeOwner['id'];
 						$insertn['nt_apstatus']=3;
 							
-						$this->common_model->insert('notification',$insertn);
+						$this->common_model->insert('notification',$insertn);	
 						
-						if($tradeMen){
-							$insertn2['nt_message'] = 'Your job offer has expired as you failed to respond.</a>';
+						$insertn2['nt_message'] = 'Your job offer has expired as you failed to respond.</a>';
 						
-							$insertn2['nt_userId']=$tradeMen['id'];
-							$insertn2['nt_satus']=0;
-							$insertn2['nt_create']=date('Y-m-d H:i:s');
-							$insertn2['nt_update']=date('Y-m-d H:i:s');
-							$insertn2['job_id']=$bid_data['job_id'];
-							$insertn2['posted_by']=$homeOwner['id'];
-							$insertn2['nt_apstatus']=3;
-								
-							$this->common_model->insert('notification',$insertn2);
-						}
-						
-						
+						$insertn2['nt_userId']=$tradeMen['id'];
+						$insertn2['nt_satus']=0;
+						$insertn2['nt_create']=date('Y-m-d H:i:s');
+						$insertn2['nt_update']=date('Y-m-d H:i:s');
+						$insertn2['job_id']=$bid_data['job_id'];
+						$insertn2['posted_by']=$homeOwner['id'];
+						$insertn2['nt_apstatus']=3;
+							
+						$this->common_model->insert('notification',$insertn2);
 						
 						$update['status'] = 1;
 						$update['awarded_to'] = 0;
@@ -2903,9 +2171,7 @@ if($total_milestone==$completed_milestone){
 						$where_array1=array('job_id'=>$bid_data['job_id']);
 						
 						if($row['direct_hired']==1){
-							$update1['status'] = 8;
-							//$this->common_model->delete($where_array1,'tbl_jobs');
-							$this->common_model->update('tbl_jobs',$where_array1,$update1);
+							$this->common_model->delete($where_array1,'tbl_jobs');
 						} else {
 							$this->common_model->update('tbl_jobs',$where_array1,$update);
 						}
@@ -2915,11 +2181,11 @@ if($total_milestone==$completed_milestone){
 						$this->common_model->delete(array('id'=>$bid_data['id']),'tbl_jobpost_bids'); 
 						$this->common_model->delete(array('bid_id'=>$bid_data['id']),'tbl_milestones'); 
 
-						$subject = "Job Offer expired: ".$tradingName." didn't respond to “".$row['title']."”"; 
+						$subject = "Job Offer expired: ".$tradeMen['trading_name']." didn't respond to “".$row['title']."”"; 
 						
 						$html = '<p style="margin:0;padding:10px 0px">Hi ' . $homeOwner['f_name'] .',</p>';
 		
-						$html .= '<p style="margin:0;padding:10px 0px">Your job offer to '.$tradingName.' expired today because they didn\'t respond.</p>';
+						$html .= '<p style="margin:0;padding:10px 0px">Your job offer to '.$tradeMen['trading_name'].' expired today because they didn\'t respond.</p>';
 						
 						$html .= '<p style="margin:0;padding:10px 0px">Job: '.$row['title'].'</p>';
 						
@@ -2928,11 +2194,8 @@ if($total_milestone==$completed_milestone){
 						$html .= '<br><div style="text-align:center"><a href="'.site_url().'my-posts" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Edit Budget</a> &nbsp; &nbsp; <a href="'.site_url().'proposals/?post_id='.$bid_data['job_id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Award</a></div>';
 						
 						$html .= '<br><p style="margin:0;padding:10px 0px">Visit our homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-						if($homeOwner)
-						{
-							$this->common_model->send_mail($homeOwner['email'],$subject,$html);
-						}
 						
+						$this->common_model->send_mail($homeOwner['email'],$subject,$html);
 						
 					}
 					
@@ -2943,133 +2206,140 @@ if($total_milestone==$completed_milestone){
 				
 				
 			}
-		} 
-		
+		}
 	}
 
-  	public function send_weekly_job_post(){
-    	$this->send_job_post('weekly');
-  	}
+  public function send_weekly_job_post(){
+    $this->send_job_post('weekly');
+  }
 
-  	public function send_daily_job_post(){
-    	$this->send_job_post('daily');
-  	}
+  public function send_daily_job_post(){
+    $this->send_job_post('daily');
+  }
 
-  	public function send_job_post($frequency){
-    	/* Send daily job post to unverified accounts */		
+  public function send_job_post($frequency){
+    /* Send daily job post to unverified accounts */
+		
 		$whereJob = "(tbl_jobs.status=1 or tbl_jobs.status=2 or tbl_jobs.status=3 or tbl_jobs.status=8) and tbl_jobs.direct_hired != 1 and tbl_jobs.is_delete=0";
 		//echo "this";die;
-    	if($frequency == 'daily'){
+    if($frequency == 'daily'){
 			$whereJob .= " and tbl_jobs.c_date >= '".date("Y-m-d 00:00:00")."'";
     
 		}else{
 			
-      		$monday = date('Y-m-d 00:00:00', strtotime("last Monday"));
-      		//$sunday = date('Y-m-d 23:59:59', strtotime("next Sunday -7 day"));
+      $monday = date('Y-m-d 00:00:00', strtotime("last Monday"));
+      //$sunday = date('Y-m-d 23:59:59', strtotime("next Sunday -7 day"));
 			
 			$whereJob .= " and tbl_jobs.c_date >= '".$monday."'";
 			
 			//$whereJob .= " and tbl_jobs.c_date <= '".$sunday."'";
-    	}
+    }
 		
-    	$jobs = $this->get_jobs($whereJob);
-    	//print_r($jobs);die;
-    	if(count($jobs) > 0){
-      		//$whereUser['u_wallet'] = 0;
-      		$whereUser['free_trial_taken'] = 0;
-      		$whereUser['is_pay_as_you_go'] = 0;
-      		$whereUser['type'] = 1;
-      		$whereUser['u_email_verify'] = 1;
-      		//$whereUser['id'] = 11;
+    $jobs = $this->get_jobs($whereJob);
+    //print_r($jobs);die;
+    if(count($jobs) > 0){
+      //$whereUser['u_wallet'] = 0;
+      $whereUser['free_trial_taken'] = 0;
+      $whereUser['is_pay_as_you_go'] = 0;
+      $whereUser['type'] = 1;
+      $whereUser['u_email_verify'] = 1;
+      //$whereUser['id'] = 11;
 
-      		/* For testing */
-     		// $whereUser['email LIKE'] = 'hakim.webwiders@gmail.com';
-      		/* For testing */
+      /* For testing */
+     // $whereUser['email LIKE'] = 'hakim.webwiders@gmail.com';
+      /* For testing */
 			
 			$show_budget_text = '';
 			
 			if($this->show_budget==1){
 				$show_budget_text = 'Budget';
-			}			
+			}
+			
+			
 
-      		$columns = ['id', 'f_name', 'l_name', 'email' , 'category'];
-      		$users = $this->common_model->GetColumnName('users', $whereUser, $columns, true);
+      $columns = ['id', 'f_name', 'l_name', 'email' , 'category'];
+      $users = $this->common_model->GetColumnName('users', $whereUser, $columns, true);
 
-			//print_r($users);die;	
-      		if($frequency == 'daily'){
-        		$subject = "New ".$jobs[0]['cat_name']." Job Posted: ".$jobs[0]['city'].": Start your Free Trial Today!";
-      		}else{
-        		$subject = "Your Weekly Job Post Roundup - Start your Free Trial Today!";
-      		}
-      		$setting = $this->common_model->get_all_data('admin');
+		//print_r($users);die;	
+      if($frequency == 'daily'){
+        $subject = "New ".$jobs[0]['cat_name']." Job Posted: ".$jobs[0]['city'].": Start your Free Trial Today!";
+      }else{
+        $subject = "Your Weekly Job Post Roundup - Start your Free Trial Today!";
+      }
+      
 			//echo $jobList;
 			//echo '<pre>';print_r($users);
-			//print_r($jobs);die;	 
-      		foreach($users as $key => $user){
+		//print_r($jobs);die;	 
+      foreach($users as $key => $user){
       	
-      			//echo $user['email']; die;
-	        	$html = '';
+      		//echo $user['email']; die;
+	        $html = '';
 
-	        	$checkJoBdata = false;
-	        	/*$checkExist['user_id'] = $user['id'];
-	        	$checkExist['type'] = ($frequency == 'daily') ? 1 : 2;
-	        	$checkExist['created >='] = date("Y-m-d 00:00:00");
-	        	$checkExist['is_sent'] = 1;
-	        	$isExist = $this->common_model->GetColumnName('daily_email_records', $checkExist);
-	        	if(!$isExist){*/
-	          	$html .= '<p style="margin:0;padding:10px 0px">Hi '.$user['f_name'].',</p>';
-	          	if($frequency == 'daily'){
-	            	$html .= '<p style="margin:0;padding:10px 0px">Here is the latest job that was posted near you.</p>';
-	          	}else{
-	            	$html .= '<p style="margin:0;padding:10px 0px">Here are jobs that were posted near you this week</p>';
-	          	}
+	        $checkJoBdata = false;
+	        /*$checkExist['user_id'] = $user['id'];
+	        $checkExist['type'] = ($frequency == 'daily') ? 1 : 2;
+	        $checkExist['created >='] = date("Y-m-d 00:00:00");
+	        $checkExist['is_sent'] = 1;
+	        $isExist = $this->common_model->GetColumnName('daily_email_records', $checkExist);
+	        if(!$isExist){*/
+	          $html .= '<p style="margin:0;padding:10px 0px">Hi '.$user['f_name'].',</p>';
+	          if($frequency == 'daily'){
+	            $html .= '<p style="margin:0;padding:10px 0px">Here is the latest job that was posted near you.</p>';
+	          }else{
+	            $html .= '<p style="margin:0;padding:10px 0px">Here are jobs that were posted near you this week</p>';
+	          }
 
-	          	$jobList = '<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	          $jobList = '<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			      <tr>
 			        <td style="border:1px solid #2875D7; background:#2875d7; color:#fff;  padding:10px 15px; width: 75%">Job description</td>
 			        <td style="border:1px solid #2875D7; background:#2875d7; color:#fff;  padding:10px 15px; width: 25%;">'.$show_budget_text.'</td>
 			      </tr>';
 
-			    $userCat = explode(',', $user['category']);
-		      	//echo $user['id'];
-		      	//print_r($userCat); die();
-		      	foreach($jobs as $job){
-		      		if(in_array($job['cat_id'], $userCat)){
-		      			$jobList .= $this->job_email_body($job,$frequency);
-          				$checkJoBdata = true;
-		      		}			        
-		        	if($frequency == 'daily') break;
-		      	}
-				$jobList .= '</table>';
-		 		$html .= $jobList;
-	
-          		$html .= '<br><br><p style="margin:0;padding:10px 0px">Start your free trial & get this job for Free! <a href="' .site_url() .'dashboard" style="background-color:#4a86e8;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:15px;border-radius:3px;font-size:17px;text-decoration:none;float:right;">Start Free Trial</a></p>';
+			      $userCat = explode(',', $user['category']);
+			      //echo $user['id'];
+			      	//print_r($userCat); die();
+			      foreach($jobs as $job){
+			      	if(in_array($job['cat_id'], $userCat)){
 
-          		//print_r($jobList); die;
-          		if($checkJoBdata && $user){
-          			if($setting[0]['payment_method'] == 1){
-          				$this->common_model->send_mail($user['email'], $subject, $html);
-          			}
-          		}
+			      		$jobList .= $this->job_email_body($job,$frequency);
+	          			$checkJoBdata = true;
+			      	}
+			  		
+			        
+			        if($frequency == 'daily') break;
 
-				/*$insert['user_id'] = $user['id'];
-          		$insert['type'] = ($frequency == 'daily') ? 1 : 2;
-          		$insert['email'] = $user['email'];
-          		$insert['subject'] = $subject;
-          		$insert['created'] = date("Y-m-d H:i:s");
 
-          		if($this->common_model->send_mail($user['email'], $subject, $html)){
-          		// if($this->common_model->send_mail('rahim.webwiders@gmail', $subject, $html)){
-            	$insert['is_sent'] = 1;
-          		}
-          		$this->common_model->insert('daily_email_records', $insert);*/
-       			//} 
-  
-  			}
-    	}
-  	}
+			      }
 
-  	public function job_email_body($job,$frequency=null){
+			$jobList .= '</table>';
+			 $html .= $jobList;
+		
+	          $html .= '<br><br><p style="margin:0;padding:10px 0px">Start your free trial & get this job for Free! <a href="' .site_url() .'dashboard" style="background-color:#4a86e8;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:15px;border-radius:3px;font-size:17px;text-decoration:none;float:right;">Start Free Trial</a></p>';
+
+	          //print_r($jobList); die;
+	          if($checkJoBdata){$this->common_model->send_mail($user['email'], $subject, $html);}
+	          
+						
+						
+						/*$insert['user_id'] = $user['id'];
+	          $insert['type'] = ($frequency == 'daily') ? 1 : 2;
+	          $insert['email'] = $user['email'];
+	          $insert['subject'] = $subject;
+	          $insert['created'] = date("Y-m-d H:i:s");
+
+	          if($this->common_model->send_mail($user['email'], $subject, $html)){
+	          // if($this->common_model->send_mail('rahim.webwiders@gmail', $subject, $html)){
+	            $insert['is_sent'] = 1;
+	          }
+	          $this->common_model->insert('daily_email_records', $insert);*/
+	        //}
+	      
+      
+      }
+    }
+  }
+
+  public function job_email_body($job,$frequency=null){
 		
 		$show_budget = '';
 		$show_budget_text = '';
@@ -3312,16 +2582,17 @@ if($total_milestone==$completed_milestone){
         $html .= '<p style="margin:0;padding:10px 0px">Here are jobs that were posted near you this week</p><br>';
         $html .= $jobList;
 				$html .= '<br><br><p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
-				if($user)
-				{
-					 $sent = $this->common_model->send_mail($user['email'], $subject, $html);
-				}
-       
+        $sent = $this->common_model->send_mail($user['email'], $subject, $html);
         
       }
     }
   }
 
 
+  	
+
+  public function test_function(){
+    
+  }
 
 }

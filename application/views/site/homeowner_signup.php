@@ -66,19 +66,19 @@
 							</div>
 						</div>
 
-			            <div class="form-group">
-			              	<label class="col-md-12 control-label"> Postcode *</label> 
-			              	<div class="col-md-12">
-			                	<input type="text" placeholder="Postcode" id="postcode" value="<?php echo ($step1)?$step1['postal_code']:'';?>" name="postal_code" class="form-control input-lg" required onblur="check_postcode(this.value);">
+            <div class="form-group">
+              <label class="col-md-12 control-label"> Postcode *</label> 
+              <div class="col-md-12">
+                <input type="text" placeholder="Postcode" id="postcode" value="<?php echo ($step1)?$step1['postal_code']:'';?>" name="postal_code" class="form-control input-lg" required onblur="check_postcode(this.value);">
 
-			                	<input type="hidden" id="latitude" value="<?php echo ($step1)?$step1['latitude']:'';?>" name="latitude" class="form-control input-lg">
+                <input type="hidden" id="latitude" value="<?php echo ($step1)?$step1['latitude']:'';?>" name="latitude" class="form-control input-lg">
 
-			               		<input type="hidden" id="longitude" value="<?php echo ($step1)?$step1['longitude']:'';?>" name="longitude" class="form-control input-lg">
+               <input type="hidden" id="longitude" value="<?php echo ($step1)?$step1['longitude']:'';?>" name="longitude" class="form-control input-lg">
 
 
-			                	<p class="text-danger postcode-err" style="display:none;">Please enter valid UK postcode</p>
-			              	</div>
-			            </div>
+                <p class="text-danger postcode-err" style="display:none;">Please enter valid UK postcode</p>
+              </div>
+            </div>
 						
 						<?php /*
 
@@ -125,15 +125,15 @@
 						<div class="form-group">
 							<label class="col-md-12 control-label"> Phone number *</label>  
 							<div class="col-md-12 input-group">
-								<span class="input-group-addon">+44</span>
-								<input type="text" class="form-control input-lg" name="phone_no" id="phone_no" value="<?php echo ($step1)?$step1['phone_no']:'';?>" required>
+							<span class="input-group-addon">+44</span>
+							<input type="text" class="form-control input-lg" name="phone_no" id="phone_no" value="<?php echo ($step1)?$step1['phone_no']:'';?>" required>
 							</div>
 						</div>	
 						<div class="form-group">
-						  	<label class="col-md-12 control-label">Email *</label>  
-						  	<div class="col-md-12">
-						  		<input type="text" class="form-control input-lg" name="email" id="email" value="<?php echo ($step1)?$step1['email']:'';?>" required>
-						  	</div>
+						  <label class="col-md-12 control-label">Email *</label>  
+						  <div class="col-md-12">
+						  <input type="text" class="form-control input-lg" name="email" id="email" value="<?php echo ($step1)?$step1['email']:'';?>" required>
+						  </div>
 						</div>
 						<!-- <div class="form-group">
 						  <label class="col-md-12 control-label">Password *</label>  
@@ -142,37 +142,28 @@
 						  </div>
 						</div> -->
 						<div class="form-group" style="margin-bottom: 50px;">
-						  	<div class="col-md-6">
-						  		<label class="control-label">Password *</label>  
-						  		<input type="password" class="form-control input-lg" name="password" id="password" required>
-						  		<p id="pass_content"></p>
-						  	</div>
-						  	<div class="col-md-6">
-						  		<label class="control-label">Confirm Password *</label>  
-						  		<input type="password" class="form-control input-lg" name="confirm_password" id="cnf_password" required>
-						  		<p id="cnf_err_content"></p>
-						  	</div>
-						  	<br>
+						  <div class="col-md-6">
+						  	<label class="control-label">Password *</label>  
+						  <input type="password" class="form-control input-lg" name="password" id="password" required>
+						  <p id="pass_content"></p>
+						  </div>
+						  <div class="col-md-6">
+						  <label class="control-label">Confirm Password *</label>  
+						  <input type="password" class="form-control input-lg" name="confirm_password" id="cnf_password" required>
+						  <p id="cnf_err_content"></p>
+						  </div>
+						  <br>
 						</div>
 						<div class="form-group">
-			              	<label class="col-md-12 control-label"> Referral Code </label> 
-			              	<div class="col-md-12">
-			                	<input type="text" placeholder="If someone referred you, enter their code" id="referred_by" value="<?=$this->session->userdata('referred_by')?>" name="referred_by" class="form-control input-lg">
-			                	<p class="text-danger reffer-err" style="display:none;">Wrong Referal Code</p>
-			              	</div>
-			            </div>
-						<div class="form-group">
 							<div class="col-md-12">
-								<label for="checkboxes-0">
-								  <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1" required>
-								   I agree to the <a href="<?php echo base_url('terms-and-conditions'); ?>">Terms & Conditions</a>
-								</label>
+							<label for="checkboxes-0">
+							  <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1" required>
+							   I agree to the <a href="<?php echo base_url('terms-and-conditions'); ?>">Terms & Conditions</a>
+							</label>
 							</div>
 						</div>
 						<div class="term-acc">
-							<label for="tncCheckbox0">
-								<input type="checkbox" name="checkboxes1" id="checkboxes-1" value="1" required> I have read and understood the <a href="<?php echo base_url('privacy-policy'); ?>">Privacy Notice</a> and <a href="<?php echo base_url('cookie-policy'); ?>">Cookie Policy</a>.
-							</label>
+							<p><input type="checkbox" name="checkboxes1" id="checkboxes-1" value="1" required> I have read and understood the <a href="<?php echo base_url('privacy-policy'); ?>">Privacy Notice</a> and <a href="<?php echo base_url('cookie-policy'); ?>">Cookie Policy</a>.</p>
 						</div>
 						<div class="start-btn text-center">
 							<button type="submit" class="btn btn-warning btn-lg signup_btn">Save and Continue</button>
@@ -230,7 +221,6 @@ function check_postcode(postcode){
 	});
 	return false;
 }
-
 function signup(){
  var err_text_msg='';
 	var lower;
@@ -307,13 +297,6 @@ function signup(){
 				$('.postcode-err').show();
 				$('#postcode').focus();
 				
-				
-				$('.signup_btn').html('Save and Continue');
-				$('.signup_btn').prop('disabled',false);
-				
-			}else if(resp.status==10) {
-				
-				$('.reffer-err').show();
 				
 				$('.signup_btn').html('Save and Continue');
 				$('.signup_btn').prop('disabled',false);

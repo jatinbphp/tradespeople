@@ -3637,7 +3637,8 @@ class Common_model extends CI_Model
                 $rating = $average_usage * 5;
             }
 
-            return round($rating, 2); // rounding to 2 decimal places
+            //return round($rating, 2); // rounding to 2 decimal places
+			return number_format($rating, 1);
         }
 
         return 0;
@@ -3663,4 +3664,38 @@ class Common_model extends CI_Model
            	LIMIT 500");
 		return $query->result_array();    	
     }
+	
+	public function get_date_format($days){
+		$currentDate = new DateTime();
+		$currentDate->modify("+$days days");
+		$formattedDate = $currentDate->format('D jS F, Y');
+
+		return $formattedDate;
+	}
+	
+	public function get_keyword_suggestions($keyword) {
+		$this->db->select('positive_keywords');
+		$this->db->from('my_services');
+		$this->db->like('positive_keywords', $keyword);
+		$this->db->limit(10);
+
+		$query = $this->db->get();
+
+		$suggestions = [];
+
+		if ($query->num_rows() > 0) {
+			foreach ($query->result_array() as $row) {
+				$keywords = explode(',', $row['positive_keywords']);
+				foreach ($keywords as $key) {
+					if (stripos($key, $keyword) !== false) {
+						$suggestions[] = ['value' => trim($key)];
+					}
+				}
+			}
+		}
+
+		// Ensure unique suggestions
+		$suggestions = array_unique($suggestions, SORT_REGULAR);
+		echo json_encode(array_slice($suggestions, 0, 5));
+	}
 }

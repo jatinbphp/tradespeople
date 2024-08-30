@@ -70,25 +70,20 @@
 					<div class="sing-top">
 						<h1>
 							<?php 
-							$redirect = ($this->session->userdata('signup')) ? 'signup-step8' : 'dashboard';
+							$redirect = ($this->session->userdata('signup') && $setting == 1) ? 'signup-step8' : 'dashboard';
 							if($this->session->userdata('signup') && $this->session->userdata('type')==1){ ?>
 							<a href="<?php echo base_url("signup-step7"); ?>"><i class="fa fa-caret-left"></i> Back</a> 
 							<?php } ?>
 							Email verification 
-							<?php $email_satus = $this->common_model->get_single_data('users',['id'=>$this->session->userdata('user_id')]);
-								if(($this->session->userdata('type')==1 || $this->session->userdata('type')==2) && $email_satus['u_email_verify'] == 1){?>
+							<?php 
+								if($this->session->userdata('type')==1 || $this->session->userdata('type')==2){?>
 									<a style="float:right;" href="<?= site_url().$redirect;?>">Next <i class="fa fa-caret-right"></i></a>
 							<?php
 								}
 							?>
 						</h1>
 					</div>
-					<?php
-						if(isset($errMsg) && !empty($errMsg)){
-							echo '<p id="emailErrMsg" class="alert alert-danger">'.$errMsg.'</p>';
-						}
-					?>
-					<p id="emailSecurityCode" class="alert alert-danger">Wrong Security Code</p>
+					
 					<div class="sing-body email_verification">
 						
 				<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
@@ -99,7 +94,6 @@
 							<img src="<?= base_url(); ?>img/message_1.png">
 						</div-->
 						<?php 
-
 						$email = $this->session->userdata('email');
 						
 						$arr = explode('@',$email);
@@ -107,31 +101,14 @@
 						$domain = end($arr);
 						
 						?>
-						
-						<form method="post" id="signup" enctype="multipart/form-data" onsubmit="return verifyEmail();">
-					 		<p>You need to verify your email address. We've sent an email to <b><u><?php echo $email; ?></u></b> to verify your address. Please enter below, the code you received in the email to continue.</p>
-							<p>Click <a href="javascript:void(0);" onclick="resend_verification_link();">here</a> to resend verification code.</p>
-							<p>If the email is not right click <a href="javascript:;" data-toggle="modal" data-target="#change_email">here</a> to change</p>
-						  <div class="input_very">
-								<span><input class="form-control quantity" type="text" name="first" maxlength="1"></span>
-								<span><input class="form-control quantity" type="text" name="second" maxlength="1"></span>
-								<span><input class="form-control quantity" type="text" name="third" maxlength="1"></span>
-								<span><input class="form-control quantity" type="text" name="fourth" maxlength="1"></span>
-						  </div>
-						  <!--
-						  <input type="number" class="form-control" name="verification_code" />
-						  -->
-						  <div class="start-btn maggg1">
-								<button type="submit" class="btn btn-warning btn-lg signup_btn">Verify</button>
-						  </div>
-						</form>
+						<p>You need to verify your email address. We've sent an email to <b><u><?php echo $email; ?></u></b> to verify your address. Please click the link in that email to continue.</p>
+						<p>Click <a href="javascript:void(0);" onclick="resend_verification_link();">here</a> to resend verification link.</p>
 					</div>
 				</div>
-
 				<?php
 				
-				$email_satus = $this->common_model->get_single_data('users',['id'=>$this->session->userdata('user_id')]);
-				$do_this_later = ($this->session->userdata('type')==2 && $email_satus['u_email_verify'] == 1) ? true : false;
+				
+				$do_this_later = ($this->session->userdata('type')==2) ? true : false;
 				?>
 				<div class="row">
 					<div class="<?php echo ($do_this_later) ? 'col-sm-6' : 'col-sm-12'; ?>">
@@ -153,87 +130,10 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="change_email" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Enter New Email</h4>
-        </div>
-        <form method="post" onsubmit="return changeEmail(event)" enctype="multipart/form-data" id="changeEmail">
-	        <div class="modal-body">
-				<div class="changeEmailError"></div>
-	          	<input type="email" class="form-control" name="email">
-	          	<input type="hidden" class="form-control" name="id" value="<?=$this->session->userdata('user_id')?>">
-	        </div>
-	        <div class="modal-footer">
-	          <button type="submit" class="btn btn-success">Submit</button>
-	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	        </div>
-	    </form>
-      </div>
-    </div>
-  </div>
 
 </body>
 <?php include 'include/footer.php';  ?>
 <script>
-  $("#emailSecurityCode").hide();
-  function verifyEmail(){
-    $("#emailSecurityCode").hide();
-    var first = $("#signup input[name=first]").val();
-    var second = $("#signup input[name=second]").val();
-    var third = $("#signup input[name=third]").val();
-    var fourth = $("#signup input[name=fourth]").val();
-    if(!first || !second || !third || !fourth){
-      alert('Please enter 4 digit code.');
-      return false;
-    }
-    var verification_code = first + second + third + fourth;
-    $.ajax({
-      type:'POST',
-      url:site_url+'home/submit_email_verify/',
-      // data:$('#signup').serialize(),
-      data: {
-        'verification_code' : verification_code
-      },
-      dataType:'JSON',
-      beforeSend:function(){
-        $(".signup_btn[type='submit']").html('<i class="fa fa-spin fa-spinner"></i> Processing...');
-        $(".signup_btn[type='submit']").prop('disabled', true);
-        $('.msg').html('');
-      },
-      success:function(resp){
-        if(resp.status == 1){
-          window.location.href = site_url+''+resp.url;
-          //window.location.href = site_url + 'email-verify';
-        } else {
-          $("#emailSecurityCode").text(resp.message).show();
-          $(".signup_btn[type='submit']").html('Verify');
-          $(".signup_btn[type='submit']").prop('disabled', false);
-        }
-      }
-    });
-    return false;
-  }
-
-  $('input.quantity').on('keyup', function(e) {
-    // console.log(e.which);
-    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-      /* 96 - 105 */
-      return false;
-    }
-    if ($(this).val()) {
-      $(this).parent().next().find('.quantity').focus();
-    }
-  });
-
-  $('input.quantity').on('focus', function() {
-    if ($(this).val()) {
-      $(this).val('');
-    }
-  });
-
 function resend_verification_link() {
 	$.ajax({
 		type: 'POST',
@@ -246,46 +146,13 @@ function resend_verification_link() {
 		success: function (resp) {
 			$('.loading-overlay').hide();
 			if (resp.status == 1) {
-				$('.msg').html('<div class="alert alert-success">Verification code has been sent successfully, please check your email</div>');
+				$('.msg').html('<div class="alert alert-success">Verification link has been sent successfully, please check your email</div>');
 			} else if (resp.status == 3) {
 				$('.msg').html('<div class="alert alert-danger">Your account is already verified, please contact to administration</div>');
 			} else if (resp.status == 2) {
 				$('.msg').html('<div class="alert alert-danger">Your account is blocked, please contact to administration</div>');
 			} else {
 				$('.msg').html('<div class="alert alert-danger">Something went wrong, Please try again</div>');
-			}
-		}
-
-	})
-}
-
-function changeEmail(e) {
-	e.preventDefault();
-	$.ajax({
-		type: 'POST',
-		dataType: 'JSON',
-		contentType : false,
-		chache : false,
-		processData : false,
-		data : new FormData($('#changeEmail')[0]),
-		url:site_url+'home/change_verification_email',
-		beforeSend: function () {
-			$('.loading-overlay').show();
-			$('.changeEmailError').html('');
-		},
-		success: function (resp) {
-			$('.loading-overlay').hide();
-			
-			if (resp.status == 1) {
-				location.reload();
-			} else if (resp.status == 3) {
-				$('.changeEmailError').html('<div class="alert alert-danger">Your account is already verified, please contact to administration</div>');
-			} else if (resp.status == 2) {
-				$('.changeEmailError').html('<div class="alert alert-danger">Your account is blocked, please contact to administration</div>');
-			} else if (resp.status == 4) {
-				$('.changeEmailError').html('<div class="alert alert-danger">This email is already linked with another account, please contact to administration</div>');
-			} else {
-				$('.changeEmailError').html('<div class="alert alert-danger">Something went wrong, Please try again</div>');
 			}
 		}
 

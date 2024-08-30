@@ -66,7 +66,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <h3 style="font-size: 20px;"><b>Jobs</b></h3>
-              <?php  include("include/top_project.php") ?>
+              <?php include("include/top_project.php") ?>
               <div class="acount-page membership-page">
 <div class="container">
       <div class="user-setting">
@@ -90,36 +90,39 @@
                                 <table id="boottable" class="table table-bordered table-striped">
               <thead>
                 <tr>
-				  <th style="display: none;"></th>
+								<th style="display: none;"></th>
                   <th>Job Id</th> 
                   <th>Job Title</th>
                   <th>Quotes</th>
-			<?php if($show_buget==1){ ?>
+									<?php if($show_buget==1){ ?>
                   <th>Budget</th>
-			<?php } ?>
+									<?php } ?>
                   <th>Average Quote</th>
-				  <th>Action</th>
+									<th>Action</th>
                 </tr>
               </thead>
               <tbody>
      <?php foreach($posts as $key=>$list) {
                 ?>
                 <tr>
-				  <td style="display: none;"><?php  echo $key+1; ?></td>
+									<td style="display: none;"><?php  echo $key+1; ?></td>
                   <td><?php  echo $list['project_id']; ?></td>
                   <td>
-					<?php
-						if($list['direct_hired']==1){
-							$tradesment=$this->common_model->GetColumnName('users',array('id'=>$list['awarded_to']),array('trading_name'));
-							$job_title = 'Work for '.$tradesment['trading_name'];
-						} else {
-							$job_title = $list['title'];
-						}
-					?>
-	<a href="<?php echo base_url('details/?post_id='.$list['job_id']); ?>"><?php echo $job_title; ?></a>
-				</td>
+									
+									<?php
+										if($list['direct_hired']==1){
+												$tradesment=$this->common_model->GetColumnName('users',array('id'=>$list['awarded_to']),array('trading_name'));
+												$job_title = 'Work for '.$tradesment['trading_name'];
+												} else {
+												$job_title = $list['title'];
+										 }
+										?>
+									
+									<a href="<?php echo base_url('details/?post_id='.$list['job_id']); ?>"><?php echo $job_title; ?></a>
+									
+									</td>
                   <td><?php $get_total_bids=$this->common_model->get_total_bids($this->session->userdata('user_id'),$list['job_id']); echo $get_total_bids[0]['bids']; ?></td>
-		<?php if($show_buget==1){ ?>
+									<?php if($show_buget==1){ ?>
                   <td><?php echo ($list['budget'])?'£'.$list['budget']:''; ?><?php echo ($list['budget2'])?' - £'.$list['budget2']:''; ?> </td>
 									<?php } ?>
                   <td><i class="fa fa-gbp"></i><?php $get_avg_bid=$this->common_model->get_avg_bid($this->session->userdata('user_id'),$list['job_id']); if($get_avg_bid[0]['average_amt']){ ?><?php echo number_format($get_avg_bid[0]['average_amt'],2); } else { echo "0"; } ?> GBP</td>

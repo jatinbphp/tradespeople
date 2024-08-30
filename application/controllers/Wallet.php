@@ -5,20 +5,10 @@ class Wallet extends CI_Controller
 	public function __construct() {
 		parent::__construct();
 		$this->check_login();
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
 		//require_once('application/libraries/stripe/init.php');
 		require_once('application/libraries/stripe-php-7.49.0/init.php');
-		if($this->session->userdata('user_id')){
-			$user_id = $this->session->userdata('user_id');
-			if(!empty($user_id)){
-				$user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-				if(empty($user_profile)){
-					$this->session->sess_destroy();
-					redirect('login');
-				}
-			}
-		}
 	}
 	
 	public function check_login() {
@@ -154,7 +144,7 @@ class Wallet extends CI_Controller
 			$status = 1;
 					
 			$insert['tr_userid'] = $user_id;
-			$insert['tr_message'] = '£'.$amount.' has been deposited to your wallet via card payment.</b>';
+			$insert['tr_message'] = '<i class="fa fa-gbp"></i>'.$amount.' has deposited in your wallet by credit card.</b>';
 			$insert['tr_amount'] = $amount;
 			$insert['tr_type'] = 1;
 			$insert['tr_transactionId'] = $txnID;
@@ -174,11 +164,11 @@ class Wallet extends CI_Controller
 			$store .= '&'.$user_id;//3
 			$store .= '&'.date('Y-m-d');//4
 			$store .= '&'.$txnID;//5
-			$store .= '&£'.$amount.' was credited to your account.';//6
+			$store .= '&<i class="fa fa-gbp"></i>'.$amount.' was credited to your account.';//6
 						
 			$inv = $this->common_model->insert('invoice',array('data'=>$store));
 			
-			$nt_message = '£'.$amount.' was credited to your account. <a target="_blank" href="'.site_url().'view-invoice/'.$inv.'">View invoice!</a>';
+			$nt_message = '<i class="fa fa-gbp"></i>'.$amount.' was credited to your account. <a target="_blank" href="'.site_url().'view-invoice/'.$inv.'">View invoice!</a>';
 		
 			$this->common_model->insert_notification($user_id,$nt_message);
 			
@@ -207,14 +197,14 @@ class Wallet extends CI_Controller
 			
 			if($user['is_pay_as_you_go']==1){
 	
-				$this->session->set_flashdata('errorss','<div class="alert alert-success">£'.$amount.' has been added to your wallet successfully. You can now start winning jobs. Don´t also forget to verify your account.</div>');
+				$this->session->set_flashdata('errorss','<div class="alert alert-success"><i class="fa fa-gbp"></i>'.$amount.' has been added to your wallet successfully. You can now start winning jobs. Don´t also forget to verify your account.</div>');
 				
 				$this->common_model->update('users',array('id' => $user_id), array('is_pay_as_you_go'=>2,'free_trial_taken'=>1));
 				
 				$this->send_pay_as_you_go_welcome_email($user['email'],$user['f_name'], $user['u_token']);
 				
 			} else {
-				$this->session->set_flashdata('errorss','<div class="alert alert-success">£'.$amount.' has been added to your wallet successfully!</div>');
+				$this->session->set_flashdata('errorss','<div class="alert alert-success"><i class="fa fa-gbp"></i>'.$amount.' has been added to your wallet successfully!</div>');
 			}
 			//echo $this->session->flashdata('errorss');
 			/*$serialize = serialize($stripe_data);
@@ -358,31 +348,21 @@ class Wallet extends CI_Controller
       $insert['bank_account_name'] = $this->input->post('bank_account_name');
       $insert['date_of_deposit'] = $this->input->post('date_of_deposit');
       $insert['reference'] = $this->input->post('reference');
-
-      //$insert['amount'] = $this->input->post('bank_amount');
-
+      $insert['amount'] = $this->input->post('bank_amount');
       $insert['create_date'] = date('Y-m-d H:i:s');
       $insert['update_date'] = date('Y-m-d H:i:s');
       $insert['status'] = 0;
       $admin = $this->common_model->GetColumnName('admin',array('id'=>1), array('processing_fee'));
-
-      // $comission = ($insert['amount']*$admin['processing_fee'])/100;
-      $comission = ($this->input->post('bank_amount')*$admin['processing_fee'])/100;
-
+      $comission = ($insert['amount']*$admin['processing_fee'])/100;
       $insert['admin_percent'] = $admin['processing_fee'];
-			
-      // $insert['user_amount'] = $insert['amount']-$comission;
-      $insert['user_amount'] = $this->input->post('bank_amount');
-      $mainAmt = $insert['user_amount'] + $comission;
-      $insert['amount'] = number_format($mainAmt,2);
-
+      $insert['user_amount'] = $insert['amount']-$comission;
       $insert['admin_amt'] = $comission;
       $insert['userId'] = $this->session->userdata('user_id');
       $run = $this->common_model->insert('bank_transfer',$insert);
 
       if($run){
         $json['status'] = 1;
-        $this->session->set_flashdata('msg1','<div class="alert alert-success" style="margin-bottom:5px!important;">Bank transfer deposit request has been submitted successfully. Head over to your bank account and pay to Tradespeoplehub account. Our account information is given below. Your money will be available for milestones payments with 24-48 hrs of payment.</div> <span class="text-danger">Amount to be transferred: <i class="fa fa-gbp"></i>'.$insert['amount'].'</span>');
+        $this->session->set_flashdata('msg1','<div class="alert alert-success">Bank transfer deposit request has been submitted successfully. Head over to your bank account and pay to Tradespeoplehub account. Our account information is given below. Your money will be available for milestones payments with 24-48 hrs of payment.</div>');
       } else {
         $json['status'] = 0;
         $json['msg'] = '<div class="alert alert-danger">Something went wrong, try again later.</div>';
@@ -396,13 +376,10 @@ class Wallet extends CI_Controller
   }
 
   public function wallet(){
-  	$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
-
   	$setting=$this->common_model->get_all_data('admin');
-  	if($data['user_profile']['type'] == 1 && $setting[0]['payment_method'] == 0){
-  		redirect('dashboard');
-  	}
-
+		if($setting[0]['payment_method'] == 0){
+			redirect('dashboard');
+		}
     if(isset($_GET['reject_reason']) && !isset($_GET['type'])){
       $whereRejectReason['id'] = $_GET['reject_reason'];
       $result = $this->common_model->fetch_records('homeowner_fund_withdrawal', $whereRejectReason);
@@ -421,7 +398,7 @@ class Wallet extends CI_Controller
         redirect('wallet');
       }
     }
-    
+    $data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
     $data['setting'] = $this->common_model->get_single_data('admin',array('id'=>1));
     $data['get_region'] = $this->common_model->getRows('tbl_region');
     
@@ -441,7 +418,6 @@ class Wallet extends CI_Controller
   }
 
 	public function transaction_history(){ 
-		
 		$user_id = $this->session->userdata('user_id');
 		
 		$page['transactions'] = $this->common_model->get_all_data('transactions',array('tr_userid'=>$user_id),'tr_id');
@@ -536,7 +512,7 @@ class Wallet extends CI_Controller
 			
 			
 			$insert['tr_userid'] = $user_id;
-			$insert['tr_message'] = '£'.$amount.' has deposited in your wallet by PayPal.</b>';
+			$insert['tr_message'] = '<i class="fa fa-gbp"></i>'.$amount.' has deposited in your wallet by PayPal.</b>';
 			$insert['tr_amount'] = $amount;
 			$insert['tr_type'] = 1;
 			$insert['tr_transactionId'] = $txnID;
@@ -552,11 +528,11 @@ class Wallet extends CI_Controller
 			$store .= '&'.$user_id;//3
 			$store .= '&'.date('Y-m-d');//4
 			$store .= '&'.$txnID;//5
-			$store .= '&£'.$amount.' was credited to your account.';//6
+			$store .= '&<i class="fa fa-gbp"></i>'.$amount.' was credited to your account.';//6
 						
 			$inv = $this->common_model->insert('invoice',array('data'=>$store));
 			
-			$nt_message = '£'.$amount.' was credited to your account. <a target="_blank" href="'.site_url().'view-invoice/'.$inv.'">View invoice!</a>';
+			$nt_message = '<i class="fa fa-gbp"></i>'.$amount.' was credited to your account. <a target="_blank" href="'.site_url().'view-invoice/'.$inv.'">View invoice!</a>';
 			
 			$subject = "Your TradespeopleHub account funded successfully.";
 		
@@ -571,14 +547,14 @@ class Wallet extends CI_Controller
 			
 			if($user['is_pay_as_you_go']==1){
 			
-				$this->session->set_userdata('succ123','<div class="alert alert-success">£'.$amount.' has been added to your wallet successfully. You can now start winning jobs. Don´t also forget to verify your account.</div>');
+				$this->session->set_userdata('succ123','<div class="alert alert-success"><i class="fa fa-gbp"></i>'.$amount.' has been added to your wallet successfully. You can now start winning jobs. Don´t also forget to verify your account.</div>');
 				
 				$this->common_model->update('users',array('id' => $user_id), array('is_pay_as_you_go'=>2,'free_trial_taken'=>1));
 				
 				$this->send_pay_as_you_go_welcome_email($user['email'],$user['f_name'], $user['u_token']);
 				
 			} else {
-				$this->session->set_userdata('succ123','<div class="alert alert-success">£'.$amount.' has been added to your wallet successfully!</div>');
+				$this->session->set_userdata('succ123','<div class="alert alert-success"><i class="fa fa-gbp"></i>'.$amount.' has been added to your wallet successfully!</div>');
 			}
 			
 			if($user['type']==1){
@@ -678,7 +654,7 @@ class Wallet extends CI_Controller
 									
 					
 					$insert['tr_userid'] = $user_id;
-					$insert['tr_message'] = '£'.$amount.' has been deposited to your wallet via card payment.</b>';
+					$insert['tr_message'] = '<i class="fa fa-gbp"></i>'.$amount.' has deposited in your wallet by credit card.</b>';
 					$insert['tr_amount'] = $amount;
 					$insert['tr_type'] = 1;
 					$insert['tr_transactionId'] = $txnID;
@@ -703,11 +679,11 @@ class Wallet extends CI_Controller
 						$store .= '&'.$user_id;//3
 						$store .= '&'.date('Y-m-d');//4
 						$store .= '&'.$txnID;//5
-						$store .= '&£'.$amount.' was credited to your account.';//6
+						$store .= '&<i class="fa fa-gbp"></i>'.$amount.' was credited to your account.';//6
 									
 						$inv = $this->common_model->insert('invoice',array('data'=>$store));
 						
-						$nt_message = '£'.$amount.' was credited to your account. <a target="_blank" href="'.site_url().'view-invoice/'.$inv.'">View invoice!</a>';
+						$nt_message = '<i class="fa fa-gbp"></i>'.$amount.' was credited to your account. <a target="_blank" href="'.site_url().'view-invoice/'.$inv.'">View invoice!</a>';
 					
 						
 						$this->common_model->insert_notification($user_id,$nt_message);
@@ -725,14 +701,14 @@ class Wallet extends CI_Controller
 						
 						if($user['is_pay_as_you_go']==1){
 				
-							$this->session->set_userdata('succ123','<div class="alert alert-success">£'.$amount.' has been added to your wallet successfully. You can now start winning jobs. Don´t also forget to verify your account.</div>');
+							$this->session->set_userdata('succ123','<div class="alert alert-success"><i class="fa fa-gbp"></i>'.$amount.' has been added to your wallet successfully. You can now start winning jobs. Don´t also forget to verify your account.</div>');
 							
 							$this->common_model->update('users',array('id' => $user_id), array('is_pay_as_you_go'=>2,'free_trial_taken'=>1));
 							
 							$this->send_pay_as_you_go_welcome_email($user['email'],$user['f_name'], $user['u_token']);
 							
 						} else {
-							$this->session->set_userdata('succ123','<div class="alert alert-success">£'.$amount.' has been added to your wallet successfully!</div>');
+							$this->session->set_userdata('succ123','<div class="alert alert-success"><i class="fa fa-gbp"></i>'.$amount.' has been added to your wallet successfully!</div>');
 						}
 						
 						if($user['type']==1){
@@ -850,7 +826,7 @@ class Wallet extends CI_Controller
 				$results=$this->common_model->update_data('users',$where_array1,$userdata1);
 				
 				$insert3['tr_userid'] = $user_id;
-				$insert3['tr_message'] = 'You have withdrawn £'.$amount.' from your wallet.</b>';
+				$insert3['tr_message'] = 'You have withdrawal <i class="fa fa-gbp"></i>'.$amount.' from your wallet.</b>';
 				$insert3['tr_amount'] = $amount;
 				$insert3['tr_type'] = 2;
 				$insert3['tr_status'] = 1;
@@ -931,7 +907,7 @@ class Wallet extends CI_Controller
 				$results=$this->common_model->update_data('users',$where_array1,$userdata1);
 				
 				$insert3['tr_userid'] = $user_id;
-				$insert3['tr_message'] = 'You have withdrawn £'.$amount.' from your wallet.</b>';
+				$insert3['tr_message'] = 'You have withdrawal <i class="fa fa-gbp"></i>'.$amount.' from your wallet.</b>';
 				$insert3['tr_amount'] = $amount;
 				$insert3['tr_type'] = 2;
 				$insert3['tr_status'] = 1;
@@ -1074,8 +1050,6 @@ class Wallet extends CI_Controller
 	}
 
   public function Add_a_Card_to_Verify_your_Account($email,$name){
-  	$setting = $this->common_model->get_all_data('admin');
-
     $subject = "Add a Card to verify your Tradespeoplehub account";
 
     $html = '<p style="margin:0;padding:20px 0px">Add a Card to Verify your Account</p>';
@@ -1088,9 +1062,7 @@ class Wallet extends CI_Controller
     $html .= '<p style="margin:0;padding:20px 0px">Note we will not charge the card as it only for account verification and not billing.</p>';
     $html .= '<p style="margin:0;padding:20px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 
-    if($setting[0]['payment_method'] == 1){
-    	$sent = $this->common_model->send_mail($email,$subject,$html);	
-    }    
+    $sent = $this->common_model->send_mail($email,$subject,$html);
   }
 	public function send_pay_as_you_go_welcome_email($to, $f_name, $token){
 		

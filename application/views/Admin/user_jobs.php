@@ -121,7 +121,6 @@ $closed_date=$get_commision[0]['closed_date'];
                 $x=1;
                 
                 foreach($user_jobs as $lists) {
-                  
                   $user=$this->Common_model->get_userDataByid($lists['userid']);
                   $category_name="";
                   if($lists['category']){
@@ -148,8 +147,7 @@ $closed_date=$get_commision[0]['closed_date'];
 
                   }
                 ?>
-
-                <?php $get_total_bids=$this->Common_model->get_single_data('tbl_jobpost_bids',array('job_id'=>$lists['job_id'])); ?>
+             
                 <tr role="row" class="odd">
                   <td class="hide"><?php echo $x; ?></td>  
                   <td><?php echo $lists['project_id']; ?></td>  
@@ -191,7 +189,7 @@ $closed_date=$get_commision[0]['closed_date'];
 											
 												echo '<span class="label label-success" style="width:44px;">DISPUTE</span>';
 												
-											}else if(empty($get_total_bids)){
+											}else if(date('Y-m-d')>=$datesss){
 												
 												echo '<span class="label label-success" style="width:44px;">CLOSED</span>';
 												
@@ -200,11 +198,7 @@ $closed_date=$get_commision[0]['closed_date'];
 											
 												echo '<span class="label label-success" style="width:44px;">REJECTED</span>';
 											
-											} if(($list['status']==0 || $list['status']==1 || $list['status']==2 || $list['status']==3) && !empty($get_total_bids)){ 
-                
-                  echo  '<span class="label label-success">Open</span>';
-                  
-                 }
+											}
 												
                       ?>
                   </td>

@@ -1,6 +1,5 @@
 <?php 
 include_once('include/header.php');
-$paymentSettings = $this->Common_model->get_all_data('admin');
 ?>
 <style>
 	.well {
@@ -57,15 +56,7 @@ $paymentSettings = $this->Common_model->get_all_data('admin');
                         <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Marketers Name: activate to sort column ascending" style="width: 189.236px;">Homeowner name</th>
                         <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Requested Amount: activate to sort column ascending" style="width: 219.705px;">Email</th>
 
-                        <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 252.795px;">  
-                          <?php 
-                            if($paymentSettings[0]['payment_method'] == 1){
-                                echo 'Quotes job received';
-                            }else{
-                                echo 'Milestone Released(£)';
-                            }
-                          ?>
-                        </th>
+                        <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 252.795px;">Quotes job received</th>
 
                         <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Payment Method: activate to sort column ascending" style="width: 195.174px;">Customer acquired</th>
                         <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Requested Amount: activate to sort column ascending" style="width: 219.705px;">Email</th> -->
@@ -145,15 +136,7 @@ $paymentSettings = $this->Common_model->get_all_data('admin');
                           <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Payment Method: activate to sort column ascending" style="width: 195.174px;">Customer acquired</th> -->
                           <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Requested Amount: activate to sort column ascending" style="width: 219.705px;">Email</th> -->
                           <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Payment Method: activate to sort column ascending" style="width: 195.174px;">Customer Types</th> -->
-                          <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="status: activate to sort column ascending" style="width: 85.4688px;">
-                            <?php 
-                            if($paymentSettings[0]['payment_method'] == 1){
-                                echo 'Quotes Provided';
-                            }else{
-                                echo 'Milestone Released(£)';
-                            }
-                          ?>
-                          </th>
+                          <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="status: activate to sort column ascending" style="width: 85.4688px;">Quotes Provided</th>
 
                           <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="status: activate to sort column ascending" style="width: 85.4688px;">Revenue</th>
                           <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 252.795px;">Credit transferred to wallet  </th> -->

@@ -30,10 +30,10 @@ include_once('include/header.php');
 										<th>Requested Amount</th>
 										<th>Payment Method</th>
 										<th>status</th>
-										<?php //if($_GET['v']!='t'){ ?>
+										<?php if($_GET['v']!='t'){ ?>
 											<!-- <th>Reason</th> -->
 											<th>Action</th>
-										<?php //} ?>
+										<?php } ?>
 									</tr>
 								</thead>
 								<tbody>
@@ -55,7 +55,7 @@ include_once('include/header.php');
 													<span class="label label-success">Paid</span>
 												<?php } ?>
 											</td>
-											<?php //if($_GET['v']!='t'){ ?>
+											<?php if($_GET['v']!='t'){ ?>
 												<!-- <td><?= $payouts->reason_for_reject; ?></td> -->
 
 											
@@ -113,7 +113,7 @@ include_once('include/header.php');
 
 														<?php } } ?> 
 													</td>
-												<?php //} ?>
+												<?php } ?>
 
 
 										<!-- popup............. -->

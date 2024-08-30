@@ -3,22 +3,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Addon extends CI_Controller
 {
 	public function __construct() {
-		parent::__construct();
+		parent::__construct(); 
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
 		require_once('application/libraries/stripe-php-7.49.0/init.php');
 
 		error_reporting(0);
-		if($this->session->userdata('user_id')){
-			$user_id = $this->session->userdata('user_id');
-			if(!empty($user_id)){
-				$user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
-
-				if(empty($user_profile)){
-					$this->session->sess_destroy();
-					redirect('login');
-				}
-			}
-		}
 	}
 	public function check_login() {
 		if(!$this->session->userdata('user_logIn')){

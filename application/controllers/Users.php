@@ -2391,7 +2391,8 @@ class Users extends CI_Controller
 			$data['service_category'] = $this->common_model->GetSingleData('service_category',['cat_id'=>$sesData['category']]);
 
 			$data['price_per_type'] = !empty($data['service_category']['price_type_list']) ? explode(',', $data['service_category']['price_type_list']) : [];
-
+			
+			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
       		$this->load->view('site/add-service',$data);
     	} 
 	}
@@ -2576,6 +2577,14 @@ class Users extends CI_Controller
 		if ($step3 !== null) {
 		  $insert = array_merge($insert, $step3);
 		}*/
+		
+		$this->form_validation->set_rules('video', 'Video', 'callback_check_video_size');
+		
+		if ($this->form_validation->run()==false) {
+			$this->session->set_flashdata('error',validation_errors());
+			$this->session->set_userdata('next_step',4);
+			redirect('add-service');
+		}
 
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
@@ -2658,19 +2667,12 @@ class Users extends CI_Controller
 
 		$input['status'] = 'approval_pending';
 		$result = $this->common_model->update('my_services',array('id'=>$this->session->userdata('latest_service')),$input);
+		
+		$this->session->set_userdata('next_step',8);
+		$this->session->set_flashdata('success',"Service availability details added successfully.");
+		redirect('add-service');
 	
-		if($run){
-			$this->session->unset_userdata('store_service1');
-			$this->session->unset_userdata('store_service2');
-			$this->session->unset_userdata('store_service3');
-			$this->session->unset_userdata('latest_service');
-			$this->reserServiceTabData();							
-
-			$this->session->set_flashdata('success','Your service has been saved successfully.');
-		} else {
-			$this->session->set_flashdata('error','Something is wrong. Your Service is not saved successfully!!!');
-		}			
-		redirect('my-services');
+		
 	}
 
 	public function storeServices7($value=''){
@@ -2702,6 +2704,53 @@ class Users extends CI_Controller
 		$this->session->set_userdata('next_step',3);
 		$this->session->set_flashdata('success',"Package details added successfully.");
 		redirect('add-service');		
+	}
+	
+	public function storeServices8($value=''){
+		$this->form_validation->set_rules('f_name','First Name','required');
+		$this->form_validation->set_rules('l_name','Last Name','required');
+		$this->form_validation->set_rules('about_business','About Business','required');
+		$this->form_validation->set_rules('trading_name','Trading Name','required');
+		
+		if ($this->form_validation->run()==false) {
+			$this->session->set_flashdata('error',validation_errors());
+			$this->session->set_userdata('next_step',8);
+			redirect('add-service');
+		} else {
+			
+			if($_FILES['profile']['name']){ 
+				$config['upload_path']="img/profile";
+				$config['allowed_types'] = 'jpeg|gif|jpg|png';
+				$config['encrypt_name']=true;
+				$this->load->library("upload",$config);
+				if ($this->upload->do_upload('profile')) {
+					$profile=$this->upload->data("file_name");
+					$insert['profile'] = $profile;
+				} 
+			}
+			
+			$user_id = $this->session->userdata('user_id');
+				
+			$insert['f_name'] = $this->input->post('f_name');
+			$insert['l_name'] = $this->input->post('l_name');
+			$insert['about_business'] = $this->input->post('about_business');
+			$insert['trading_name'] = $this->input->post('trading_name');
+			
+			$run = $this->common_model->update('users',array('id'=>$user_id),$insert);	
+			
+			if($run){
+				$this->session->unset_userdata('store_service1');
+				$this->session->unset_userdata('store_service2');
+				$this->session->unset_userdata('store_service3');
+				$this->session->unset_userdata('latest_service');
+				$this->reserServiceTabData();							
+
+				$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
+			} else {
+				$this->session->set_flashdata('error','Something is wrong. Your Service is not saved successfully!!!');
+			}			
+			redirect('my-services');
+		}
 	}
 
 	public function editServices($id=""){
@@ -2774,6 +2823,7 @@ class Users extends CI_Controller
 			$this->session->set_userdata('service_type_data', $service_type);
 
 			$data['service_type'] = $this->common_model->getServiceType($service_type);
+			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 
 			$this->load->view('site/edit-service',$data);
     	} 
@@ -2907,6 +2957,15 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
+		
+		$this->form_validation->set_rules('video', 'Video', 'callback_check_video_size');
+		
+		if ($this->form_validation->run()==false) {
+			$this->session->set_flashdata('error',validation_errors());
+			$this->session->set_userdata('next_step',4);
+			redirect('add-service');
+		}
+		
 		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
 		$mDocs = !empty($this->input->post('multiDocIds')) ? explode(',', $this->input->post('multiDocIds')) : [];
 
@@ -3017,22 +3076,20 @@ class Users extends CI_Controller
 
 		$serviceAvailible = $this->common_model->GetSingleData('service_availability',array('service_id'=>$id));
 
-		$insert1['status'] = 'approval_pending';
-		$this->common_model->update('my_services',array('id'=>$id),$insert1);
+		//$insert1['status'] = 'approval_pending';
+		//$this->common_model->update('my_services',array('id'=>$id),$insert1);
 
 		if(!empty($serviceAvailible)){
 			$this->common_model->update('service_availability',array('service_id'=>$id),$insert);	
 		}else{
 			$this->common_model->insert('service_availability', $insert);				
 		}
+		
+		$this->session->set_userdata('update_next_step',8);
+		$this->session->set_flashdata('success','Service availability details updated succesfully.');
+		redirect("edit-service/{$id}");
 	
-		if($id){
-			$this->session->set_flashdata('success','Your service has been updated successfully.');
-		} else {
-			$this->session->set_flashdata('error','Something is wrong.');
-		}
-		$this->resetEditServiceTabData();
-		redirect("my-services");				
+						
 	}
 
 	public function updateServices7($id=''){
@@ -3060,6 +3117,53 @@ class Users extends CI_Controller
 		$this->session->set_userdata('update_next_step',3);
 		redirect("edit-service/{$id}");							
 	}
+		
+	public function updateServices8($id=''){
+		if(!$id){
+			redirect(base_url());
+			return;
+		}
+		
+		$this->form_validation->set_rules('f_name','First Name','required');
+		$this->form_validation->set_rules('l_name','Last Name','required');
+		$this->form_validation->set_rules('about_business','About Business','required');
+		$this->form_validation->set_rules('trading_name','Trading Name','required');
+		
+		if ($this->form_validation->run()==false) {
+			$this->session->set_flashdata('error',validation_errors());
+			$this->session->set_userdata('update_next_step',8);
+			redirect("edit-service/{$id}");
+		} else {
+			
+			if($_FILES['profile']['name']){ 
+				$config['upload_path']="img/profile";
+				$config['allowed_types'] = 'jpeg|gif|jpg|png';
+				$config['encrypt_name']=true;
+				$this->load->library("upload",$config);
+				if ($this->upload->do_upload('profile')) {
+					$profile=$this->upload->data("file_name");
+					$insert['profile'] = $profile;
+				} 
+			}
+			
+			$user_id = $this->session->userdata('user_id');
+				
+			$insert['f_name'] = $this->input->post('f_name');
+			$insert['l_name'] = $this->input->post('l_name');
+			$insert['about_business'] = $this->input->post('about_business');
+			$insert['trading_name'] = $this->input->post('trading_name');
+			
+			$run = $this->common_model->update('users',array('id'=>$user_id),$insert);
+			
+			if($id){
+				$this->session->set_flashdata('success','Your service has been updated successfully.');
+			} else {
+				$this->session->set_flashdata('error','Something is wrong.');
+			}
+			$this->resetEditServiceTabData();
+			redirect("my-services");			
+		}
+	}	
 
 	public function removeServiceImage(){
 		$user_id = $this->session->userdata('user_id');
@@ -3119,18 +3223,19 @@ class Users extends CI_Controller
 			$jsFunction = $type == 1 ? 'onclick="return changesub($(this).val())"' : '';
 			$chkName = $type == 1 ? 'sub_category[]' : 'service_type[]';
 			$inputType = $type == 1 ? 'radio' : 'checkbox';
+			$className = $type == 1 ? '' : 'serviceCheck';
 
 			// $option .= '<option value="">Please Select</option>';
 			foreach($subCategory as $sCat){
 				// $option .= '<option value="'.$sCat['cat_id'].'">'.$sCat['cat_name'].'</option>';
 
 				if($type == 1){
-					$checked = in_array($sCat['cat_id'], $existSCat) ? 'checked' : '';
+					$checked = in_array($sCat['cat_id'], $existSCat) ? 'checked' : '';					
 				}else{
 					$checked = in_array($sCat['cat_id'], $existSType) ? 'checked' : '';
 				}
 
-				$option .= '<div class="col-sm-6"><div class=""><label><input type="'.$inputType.'" name="'.$chkName.'" class="subCategory" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
+				$option .= '<div class="col-sm-6"><div class=""><label><input type="'.$inputType.'" name="'.$chkName.'" class="subCategory '.$className.'" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
 			}
 			$option .= '</div>';
 		}		
@@ -3655,4 +3760,22 @@ class Users extends CI_Controller
 			redirect('login');
 		}   	
     }
+	
+	public function getPositiveKeywords(){
+		$keywords = $oId = $_GET['keyword'];
+		$suggestions = $this->common_model->get_keyword_suggestions($keywords);
+		echo json_encode($suggestions);
+	}
+	
+	public function check_video_size() {
+    	// Maximum file size allowed (in bytes), 60MB = 60 * 1024 * 1024 bytes
+		$max_size = 60 * 1024 * 1024;
+
+		if (isset($_FILES['video']) && $_FILES['video']['size'] > $max_size) {
+			// Set custom error message for file size validation
+			$this->form_validation->set_message('check_video_size', 'The video file exceeds the maximum allowed size of 60MB.');
+			return false;
+		}
+		return true;
+	}
 }

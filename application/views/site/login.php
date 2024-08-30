@@ -23,42 +23,6 @@
 								<button type="submit" class="btn btn-primary  btn-block btn-lg login_btn" >Login </button>					
 								<a href="<?php echo base_url('forgot-password'); ?>" class="for-link">Need help logging in?</a>
 							</div>
-
-							<div class="row mt20">
-								<!-- <div class="col-md-6"><img src="img/ios-btn.png" class="ios" alt="ios"></div>
-								<div class="col-md-6"><img src="img/android-btn2.png" class="android" alt="android"></div> -->
-								<div class="col-md-12">
-									<ul class="nav login d-sm-none">
-										<li class="dropdown">
-											<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-												<img src="<?php echo base_url('img/ios-appStore-black.png'); ?>">
-											</a>
-											<ul class="dropdown-menu">
-							                  <li>
-							                    <a target="_blank" href="https://apps.apple.com/app/tradespeoplehub-for-homeowners/id6450202456">Homeowner's app</a>
-							                  </li>
-							                  <li>
-							                    <a target="_blank" href="https://apps.apple.com/app/tradespeoplehub-for-provider/id6450201899">Tradespeople's app</a>
-							                  </li>
-							                </ul>
-										</li>
-										<li class="dropdown">
-							                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-							                  <img src="<?php echo base_url('img/google-appStore-black.png'); ?>">
-							                </a>
-							                <ul class="dropdown-menu">
-							                  <li>
-							                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.tradespeoplehub">Homeowner's app</a>
-							                  </li>
-							                  <li>
-							                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.tradesprovider">Tradespeople's app</a>
-							                  </li>
-							                </ul>
-							             </li>
-									</ul>
-								</div>
-							</div>
-							
 						</form>
 						</div>
 					</div>
@@ -77,34 +41,7 @@
 								<!-- <p>Over 100,000 homeowners post jobs on our platform. We only need tradespeople like you to do them.</p> -->
 								<!-- <a href="<?php echo base_url('marketers'); ?>" class="text-href">Sign up now</a> -->
 							</div>
-							<ul class="nav login d-lg-none">
-								<li class="dropdown">
-									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-										<img src="<?php echo base_url('img/ios-appStore-black.png'); ?>">
-									</a>
-									<ul class="dropdown-menu">
-					                  <li>
-					                    <a target="_blank" href="https://apps.apple.com/app/tradespeoplehub-for-homeowners/id6450202456">Homeowner's app</a>
-					                  </li>
-					                  <li>
-					                    <a target="_blank" href="https://apps.apple.com/app/tradespeoplehub-for-provider/id6450201899">Tradespeople's app</a>
-					                  </li>
-					                </ul>
-								</li>
-								<li class="dropdown">
-					                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-					                  <img src="<?php echo base_url('img/google-appStore-black.png'); ?>">
-					                </a>
-					                <ul class="dropdown-menu">
-					                  <li>
-					                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.tradespeoplehub">Homeowner's app</a>
-					                  </li>
-					                  <li>
-					                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.tradesprovider">Tradespeople's app</a>
-					                  </li>
-					                </ul>
-					             </li>
-							</ul>
+							
 						</div>
 					</div>
 				</div>

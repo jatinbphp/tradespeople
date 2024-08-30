@@ -32,7 +32,7 @@
 				</div>
 			</div>
 
-			<div class="col-sm-12" id="datePickerDiv" style="margin-top:10px; border-bottom:1px solid #b0c0d3; display: none;">
+			<div class="col-sm-12" id="datePickerDiv" style="margin-top:10px; padding-bottom:15px; border-bottom:1px solid #b0c0d3; display: none;">
 				<span>If No add the days and time you not available</span><br>
 				<span style="font-size: 12px; color: #b0c0d3;">
 					Days you will not available?
@@ -49,30 +49,35 @@
 						<select class="form-control input-md" name="time_slot" id="timeSlot">
 							<option value="">Specify your unavailable time range</option>
 							<?php for ($hour = 0; $hour <= 23; $hour++) {
-								$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
-								$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
-								echo "<option " . (isset($serviceData['service_availiblity']['time_slot']) && $serviceData['service_availiblity']['time_slot'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+								//$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
+								//$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
+	 							$hour_padded = sprintf("%02d", $hour);  // Pad the hour to two digits
+								//echo "<option " . (isset($serviceData['service_availiblity']['time_slot']) && $serviceData['service_availiblity']['time_slot'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+								echo "<option " . (isset($serviceData['service_availiblity']['time_slot']) && $serviceData['service_availiblity']['time_slot'] == "$hour_padded:00" ? 'selected' : '') . " value=\"$hour_padded:00\">$hour_padded:00</option>\n";
 							}?>
-						</select>
+						</select>						
 					</div>
 					<div class="col-md-6">
 						<label class="control-label" for="timeSlotTo">To</label>
 						<select class="form-control input-md" name="time_slot_2" id="timeSlotTo">
 							<option value="">Specify your unavailable time range</option>
 							<?php for ($hour = 0; $hour <= 23; $hour++) {
-								$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
-								$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
-								echo "<option " . (isset($serviceData['service_availiblity']['time_slot_2']) && $serviceData['service_availiblity']['time_slot_2'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+								//$hour_padded = sprintf("%02d", $hour % 12 == 0 ? 12 : $hour % 12); // Convert 0 to 12 for am/pm display
+								//$ampm = $hour < 12 ? 'am' : 'pm'; // Determine am/pm
+								$hour_padded = sprintf("%02d", $hour);  // Pad the hour to two digits
+								//echo "<option " . (isset($serviceData['service_availiblity']['time_slot_2']) && $serviceData['service_availiblity']['time_slot_2'] == "$hour_padded:00 $ampm" ? 'selected' : '') . " value=\"$hour_padded:00 $ampm\">$hour_padded:00 $ampm</option>\n";
+								echo "<option " . (isset($serviceData['service_availiblity']['time_slot_2']) && $serviceData['service_availiblity']['time_slot_2'] == "$hour_padded:00" ? 'selected' : '') . " value=\"$hour_padded:00\">$hour_padded:00</option>\n";
+		
 							}?>
 						</select>
 					</div>
 				</div>
-				<div style="padding: 10px 0;">
+				<!--<div style="padding: 10px 0;">
 					<span>
 						Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
 					</span>
-				</div>
-				<div id="notAvailablMsg" style="border-top:1px solid #b0c0d3; padding: 10px 0; display: none;"></div>
+				</div>-->
+				<div id="notAvailablMsg" style="padding: 10px 0; display: none;"></div>
 			</div>
 
 			<div class="col-sm-12" style="margin-top:10px;">
@@ -121,8 +126,8 @@
 		
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
-			<div class="col-sm-12">
-				<button type="submit" class="btn btn-primary submit_btn">Post Service Now</button>
+			<div class="col-sm-12 serviceBtn">
+				<button type="submit" class="btn btn-warning submit_btn">Continue</button>
 			</div>                                 
 		</div>
 	</div>                        

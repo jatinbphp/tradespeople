@@ -1,0 +1,497 @@
+<?php 
+if($user_data['type']==1 && $user_data['u_email_verify']==0) {
+	//redirect('email-verify');
+}
+$page_name=$this->uri->segment(1); 
+
+$user_profile=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
+  
+$percentage=0;
+if($user_profile['u_email_verify']==1) {
+	$percentage=20; 
+}
+  
+if(!empty($user_profile['phone_no'])) {  
+	$percentage=$percentage+20;
+}
+    
+if(!empty($user_profile['profile'])) {
+  $percentage=$percentage+15;
+}
+
+$get_certification=$this->common_model->get_education('user_certification',$this->session->userdata('user_id'));
+    
+if($get_certification) {
+	$percentage=$percentage+15;
+}
+   
+$get_education=$this->common_model->get_education('user_education',$this->session->userdata('user_id'));
+
+if($get_education) {
+	$percentage=$percentage+15;
+}
+   
+$get_portfolio=$this->common_model->get_education('user_portfolio',$this->session->userdata('user_id'));
+
+if($get_portfolio) {
+	$percentage=$percentage+15;
+}
+$isUrlExpired = $this->common_model->check_review_invitation_count($user_profile['id']);
+
+$required = ($isUrlExpired) ? 'required=""' : '';
+
+?>
+<div class="man_nan">
+	<button type="button" class="navbar-toggle" id="man_bbbon">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+</div>
+<div class="sidebarnav" id="sidd_cll">
+	<div class="sub-sidebar-container">
+		<?php if($this->session->userdata('type')==1){ ?>
+		<div class="sub-sidebar">
+			<a href="<?php echo base_url('wallet'); ?>"><i class="fa fa-cog" aria-hidden="true"></i>
+				<span>Pay as you go</span>
+				<a href="<?php echo base_url('membership-plans'); ?>"><b>Upgrade</b></a>
+			</a>
+                    
+		</div>
+		<?php } ?>
+		
+		<div class="meter blue">
+			<span style="width: <?php echo $percentage; ?>%; line-height:30px; font-weight:600;">
+				<?php echo $percentage; ?>%
+			</span>
+		</div>
+
+	</div>
+	<div class="user-page-menu">
+		<?php if($page_name=='dashboard'){ ?>
+      <p>
+				<a href="<?php echo base_url('dashboard'); ?>" class="active"><span><i class="fa fa-home" aria-hidden="true"></i></span> My Account</a>
+			</p>
+		<?php }else{ ?>
+		
+			<p>
+				<a href="<?php echo base_url('dashboard'); ?>">
+        <span><i class="fa fa-home" aria-hidden="true"></i></span>Dashboard</a>
+			</p>
+        
+		<?php } ?>
+							
+		<?php if($this->session->userdata('type')==1){ ?>
+		
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+			
+			<div class="panel panel-default">
+				
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+							 <span><i class="fa fa-pencil" aria-hidden="true"></i></span> My Details
+						</a>
+					</h4>
+				</div>
+
+				<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+						<p><a href="<?php echo base_url('edit-profile'); ?>"> <span><i class="fa fa-user" aria-hidden="true"></i></span> Personal Details</a></p>
+						
+						<p><a href="<?php echo base_url('company'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> Company</a></p>
+						
+						<p><a href="<?php echo base_url('trades') ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Category </a></p>
+						
+						<p><a onclick="update_noti();" href="<?php echo base_url('notifications'); ?>"> <span><i class="fa fa-bell" aria-hidden="true"></i></span> Notifications <?php echo ($count > 0) ?  '<span style="background:red;color:#fff;" class="badge">'.$count.'</span>' : '';?></a></p>
+						
+						<p style="display: none;"><a href="#"> <span><i class="fa fa-users" aria-hidden="true"></i></span> Directory Details</a></p>
+						
+						<p><a href="<?php echo base_url('change-password'); ?>"> <span><i class="fa fa-lock" aria-hidden="true"></i></span> Password</a></p>
+						
+					</div>
+				</div>
+			</div>
+		</div> 
+		<?php } ?>
+		
+		<?php if($this->session->userdata('type')==1){ ?>
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+							<span><i class="fa fa-list" aria-hidden="true"></i></span> My Jobs
+							</a>
+						</h4>
+					</div>
+					<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+                  
+							<p><a href="<?php echo base_url('work-in-progress'); ?>"> <span><i class="fa fa-user" aria-hidden="true"></i></span> Work in Progress</a></p>
+                   
+							<p><a href="<?php echo base_url('recent-jobs'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p>
+                      
+							<p><a href="<?php echo base_url('completed'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Completed Jobs</a></p>
+									
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<p><a href="<?php echo base_url('verify'); ?>"><span><i class="fa fa-unlock-alt" aria-hidden="true"></i></span> Account Verification</a></p>
+
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+								<span><i class="fa fa-cog" aria-hidden="true"></i></span> Membership Manag.
+							</a>
+						</h4>
+					</div>
+					<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+										
+							<p><a href="<?php echo base_url('wallet'); ?>"> <span><i class="fa fa-money" aria-hidden="true"></i></span> Paid as you go</a></p>
+                     
+							<p><a href="<?php echo base_url('subscription-plan'); ?>"> <span><i class="fa fa-cubes" aria-hidden="true"></i></span> Subscription</a></p>
+							<p><a href="<?php echo base_url('addons'); ?>"> <span><i class="fa fa-plus" aria-hidden="true"></i></span> Addons</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+								<span><i class="fa fa-credit-card" aria-hidden="true"></i></span> Billing
+							</a>
+						</h4>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+								
+							<p><a href="<?php echo base_url('wallet'); ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Wallet</a></p>
+							
+							<p><a href="<?php echo site_url().'billing-info/?verify=1'; ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Update debit/credit card</a></p>
+                 
+							<p><a href="<?php echo base_url('invoices'); ?>"> <span><i class="fa fa-file-pdf-o" aria-hidden="true"></i></span> Invoice</a></p>
+                   
+							<p><a href="<?php echo base_url('transaction-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> History</a></p> 
+                   
+							<p><a href="<?php echo base_url('rewards'); ?>"> <span><i class="fa fa-bullhorn" aria-hidden="true"></i></span> Rewards </a></p> 
+
+						</div>
+						
+					</div>
+				</div>
+			</div>
+  
+			<p><a href="<?php echo base_url('profile/'.$this->session->userdata('user_id')); ?>"><span><i class="fa fa-wrench" aria-hidden="true"></i></span> My Profile</a></p>
+			
+			<!--p><a href="<?php echo base_url('my_reviews'); ?>"><span><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span> My review</a></p--> 
+			
+			<p style="display: none;"><a href="#"><span><i class="fa fa-envelope-o" aria-hidden="true"></i></span> My Ticket</a></p>
+			
+			<p style="display: none;">
+				<a href="<?php echo base_url('milestone-requests'); ?>"><span><i class="fa fa-comment" aria-hidden="true"></i></span>Milestone Request</a>
+			</p>
+   
+   
+			<p>
+				<a href="<?php echo base_url('earnings'); ?>"><span><i class="fa fa-google-wallet" aria-hidden="true"></i></span> Earnings</a>
+			</p>
+		<?php } ?> 
+		
+		<?php if($this->session->userdata('type')==2){ ?>
+    <p>
+			<a href="<?php echo base_url('edit-profile'); ?>"><span><i class="fa fa-pencil" aria-hidden="true"></i></span> My Details</a>
+		</p> 
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+						 <span><i class="fa fa-list" aria-hidden="true"></i></span> My Jobs
+						</a>
+					</h4>
+				</div>
+				<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+									 
+						<p><a href="<?php echo base_url('jobs-in-progress'); ?>"> <span><i class="fa fa-user" aria-hidden="true"></i></span> Work in Progress</a></p>
+										
+						<!--p><a href="<?php echo base_url('new-jobs'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p-->
+						<p><a href="<?php echo base_url('my-account'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span> New Job</a></p>
+									 
+						<p><a href="<?php echo base_url('jobs-completed'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Completed Jobs</a></p>
+						
+						<p><a href="<?php echo base_url('jobs-rejected'); ?>"> <span><i class="fa fa-wrench" aria-hidden="true"></i></span> Rejected Jobs</a></p>
+									 
+						<p style="display: none;"><a href="<?php echo base_url('disputed-milestones'); ?>"> <span><i class="fa fa-users" aria-hidden="true"></i></span> Disputed Milestones</a></p>
+								 
+					</div>
+				</div>
+			</div>
+		</div>
+            
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+							<span><i class="fa fa-credit-card" aria-hidden="true"></i></span> Billing
+						</a>
+					</h4>
+				</div>
+				<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+						
+						<p><a href="<?php echo base_url('wallet'); ?>"> <span><i class="fa fa-cc-visa" aria-hidden="true"></i></span> Wallet</a></p>
+							
+						<p><a href="<?php echo base_url('invoices'); ?>"> <span><i class="fa fa-file-pdf-o" aria-hidden="true"></i></span> Invoice</a></p>
+                   
+						<p><a href="<?php echo base_url('transaction-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> History</a></p> 
+						
+						<p><a href="<?php echo base_url('spendamount-history'); ?>"> <span><i class="fa fa-calendar" aria-hidden="true"></i></span> Spend History</a></p> 
+                    
+					</div>
+				</div>
+			</div>
+		</div>
+         
+		<p style="display: none;"><a href="#"><span><i class="fa fa-money" aria-hidden="true"></i></span> Deposit fund</a></p> 
+           
+		<p style="display: none;"><a href="#"><span><i class="fa fa-money" aria-hidden="true"></i></span> Create Milestone</a></p> 
+                  
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="display: none;">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" aria-controls="collapse3">
+							<span><i class="fa fa-comment" aria-hidden="true"></i></span> Message
+						</a>
+					</h4>
+				</div>
+				<div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+						
+						<p><a href="#"> <span><i class="fa fa-money" aria-hidden="true"></i></span> Read</a></p>
+                      
+						<p><a href="<?php echo base_url('membership-plans'); ?>"> <span><i class="fa fa-cubes" aria-hidden="true"></i></span> Unread</a></p>
+					
+					</div>
+								
+				</div>
+            
+			</div>
+		</div>
+             
+		<p><a href="<?php echo base_url('change-password'); ?>"><span><i class="fa fa-lock" aria-hidden="true"></i></span> Password</a></p>
+             
+		<!--p><a href="<?php echo base_url('my_reviews'); ?>"><span><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span> Reviews</a></p--> 
+              
+		<p style="display: none;"><a href="#"><span><i class="fa fa-envelope-o" aria-hidden="true"></i></span> My ticket</a></p> 
+          
+		 
+         
+		<?php } ?>
+		
+		<p><a href="<?php echo base_url('inbox'); ?>"><span><i class="fa fa-comment" aria-hidden="true"></i></span> Messenger</a></p>
+		
+		<?php if($user_profile['u_email_verify']==0 && $this->session->userdata('type')==2){ ?>
+		<p>
+			<a href="<?php echo base_url('email-verify'); ?>">
+			<span><i class="fa fa-check-square-o	" aria-hidden="true"></i></span>Verify your email</a>
+		</p>
+		<?php } ?>
+
+		<?php if($this->session->userdata('type')==1){ ?>
+		
+		<?php 
+		$check_invitation = $this->common_model->GetColumnName('admin',array('invite_to_review_status'=>1,'id'=>1),array('id'));
+		if($check_invitation){ ?>
+		<?php if($user_profile['review_invitation_status']==1){ ?>
+		<p><a  data-toggle="modal" data-target="#invite_review"> <i class="fa fa-handshake-o" aria-hidden="true"></i></span> Invite to review</a></p>
+		<?php } ?>
+		<?php } ?>
+		
+		<?php } ?>
+    <?php
+      $unreadMessages = $this->common_model->check_admin_unread('admin_chat_details', array('is_read' => 0, 'receiver_id' => $user_data['id']), 'is_read');
+    ?>
+    <p><a href="<?= site_url().'Support/tickets'?>"> <i class="fa fa-envelope" aria-hidden="true"></i></span> Support Center <?=($unreadMessages > 0) ?  '<span style="background:red;color:#fff;" class="badge">' .$unreadMessages.'</span>' : '';?> </a></p>
+     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse5" aria-expanded="true" aria-controls="collapse5">
+							<span><i class="fa fa-list" aria-hidden="true"></i></span> Invite & Earn
+							</a>
+						</h4>
+					</div>  
+					<div id="collapse5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body"> 
+                   
+							<p><a href="<?php echo base_url('exists-refferals'); ?>"> <span><i class="fa fa-user" aria-hidden="true"></i></span>Earnings</a></p>
+                   
+							<p><a href="<?php echo base_url('new-referral'); ?>"> <span><i class="fa fa-info-circle" aria-hidden="true"></i></span>Referral Links</a></p>
+						</div>
+					</div> 
+				</div>
+			</div>
+		<?php if($this->session->userdata('type')==2){ ?>
+		<p><a href="<?php echo base_url('payment-settings'); ?>"> <i class="fa fa-credit-card" aria-hidden="true"></i></span>Payment Settings</a></p>
+		<?php
+		}?>
+		<p><a href="<?= site_url().'home/logout'?>"> <i class="fa fa-unlock" aria-hidden="true"></i></span>Logout</a></p>
+	</div>
+</div>
+<?php if($this->session->userdata('type')==1){ ?>
+<!-- Modal -->
+<div id="invite_review" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Invite to review</h4>
+      </div>
+			<form id="send_review_invitation" onsubmit="return send_review_invitation();">
+				<div class="modal-body">
+					<div class="err-Rev"></div>
+					<div class="form-group">
+						<label>Select Job</label>
+						<select class="form-control" onchange="get_home_email_by_job_id(this.value);" name="review_job" id="review_job" <?=$required;?> >
+              <?php
+                if($isUrlExpired){
+              ?>
+                  <option value="">Please select a job</option>
+              <?php
+                }else{
+              ?>
+                  <option value="">Other job</option>
+							<?php
+                }
+              ?>
+							<?php
+							$today = date('Y-m-d H:i:s');
+							$check_date = date('Y-m-d H:i:s',strtotime($today.' - 24 hour'));
+							
+							$where_rew = "tbl_jobs.awarded_to = '".$user_profile['id']."' and tbl_jobs.direct_hired = '0' and (tbl_jobs.status = 4 or tbl_jobs.status = 7 or tbl_jobs.status = 9 or tbl_jobs.status = 10) and (select count(id) from tbl_milestones where tbl_milestones.post_id = tbl_jobs.job_id) = 0 and (select count(tr_id) from rating_table where rating_table.rt_jobid = tbl_jobs.job_id and rating_table.rt_rateBy = tbl_jobs.userid) = 0";
+							
+							$my_completed_job = $this->common_model->GetColumnName('tbl_jobs',$where_rew,array('title','job_id'),true,'tbl_jobs.job_id'); 
+							
+							//echo $this->db->last_query();
+							//echo '<pre>'; print_r($my_completed_job); echo '</pre>';
+							
+							if(count($my_completed_job) > 0){ 
+								foreach($my_completed_job as $Rkey => $Rrow){
+									echo '<option value="'.$Rrow['job_id'].'">'.$Rrow['title'].'</option>';
+								} 
+							} ?>
+						</select>
+					</div>
+					<div class="form-group invite-email-div">
+						<label>Enter recipient email address</label>
+						<input type="email" class="form-control" value="" name="review_email" id="review_email" required>
+						<input type="hidden" name="review_id" id="review_id" value="0">
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>First name</label>
+								<input type="text" class="form-control" name="f_name" id="Review_f_name" required>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Last name</label>
+								<input type="text" class="form-control" name="l_name" id="Review_l_name" required>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary btn-invitation">Send invitation</button>
+				</div>
+			</form>
+    </div>
+
+  </div>
+</div>
+<script>
+function get_home_email_by_job_id(id){
+	if(id){
+		$.ajax({
+			type:'post',
+			url:site_url+'users/get_home_email_by_job_id',
+			data:{id:id},
+			dataType:'json',
+			success:function(res){
+				if(res.status==1){
+					$('#review_id').val(res.userid);
+					$('#Review_l_name').val(res.l_name);
+					$('#Review_f_name').val(res.f_name);
+					$('#review_email').val(res.email);
+					$('.invite-email-div').hide();
+				} else {
+					$('#review_id').val(0);
+					$('.invite-email-div').show();
+				}
+			}
+		});
+	} else {
+		$('#Review_l_name').val('');
+		$('#Review_f_name').val('');
+		$('#review_email').val('');
+		$('#review_id').val(0);
+		$('.invite-email-div').show();
+	}
+	return false;
+}
+function send_review_invitation(id){
+	$.ajax({
+		type:'post',
+		url:site_url+'users/send_review_invitation/',
+		data:$('#send_review_invitation').serialize(),
+		dataType:'json',
+		beforeSend:function(){
+			$('.err-Rev').html('');
+			$('.btn-invitation').prop('disabled',true);
+			$('.btn-invitation').html('<i class="fa fa-spin fa-spinner"></i>');
+		},
+		success:function(res){
+			$('.err-Rev').html(res.msg);
+			$('.btn-invitation').prop('disabled',false);
+			$('.btn-invitation').html('Send invitation');
+			if(res.status==1){
+				setTimeout(function(){
+					document.getElementById("review_job").selectedIndex = "0";
+					$('.err-Rev').html('');
+					$('#review_email').val('');
+					$('#review_id').val('');
+					$('#invite_review').modal('hide');
+					$('.invite-email-div').show();
+				},3000);
+			}
+		}
+	});
+	return false;
+}
+</script>
+<?php } ?>
+<script type="text/javascript">
+	$(document).ready(function(){
+  $("#man_bbbon").click(function(){
+    $("#sidd_cll").toggleClass("opn_d");
+  });
+});
+</script>

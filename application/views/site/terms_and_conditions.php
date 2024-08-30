@@ -40,7 +40,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingOne">
                   <h4 class="panel-title">
-                    <a role="button" tab-data='Tac' data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="open_possition('Tac','Tac');" aria-expanded="true" aria-controls="collapseOne">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="open_possition('Tac','Tac');" aria-expanded="true" aria-controls="collapseOne">
                        Term and Conditions
                     </a>
                   </h4>
@@ -50,7 +50,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac1' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac1','Tac1');"  aria-expanded="false" aria-controls="collapseTwo">Overview</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac1','Tac1');"  aria-expanded="false" aria-controls="collapseTwo">Overview</a>
                   </h4>
                 </div>
               </div>
@@ -58,7 +58,7 @@ html {
                <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac2' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac2','Tac2');"  aria-expanded="false" aria-controls="collapseTwo">Scope</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac2','Tac2');"  aria-expanded="false" aria-controls="collapseTwo">Scope</a>
                   </h4>
                 </div>
               </div>    
@@ -66,7 +66,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac3' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac3','Tac3');"  aria-expanded="false" aria-controls="collapseTwo">Eligibility</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac3','Tac3');"  aria-expanded="false" aria-controls="collapseTwo">Eligibility</a>
                   </h4>
                 </div>
               </div>    
@@ -74,7 +74,7 @@ html {
                <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac4' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac4','Tac4');"  aria-expanded="false" aria-controls="collapseTwo">Using Tradespeoplehub.co.uk </a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac4','Tac4');"  aria-expanded="false" aria-controls="collapseTwo">Using Tradespeoplehub.co.uk </a>
                   </h4>
                 </div>
               </div>   
@@ -82,7 +82,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac5' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac5','Tac5');"  aria-expanded="false" aria-controls="collapseTwo">Intellectual Property Rights Infringement </a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac5','Tac5');"  aria-expanded="false" aria-controls="collapseTwo">Intellectual Property Rights Infringement </a>
                   </h4>
                 </div>
               </div>   
@@ -91,7 +91,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac6' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac6','Tac6');"  aria-expanded="false" aria-controls="collapseTwo">Fees and Services </a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac6','Tac6');"  aria-expanded="false" aria-controls="collapseTwo">Fees and Services </a>
                   </h4>
                 </div>
               </div>   
@@ -99,7 +99,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac7' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac7','Tac7');"  aria-expanded="false" aria-controls="collapseTwo">Taxes</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac7','Tac7');"  aria-expanded="false" aria-controls="collapseTwo">Taxes</a>
                   </h4>
                 </div>
               </div>  
@@ -107,7 +107,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac8' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac8','Tac8');"  aria-expanded="false" aria-controls="collapseTwo">Feedback, Reputation and Reviews</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac8','Tac8');"  aria-expanded="false" aria-controls="collapseTwo">Feedback, Reputation and Reviews</a>
                   </h4>
                 </div>
               </div> 
@@ -115,7 +115,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac9' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac9','Tac9');"  aria-expanded="false" aria-controls="collapseTwo">Advertising</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac9','Tac9');"  aria-expanded="false" aria-controls="collapseTwo">Advertising</a>
                   </h4>
                 </div>
               </div>  
@@ -123,7 +123,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac10' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac10','Tac10');"  aria-expanded="false" aria-controls="collapseTwo">Communication With Other Users</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac10','Tac10');"  aria-expanded="false" aria-controls="collapseTwo">Communication With Other Users</a>
                   </h4>
                 </div>
               </div>
@@ -131,7 +131,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac11' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac11','Tac11');"  aria-expanded="false" aria-controls="collapseTwo">Identity</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac11','Tac11');"  aria-expanded="false" aria-controls="collapseTwo">Identity</a>
                   </h4>
                 </div>
               </div>  
@@ -139,7 +139,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac12' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac12','Tac12');"  aria-expanded="false" aria-controls="collapseTwo">User Services</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac12','Tac12');"  aria-expanded="false" aria-controls="collapseTwo">User Services</a>
                   </h4>
                 </div>
               </div>  
@@ -147,24 +147,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac13' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac13','Tac13');"  aria-expanded="false" aria-controls="collapseTwo">Funds</a>
-                  </h4>
-                </div>
-              </div>  
-
-
-              <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingTwo">
-                  <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac14' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac14','Tac14');"  aria-expanded="false" aria-controls="collapseTwo">Refunds</a>
-                  </h4>
-                </div>
-              </div>  
-
-              <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingTwo">
-                  <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac15' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac15','Tac15');"  aria-expanded="false" aria-controls="collapseTwo">Withdrawals</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac13','Tac13');"  aria-expanded="false" aria-controls="collapseTwo">Funds</a>
                   </h4>
                 </div>
               </div>  
@@ -173,7 +156,24 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac16' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac16','Tac16');"  aria-expanded="false" aria-controls="collapseTwo">Chargebacks</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac14','Tac14');"  aria-expanded="false" aria-controls="collapseTwo">Refunds</a>
+                  </h4>
+                </div>
+              </div>  
+
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                  <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac15','Tac15');"  aria-expanded="false" aria-controls="collapseTwo">Withdrawals</a>
+                  </h4>
+                </div>
+              </div>  
+
+
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                  <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac16','Tac16');"  aria-expanded="false" aria-controls="collapseTwo">Chargebacks</a>
                   </h4>
                 </div>
               </div>  
@@ -181,7 +181,7 @@ html {
                <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac17' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac17','Tac17');"  aria-expanded="false" aria-controls="collapseTwo">Right to Refuse Service</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac17','Tac17');"  aria-expanded="false" aria-controls="collapseTwo">Right to Refuse Service</a>
                   </h4>
                 </div>
               </div>
@@ -189,7 +189,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac18' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac18','Tac18');"  aria-expanded="false" aria-controls="collapseTwo">Milestone Payments</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac18','Tac18');"  aria-expanded="false" aria-controls="collapseTwo">Milestone Payments</a>
                   </h4>
                 </div>
               </div> 
@@ -197,7 +197,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac19' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac19','Tac19');"  aria-expanded="false" aria-controls="collapseTwo"> Milestone Dispute Resolution Services</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac19','Tac19');"  aria-expanded="false" aria-controls="collapseTwo"> Milestone Dispute Resolution Services</a>
                   </h4>
                 </div>
               </div>  
@@ -205,15 +205,7 @@ html {
               <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTwo">
                   <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac20' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac20','Tac20');"  aria-expanded="false" aria-controls="collapseTwo"> Other Disputes With Users</a>
-                  </h4>
-                </div>
-              </div> 
-
-              <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="headingTwo">
-                  <h4 class="panel-title">
-                    <a class="collapsed" role="button" tab-data='Tac21' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac21','Tac21');"  aria-expanded="false" aria-controls="collapseTwo"> Referral & Affiliate Terms & Conditions</a>
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="open_possition('Tac20','Tac20');"  aria-expanded="false" aria-controls="collapseTwo"> Other Disputes With Users</a>
                   </h4>
                 </div>
               </div>  
@@ -559,28 +551,17 @@ html {
                           <p>Tradespeoplehub  will respond to disputes initiated by either of the users in accordance with the Milestone Dispute Resolution Services as set out in this clause and the Milestone Disputes Policy.</p>
 					    </div>
 
-					    <div class="top-head Tac20-Head Common-Head" id="Tac20" style="display:none;"><h1>Other Disputes With Users</h1></div>
+					     <div class="top-head Tac20-Head Common-Head" id="Tac20" style="display:none;">
+							<h1>Other Disputes With Users</h1>
+						</div>
+						
 					    <div class="box-inner Tac20-Body Common-Body" style="display:none;">
-                <p>You acknowledge and agree that in the event that a dispute arises between you and another User in relation to any Project that you will first attempt to resolve any differences that you have in relation to such Project, including in relation to the quality of the services provided. </p>
-                <p>
-                	If you continue to have any difficulties or problems in relation to a dispute with another User in relation to a Project we encourage you to contact us as set out in the Clause entitled "Contacting us".
-                </p>
-                <p>You agree that any dispute that is not related to a Milestone Payment (which must be dealt with in accordance with the Milestone Disputes Policy) arising between you and another User will be handled in accordance with this clause.</p>
+                          <p>You acknowledge and agree that in the event that a dispute arises between you and another User in relation to any Project that you will first attempt to resolve any differences that you have in relation to such Project, including in relation to the quality of the services provided. </p>
+                          <p>
+                          	If you continue to have any difficulties or problems in relation to a dispute with another User in relation to a Project we encourage you to contact us as set out in the Clause entitled "Contacting us".
+                          </p>
+                          <p>You agree that any dispute that is not related to a Milestone Payment (which must be dealt with in accordance with the Milestone Disputes Policy) arising between you and another User will be handled in accordance with this clause.</p>
 					    </div>
-
-              <div class="top-head Tac21-Head Common-Head" id="Tac21" style="display:none;"><h1>Affiliate & Referral  Program Terms & Conditions</h1></div>
-              <div class="box-inner Tac21-Body Common-Body" style="display:none;">
-                <p>The Tradespeoplehub Affiliate Program ("Affiliate Program") allows you to receive a payment from from us into your Account for referring a new user ("Referred User") to  Tradespeoplehub . To participate in the Affiliate or referral Program, you must comply with all of these requirements, and have an Account that is in good standing.</p>
-                <p><b>How to Refer Your Friends or Audience</b></p>
-                <p>
-                  This referral and affiliate program is open to registered Tradespeoplehub users only, for a limited time, and we may withdraw or suspend this referral program (in whole or in part) at any time. The requirements and incentives are also subject to change at any time.
-                </p>
-                <p>You may not obtain names for referrals from group email addresses, third party bulk mailing lists, customer lists, or other similar sources. You may not send unsolicited e-mails ("Spam"). If you send Spam in order to recruit Referred Users, Tradespeoplehub may immediately and permanently close your Account, without paying out any accrued earnings.</p>
-                <p><b>Earnings</b></p>
-                <p>You earn upto 50% commission amounting to between £5 to £15 per referral.The amount earn is depedendt on number of provided or receive quote. Note that Free trial quote does not count towards your earning.</p>
-                <p><b>Important Disclaimers</b></p>
-                <p>We reserve the right to suspend your account and remove referrals earningentitlement should we notice any activity we determine contrary to the Referral Program terms and conditions or the Fiverr Terms of Service by the Referrer and/or Referral. We retain the right to investigate the participation in the Referral Program for any fraudulent activities and take any measures to end them. We reserve the right to amend or suspend this Referral Program at any time without notice.</p>
-              </div>
 
 
 					</div>
@@ -591,33 +572,6 @@ html {
 	</div>
 </div>
 <?php include ("include/footer.php") ?>
-<script type="text/javascript">
-  $(document).ready(function() {
-    var url = $(location).attr('href').split("/").splice(0, 5).join("/");
-    var segments = url.split('#');
-    var main = segments[1];
-    var main = segments[1];
-
-    $("a[role]").each(function(){
-        var testdata = $(this).attr('tab-data');
-        $(this).attr('class', 'collapsed');
-        if(main == testdata){
-          $(this).removeAttr('class');
-        }
-    });
-
-
-    $('.Common-Head').hide();
-    $('.Common-Body').hide();
-    $('.Common-Content').hide();
-    $('.'+main+'-Head').show();
-    $('.'+main+'-Body').show();
-    $('.Content-'+content).show();
-    window.location.href='#'+content;
-});
-</script>
-
-
 <script type="text/javascript" src="js/sticky-sidebar.js"></script>
 <script type="text/javascript">
   var stickySidebar = new StickySidebar('#sidebar', {
@@ -636,6 +590,4 @@ html {
     $('.Content-'+content).show();
     window.location.href='#'+content;
   }
-
-
 </script>

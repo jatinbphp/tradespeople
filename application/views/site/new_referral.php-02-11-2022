@@ -1,0 +1,252 @@
+<?php include 'include/header.php'; ?>
+ <style>
+.social_icons_styles {
+    padding-left: 0px !important; 
+    padding-right: 0px !important;
+    width: 8%;
+}
+.reffer-sec-1{
+    background:#3d78cb;
+  /*  background: url(https://www.tradespeoplehub.co.uk/asset/admin/img/Vector.png); */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    padding: 30px 0px;
+}
+.reffer-sec-1 h1, .reffer-sec-1 p{
+    color: #fff;
+}
+.user-id-logo{
+    background: #f1f1f1;
+    border-radius: 100px;
+    padding: 10px;
+    width: 63px;
+    margin: auto;
+    color: #000 !important;
+}
+.referal-copy{
+padding-top:24px;
+}
+.reffer-share{
+padding-top:18px;
+}
+hr{
+margin:10px 0px;
+}
+.referral-steps-1{
+    background:#fff;
+}
+.block-header{
+padding-top:10px;
+padding-left:10px;
+}
+.card{
+text-align:center;
+border:1px solid #B1B1B1;
+border-radius:5px;
+padding:10px;
+margin-top:10px;
+}
+.refer-content-head{
+padding:0px 30px 40px 30px;
+}
+.card img{
+padding-bottom:20px;
+}
+.referal-copy button{
+width:100%;
+}
+ </style>
+    <?php 
+        $user_id = $this->session->user_id;
+        $unique_id = $this->session->unique_id;
+        $type = $this->session->type;
+    ?>
+<div class="acount-page membership-page">
+    <div class="container">
+        <div class="user-setting">
+            <div class="row" style="display:flex;flex-wrap: wrap;">
+                <div class="col-sm-3">
+                    <?php include 'include/sidebar.php'; ?>
+                </div>
+<!-- main content -->
+                    <?php
+                        $user_id = $this->session->user_id;
+                        $unique_id = $this->session->unique_id;
+                        $type = $this->session->type;
+                        $url_h = base_url("signup?userid=$user_id%26unique_id=$unique_id%26user_type=$type");
+                        $url_t = base_url("signup-step1?userid=$user_id%26unique_id=$unique_id%26user_type=$type");
+                        $url_mh = base_url("signup?userid=$user_id&unique_id=$unique_id&user_type=$type");
+                        $url_mt = base_url("signup-step1?userid=$user_id&unique_id=$unique_id&user_type=$type");
+
+                    ?>
+<div class="col-sm-9" >
+<section class="reffer-sec-1">
+
+<h1>Invite Friends & You Both are Earn</h1>
+<p style="font-size: 20px;">Introduce your friends to the easyest way to get things done</p>
+</section>
+ <section style="background:#fff; padding-bottom:3px;margin:4px">
+    <h3 class="block-header" >Shareable Links</h3>
+</section>
+<!-- <hr style="background:#fff; height:3px; width:100%;"> -->
+    <div class="row" style="background-color: white;padding: 25px;margin:4px;">
+        <label style="margin-left: 15px;font-size: 17px;">Home Owner</label>
+      <?php
+       if(isset($get_referral_links)){
+         foreach($get_referral_links as $links){
+           if($this->session->type == '2'){
+             $link_type = 'homeowners';
+           }if($this->session->type == '1'){
+             $link_type = 'tradsman';
+           }
+           if($links->type == $link_type){
+             $user_id = $this->session->userdata('user_id');
+             $homeowner_links = $links->referral_links_homeowner;
+             $homeowner_links_f = explode(",",$homeowner_links);
+             for($k=0;$k<count($homeowner_links_f);$k++){
+               $url_h = $homeowner_links_f[$k].'?referral='.$user_id;
+               $shared_url_id = 'shared_url_hm_'.$k;
+               ?>
+               <div class="row" style="margin-bottom: 13px;">
+               <div class="col-lg-7">
+               <div class="col-lg-10">
+               <span type="text" placeholder="" value="" name="" class="form-control input-md" style="font-size:11px;height:100%;"><?php echo $url_h?></span>
+               <input type="hidden" id="<?php echo $shared_url_id?>" value="<?php echo $url_h?>">
+                  </div>
+               <div class="col-lg-2">
+                           <button style="padding:0px 4px" class="btn btn-primary copied_url" attr-id="<?php echo $shared_url_id?>">Copy</button>
+               </div>
+               </div>
+               <div class="col-lg-5">
+               <a href="https://www.facebook.com/sharer.php?u=<?php echo $url_h?>">
+                 <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/facebook.png" alt="">
+               </a>
+               <a href="https://twitter.com/share?url=<?php echo $url_h?>">
+                 <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/twitter.png" alt="">
+               </a>
+                     <a href="https://www.instagram.com/url=<?php echo $url_h?>">
+                     <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/insta.png" alt=""></a>
+                     <a href="https://api.whatsapp.com/send?text=<?php echo $url_h?>" target="_blank">
+                       <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/whatsapp.png" alt="">
+                     </a>
+                     <a href="mailto:?body=<?php echo $url_h?>">
+                     <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/mail.png" alt=""></a>
+                     <a href="https://www.blogger.com/blog-this.g?u=<?php echo $url_h?>">
+                     <img  class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/Blogger.png" alt=""></a>
+                   </div>
+               </div>
+             <?php
+             }
+           }
+         }
+       }
+      ?>
+    </div>
+<!-- tradsman -->
+    <div class="row" style="background-color: white;padding: 20px;margin:2px;" >
+        <label style="margin-left: 15px;font-size: 17px;">Trades Man</label>
+      <?php
+       if(isset($get_referral_links)){
+         foreach($get_referral_links as $links){
+           if($this->session->type == '2'){
+             $link_type = 'homeowners';
+           }if($this->session->type == '1'){
+             $link_type = 'tradsman';
+           }
+           if($links->type == $link_type){
+             $user_id = $this->session->userdata('user_id');
+             $homeowner_links = $links->referral_links_tradsman;
+             $homeowner_links_f = explode(",",$homeowner_links);
+             for($k=0;$k<count($homeowner_links_f);$k++){
+               $url_h = $homeowner_links_f[$k].'?referral='.$user_id;
+               $shared_url_id = 'shared_url_hm_'.$k;
+               ?>
+               <div class="row" style="margin-bottom: 13px;">
+               <div class="col-lg-7">
+               <div class="col-lg-10">
+               <span type="text" placeholder="" value="" name="" class="form-control input-md" style="font-size:11px;height:100%;"><?php echo $url_h?></span>
+               <input type="hidden" id="<?php echo $shared_url_id?>" value="<?php echo $url_h?>">
+                  </div>
+               <div class="col-lg-2">
+                           <button style="padding:0px 4px" class="btn btn-primary copied_url" attr-id="<?php echo $shared_url_id?>">Copy</button>
+               </div>
+               </div>
+               <div class="col-lg-5">
+               <a href="https://www.facebook.com/sharer.php?u=<?php echo $url_h?>">
+                 <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/facebook.png" alt="">
+               </a>
+               <a href="https://twitter.com/share?url=<?php echo $url_h?>">
+                 <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/twitter.png" alt="">
+               </a>
+                     <a href="https://www.instagram.com/url=<?php echo $url_h?>">
+                     <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/insta.png" alt=""></a>
+                     <a href="https://api.whatsapp.com/send?text=<?php echo $url_h?>" target="_blank">
+                       <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/whatsapp.png" alt="">
+                     </a>
+                     <a href="mailto:?body=<?php echo $url_h?>">
+                     <img class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/mail.png" alt=""></a>
+                     <a href="https://www.blogger.com/blog-this.g?u=<?php echo $url_h?>">
+                     <img  class="social_icons_styles" src="https://www.tradespeoplehub.co.uk/asset/admin/img/Blogger.png" alt=""></a>
+                   </div>
+               </div>
+             <?php
+             }
+           }
+         }
+       }
+      ?>
+    </div>
+<!-- </section> -->
+<section class="referral-steps-1">
+    <h3 class="block-header">How it works</h3>
+<hr style="background:#fff; height:3px; width:100%;">
+    <div class="row" style="padding:30px;">
+    <div class="col-lg-4">
+        <div class="card">
+            <img src="<?php echo base_url('asset/admin/img/Chat.png')?>" alt="">
+            <p>Spread the word by email or with your link via social sharing</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <img src="<?php echo base_url('asset/admin/img/Group.png')?>" alt="">
+            <p>Your friend sign up purchase the frist job</p>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <img src="<?php echo base_url('asset/admin/img/Receive money.png')?>" alt="">
+            <p>Paying your referral money to your account</p>
+        </div>
+    </div>
+
+</div>
+<div class="refer-content-head">
+<h1 class="text-center ">Don't Let Your Friends waste another minute</h1>
+<p class="text-center">Nobody likes to waste time. Thats why connects with pros who can help them do more with less. you've experienced this power , now you can share it and earn  for every friend who signs up and makes ther first purchase</p>
+</div>
+</section>
+</div>
+
+<!-- main content  end here -->
+</div>
+</div>
+</div>
+</div>
+<?php include 'include/footer.php'; ?>
+<script>
+ jQuery(document).ready(function(){
+    jQuery(document).on("click",".copied_url",function(){
+            var attr_id = jQuery(this).attr('attr-id');
+            
+                var copyText = document.getElementById(attr_id);
+          
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
+            alert("Copied the Url");
+          });
+        
+  });
+</script>

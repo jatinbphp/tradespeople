@@ -2431,6 +2431,10 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 		$data['referalRating']=$this->common_model->get_referral_code_rating($uId);
 		$data['serviceAvgRating']=$this->common_model->get_service_avg_rating($uId);
+		
+		$serviceRating = min($data['serviceAvgRating'][0]['average_rating'], 5);
+		$referralRating = min($data['referalRating'], 5);
+		$data['overallRating'] = ($serviceRating + $referralRating) / 2;
 
 		$attributesArray = [];
 		foreach ($data['package_data'] as $value) {

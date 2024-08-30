@@ -4,7 +4,7 @@ class Chats extends CI_Controller {
   
   public function __construct() {
     parent::__construct();
-    //date_default_timezone_set('Europe/London');
+    date_default_timezone_set('Europe/London');
     $config['charset'] = 'utf-8';
     $config['wordwrap'] = TRUE;
     $config['mailtype'] = 'html';
@@ -27,33 +27,18 @@ class Chats extends CI_Controller {
 
     $where['sender_id'] = 0;
     // $where['sender_id'] = $this->session->userdata('session_adminId');
-
-    // $select = 'users.id, users.f_name, users.l_name, users.type, users.email, users.profile, admin_chats.id AS admin_chat_id, admin_chats.user_id, admin_chats.ticket_id, admin_chats.ticket_status';
-
-    // $joins[0][] = 'users';
-    $this->db->select ( 'users.id, users.f_name, users.l_name, users.type, users.email, users.profile, admin_chats.id AS admin_chat_id, admin_chats.user_id, admin_chats.ticket_id, admin_chats.ticket_status' ); 
-    $this->db->from ( 'admin_chats' );
-    $this->db->join ( 'users', 'users.id = admin_chats.user_id' , 'left' );
-
+    $joins[0][] = 'users';
     if(isset($_GET['m']) && $_GET['m']==1){
-      // $joins[0][] = 'admin_chats.user_id = users.id and users.type=3';
-      $this->db->where('users.type', 3);
+      $joins[0][] = 'admin_chats.user_id = users.id and users.type=3';
     }else{
-      $this->db->where('users.type', 2);
-      $this->db->or_where('users.type', 1);
-
-      // $joins[0][] = 'admin_chats.user_id = users.id and users.type=1 OR users.type=2';
+      $joins[0][] = 'admin_chats.user_id = users.id and users.type=1 OR users.type=2';
     }
-   $chatUsers = $this->db->order_by('admin_chats.id', 'desc')->get()->result_array();
-    // $joins[0][] = 'left';
+    $joins[0][] = 'left';
 
-    
-    // $this->db->join ( 'Soundtrack', 'Soundtrack.album_id = Album.album_id' , 'left' );
-    
-    // return $query->result ();
+    $select = 'users.id, users.f_name, users.l_name, users.type, users.email, users.profile, admin_chats.id AS admin_chat_id, admin_chats.user_id, admin_chats.ticket_id, admin_chats.ticket_status';
 
-    // $chatUsers = $this->Common_model->join_records('admin_chats', $joins, false, $select, 'admin_chats.id');
-    
+    $chatUsers = $this->Common_model->join_records('admin_chats', $joins, false, $select, 'admin_chats.id');
+
     $set_admin_chat_id = false;
     foreach($chatUsers as $key => $chatUser){
       if(!$chatUser['admin_chat_id']) continue;
@@ -175,11 +160,9 @@ class Chats extends CI_Controller {
     $content = '<p style="margin:0;padding:10px 0px">Hi ' .$name .',</p>';
     $content .= '<p style="margin:0;padding:10px 0px">You´ve got a message from our support team. Please log in to your account to read the message or click the view message below.</p>';
     $content .= '<br><div style="text-align:center"><a href="' .site_url('Support/details/' .$chat_id) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Message</a></div><br>';
-    // $content .= '<p style="margin:0;padding:10px 0px">Visit our help page or contact our customer service if you have any specific questions using our service.</p>';
-    $content .= '<p style="margin:0;padding:10px 0px">Contact our customer service if you have any specific questions using our service.</p>';
+    $content .= '<p style="margin:0;padding:10px 0px">Visit our help page or contact our customer service if you have any specific questions using our service.</p>';
 
     $this->Common_model->send_mail($to, $subject, $content,null,null,'support');
-   
   }
 
   public function get_messages(){
@@ -290,6 +273,7 @@ class Chats extends CI_Controller {
 
   public function close_ticket()
   {
+    // print_r($_POST);
     $admin_chat_id = $this->input->post('admin_chat_id');
     $user_id = $this->input->post('user_id');
 
@@ -302,7 +286,7 @@ class Chats extends CI_Controller {
       $tickets = $this->db->where('id', $admin_chat_id)->get('admin_chats')->row_array();
 
       $subject = 'Your support ticket is now closed : '.$tickets['ticket_id'];
-      $content = '<p style="margin:0;padding:10px 0px">Hi ' .$user['f_name'].' '.$user['l_name'].',</p>';
+      $content = '<p style="margin:0;padding:10px 0px">Hi ' .$user['f_name'] .',</p>';
       $content .= '<p style="margin:0;padding:10px 0px">A solution was proposed for your support ticket '.$tickets['ticket_id'].' few days ago.</p>';
       $content .= '<p style="margin:0;padding:10px 0px">As we have not received a response, we have now closed the ticket. However should you require further assistance, please create a new support ticket.</p>';
 
@@ -310,12 +294,13 @@ class Chats extends CI_Controller {
         $content .= '<p style="margin:0;padding:10px 0px">Visit our tradespeople help page or contact our customer service if you have any specific questions using our service.</p>';
       }else if($user['type']==2){ //homeowner
         $content .= '<p style="margin:0;padding:10px 0px">Visit our homeowner help page or contact our customer service if you have any specific questions using our service.</p>';
-      }else if($user['type']==3){ //affiliate
-        $content .= '<p style="margin:0;padding:10px 0px">Contact our customer service if you have any specific questions using our service.</p>';
       }
 
-      $this->Common_model->send_mail($user['email'], $subject, $content,null,null,'support');
-     
+      $this->Common_model->send_mail($user['email'], $subject, $content);
+
+
+
+
     }else{
       $response['responseMessage'] = 'Something wrong.';
       $response['status'] = 0;

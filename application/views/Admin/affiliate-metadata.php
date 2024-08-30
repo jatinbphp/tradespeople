@@ -110,24 +110,6 @@ if(!in_array(7,$my_access)) { redirect('Admin_dashboard'); }
 							</div>
 						</div>
 
-						<?php if(!empty($affilate_page_metadata['image'])) : ?>
-						<div class="form-group">
-							<label for="image" class="col-sm-2 control-label">
-								
-							</label>
-							<div class="col-sm-10">
-								<img src="<?=base_url()."/img/common/".$affilate_page_metadata['image']?>" width="350px">
-							</div>
-							
-						</div>
-						<?php endif ?>
-						<div class="form-group">
-							<label for="image" class="col-sm-2 control-label">Image</label>
-							<div class="col-sm-10">
-								<input type="file" name="image" id="image" class="form-control" accept="image/*">
-							</div>
-						</div>
-
 						<!-- <div class="form-group">
 							<label for="email" class="col-sm-2 control-label">Footer Description</label>
 							<div class="col-sm-10">

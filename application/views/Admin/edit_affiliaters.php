@@ -47,7 +47,7 @@
 									<div class="col-sm-6">
 										<!-- Text input-->
 										<div class="form-group">
-											<label class="col-md-12 control-label" for="">First Name</label>  
+											<label class="col-md-12 control-label" for="">First Name*</label>  
 											<div class="col-md-12">
 												<input id="f_name" name="f_name" placeholder="First Name" class="form-control input-md f_name" <?php echo ($marketer['type']==1) ? 'readonly' : ''; ?> type="text" value="<?php echo $marketer['f_name']; ?>">
                                         
@@ -57,7 +57,7 @@
 									<div class="col-sm-6">
 										<!-- Text input-->
 										<div class="form-group">
-											<label class="col-md-12 control-label" for="">Last Name</label>  
+											<label class="col-md-12 control-label" for="">Last Name*</label>  
 											<div class="col-md-12">
 												<input id="l_name" <?php echo ($marketer['type']==1) ? 'readonly' : ''; ?> name="l_name" placeholder="Last Name" class="form-control input-md" type="text" value="<?php echo $marketer['l_name']; ?>">
                                         
@@ -90,15 +90,16 @@
 										<div class="row">
 											<div class="col-sm-6">     
 												<div class="form-group">
-													<label class="col-md-12 control-label" for=""> Country </label>  
+													<label class="col-md-12 control-label" for=""> Country* </label>  
 													<div class="col-md-12">
 														<select class="form-control input-lg"  name="country" id="countryus1">
 															<option value="">Select country</option>
-															<?php foreach($country as $key => $val){ 
-																$value_country = strtolower($val->name);
+															<?php
+															foreach($country as $key => $val){
+																$value_country = strtolower($val['region_name']);
 																$country_name = ucfirst($value_country);
-																$selected = (strtolower($marketer['county']) == strtolower($val->name)) ? 'selected' : '';
-																echo '<option '.$selected.' value="'.$val->name.'">'.$country_name.'</option>';
+																$selected = (strtolower($marketer['county']) == strtolower($val['region_name'])) ? 'selected' : '';
+																echo '<option '.$selected.' value="'.$val['region_name'].'">'.$country_name.'</option>';
 															}
 															?>
 														</select>
@@ -109,7 +110,7 @@
 											<!-- Text input-->
 											<div class="col-sm-6">     
 												<div class="form-group">
-													<label class="col-md-12 control-label" for=""> Town/City </label>  
+													<label class="col-md-12 control-label" for=""> Town/City* </label>  
 													<div class="col-md-12">
 														<input type="text" placeholder="Town/City" name="locality" id="e_city" value="<?php echo $marketer['city']; ?>" class="form-control">
 												
@@ -141,7 +142,7 @@
 											?>                                         
 												<!-- Text input-->
 												<div class="form-group">
-													<label class="col-md-12 control-label" for="">Profile Picture</label>  
+													<label class="col-md-12 control-label" for="">Profile Picture*</label>  
 													<div class="col-md-12">
 														<input type="file" name="profile" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();" value="<?= $marketer['profile']; ?>" >
 														<input type="hidden" name="u_profile_old" value="<?= $marketer['profile']; ?>" >  
@@ -160,7 +161,7 @@
 											<div class="col-sm-6">                             
 													<!-- Text input-->
 													<div class="form-group">
-														<label class="col-md-12 control-label" for="">Email</label>  
+														<label class="col-md-12 control-label" for="">Email*</label>  
 															<div class="col-md-12">
 															<input type="text" value="<?php echo $marketer['email']; ?>" id="email" name="email" class="form-control input-md">
 															
@@ -170,7 +171,7 @@
 											<div class="col-sm-6">                             
 													<!-- Text input-->
 													<div class="form-group">
-														<label class="col-md-12 control-label" for="">Number</label>  
+														<label class="col-md-12 control-label" for="">Number*</label>  
 															<div class="col-md-12">
 															<input type="text"  value="<?php echo $marketer['phone_no']; ?>" id="phone_no" name="phone_no" class="form-control input-md">
 															
@@ -225,10 +226,10 @@
 			// console.log(f_name , l_name, e_address , countryus1 , e_city , profile , email , phone_no);
 
 
-			// if(f_name == '' || l_name == '' || e_address == '' || countryus1 == '' || e_city == '' || profile == '' || email == '' || phone_no == '' ){
-			// 	alert(' All Fields Are Mandatory');
-			// }
-			// else{ 
+			if(f_name == '' || l_name == '' || e_address == '' || countryus1 == '' || e_city == '' || profile == '' || email == '' || phone_no == '' ){
+				alert(' All Fields Are Mandatory');
+			}
+			else{ 
 				    jQuery.ajax({
 		             url:'<?= base_url(); ?>Admin/Admin/update_marketer_profile',
 		             type:"post",
@@ -252,7 +253,7 @@
 		             console.log(ts);
 		           }
 		         });
-			// }
+			}
     	});	
 </script>
 <?php include_once('include/footer.php'); ?>

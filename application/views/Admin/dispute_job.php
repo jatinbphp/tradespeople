@@ -19,10 +19,10 @@ if(!in_array(10,$my_access)) { redirect('Admin_dashboard'); }
 			echo $_SESSION['err'];
 			unset($_SESSION['err']);
 		}?>
-    <h1><?= isset($page_title) ? $page_title : 'Milestone Dispute Management'?></h1>
+    <h1>Milestone Dispute Management</h1>
 		<ol class="breadcrumb">
 			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-			<li class="active"><?= isset($page_title) ? $page_title : 'Milestone Dispute Management'?></li>
+			<li class="active">Milestone Dispute Management</li>
 		</ol>
 	</section>
   <section class="content">
@@ -36,7 +36,7 @@ if(!in_array(10,$my_access)) { redirect('Admin_dashboard'); }
                 <tr>
                   <th>S.NO</th>
                   <th>Job Title</th>
-                  <th>Case ID</th>
+                  <th>Milestone Name</th>
                   <th>Homeowner</th>
                   <th>Tradesmen</th>
     			  <th>Status</th>
@@ -53,14 +53,12 @@ if(!in_array(10,$my_access)) { redirect('Admin_dashboard'); }
 							 $milestone=$this->Common_model->get_single_data('tbl_milestones',array('id'=>$row['mile_id']));
                              $post_user=$this->Common_model->get_userDataByid($row['ds_puser_id']);
                              $bid_user=$this->Common_model->get_userDataByid($row['ds_buser_id']);
-
-							
                     
               ?>  
 							<tr role="row" class="odd">
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $job['title']; ?></td>
-								<td><?php echo $row['caseid']; ?></td>
+								<td><?php echo $milestone['milestone_name']; ?></td>
 								
 								<td><?php echo $post_user['f_name'].' '.$post_user['l_name']; ?></td>
 								<td><?php echo $bid_user['f_name'].' '.$bid_user['l_name']; ?></td>
@@ -77,41 +75,9 @@ if(!in_array(10,$my_access)) { redirect('Admin_dashboard'); }
 								<td>
 								<?php
 								if($row['ds_status']=='1') {
-									
-
-									if($row['caseCloseStatus']==1) {
-
-										echo "Resolved, Not Responded";
-
-									} else if($row['caseCloseStatus']==2){
-
-										echo "Resolved, Cancelled";
-
-									} else if($row['caseCloseStatus']==3){
-
-										echo "Arbitration Fees Not Paid";
-
-									} else if($row['caseCloseStatus']==4){
-
-										echo "Resolved By Dispute Team";
-
-									} else if($row['caseCloseStatus']==5){
-
-										echo "Resolved, Offer Accepted";
-
-									} else {
-										echo "Resolve";
-									}
-
+									echo "Resolve";
 								} else {
-
-									$check_dispute2 = $this->Common_model->GetColumnName('ask_admin_to_step',"dispute_id = '".$$row['ds_favour']."'",['count(id) as total']);
-									if($check_dispute2['total'] >= 2){
-										echo "Ask to step in";
-									} else {
-										echo "Pending";
-									}
-									
+									echo "Pending";
 								} ?>
 								</td>
 								<td>

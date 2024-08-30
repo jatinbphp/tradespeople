@@ -88,15 +88,7 @@ include_once('include/header.php');
                                             <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Marketers Name: activate to sort column ascending" style="width: 189.236px;">Homeowner name</th>
                                             <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Requested Amount: activate to sort column ascending" style="width: 219.705px;">Email</th>
 
-                                            <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 252.795px;">
-                                                <?php 
-                                                    if($paymentSettings[0]['payment_method'] == 1){
-                                                        echo 'Quotes job received';
-                                                    }else{
-                                                        echo 'Milestone Released(£)';
-                                                    }
-                                                ?>                                                
-                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 252.795px;">Quotes job received</th>
 
                                             <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Payment Method: activate to sort column ascending" style="width: 195.174px;">Customer acquired</th>
                                             <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Requested Amount: activate to sort column ascending" style="width: 219.705px;">Email</th> -->
@@ -142,16 +134,9 @@ include_once('include/header.php');
                                                 }
                                                 echo $invitedData['f_name'].' '.$invitedData['l_name']; ?><?= $new_label; ?></td>
                                                 <td><?php echo $invitedData['email']?></td>
-                                                <td>
-                                                    <?php
-                                                        $firstMilestone = $this->Common_model->get_single_data("tbl_milestones", array("posted_user"=>$homeowner['user_id']));
-                                                        if($adminSetting[0]['payment_method'] == 1){
-                                                            echo $checkBidCount['total'];
-                                                        }else{
-                                                            echo $firstMilestone['milestone_amount'];
-                                                        }                                                         
-                                                    ?>                                                        
-                                                </td>
+                                                <td><?= $checkBidCount['total']; ?></td>
+
+
 
                                                 <!-- <td><?php
                                                 $reffData = $this->Common_model->GetColumnName("users", array("id"=>$homeowner['referred_by']));
@@ -204,15 +189,7 @@ include_once('include/header.php');
                                             <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Payment Method: activate to sort column ascending" style="width: 195.174px;">Customer acquired</th> -->
                                             <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Requested Amount: activate to sort column ascending" style="width: 219.705px;">Email</th> -->
                                             <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Payment Method: activate to sort column ascending" style="width: 195.174px;">Customer Types</th> -->
-                                            <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="status: activate to sort column ascending" style="width: 85.4688px;">
-                                                <?php 
-                                                    if($paymentSettings[0]['payment_method'] == 1){
-                                                        echo 'Quotes Provided';
-                                                    }else{
-                                                        echo 'Milestone Released(£)';
-                                                    }
-                                                ?>
-                                            </th>
+                                            <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="status: activate to sort column ascending" style="width: 85.4688px;">Quotes Provided</th>
 
                                             <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="status: activate to sort column ascending" style="width: 85.4688px;">Revenue</th>
                                             <!-- <th class="sorting" tabindex="0" aria-controls="boottable" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 252.795px;">Credit transferred to wallet  </th> -->
@@ -233,8 +210,6 @@ include_once('include/header.php');
                                                     $cdate = $tradsman['cdate'];
                                                     $final_signed = date_create($cdate);
                                                     $joined_on = date_format($final_signed,"d/m/Y");
-
-                                                    
                                                 ?>  
                 								<tr role="row" class="odd">
                                                 <td class="sorting_1"><?php echo $tradsman['user_id']?></td>
@@ -253,13 +228,9 @@ include_once('include/header.php');
                                                 <td> <?php echo $invitedData['email']?></td>
                                                 <td>
                                                 <?php 
-                                                    $firstMilestone = $this->Common_model->get_single_data("tbl_milestones", array("userid"=>$tradsman['user_id']));
-                                                    if($paymentSettings[0]['payment_method'] == 1){
-                                                        $checkBidCount1 = $this->Common_model->GetColumnName('tbl_jobpost_bids',['bid_by'=>$tradsman['user_id']],['count(id) as total']);
-                                                        echo $checkBidCount1['total'];
-                                                    }else{
-                                                        echo $firstMilestone['milestone_amount'];
-                                                    }
+
+                                                     $checkBidCount1 = $this->Common_model->GetColumnName('tbl_jobpost_bids',['bid_by'=>$tradsman['user_id']],['count(id) as total']);
+                                                     echo $checkBidCount1['total'];
                                                  ?>
                                                  </td>
                                                 <!-- <td><?php

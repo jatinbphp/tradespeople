@@ -3,22 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Posts extends CI_Controller
 {
 	public function __construct() {
-		parent::__construct();
+		parent::__construct(); 
+		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
 		$this->load->model('search_model');
-		$this->words = array('gmail.com','yahoo.com','yahoo','gmail','skype','hotmail','live','phone numbers','phone number','outlook','icloud mail','yahoo! mail','yahoo mail','aol mail','gmx','yandex','mail','lycos','protonmail','proton mail','tutanota','zoho mail','zohomail','077','074','020','0','1','2','3','4','5','6','7','8','9','@','www','http://','https://','.com','.uk','.co.uk','.gov.uk','.me.uk','.ac.uk','.org.uk','.Itd.uk','.mod.uk ','.mil.uk','.net.uk','.nic.uk','.nhs.uk','.pic.uk','.sch.uk','.pic.uk:','.info','.io','.cloud','.online','.ai','.net','.org');
+		$this->words = array('gmail.com','yahoo.com','yahoo','gmail','skype','hotmail','live','phone numbers','phone number','outlook','icloud mail','yahoo! mail','yahoo mail','aol mail','gmx','yandex','mail','lycos','protonmail','proton mail','tutanota','zoho mail','zohomail','077','074','020');
 		error_reporting(0);
-		if($this->session->userdata('user_id')){
-			$user_id = $this->session->userdata('user_id');
-			if(!empty($user_id)){
-				$user_profile = $this->common_model->get_single_data('users',array('id'=>$user_id));
 
-				if(empty($user_profile)){
-					$this->session->sess_destroy();
-					redirect('login');
-				}
-			}
-		}
 	}
 	public function check_contact_info(){
 		
@@ -212,41 +203,22 @@ class Posts extends CI_Controller
 					$insert['postal_code'] = $this->input->post('post_code');
 					$insert['u_token'] = md5(rand(1000,9999).time());
 					$insert['cdate']=date('Y-m-d H:i:s');
-					$insert['unique_id']=GetUserUniqueId();
-					$insert['unique_id1']=time();
-					
-					$referred_by = false;
-					if(isset($_POST['referred_by']) && !empty($this->input->post('referred_by' )))
-					{
-						$check = $this->common_model->GetSingleData('users',['unique_id'=>$_POST['referred_by']]);
-						if($check)
-						{
-							$referred_by = $this->input->post('referred_by');
-						} else {
-							$json['status'] = 10;
-							echo json_encode($json);
-							exit; 
-						}
-						
-					} else {
-						$referred_by = $this->session->userdata('referred_by');
-					}
-
+				
 					$run = $this->common_model->insert('users',$insert);	
 					if($run){
 
 
-						//$referred_by = $this->session->userdata('referred_by');
+						$referred_by = $this->session->userdata('referred_by');
 					// $referred_type = $this->input->post('referred_type');
 					if($referred_by){
 						
 						$referred_link = $this->session->userdata('referred_link');
 
-						$users = $this->db->where('unique_id', $referred_by)->get('users')->row();
+						$users = $this->db->where('id', $referred_by)->get('users')->row();
 						$referal_data = array(
 							'user_id'=> $run,
 							'user_type'=> 2,
-							'referred_by'=> $users->id,
+							'referred_by'=> $referred_by,
 							'referred_type'=> $users->type,
 							'referred_link'=> $referred_link
 						);
@@ -265,14 +237,6 @@ class Posts extends CI_Controller
 						$this->session->set_userdata('email',$insert['email']);
 						$get_name=$insert['f_name'].' '.$insert['l_name'];
 						$this->session->set_userdata('u_name',$get_name);
-						$this->session->set_userdata('unique_id',$run.$degit);
-
-						$this->input->set_cookie('type',$insert['type'],43200*60);
-						$this->input->set_cookie('user_id',$run,43200*60);
-						$this->input->set_cookie('email',$insert['email'],43200*60);
-						$this->input->set_cookie('unique_id',$run.$digit,43200*60);
-						$get_name = $insert['f_name'].''.$insert['l_name'];
-						$this->input->set_cookie('u_name',$get_name,43200*60);
 
 						// $subject = Project.": Registration!";
 						$subject = "Verify your Email Address - Tradespeoplehub.co.uk";
@@ -435,13 +399,7 @@ class Posts extends CI_Controller
 							$get_name=$data['f_name'].' '.$data['l_name'];
 							$this->session->set_userdata('u_name',$get_name);
 							
-
-							$this->input->set_cookie('type',$data['type'],43200*60);
-							$this->input->set_cookie('user_id',$data['id'],43200*60);
-							$this->input->set_cookie('email',$data['email'],43200*60);
-							$this->input->set_cookie('unique_id',$data['unique_id'],43200*60);
-							$this->input->set_cookie('u_name',$get_name,43200*60);
-								
+						
 							$budget = $this->input->post('budget');
 							$budget2 = $this->input->post('static_amount2');
 							
@@ -548,7 +506,7 @@ class Posts extends CI_Controller
 							$json['status'] = 1;
 							$json['job_id']=$run3;
 							$this->session->set_flashdata('success2', '<p class="alert alert-success">Thank you for posting your job, our vetted professionals will quote soon.</p>');
-							$json['user_id']=$this->session->userdata('user_id');
+							$json['user_id']=$this->session->set_userdata('user_id',$data['id']);
 
 						}
 					
@@ -748,33 +706,6 @@ class Posts extends CI_Controller
 					
 					foreach($trades as $key => $value){
 						
-						
-						
-
-						$notArr = [];
-						$notArr['title'] = 'New job posted';
-						$notArr['message'] = $userdataaa['f_name'].' '.$userdataaa['l_name'].' posted a new job.';
-						$notArr['link'] = site_url().'details/?post_id='.$json['job_id'];
-						$notArr['user_id'] = $value['id'];
-						$notArr['behalf_of'] = $user_id;
-
-						$this->common_model->AndroidNotification($notArr);
-
-						$OneSignalNoti = [];
-						$OneSignalNoti['title'] = 'New job posted';
-						$OneSignalNoti['message'] = $userdataaa['f_name'].' '.$userdataaa['l_name'].' posted a new job.';
-						$OneSignalNoti['is_customer'] = false;
-						$OneSignalNoti['user_id'] = $value['id'];
-						//$OneSignalNoti['pushdata']['link'] = site_url().'details/?post_id='.$json['job_id'];
-						$OneSignalNoti['pushdata']['action'] = 'new_job';
-						$OneSignalNoti['pushdata']['other_user_id'] = $value['id'];
-						$OneSignalNoti['pushdata']['user_id'] = $user_id;
-						$OneSignalNoti['pushdata']['action_id'] = $json['job_id']; 
-						$OneSignalNoti['pushdata']['job_id'] = $json['job_id']; 
-
-						$return = $this->common_model->OneSignalNotification($OneSignalNoti);
-
-						
 						$insertn = array(); 
 						$insertn['nt_userId']=$value['id'];
 						$insertn['nt_message']= $userdataaa['f_name'].' '.$userdataaa['l_name'].' posted a new job. <a href="'.site_url().'details/?post_id='.$json['job_id'].'">View & Quote now!</a>';
@@ -782,11 +713,7 @@ class Posts extends CI_Controller
 						$insertn['nt_create']=date('Y-m-d H:i:s');
 						$insertn['nt_update']=date('Y-m-d H:i:s');
 						$insertn['job_id']=$json['job_id'];
-						$insertn['action']=$OneSignalNoti['pushdata']['action'];
-						$insertn['action_id']=$OneSignalNoti['pushdata']['action_id'];
-						$insertn['action_json']=json_encode($OneSignalNoti['pushdata']);
 						$run2 = $this->common_model->insert('notification',$insertn);
-						//print_r($return);
 						
 						$today_sms = $this->common_model->get_data_count('daily_sms_records',array('date'=>date('Y-m-d'),'user_id'=>$value['id']),'id');
 						
@@ -921,19 +848,9 @@ class Posts extends CI_Controller
 
 			$this->common_model->send_mail($user['email'],$subjectH,$htmlH);
 			
-			$OneSignalNoti = [];
-			$OneSignalNoti['title'] = 'Job Offer';
-			$OneSignalNoti['message'] = 'Congratulations! ' .$user['f_name'].' '.$user['l_name'] .' offered you the job.';
-			$OneSignalNoti['is_customer'] = false;
-			$OneSignalNoti['user_id'] = $get_jobs[0]['bid_by'];
-			$OneSignalNoti['pushdata']['action'] = 'job_award';
-			$OneSignalNoti['pushdata']['other_user_id'] = $get_jobs[0]['bid_by'];
-			$OneSignalNoti['pushdata']['user_id'] = $get_jobs[0]['posted_by'];
-			$OneSignalNoti['pushdata']['action_id'] = $get_jobs[0]['job_id'];
-			$this->common_model->OneSignalNotification($OneSignalNoti);
 			
-			$insertn = [];
 			$insertn['nt_userId']=$get_jobs[0]['bid_by'];
+			
 			$insertn['nt_message']='Congratulations! ' .$user['f_name'].' '.$user['l_name'] .' offered you the job. <a href="'.site_url().'proposals/?post_id='.$get_jobs[0]['job_id'].'">Accept now</a>';
 			$insertn['nt_satus']=0;
 			$insertn['nt_apstatus']=2;
@@ -941,18 +858,8 @@ class Posts extends CI_Controller
 			$insertn['nt_update']=date('Y-m-d H:i:s');   
 			$insertn['job_id']=$get_jobs[0]['job_id'];
 			$insertn['posted_by']=$get_jobs[0]['posted_by'];
-			$insertn['action']=$OneSignalNoti['pushdata']['action'];
-			$insertn['action_id']=$OneSignalNoti['pushdata']['action_id'];
-			$insertn['action_json']=json_encode($OneSignalNoti['pushdata']);
 			$run2 = $this->common_model->insert('notification',$insertn);
 			
-			$notArr['title'] = 'Job Offer';
-			$notArr['message'] = 'Congratulations! ' .$user['f_name'].' '.$user['l_name'] .' offered you the job.';
-			$notArr['link'] = site_url().'proposals/?post_id='.$get_jobs[0]['job_id'];
-			$notArr['user_id'] = $get_jobs[0]['bid_by'];
-			$notArr['behalf_of'] = $get_jobs[0]['posted_by'];
-			$this->common_model->AndroidNotification($notArr);
-
 			if($result)
 			{
 				if($check_create_ms==1){
@@ -1034,7 +941,7 @@ class Posts extends CI_Controller
 				
 					$transactionid = md5(rand(1000,999).time());
 				
-					$tr_message='£'.$amount.' has been debited to your wallet for creating a milestone to <a href="'.site_url().'proposals/?post_id='.$get_jobs[0]['job_id'].'">'.$get_job_details[0]['title'].'</a> job.';
+					$tr_message='£'.$amount.' has been debited from your wallet for create master the job <a href="'.site_url().'proposals/?post_id='.$get_jobs[0]['job_id'].'">'.$get_job_details[0]['title'].'</a> on date '.date('d-m-Y h:i:s A');
 				
 					$data1 = array(
 						'tr_userid'=>$this->session->userdata('user_id'), 
@@ -1052,8 +959,7 @@ class Posts extends CI_Controller
 				} 
 				
 				$json['status'] = 1;
-				$_SESSION['quote_success'] = '<p class="alert alert-success">Success! Project has been awarded successfully.</p>';
-					/*$this->session->set_flashdata('success1', '<p class="alert alert-success">Success! Project has been awarded successfully.</p>');*/
+					$this->session->set_flashdata('success1', '<p class="alert alert-success">Success! Project has been awarded successfully.</p>');
 			}
 			else
 			{
@@ -1188,9 +1094,9 @@ class Posts extends CI_Controller
 		$plan=false;
 		$wallet=false;
 		$chat_paid=false;
-		$setting = $this->common_model->get_all_data('admin');		
-		
-		if($setting[0]['payment_method'] == 1){	
+		$setting = $this->common_model->get_all_data('admin');
+
+		if($setting[0]['payment_method'] == 1){		
 			if($get_plan_bids && $get_plan_bids['up_status']==1 && strtotime($get_plan_bids['up_enddate'])>=strtotime(date('Y-m-d')) || $get_plan_bids['valid_type']==1){
 				$plan = true;
 				$check = true;
@@ -1268,7 +1174,7 @@ class Posts extends CI_Controller
 				
 				$transactionid = md5(rand(1000,999).time());
 				
-				$tr_message='£'.$credit_amount.' has been debited to your wallet for responding to '.$get_posted_user['f_name'].' '.$get_posted_user['l_name'].' private job offer.';
+				$tr_message='£'.$credit_amount.' has been debited from your wallet for accept award on <a href="'.site_url().'proposals/?post_id='.$job_id.'">'.$get_jobs[0]['title'].'</a> on date '.date('d-m-Y h:i:s A');
 				
 				$data112 = array(
 					'tr_userid'=>$this->session->userdata('user_id'), 
@@ -1425,7 +1331,7 @@ class Posts extends CI_Controller
 			$tsm_name1=$this->input->post('tsm_name1');
 			$tsm_amount1=$this->input->post('tsm_amount1');
 		
-			$where = "id = '".$id."' and bid_by = '".$bid_by."' and (status = 7 or status = 3 or status = 5 or status = 10 or status = 4)";
+			$where = "id = '".$id."' and bid_by = '".$bid_by."' and (status = 7 or status = 3 or status = 5 or status = 10)";
 			$get_post_data = $this->common_model->get_single_data('tbl_jobpost_bids',$where);
 			
 			$get_job_post = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$get_post_data['job_id']));
@@ -1475,7 +1381,7 @@ class Posts extends CI_Controller
 					
 					$transactionid = md5(rand(1000,999).time());
 					
-					$tr_message='£'.$tsm_amount1.' has been debited to your wallet for accepting a milestone request for the job <a href="'.site_url().'proposals/?post_id='.$get_job_post['job_id'].'">'.$get_job_post['title'].'.</a>';
+					$tr_message='£'.$tsm_amount1.' has been debited from your wallet for accept a milestone for the job <a href="'.site_url().'proposals/?post_id='.$get_job_post['job_id'].'">'.$get_job_post['title'].'</a> on date '.date('d-m-Y h:i:s A');
 					
 					$data1 = array(
 						'tr_userid'=>$user_id, 
@@ -1581,7 +1487,7 @@ class Posts extends CI_Controller
 			$tsm_name1=$this->input->post('tsm_name1');
 			$tsm_amount1=$this->input->post('tsm_amount1');
 		
-			$where = "id = '".$id."' and bid_by = '".$bid_by."' and (status = 7 or status = 3 or status = 5 or status = 10 or status = 4)";
+			$where = "id = '".$id."' and bid_by = '".$bid_by."' and (status = 7 or status = 3 or status = 5 or status = 10)";
 			$get_post_data = $this->common_model->get_single_data('tbl_jobpost_bids',$where);
 			
 			$get_job_post = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$get_post_data['job_id']));
@@ -1633,7 +1539,7 @@ class Posts extends CI_Controller
 					
 					$transactionid = md5(rand(1000,999).time());
 					
-					$tr_message='£'.$tsm_amount1.'  has been debited to your wallet for creating a milestone to <a href="'.site_url().'proposals/?post_id='.$get_job_post['job_id'].'">'.$get_job_post['title'].'.</a>';
+					$tr_message='£'.$tsm_amount1.' has been debited from your wallet for create a milestone for the job <a href="'.site_url().'proposals/?post_id='.$get_job_post['job_id'].'">'.$get_job_post['title'].'</a> on date '.date('d-m-Y h:i:s A');
 					
 					$data1 = array(
 						'tr_userid'=>$user_id, 
@@ -1732,7 +1638,7 @@ class Posts extends CI_Controller
 			$tsm_name1=$this->input->post('tsm_name1');
 			$tsm_amount1=$this->input->post('tsm_amount1');
 			
-			$where = "id = '".$id."' and bid_by = '".$bid_by."' and (status = 7 or status = 3 or status = 5 or status = 10 or status = 4)";
+			$where = "id = '".$id."' and bid_by = '".$bid_by."' and (status = 7 or status = 3 or status = 5 or status = 10)";
 			$get_post_data = $this->common_model->get_single_data('tbl_jobpost_bids',$where);
 			
 			$get_job_post = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$get_post_data['job_id']));
@@ -1747,12 +1653,12 @@ class Posts extends CI_Controller
 				 
 				$total_amt = $mile_amount+$tsm_amount1;
 				
-				// if($total_amt > $get_post_data['bid_amount']) {
+				if($total_amt > $get_post_data['bid_amount']) {
 					
-				// 	$json['status'] = 0;
-				// 	$json['msg'] = '<div class="alert alert-danger">Sum of the total milestone amount should not be greater than total bid amount.</div>';
+					$json['status'] = 0;
+					$json['msg'] = '<div class="alert alert-danger">Sum of the total milestone amount should not be greater than total bid amount.</div>';
 					
-				// } else {
+				} else {
 					
 					$data = array(
 						'milestone_name'=>$tsm_name1, 
@@ -1823,21 +1729,11 @@ class Posts extends CI_Controller
 					$insertn['posted_by']=$bid_by;
 					
 					$run2 = $this->common_model->insert('notification',$insertn);
-
-					$notArr['title'] = 'Milestone Payment Creation request';
-					$notArr['message'] = $get_users['trading_name'] .' has requested a milestone payment: Amount £' .$tsm_amount1;
-					$notArr['link'] = site_url().'payments?post_id='.$get_post_data['job_id'];
-					$notArr['user_id'] = $get_post_data['posted_by'];
-					$notArr['behalf_of'] = $bid_by;
-
-					$u = $this->common_model->AndroidNotification($notArr);
-
-					
-						
+		
 					$json['status'] = 1;
 					$this->session->set_flashdata('success1', 'Success! Milestone request has been created successfully.');
 					
-				
+				}
 			} else {
 				$json['status'] = 0;
 				$json['msg'] = '<div class="alert alert-danger">Something went wrong try agin later.</div>';
@@ -1872,7 +1768,7 @@ class Posts extends CI_Controller
 
 
 		    $transactionid = md5(rand(1000,999).time());
-				    $tr_message='£'.$amount.' has been credited to your wallet for '.$name.' milestone for the job post <a href="'.site_url().'details/?post_id='.$job_id.'"> '.$post_title.'.</a>';
+				    $tr_message='£'.$amount.' has been credited to your wallet for '.$name.' milestone for the job post <a href="'.site_url().'details/?post_id='.$job_id.'"> '.$post_title.'</a> on date '.date('d-m-Y h:i:s A');
 				   $data1 = array(
    					  'tr_userid'=>$this->session->userdata('user_id'), 
     				  'tr_amount'=>$amount,
@@ -1941,7 +1837,7 @@ class Posts extends CI_Controller
 			
 			
 			
-				 if($runss1)
+				 if($run)
 				 {
 				 	$json['status']=1;
 				 		$this->session->set_flashdata('message', '<p class="alert alert-success">Success! Your request has been submitted successfully.</p>');
@@ -1972,15 +1868,18 @@ class Posts extends CI_Controller
   }
 
   public function proposals() {
+
+
+
     if($this->session->userdata('user_id')) {
-      	if( isset($_GET['reject_reason']) && isset($_GET['type']) ){
-        	$whereReason['id'] = $_GET['reject_reason'];
-        	$reject_reason = $this->common_model->fetch_records('tbl_jobpost_bids', $whereReason);
-        	if(!empty($reject_reason)){
-          		$this->session->set_flashdata('reject_reason', $reject_reason[0]['reject_reason']);
-          		redirect('proposals?post_id=' .$_GET['post_id']);
-        	}
-      	}
+      if( isset($_GET['reject_reason']) && isset($_GET['type']) ){
+        $whereReason['id'] = $_GET['reject_reason'];
+        $reject_reason = $this->common_model->fetch_records('tbl_jobpost_bids', $whereReason);
+        if(!empty($reject_reason)){
+          $this->session->set_flashdata('reject_reason', $reject_reason[0]['reject_reason']);
+          redirect('proposals?post_id=' .$_GET['post_id']);
+        }
+      }
 			
       $post_id=$_REQUEST['post_id'];
 			
@@ -1997,7 +1896,7 @@ class Posts extends CI_Controller
 			
       $data['awarded']=$this->common_model->get_awarded_trades($post_id);
 			
-		$data['setting']=$this->common_model->get_all_data('admin');
+			$data['setting']=$this->common_model->get_all_data('admin');
 			
       $this->load->view('site/proposals',$data);
     } else {
@@ -2043,48 +1942,6 @@ class Posts extends CI_Controller
 			//print_r($data['get_reviews']);
 			
       $this->load->view('site/project-detail',$data);
-    }else{
-      redirect('login');
-    }
-  }
-  public function proposals_edit(){
-    if(!$_REQUEST['post_id']) redirect('dashboard');
-    if($this->session->userdata('user_id')){
-      $post_id = $_REQUEST['post_id'];
-      $data['category']=$this->common_model->get_all_category('category');
-      $data['project_details']=$this->common_model->get_single_data('tbl_jobs',array('job_id'=>$post_id));
-      $data['attachment']=$this->common_model->get_all_files($post_id);
-			
-      $data['get_users']=$this->common_model->get_single_data('users',array('id'=>$data['project_details']['userid']));
-			
-			
-			$this->load->library('Ajax_pagination');
-			$this->load->model('search_model');
-			$perPage = 1;
-			
-			$conditions['search']['userid'] = $data['get_users']['id'];
-			
-			$totalRec = count($this->search_model->get_rating($conditions));
-			
-			$data['totalRec'] = $totalRec;
-			
-			$base_url = site_url().'users/find_rating_ajax';
-			
-			$config['target']      = '#search_data';
-			$config['base_url']    = $base_url;
-			$config['total_rows']  = $totalRec;
-			$config['per_page']    = $perPage;
-			$config['link_func']   = 'searchFilter';
-			$this->ajax_pagination->initialize($config);
-			
-			$conditions['start'] = 0;
-			$conditions['limit'] = $perPage;
-			
-			$data['get_reviews'] = $this->search_model->get_rating($conditions);
-			
-			//print_r($data['get_reviews']);
-			
-      $this->load->view('site/edit-quote',$data);
     }else{
       redirect('login');
     }
@@ -2386,7 +2243,7 @@ class Posts extends CI_Controller
 			
 		 	$transactionid = md5(rand(1000,999).time());
 			
-			$tr_message = '£'.$bid_data['total_milestone_amount'].' has been credited to your wallet as a result of <a href="'.site_url().'profile/'.$tradeMen['id'].'">'.$tradeMen['trading_name'].'</a> rejecting your job offer on <a href="'.site_url().'details/?post_id='.$job_data['job_id'].'">'.$job_data['title'].'</a>';
+			$tr_message = '£'.$bid_data['total_milestone_amount'].' has been credited to your wallet.  <a href="'.site_url().'profile/'.$tradeMen['id'].'">'.$tradeMen['trading_name'].'</a> has rejected your proposal for <a href="'.site_url().'details/?post_id='.$job_data['job_id'].'">'.$job_data['title'].'</a>';
 		 
 			$data1 = array(
 				'tr_userid'=>$homeOwner['id'], 
@@ -2474,7 +2331,7 @@ class Posts extends CI_Controller
 		
 		if($runss1) {
 		 	$transactionid = md5(rand(1000,999).time());
-			$tr_message='£'.$bid_data['bid_amount'].' has been credited to your wallet for milestone.';
+			$tr_message='£'.$bid_data['bid_amount'].' has been credited to your wallet for milestone on date '.date('d-m-Y h:i:s A').'.';
 			$data1 = array(
 				'tr_userid'=>$get_jobs['bid_by'], 
 				'tr_amount'=>$get_amount[0]['sum'],
@@ -2495,7 +2352,7 @@ class Posts extends CI_Controller
 		$runss11 = $this->common_model->update('users',array('id'=>$get_jobs['posted_by']),$update22);
 		if($runss11) {
 		 	$transactionid = md5(rand(1000,999).time());
-			$tr_message='£'.$get_amounts[0]['sum'].' has been credited to your wallet for milestone';
+			$tr_message='£'.$get_amounts[0]['sum'].' has been credited to your wallet for milestone on date '.date('d-m-Y h:i:s A').'.';
 			$data1 = array(
 				'tr_userid'=>$get_jobs['posted_by'], 
 				'tr_amount'=>$get_amounts[0]['sum'],
@@ -2679,7 +2536,7 @@ class Posts extends CI_Controller
 				$run2 = $this->common_model->insert('notification',$insertn);
 
 				    $transactionid = md5(rand(1000,999).time());
-				    $tr_message='£'.$get_milestones['milestone_amount'].' has been credited to your wallet for '.$get_milestones['milestone_name'].' milestone.';
+				    $tr_message='£'.$get_milestones['milestone_amount'].' has been credited to your wallet for '.$get_milestones['milestone_name'].' milestone on date '.date('d-m-Y h:i:s A').'.';
 				   $data1 = array(
    					  'tr_userid'=>$get_milestones['created_by'], 
     				  'tr_amount'=>$get_milestones['milestone_amount'],

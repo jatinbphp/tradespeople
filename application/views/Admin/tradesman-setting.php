@@ -20,14 +20,12 @@ include_once('include/header.php');
 foreach($settings as $setting){
 	
 	if($setting->type == 'tradsman'){
-		$min_cashout_tradesman = $setting->min_amount_cashout;
 		$min_quotes_received_homeowner_t =  $setting->min_quotes_received_homeowner;
 		$min_quotes_approved_tradsman_t =  $setting->min_quotes_approved_tradsman;
 		$comission_ref_homeowner_t =  $setting->comission_ref_homeowner;
 		$comission_ref_tradsman_t =  $setting->comission_ref_tradsman;
 		$referral_links_homeowner =  $setting->referral_links_homeowner;
 		$referral_links_tradsman =  $setting->referral_links_tradsman;
-		$payment_method =  $setting->payment_method;
 		$tradsman_ref_links_hm = explode(",",$referral_links_homeowner);
 		$tradsman_ref_links_tm = explode(",",$referral_links_tradsman);
 		$banner =  $setting->banner;
@@ -67,31 +65,6 @@ foreach($settings as $setting){
 								<div class="col-sm-12" style="height:31px;margin-bottom: 10px;">
 									<h2>Tradsman</h2>
 								</div>
-								<div class="row">
-									<div class="col-sm-5">
-										<div class="form-group">
-											<label class="col-md-7 control-label" for="">Payment Method</label>
-											<div class="col-md-5" style="padding-left: 0px;padding-right: 33px;">
-												<select class="form-control" name="payment_method">
-													<option value="bank_transfer"<?php echo $payment_method == 'bank_transfer' ?'selected' : ''?>>Bank transfer</option>
-													<option value="paypal" <?php echo $payment_method == 'paypal' ?'selected' : ''?>>Paypal</option>
-													<option value="both" <?php echo $payment_method == 'both' ?'selected' : ''?>>Both</option>
-												</select>
-											</div>
-										</div>
-									</div>
-									<div class="col-sm-6">
-										<div class="form-group">
-											<label class="col-md-6 control-label" for="">Minimum Cashout Amount</label>
-											<div class="col-md-4 control-label" style="padding-left: 0px;padding-right: 33px;">
-												<div class="input-group">
-													<span class="input-group-addon">£</span>
-													<input name="min_amount_cashout_t" placeholder="" class="form-control input-md" type="number" step="0.01" min="0" value="<?php echo $min_cashout_tradesman;?>" required="">
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
 								<div class="col-sm-5" style="padding-left:2px;">
 									<div class="row">
 										<p style="margin-top:0px;margin-bottom:15px;margin-left:29px;font-size: 14px;font-weight: 600;">Referral Homeowner :</p>				
@@ -100,15 +73,7 @@ foreach($settings as $setting){
 										<div class="col-sm-12">
 											<!-- Text input-->
 											<div class="form-group">
-												<label class="col-md-7 control-label" for="">
-													<?php 
-														if($paymentSettings[0]['payment_method'] == 0){
-															echo 'Minimum Milestone Release';
-														}else{
-															echo 'No. of quotes a job must receives to earn';
-														}
-													?>
-												</label>  
+												<label class="col-md-7 control-label" for="">No. of quotes a job must receives to earn</label>  
 												<div class="col-md-5">
 													<input  name="min_quotes_received_t" placeholder="" class="form-control input-md" type="number" step="1" min="0" value="<?php echo $min_quotes_received_homeowner_t;?>" required >
 																					
@@ -121,15 +86,7 @@ foreach($settings as $setting){
 										<div class="col-sm-12">
 											<!-- Text input-->
 											<div class="form-group">
-												<label class="col-md-7 control-label" for="">
-													<?php 
-														if($paymentSettings[0]['payment_method'] == 0){
-															echo 'Amount to earn after milestore release';
-														}else{
-															echo 'Amount to earn after job post receive quotes';
-														}
-													?>													
-												</label>
+												<label class="col-md-7 control-label" for="">Amount to earn after job post receive quotes</label>  
 												<div class="col-md-5">
 													<div class="input-group">
 														<span class="input-group-addon">£</span>
@@ -150,15 +107,7 @@ foreach($settings as $setting){
 									<div class="col-sm-12">
 										<!-- Text input-->
 										<div class="form-group">
-											<label class="col-md-7 control-label" for="">
-												<?php 
-													if($paymentSettings[0]['payment_method'] == 0){
-														echo 'Minimum Milestone Release';
-													}else{
-														echo 'No. of quotes a trade must provide to earn';
-													}
-												?>												
-											</label>
+											<label class="col-md-7 control-label" for="">No. of quotes a trade must provide to earn</label>  
 											<div class="col-md-5">
 												<input  name="min_quotes_approved_t" placeholder="" class="form-control input-md" type="number" step="1" min="0" value="<?php echo $min_quotes_approved_tradsman_t;?>" required >
                                         
@@ -171,15 +120,7 @@ foreach($settings as $setting){
 									<div class="col-sm-12">
 										<!-- Text input-->
 										<div class="form-group">
-											<label class="col-md-7 control-label" for="">
-												<?php 
-													if($paymentSettings[0]['payment_method'] == 0){
-														echo 'Amount to earn after milestone release';
-													}else{
-														echo 'Amount to receive after a trade  provide quotes';
-													}
-												?>												
-											</label>  
+											<label class="col-md-7 control-label" for="">Amount to receive after a trade  provide quotes</label>  
 											<div class="col-md-5">
 												<div class="input-group">
 													<span class="input-group-addon">£</span>
