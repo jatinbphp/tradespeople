@@ -3158,132 +3158,125 @@ class Admin extends CI_Controller
                     $price_type_list = implode(',',$this->input->post('priceUnit'));
                 }
 				
-				$existCategory = $this->Common_model->get_single_data('service_category', ['original_cat_id' => $this->input->post('main_category')]);
-				
-				if(!empty($existCategory)){
-					$json['msg'] = '<div class="alert alert-danger">Selected main category is already exist<div>';
-                	$json['status'] = 2;					
-				}else{
-					$category = $this->Common_model->get_single_data('category', ['cat_id' => $this->input->post('main_category')]);
+				$category = $this->Common_model->get_single_data('category', ['cat_id' => $this->input->post('main_category')]);
 
-					$insert_arr = [
-						'original_cat_id'    => $this->input->post('main_category'),
-						'cat_name'           => $category['cat_name'],
-						'find_job_title'     => $category['cat_name'],
-						'title_ft'           => $category['cat_name'],
-						'slug'               => $category['slug'],
-						'cat_parent'         => 0,
-						'cat_create'         => date('Y-m-d h:i:s'),
-						'cat_description'    => $category['cat_description'],
-						'description'        => $category['description'],
-						'cat_image'          => $category['cat_image'],
-						'price_type'         => $price_type,
-						'price_type_list'    => $price_type_list,
-						'meta_title'         => $category['meta_title'],
-						'meta_key'           => $category['meta_key'],
-						'meta_description'   => $category['meta_description'],
-						'footer_description' => $category['footer_description'],
-						'is_activate'        => 1,
-					];
+                $insert_arr = [
+                    'original_cat_id'    => $this->input->post('main_category'),
+                    'cat_name'           => $category['cat_name'],
+                    'find_job_title'     => $category['cat_name'],
+                    'title_ft'           => $category['cat_name'],
+                    'slug'               => $category['slug'],
+                    'cat_parent'         => 0,
+                    'cat_create'         => date('Y-m-d h:i:s'),
+                    'cat_description'    => $category['cat_description'],
+                    'description'        => $category['description'],
+                    'cat_image'          => $category['cat_image'],
+                    'price_type'         => $price_type,
+                    'price_type_list'    => $price_type_list,
+                    'meta_title'         => $category['meta_title'],
+                    'meta_key'           => $category['meta_key'],
+                    'meta_description'   => $category['meta_description'],
+                    'footer_description' => $category['footer_description'],
+                    'is_activate'        => 1,
+                ];
 
-					$result = $this->My_model->insert_entry('service_category', $insert_arr);
+                $result = $this->My_model->insert_entry('service_category', $insert_arr);
 
-					if ($result) {
-						/*Add Sub Category*/
-						$subCategories = $this->input->post('sub_category');
-						if(!empty($subCategories)){
-							foreach($subCategories as $sCat){
-								$scat = $this->Common_model->get_single_data('category', ['cat_id' => $sCat]);
+                if ($result) {
+                    /*Add Sub Category*/
+                    $subCategories = $this->input->post('sub_category');
+                    if(!empty($subCategories)){
+                        foreach($subCategories as $sCat){
+                            $scat = $this->Common_model->get_single_data('category', ['cat_id' => $sCat]);
 
-								$insert_arr1 = [
-									'original_cat_id'    => $scat['cat_id'],
-									'cat_name'           => $scat['cat_name'],
-									'find_job_title'     => $scat['cat_name'],
-									'title_ft'           => $scat['cat_name'],
-									'slug'               => $scat['slug'],
-									'cat_parent'         => $result,
-									'cat_create'         => date('Y-m-d h:i:s'),
-									'cat_description'    => $scat['cat_description'],
-									'description'        => $scat['description'],
-									'cat_image'          => $scat['cat_image'],
-									'price_type'        => $price_type,
-									'price_type_list'    => $price_type_list,
-									'meta_title'         => $scat['meta_title'],
-									'meta_key'           => $scat['meta_key'],
-									'meta_description'   => $scat['meta_description'],
-									'footer_description' => $scat['footer_description'],
-									'is_activate'        => 1,
-								];
+                            $insert_arr1 = [
+                                'original_cat_id'    => $scat['cat_id'],
+                                'cat_name'           => $scat['cat_name'],
+                                'find_job_title'     => $scat['cat_name'],
+                                'title_ft'           => $scat['cat_name'],
+                                'slug'               => $scat['slug'],
+                                'cat_parent'         => $result,
+                                'cat_create'         => date('Y-m-d h:i:s'),
+                                'cat_description'    => $scat['cat_description'],
+                                'description'        => $scat['description'],
+                                'cat_image'          => $scat['cat_image'],
+                                'price_type'        => $price_type,
+                                'price_type_list'    => $price_type_list,
+                                'meta_title'         => $scat['meta_title'],
+                                'meta_key'           => $scat['meta_key'],
+                                'meta_description'   => $scat['meta_description'],
+                                'footer_description' => $scat['footer_description'],
+                                'is_activate'        => 1,
+                            ];
 
-								$result1 = $this->My_model->insert_entry('service_category', $insert_arr1);
+                            $result1 = $this->My_model->insert_entry('service_category', $insert_arr1);
 
-								if(!empty($result1)){
-									/*Add Service Type*/
-									$service_types = $this->input->post('service_type_category');
+                            if(!empty($result1)){
+                                /*Add Service Type*/
+                                $service_types = $this->input->post('service_type_category');
 
-									if(!empty($service_types)){
-										foreach($service_types as $sType){
-											$sTypeCat = $this->Common_model->get_single_data('category', ['cat_id' => $sType, 'cat_parent'=>$scat['cat_id']]);
+                                if(!empty($service_types)){
+                                    foreach($service_types as $sType){
+                                        $sTypeCat = $this->Common_model->get_single_data('category', ['cat_id' => $sType, 'cat_parent'=>$scat['cat_id']]);
 
-											if(!empty($sTypeCat)){
-												$insert_arr2 = [
-													'original_cat_id'    => $sTypeCat['cat_id'],
-													'cat_name'           => $sTypeCat['cat_name'],
-													'find_job_title'     => $sTypeCat['cat_name'],
-													'title_ft'           => $sTypeCat['cat_name'],
-													'slug'               => $sTypeCat['slug'],
-													'cat_parent'         => $result1,
-													'cat_create'         => date('Y-m-d h:i:s'),
-													'cat_description'    => $sTypeCat['cat_description'],
-													'description'        => $sTypeCat['description'],
-													'cat_image'          => $sTypeCat['cat_image'],
-													'price_type'        => $price_type,
-													'price_type_list'    => $price_type_list,
-													'meta_title'         => $sTypeCat['meta_title'],
-													'meta_key'           => $sTypeCat['meta_key'],
-													'meta_description'   => $sTypeCat['meta_description'],
-													'footer_description' => $sTypeCat['footer_description'],
-													'is_activate'        => 1,
-												];
-												$this->My_model->insert_entry('service_category', $insert_arr2);    
-											}
-										}
-									}
-								}
-							}
-						}
+                                        if(!empty($sTypeCat)){
+                                            $insert_arr2 = [
+                                                'original_cat_id'    => $sTypeCat['cat_id'],
+                                                'cat_name'           => $sTypeCat['cat_name'],
+                                                'find_job_title'     => $sTypeCat['cat_name'],
+                                                'title_ft'           => $sTypeCat['cat_name'],
+                                                'slug'               => $sTypeCat['slug'],
+                                                'cat_parent'         => $result1,
+                                                'cat_create'         => date('Y-m-d h:i:s'),
+                                                'cat_description'    => $sTypeCat['cat_description'],
+                                                'description'        => $sTypeCat['description'],
+                                                'cat_image'          => $sTypeCat['cat_image'],
+                                                'price_type'        => $price_type,
+                                                'price_type_list'    => $price_type_list,
+                                                'meta_title'         => $sTypeCat['meta_title'],
+                                                'meta_key'           => $sTypeCat['meta_key'],
+                                                'meta_description'   => $sTypeCat['meta_description'],
+                                                'footer_description' => $sTypeCat['footer_description'],
+                                                'is_activate'        => 1,
+                                            ];
+                                            $this->My_model->insert_entry('service_category', $insert_arr2);    
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-						$attribute = $this->input->post('attributes');
-						if(!empty($attribute)){
-							foreach ($attribute as $key => $value) {
-								$insert_attribute = [
-									'service_cat_id' => $result,
-									'attribute_name' => $value,
-								];
-								$this->My_model->insert_entry('service_attribute', $insert_attribute);
-							}
-						}
+                    $attribute = $this->input->post('attributes');
+                    if(!empty($attribute)){
+                        foreach ($attribute as $key => $value) {
+                            $insert_attribute = [
+                                'service_cat_id' => $result,
+                                'attribute_name' => $value,
+                            ];
+                            $this->My_model->insert_entry('service_attribute', $insert_attribute);
+                        }
+                    }
 
-						$exService = $this->input->post('exService');
-						if(!empty($exService['name'])){
-							foreach ($exService['name'] as $key => $value) {
-								$insert_exService = [
-									'category' => $result,
-									'ex_service_name' => $value,
-									'price' => $exService['price'][$key],
-									'days' => $exService['days'][$key],
-								];
-								$this->My_model->insert_entry('extra_service', $insert_exService);
-							}
-						}
+                    $exService = $this->input->post('exService');
+                    if(!empty($exService['name'])){
+                        foreach ($exService['name'] as $key => $value) {
+                            $insert_exService = [
+                                'category' => $result,
+                                'ex_service_name' => $value,
+                                'price' => $exService['price'][$key],
+                                'days' => $exService['days'][$key],
+                            ];
+                            $this->My_model->insert_entry('extra_service', $insert_exService);
+                        }
+                    }
 
-						$this->session->set_flashdata('success', 'Success! service category added successfully.');
-						$json['status'] = 1;
-					} else {
-						$json['msg'] = 'Error! something went wrong.';
-						$this->session->set_flashdata('error', 'Error! something went wrong.');
-					}
-				}
+                    $this->session->set_flashdata('success', 'Success! service category added successfully.');
+                    $json['status'] = 1;
+                } else {
+                    $json['msg'] = 'Error! something went wrong.';
+                    $this->session->set_flashdata('error', 'Error! something went wrong.');
+                }
             }
         }
         echo json_encode($json);
@@ -3327,231 +3320,224 @@ class Admin extends CI_Controller
 
                 $category = $this->Common_model->get_single_data('category', ['cat_id' => $this->input->post('main_category')]);
 				
-				$existMainCat = $this->Common_model->get_single_data('service_category', ['original_cat_id' => $this->input->post('main_category'), 'cat_id != ' => $id]);
-				
-				if(!empty($existMainCat)){
-					$json['msg'] = '<div class="alert alert-danger">Selected main category is already exist<div>';
-                	$json['status'] = 2;
-				}else{
-					$existSCat = $this->Common_model->get_single_data('service_category', ['cat_id' => $id]);
-					$update_array = [
-						'original_cat_id'    => $this->input->post('main_category'),
-						'cat_name'           => $category['cat_name'],
-						'find_job_title'     => $category['cat_name'],
-						'title_ft'           => $category['cat_name'],
-						'slug'               => $category['slug'],
-						'cat_parent'         => 0,
-						'cat_create'         => date('Y-m-d h:i:s'),
-						'cat_description'    => $category['cat_description'],
-						'description'        => $category['description'],
-						'cat_image'          => $category['cat_image'],
-						'price_type'         => $price_type,
-						'price_type_list'    => $price_type_list,
-						'meta_title'         => $category['meta_title'],
-						'meta_key'           => $category['meta_key'],
-						'meta_description'   => $category['meta_description'],
-						'footer_description' => $category['footer_description'],
-						'is_activate'        => 1,
-					];
-					$where_array = ['cat_id' => $id];
-					$result = $this->My_model->update_entry('service_category', $update_array, $where_array);
-					if ($result) {
+				$existSCat = $this->Common_model->get_single_data('service_category', ['cat_id' => $id]);
+                $update_array = [
+                    'original_cat_id'    => $this->input->post('main_category'),
+                    'cat_name'           => $category['cat_name'],
+                    'find_job_title'     => $category['cat_name'],
+                    'title_ft'           => $category['cat_name'],
+                    'slug'               => $category['slug'],
+                    'cat_parent'         => 0,
+                    'cat_create'         => date('Y-m-d h:i:s'),
+                    'cat_description'    => $category['cat_description'],
+                    'description'        => $category['description'],
+                    'cat_image'          => $category['cat_image'],
+                    'price_type'         => $price_type,
+                    'price_type_list'    => $price_type_list,
+                    'meta_title'         => $category['meta_title'],
+                    'meta_key'           => $category['meta_key'],
+                    'meta_description'   => $category['meta_description'],
+                    'footer_description' => $category['footer_description'],
+                    'is_activate'        => 1,
+                ];
+                $where_array = ['cat_id' => $id];
+                $result = $this->My_model->update_entry('service_category', $update_array, $where_array);
+                if ($result) {
 
-						if($existSCat['original_cat_id'] != $this->input->post('main_category')){
-							$allSubCats = $this->Common_model->get_all_data('service_category',['cat_parent'=>$id]);
+                    if($existSCat['original_cat_id'] != $this->input->post('main_category')){
+                        $allSubCats = $this->Common_model->get_all_data('service_category',['cat_parent'=>$id]);
 
-							if(!empty($allSubCats)){
-								foreach($allSubCats as $allsc){
-									$this->Common_model->delete(['cat_parent' => $allsc['cat_id']], 'service_category');
-								}
-							}
-							$this->Common_model->delete(['cat_parent' => $id], 'service_category');
-						}
+                        if(!empty($allSubCats)){
+                            foreach($allSubCats as $allsc){
+                                $this->Common_model->delete(['cat_parent' => $allsc['cat_id']], 'service_category');
+                            }
+                        }
+                        $this->Common_model->delete(['cat_parent' => $id], 'service_category');
+                    }
 
-						/*Add Sub Category*/
-						$subCategories = $this->input->post('sub_category');
+                    /*Add Sub Category*/
+                    $subCategories = $this->input->post('sub_category');
 
-						if(!empty($subCategories)){
-							foreach($subCategories as $sCat){
-								$scat = $this->Common_model->get_single_data('category', ['cat_id' => $sCat]);
+                    if(!empty($subCategories)){
+                        foreach($subCategories as $sCat){
+                            $scat = $this->Common_model->get_single_data('category', ['cat_id' => $sCat]);
 
-								$insert_arr1 = [
-									'original_cat_id'    => $scat['cat_id'],
-									'cat_name'           => $scat['cat_name'],
-									'find_job_title'     => $scat['cat_name'],
-									'title_ft'           => $scat['cat_name'],
-									'slug'               => $scat['slug'],
-									'cat_parent'         => $id,
-									'cat_create'         => date('Y-m-d h:i:s'),
-									'cat_description'    => $scat['cat_description'],
-									'description'        => $scat['description'],
-									'cat_image'          => $scat['cat_image'],
-									'price_type'         => $price_type,
-									'price_type_list'    => $price_type_list,
-									'meta_title'         => $scat['meta_title'],
-									'meta_key'           => $scat['meta_key'],
-									'meta_description'   => $scat['meta_description'],
-									'footer_description' => $scat['footer_description'],
-									'is_activate'        => 1,
-								];
+                            $insert_arr1 = [
+                                'original_cat_id'    => $scat['cat_id'],
+                                'cat_name'           => $scat['cat_name'],
+                                'find_job_title'     => $scat['cat_name'],
+                                'title_ft'           => $scat['cat_name'],
+                                'slug'               => $scat['slug'],
+                                'cat_parent'         => $id,
+                                'cat_create'         => date('Y-m-d h:i:s'),
+                                'cat_description'    => $scat['cat_description'],
+                                'description'        => $scat['description'],
+                                'cat_image'          => $scat['cat_image'],
+                                'price_type'         => $price_type,
+                                'price_type_list'    => $price_type_list,
+                                'meta_title'         => $scat['meta_title'],
+                                'meta_key'           => $scat['meta_key'],
+                                'meta_description'   => $scat['meta_description'],
+                                'footer_description' => $scat['footer_description'],
+                                'is_activate'        => 1,
+                            ];
 
-								$exist_sub_category = $this->Common_model->get_single_data('service_category', ['original_cat_id' => $sCat]);
+                            $exist_sub_category = $this->Common_model->get_single_data('service_category', ['original_cat_id' => $sCat]);
 
-								if(!empty($exist_sub_category)){
-									$where_array = ['cat_id' => $exist_sub_category['cat_id']];
-									$result1 = $this->My_model->update_entry('service_category', $insert_arr1, $where_array);
-									$sCatId = $exist_sub_category['cat_id'];
-								}else{
-									$result1 = $this->My_model->insert_entry('service_category', $insert_arr1);
-									$sCatId = $result1;
-								}
+                            if(!empty($exist_sub_category)){
+                                $where_array = ['cat_id' => $exist_sub_category['cat_id']];
+                                $result1 = $this->My_model->update_entry('service_category', $insert_arr1, $where_array);
+                                $sCatId = $exist_sub_category['cat_id'];
+                            }else{
+                                $result1 = $this->My_model->insert_entry('service_category', $insert_arr1);
+                                $sCatId = $result1;
+                            }
 
-								if(!empty($sCatId)){
-									$service_types = $this->input->post('service_type_category');
-									if(!empty($service_types)){
-										foreach($service_types as $sType){
-											$sTypeCat = $this->Common_model->get_single_data('category', ['cat_id' => $sType, 'cat_parent'=>$scat['cat_id']]);
+                            if(!empty($sCatId)){
+                                $service_types = $this->input->post('service_type_category');
+                                if(!empty($service_types)){
+                                    foreach($service_types as $sType){
+                                        $sTypeCat = $this->Common_model->get_single_data('category', ['cat_id' => $sType, 'cat_parent'=>$scat['cat_id']]);
 
-											if(!empty($sTypeCat)){
-												$insert_arr2 = [
-													'original_cat_id'    => $sTypeCat['cat_id'],
-													'cat_name'           => $sTypeCat['cat_name'],
-													'find_job_title'     => $sTypeCat['cat_name'],
-													'title_ft'           => $sTypeCat['cat_name'],
-													'slug'               => $sTypeCat['slug'],
-													'cat_parent'         => $sCatId,
-													'cat_create'         => date('Y-m-d h:i:s'),
-													'cat_description'    => $sTypeCat['cat_description'],
-													'description'        => $sTypeCat['description'],
-													'cat_image'          => $sTypeCat['cat_image'],
-													'price_type'        => $price_type,
-													'price_type_list'    => $price_type_list,
-													'meta_title'         => $sTypeCat['meta_title'],
-													'meta_key'           => $sTypeCat['meta_key'],
-													'meta_description'   => $sTypeCat['meta_description'],
-													'footer_description' => $sTypeCat['footer_description'],
-													'is_activate'        => 1,
-												];
+                                        if(!empty($sTypeCat)){
+                                            $insert_arr2 = [
+                                                'original_cat_id'    => $sTypeCat['cat_id'],
+                                                'cat_name'           => $sTypeCat['cat_name'],
+                                                'find_job_title'     => $sTypeCat['cat_name'],
+                                                'title_ft'           => $sTypeCat['cat_name'],
+                                                'slug'               => $sTypeCat['slug'],
+                                                'cat_parent'         => $sCatId,
+                                                'cat_create'         => date('Y-m-d h:i:s'),
+                                                'cat_description'    => $sTypeCat['cat_description'],
+                                                'description'        => $sTypeCat['description'],
+                                                'cat_image'          => $sTypeCat['cat_image'],
+                                                'price_type'        => $price_type,
+                                                'price_type_list'    => $price_type_list,
+                                                'meta_title'         => $sTypeCat['meta_title'],
+                                                'meta_key'           => $sTypeCat['meta_key'],
+                                                'meta_description'   => $sTypeCat['meta_description'],
+                                                'footer_description' => $sTypeCat['footer_description'],
+                                                'is_activate'        => 1,
+                                            ];
 
-												$exist_service_type = $this->Common_model->get_single_data('service_category', ['original_cat_id' => $sType]);
+                                            $exist_service_type = $this->Common_model->get_single_data('service_category', ['original_cat_id' => $sType]);
 
-												if(!empty($exist_service_type)){
-													$where_array = ['cat_id' => $exist_service_type['cat_id']];
-													$this->My_model->update_entry('service_category', $insert_arr2, $where_array);
-												}else{
-													$this->My_model->insert_entry('service_category', $insert_arr2);
-												}
-											}
-										}
+                                            if(!empty($exist_service_type)){
+                                                $where_array = ['cat_id' => $exist_service_type['cat_id']];
+                                                $this->My_model->update_entry('service_category', $insert_arr2, $where_array);
+                                            }else{
+                                                $this->My_model->insert_entry('service_category', $insert_arr2);
+                                            }
+                                        }
+                                    }
 
-										$allServiceTypes = $this->Common_model->get_all_data('service_category',['cat_parent'=>$sCatId]);
+                                    $allServiceTypes = $this->Common_model->get_all_data('service_category',['cat_parent'=>$sCatId]);
 
-										if(!empty($allServiceTypes)){
-											foreach($allServiceTypes as $allst){
-												if(!in_array($allst['original_cat_id'], $service_types)){
-													$this->Common_model->delete(['cat_id' => $allst['cat_id']], 'service_category');
-												}
-											}
-										}
-									}
-								}
-							}
+                                    if(!empty($allServiceTypes)){
+                                        foreach($allServiceTypes as $allst){
+                                            if(!in_array($allst['original_cat_id'], $service_types)){
+                                                $this->Common_model->delete(['cat_id' => $allst['cat_id']], 'service_category');
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-							$allSubCats = $this->Common_model->get_all_data('service_category',['cat_parent'=>$id]);
+                        $allSubCats = $this->Common_model->get_all_data('service_category',['cat_parent'=>$id]);
 
-							if(!empty($allSubCats)){
-								foreach($allSubCats as $allsc){
-									if(!in_array($allsc['original_cat_id'], $subCategories)){
-										$this->Common_model->delete(['cat_id' => $allsc['cat_id']], 'service_category');
-									}
-								}
-							}
-						}
+                        if(!empty($allSubCats)){
+                            foreach($allSubCats as $allsc){
+                                if(!in_array($allsc['original_cat_id'], $subCategories)){
+                                    $this->Common_model->delete(['cat_id' => $allsc['cat_id']], 'service_category');
+                                }
+                            }
+                        }
+                    }
 
-						$attribute = $this->input->post('attributes');
-						$attribute_ids = $this->input->post('attribute_ids');
-						if(!empty($attribute)){
+                    $attribute = $this->input->post('attributes');
+                    $attribute_ids = $this->input->post('attribute_ids');
+                    if(!empty($attribute)){
 
-							$old_attribute = $this->Common_model->get_all_data('service_attribute', ['service_cat_id' => $result]);
-							$old_attributes_map = [];
-							if(!empty($old_attribute)){
-								foreach($old_attribute as $oa){
-									$old_attributes_map[$oa['id']] = $oa['attribute_name'];
-								}
-							}
+                        $old_attribute = $this->Common_model->get_all_data('service_attribute', ['service_cat_id' => $id]);
+                        $old_attributes_map = [];
+                        if(!empty($old_attribute)){
+                            foreach($old_attribute as $oa){
+                                $old_attributes_map[$oa['id']] = $oa['attribute_name'];
+                            }
+                        }
 
-							foreach ($attribute as $key => $value) {
-								$attribute_id = isset($attribute_ids[$key]) ? $attribute_ids[$key] : false;
-								if ($attribute_id && isset($old_attributes_map[$attribute_id])) {
-									// Update existing attribute
-									$update_data = ['attribute_name' => $value];
-									$this->Common_model->update('service_attribute', ['id' => $attribute_id], $update_data);
+                        foreach ($attribute as $key => $value) {
+                            $attribute_id = isset($attribute_ids[$key]) ? $attribute_ids[$key] : false;
+                            if ($attribute_id && isset($old_attributes_map[$attribute_id])) {
+                                // Update existing attribute
+                                $update_data = ['attribute_name' => $value];
+                                $this->Common_model->update('service_attribute', ['id' => $attribute_id], $update_data);
 
-									// Remove from map after updating
-									unset($old_attributes_map[$attribute_id]);
-								} else {
-									// Insert new attribute
-									$insert_data = [
-										'service_cat_id' => $result,
-										'attribute_name' => $value,
-									];
-									$this->My_model->insert_entry('service_attribute', $insert_data);
-								}
-							}
+                                // Remove from map after updating
+                                unset($old_attributes_map[$attribute_id]);
+                            } else {
+                                // Insert new attribute
+                                $insert_data = [
+                                    'service_cat_id' => $id,
+                                    'attribute_name' => $value,
+                                ];
+                                $this->My_model->insert_entry('service_attribute', $insert_data);
+                            }
+                        }
 
-							foreach ($old_attributes_map as $id => $name) {
-								$this->Common_model->delete(['id' => $id], 'service_attribute');
-							}
-						}
+                        foreach ($old_attributes_map as $id => $name) {
+                            $this->Common_model->delete(['id' => $id], 'service_attribute');
+                        }
+                    }
 
-						$exService = $this->input->post('exService');
-						if(!empty($exService['name'])){
-							$old_exs = $this->Common_model->get_all_data('extra_service', ['category' => $result]);
-							$old_exs_map = [];
-							if(!empty($old_exs)){
-								foreach($old_exs as $oexs){
-									$old_exs_map[$oexs['id']] = $oexs['ex_service_name'];
-								}
-							}
+                    $exService = $this->input->post('exService');
+                    if(!empty($exService['name'])){
+                        $old_exs = $this->Common_model->get_all_data('extra_service', ['category' => $id]);
+                        $old_exs_map = [];
+                        if(!empty($old_exs)){
+                            foreach($old_exs as $oexs){
+                                $old_exs_map[$oexs['id']] = $oexs['ex_service_name'];
+                            }
+                        }
 
-							foreach ($exService['name'] as $key => $value) {
-								$ex_service_id = isset($exService['id'][$key]) ? $exService['id'][$key] : false;
+                        foreach ($exService['name'] as $key => $value) {
+                            $ex_service_id = isset($exService['id'][$key]) ? $exService['id'][$key] : false;
 
-								if ($ex_service_id && isset($old_exs_map[$ex_service_id])) {
-									// Update existing extra service
-									$update_data = [
-										'ex_service_name' => $value,
-										'price' => $exService['price'][$key],
-										'days' => $exService['days'][$key],
-									];
-									$this->Common_model->update('extra_service', ['id' => $ex_service_id], $update_data);
+                            if ($ex_service_id && isset($old_exs_map[$ex_service_id])) {
+                                // Update existing extra service
+                                $update_data = [
+                                    'ex_service_name' => $value,
+                                    'price' => $exService['price'][$key],
+                                    'days' => $exService['days'][$key],
+                                ];
+                                $this->Common_model->update('extra_service', ['id' => $ex_service_id], $update_data);
 
-									// Remove from map after updating
-									unset($old_exs_map[$ex_service_id]);
-								} else {
-									// Insert new extra service
-									$insert_data = [
-										'category' => $result,
-										'ex_service_name' => $value,
-										'price' => $exService['price'][$key],
-										'days' => $exService['days'][$key],
-									];
-									$this->My_model->insert_entry('extra_service', $insert_data);
-								}
-							}
+                                // Remove from map after updating
+                                unset($old_exs_map[$ex_service_id]);
+                            } else {
+                                // Insert new extra service
+                                $insert_data = [
+                                    'category' => $id,
+                                    'ex_service_name' => $value,
+                                    'price' => $exService['price'][$key],
+                                    'days' => $exService['days'][$key],
+                                ];
+                                $this->My_model->insert_entry('extra_service', $insert_data);
+                            }
+                        }
 
-							foreach ($old_exs_map as $id => $data) {
-								$this->Common_model->delete(['id' => $id], 'extra_service');
-							}
-						}
+                        foreach ($old_exs_map as $id => $data) {
+                            $this->Common_model->delete(['id' => $id], 'extra_service');
+                        }
+                    }
 
-						$json['status'] = 1;
-						$this->session->set_flashdata('success', 'Success! Service category updated successfully.');
-					} else {
-						$json['status'] = 2;
-						$this->session->set_flashdata('error', 'Some error occured.');
-					}
-				}                
+                    $json['status'] = 1;
+                    $this->session->set_flashdata('success', 'Success! Service category updated successfully.');
+                } else {
+                    $json['status'] = 2;
+                    $this->session->set_flashdata('error', 'Some error occured.');
+                }                
             }
         }
         echo json_encode($json);
@@ -3629,6 +3615,16 @@ class Admin extends CI_Controller
     public function openModal(){
         $catId = $this->input->post('catId');
         $data['parent_category']=$this->Common_model->get_parent_category('category');
+        $selected_parent_category=$this->Common_model->get_parent_category('service_category');
+
+        $spcId = [];
+        if(!empty($selected_parent_category)){
+            foreach($selected_parent_category as $cId){
+                $spcId[] = $cId['original_cat_id'];
+            }
+        }
+
+        $data['selected_parent_category'] = $spcId;
         $data['formType'] = 0;
         $data['catId'] = 0;
 

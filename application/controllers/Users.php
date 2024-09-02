@@ -2393,6 +2393,7 @@ class Users extends CI_Controller
 			$data['price_per_type'] = !empty($data['service_category']['price_type_list']) ? explode(',', $data['service_category']['price_type_list']) : [];
 			
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
+			$data['serviceId'] = 0;
       		$this->load->view('site/add-service',$data);
     	} 
 	}
@@ -2497,19 +2498,26 @@ class Users extends CI_Controller
 			$insert['plugins'] = '';
 		}
 
-		$run = $this->common_model->insert('my_services', $insert);
-		if($run){
-			$this->session->set_userdata('latest_service',$run);
+		$serviceId = $this->input->post('serviceId');
+
+		if($serviceId > 0){
+			$run = $this->common_model->update('my_services', ['id'=>$serviceId], $insert);
+			$sessionServiceId = $serviceId;
+		}else{
+			$run = $this->common_model->insert('my_services', $insert);
+			$sessionServiceId = $run;
 		}
+		
+		$this->session->set_userdata('latest_service',$sessionServiceId);
 
 		$this->session->set_userdata('store_service1',$insert);
-		$this->session->set_userdata('next_step',7);
+		$this->session->set_userdata('next_step',2);
 		$this->session->set_flashdata('success',"Service details added successfully.");
 		$this->setServiceData($insert);
 		redirect('add-service');
 	}
 
-	public function storeServices2($value=''){
+	public function storeServices2BKP($value=''){
 		$this->form_validation->set_rules('category','Category','required');
 		$this->form_validation->set_rules('sub_category','Sub Category','required');
 				
@@ -2532,6 +2540,39 @@ class Users extends CI_Controller
 		$this->session->set_userdata('next_step',3);
 		$this->session->set_flashdata('success',"Category details added successfully.");
 		redirect('add-service');
+	}
+
+	public function storeServices2($value=''){
+		$package = $this->input->post('package');
+		$result = $this->validateArray($package);
+		if (!$result['isValid']) {
+			$this->session->set_flashdata('error',$result['message']);
+			$this->session->set_userdata('next_step',2);
+			redirect('add-service');
+		}
+
+		if($this->input->post('package_type')){
+			$insert['package_type'] = 1;
+		}else{
+			$insert['package_type'] = 0;
+		}
+
+		if($this->input->post('package')){
+			$insert['package_data'] = json_encode($this->input->post('package'));
+		}else{
+			$insert['package_data'] = '';
+		}
+
+		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
+
+		$latestServiceId = $this->session->userdata('latest_service');
+		
+		$run = $this->common_model->update('my_services', ['id'=>$latestServiceId], $insert);
+
+		$this->setServiceData($insert);
+		$this->session->set_userdata('next_step',3);
+		$this->session->set_flashdata('success',"Package details added successfully.");
+		redirect('add-service');		
 	}
 
 	public function storeServices3($value=''){
@@ -2577,8 +2618,10 @@ class Users extends CI_Controller
 		if ($step3 !== null) {
 		  $insert = array_merge($insert, $step3);
 		}*/
+		
+		
 
-		$this->form_validation->set_rules('image','Image/Video','required');
+		//$this->form_validation->set_rules('image','Image','required');
 		$this->form_validation->set_rules('video', 'Video', 'callback_check_video_size');
 				
 		if ($this->form_validation->run()==false) {
@@ -2677,49 +2720,13 @@ class Users extends CI_Controller
 		$insert['not_available_days'] = $this->input->post('not_available_days');
 		
 		$run = $this->common_model->insert('service_availability', $insert);
-
-		$input['status'] = 'approval_pending';
-		$result = $this->common_model->update('my_services',array('id'=>$this->session->userdata('latest_service')),$input);
 		
-		$this->session->set_userdata('next_step',8);
+		$this->session->set_userdata('next_step',7);
 		$this->session->set_flashdata('success',"Service availability details added successfully.");
 		redirect('add-service');
-	}
-
-	public function storeServices7($value=''){
-		$package = $this->input->post('package');
-		$result = $this->validateArray($package);
-		if (!$result['isValid']) {
-			$this->session->set_flashdata('error',$result['message']);
-			$this->session->set_userdata('next_step',7);
-			redirect('add-service');
-		}
-
-		if($this->input->post('package_type')){
-			$insert['package_type'] = 1;
-		}else{
-			$insert['package_type'] = 0;
-		}
-
-		if($this->input->post('package')){
-			$insert['package_data'] = json_encode($this->input->post('package'));
-		}else{
-			$insert['package_data'] = '';
-		}
-
-		$insert['price_per_type'] = trim($this->input->post('price_per_type'));	
-
-		$this->session->set_userdata('store_service7',$insert);
-		$this->setServiceData($insert);		
-
-		$this->session->set_userdata('next_step',3);
-		$this->session->set_flashdata('success',"Package details added successfully.");
-		redirect('add-service');		
-	}
+	}	
 	
-	public function storeServices8($value=''){
-		$this->form_validation->set_rules('f_name','First Name','required');
-		$this->form_validation->set_rules('l_name','Last Name','required');
+	public function storeServices7($value=''){
 		$this->form_validation->set_rules('about_business','About Business','required');
 		$this->form_validation->set_rules('trading_name','Trading Name','required');
 		
@@ -2741,25 +2748,23 @@ class Users extends CI_Controller
 			}
 			
 			$user_id = $this->session->userdata('user_id');
-				
-			$insert['f_name'] = $this->input->post('f_name');
-			$insert['l_name'] = $this->input->post('l_name');
+			
 			$insert['about_business'] = $this->input->post('about_business');
 			$insert['trading_name'] = $this->input->post('trading_name');
 			
-			$run = $this->common_model->update('users',array('id'=>$user_id),$insert);	
 			
-			if($run){
-				$this->session->unset_userdata('store_service1');
-				$this->session->unset_userdata('store_service2');
-				$this->session->unset_userdata('store_service3');
-				$this->session->unset_userdata('latest_service');
-				$this->reserServiceTabData();							
+	
+			$run = $this->common_model->update('users', ['id'=>$user_id], $insert);
+			$input['status'] = 'approval_pending';
+			$result = $this->common_model->update('my_services',array('id'=>$this->session->userdata('latest_service')),$input);
 
-				$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
-			} else {
-				$this->session->set_flashdata('error','Something is wrong. Your Service is not saved successfully!!!');
-			}			
+			$this->session->unset_userdata('store_service1');
+			$this->session->unset_userdata('store_service2');
+			$this->session->unset_userdata('store_service3');
+			$this->session->unset_userdata('latest_service');
+			$this->reserServiceTabData();							
+
+			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');			
 			redirect('my-services');
 		}
 	}
@@ -2837,6 +2842,7 @@ class Users extends CI_Controller
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 
 			$data['suggestion'] = ['bathroom','test','reparing','123','456','789'];
+			$data['serviceId'] = $id;
 
 			$this->load->view('site/edit-service',$data);
     	} 
@@ -2919,11 +2925,11 @@ class Users extends CI_Controller
 
 		$this->common_model->update('my_services', ['id'=>$id], $insert);
 		$this->session->set_flashdata('success','Service details updated succesfully.');
-		$this->session->set_userdata('update_next_step',7);
+		$this->session->set_userdata('update_next_step',2);
 		redirect("edit-service/{$id}");
 	}
 
-	public function updateServices2($id=''){
+	public function updateServices2BKP($id=''){
 		if(!$id){
 			redirect(base_url());
 			return;
@@ -2948,6 +2954,32 @@ class Users extends CI_Controller
 		$ex_service=$this->common_model->get_ex_service('extra_service',$insert['category']);
 		$this->session->set_userdata('update_next_step',7);
 		redirect("edit-service/{$id}");					
+	}
+
+	public function updateServices2($id=''){
+		if(!$id){
+			redirect(base_url());
+			return;
+		}
+
+		if($this->input->post('package_type')){
+			$insert['package_type'] = 1;
+		}else{
+			$insert['package_type'] = 0;
+		}
+
+		if($this->input->post('package')){
+			$insert['package_data'] = json_encode($this->input->post('package'));
+		}else{
+			$insert['package_data'] = '';
+		}
+
+		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
+
+		$this->common_model->update('my_services',array('id'=>$id),$insert);
+
+		$this->session->set_userdata('update_next_step',3);
+		redirect("edit-service/{$id}");							
 	}
 
 	public function updateServices3($id=''){
@@ -3126,40 +3158,12 @@ class Users extends CI_Controller
 			$this->common_model->insert('service_availability', $insert);				
 		}
 		
-		$this->session->set_userdata('update_next_step',8);
+		$this->session->set_userdata('update_next_step',7);
 		$this->session->set_flashdata('success','Service availability details updated succesfully.');
 		redirect("edit-service/{$id}");
-	
-						
-	}
-
-	public function updateServices7($id=''){
-		if(!$id){
-			redirect(base_url());
-			return;
-		}
-
-		if($this->input->post('package_type')){
-			$insert['package_type'] = 1;
-		}else{
-			$insert['package_type'] = 0;
-		}
-
-		if($this->input->post('package')){
-			$insert['package_data'] = json_encode($this->input->post('package'));
-		}else{
-			$insert['package_data'] = '';
-		}
-
-		$insert['price_per_type'] = trim($this->input->post('price_per_type'));
-
-		$this->common_model->update('my_services',array('id'=>$id),$insert);
-
-		$this->session->set_userdata('update_next_step',3);
-		redirect("edit-service/{$id}");							
-	}
+	}	
 		
-	public function updateServices8($id=''){
+	public function updateServices7($id=''){
 		if(!$id){
 			redirect(base_url());
 			return;
@@ -3195,6 +3199,15 @@ class Users extends CI_Controller
 			$insert['trading_name'] = $this->input->post('trading_name');
 			
 			$run = $this->common_model->update('users',array('id'=>$user_id),$insert);
+
+			$serviceData = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
+
+			if(!empty($serviceData)){
+				if($serviceData['status'] == 'draft'){
+					$insert1['status'] = 'approval_pending';
+					$this->common_model->update('my_services',array('id'=>$id),$insert1);		
+				}
+			}
 			
 			if($id){
 				$this->session->set_flashdata('success','Your service has been updated successfully.');
@@ -3834,5 +3847,44 @@ class Users extends CI_Controller
 		return true;
 	}
 
+	public function autoSaveService(){
+		$subCat = !empty($this->input->post('sub_category')) ? implode(',', $this->input->post('sub_category')) : '';
+
+		$sType = !empty($this->input->post('service_type')) ? implode(',', $this->input->post('service_type')) : '';
+		$serviceId = $this->input->post('serviceId');
+
+		if($serviceId > 0){
+			$serviceData = $this->common_model->GetSingleData('my_services',['id'=>$serviceId]);
+			$status = $serviceData['status'];
+		}else{
+			$status = "draft";
+		}
+
+		$insert['user_id'] = $this->session->userdata('user_id');
+		$insert['service_name'] = $this->input->post('service_name');
+		$insert['slug'] = str_replace(' ','-',strtolower($this->input->post('service_name')));
+		$insert['description'] = trim($this->input->post('description'));
+		$insert['location'] = $this->input->post('location');
+		$insert['area'] = $this->input->post('area');
+		$insert['positive_keywords'] = implode(',', $this->input->post('positive_keywords'));
+		$insert['category'] = $this->input->post('category');
+		$insert['sub_category'] = $subCat;
+		$insert['service_type'] = $sType;
+		$insert['status'] = $status;
+		if(!empty($this->input->post('plugins'))){
+			$insert['plugins'] = implode(',', $this->input->post('plugins'));
+		} else {
+			$insert['plugins'] = '';
+		}		
+
+		if($serviceId > 0){
+			$this->common_model->update('my_services', ['id'=>$serviceId], $insert);	
+			$sId = $serviceId;
+		}else{
+			$run = $this->common_model->insert('my_services', $insert);
+			$sId = $run;
+		}
+		echo $sId;
+	}
 
 }

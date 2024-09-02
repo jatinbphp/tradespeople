@@ -48,7 +48,7 @@
 	/*----------LOADER CSS END----------*/
 
 	#serviceImage{display: none;}
-	.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center}
+	.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
 	.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
 	.imgUp{margin-bottom:15px}
 	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
@@ -56,6 +56,16 @@
 	.removeDoc {position: absolute; top: 0; right: 0; margin-right: 15px;}
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
+	#imgpreview {
+		padding-top: 15px;
+	}
+	.boxImage {
+		margin: 0;
+	}
+	.imagePreviewPlus {
+		height: 150px;
+		box-shadow: none;
+	}
 </style>
 <form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
@@ -79,7 +89,7 @@
 
 					<div class="row">
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer">
-							<div class="file-upload-btn addWorkImage imgUp">
+							<div class="file-upload-btn imgUp">
 								<div class="btn-text main-label">Main Image</div>
 								<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
 								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
@@ -87,53 +97,56 @@
 							</div>
 							<input type="hidden" name="service_image_old" value="" >
 						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imgpreview">
+							<?php $image_path = FCPATH . 'img/services/' . ($serviceData['image'] ?? ''); ?>
+				            <?php if (file_exists($image_path) && $serviceData['image']): ?>
+				                <?php
+				                $mime_type = get_mime_by_extension($image_path);
+				                $is_image = strpos($mime_type, 'image') !== false;
+				                $is_video = strpos($mime_type, 'video') !== false;
+				                ?>
+				                <?php if ($is_image): ?>
+				                    <div style='padding-left:15px'>
+				                        <div class="boxImage imgUp">
+				                            <div class="imagePreviewPlus">
+				                                <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" alt="Image">
+				                            </div>
+				                        </div>
+				                    </div>
+				                <?php elseif ($is_video): ?>
+				                    <div style='padding-left:15px'>
+				                        <div class="imgUp">
+				                            <div class="videoPreviewPlus">
+				                                <video 
+				                                    src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" 
+				                                    type="<?php echo $mime_type; ?>" 
+				                                     loop 
+				                                    class="serviceVideo">
+				                                </video>
+					                            <svg id="play-control-btn" class="playing" width="30" height="30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+					                                <path id="border" fill="none" stroke="#fff" stroke-width="1.5" stroke-miterlimit="10" d="M50,2.9L50,2.9C76,2.9,97.1,24,97.1,50v0C97.1,76,76,97.1,50,97.1h0C24,97.1,2.9,76,2.9,50v0C2.9,24,24,2.9,50,2.9z"/>
+					                                <path id="bar" fill="none" stroke="#fff" stroke-width="4.5" stroke-miterlimit="10" d="M50,2.9L50,2.9C76,2.9,97.1,24,97.1,50v0C97.1,76,76,97.1,50,97.1h0C24,97.1,2.9,76,2.9,50v0C2.9,24,24,2.9,50,2.9z" style="transition: all .3s;"/>
+					                                <g id="pause">
+					                                    <g>
+					                                        <path fill="#fff" d="M46.1,65.7h-7.3c-0.4,0-0.7-0.3-0.7-0.7V35c0-0.4,0.3-0.7,0.7-0.7h7.3c0.4,0,0.7,0.3,0.7,0.7V65 C46.8,65.4,46.5,65.7,46.1,65.7z"/>
+					                                        <path fill="#fff" d="M61.2,65.7h-7.3c-0.4,0-0.7-0.3-0.7-0.7V35c0-0.4,0.3-0.7,0.7-0.7h7.3c0.4,0,0.7,0.3,0.7,0.7V65 C61.9,65.4,61.6,65.7,61.2,65.7z"/>
+					                                    </g>
+					                                </g>
+					                                <g id="play">
+					                                    <path fill="#fff" d="M41.1,33.6l24.5,15.6c0.6,0.4,0.6,1.1,0,1.5L41.1,66.4c-0.7,0.5-1.8,0-1.8-0.7V34.4 C39.3,33.6,40.4,33.2,41.1,33.6z"/>
+					                                </g>
+					                            </svg>
+				                        	</div>
+				                   		</div>
+				                	</div>
+				    			<?php endif; ?>
+							<?php endif; ?>
+						</div>
 					</div>
 
-					<div class="row" id="imgpreview">
-			            <?php $image_path = FCPATH . 'img/services/' . ($serviceData['image'] ?? ''); ?>
-			            <?php if (file_exists($image_path) && $serviceData['image']): ?>
-			                <?php
-			                $mime_type = get_mime_by_extension($image_path);
-			                $is_image = strpos($mime_type, 'image') !== false;
-			                $is_video = strpos($mime_type, 'video') !== false;
-			                ?>
-			                <?php if ($is_image): ?>
-			                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style='padding-left:15px'>
-			                        <div class="boxImage imgUp">
-			                            <div class="imagePreviewPlus">
-			                                <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" alt="Image">
-			                            </div>
-			                        </div>
-			                    </div>
-			                <?php elseif ($is_video): ?>
-			                    <div class="col-md-4 col-sm-6 col-xs-12" style='padding-left:15px'>
-			                        <div class="imgUp">
-			                            <div class="videoPreviewPlus">
-			                                <video 
-			                                    src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" 
-			                                    type="<?php echo $mime_type; ?>" 
-			                                     loop 
-			                                    class="serviceVideo">
-			                                </video>
-				                            <svg id="play-control-btn" class="playing" width="30" height="30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
-				                                <path id="border" fill="none" stroke="#fff" stroke-width="1.5" stroke-miterlimit="10" d="M50,2.9L50,2.9C76,2.9,97.1,24,97.1,50v0C97.1,76,76,97.1,50,97.1h0C24,97.1,2.9,76,2.9,50v0C2.9,24,24,2.9,50,2.9z"/>
-				                                <path id="bar" fill="none" stroke="#fff" stroke-width="4.5" stroke-miterlimit="10" d="M50,2.9L50,2.9C76,2.9,97.1,24,97.1,50v0C97.1,76,76,97.1,50,97.1h0C24,97.1,2.9,76,2.9,50v0C2.9,24,24,2.9,50,2.9z" style="transition: all .3s;"/>
-				                                <g id="pause">
-				                                    <g>
-				                                        <path fill="#fff" d="M46.1,65.7h-7.3c-0.4,0-0.7-0.3-0.7-0.7V35c0-0.4,0.3-0.7,0.7-0.7h7.3c0.4,0,0.7,0.3,0.7,0.7V65 C46.8,65.4,46.5,65.7,46.1,65.7z"/>
-				                                        <path fill="#fff" d="M61.2,65.7h-7.3c-0.4,0-0.7-0.3-0.7-0.7V35c0-0.4,0.3-0.7,0.7-0.7h7.3c0.4,0,0.7,0.3,0.7,0.7V65 C61.9,65.4,61.6,65.7,61.2,65.7z"/>
-				                                    </g>
-				                                </g>
-				                                <g id="play">
-				                                    <path fill="#fff" d="M41.1,33.6l24.5,15.6c0.6,0.4,0.6,1.1,0,1.5L41.1,66.4c-0.7,0.5-1.8,0-1.8-0.7V34.4 C39.3,33.6,40.4,33.2,41.1,33.6z"/>
-				                                </g>
-				                            </svg>
-			                        	</div>
-			                   		</div>
-			                	</div>
-			    			<?php endif; ?>
-						<?php endif; ?>
-					</div>
+					<!-- <div class="row" id="imgpreview">
+			            
+					</div> -->
 
 					<div class="row">
 						<div id="loader1" class="loader_ajax_small"></div>
@@ -184,6 +197,7 @@
 						<div class="btn-text">Drag & drop video or <span>Browser</span></div>
 						<input type="file" name="video" id="videoprofile" class="form-control input-md" accept="video/*" onchange="return seeVideoPreview();">
 					</div>
+					<div id="loader3" class="loader_ajax_small"></div>
 					<div id="videoPreview" style="position:relative; width: fit-content;">
 						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
 							<?php $video_path = FCPATH . 'img/services/' . ($serviceData['video'] ?? ''); ?>
@@ -272,26 +286,43 @@
 		reader.readAsDataURL(file);
 	});
 
-	function seeVideoPreview(){
-		var fileUploads = $("#videoprofile")[0];
+	function seeVideoPreview() {
+	    $('#loader3').show();
+	    var fileUploads = $("#videoprofile")[0];
 	    var file = fileUploads.files[0];
-	    
-	    // Check if the file is a video
-	    if (file && file.type.startsWith('video/')) {
-	        var reader = new FileReader();
-	        reader.readAsDataURL(file);
-	        reader.onload = function (e) {
-	            var video = document.createElement('video');
-	            video.src = e.target.result;
-	            video.onloadedmetadata = function () {
-	            	var height = this.videoHeight;
-	                var width = this.videoWidth;
-	                $('#videoPreview').html('<video src="' + video.src + '" controls style="width:162px; height:113px;"></video>'); 
-	            }
+
+	    // Check if a file is selected
+	    if (file) {
+	        // Check if the file size is greater than 60MB
+	        var fileSizeInMB = file.size / (1024 * 1024);
+	        if (fileSizeInMB > 60) {
+	            $('#loader3').hide();
+	            alert("File size exceeds 60MB. Please upload a smaller video file.");
+	            return;
+	        }
+
+	        // Check if the file is a video
+	        if (file.type.startsWith('video/')) {
+	            var reader = new FileReader();
+	            reader.readAsDataURL(file);
+	            reader.onload = function (e) {
+	                var video = document.createElement('video');
+	                video.src = e.target.result;
+	                video.onloadedmetadata = function () {
+	                    $('#loader3').hide();
+	                    var height = this.videoHeight;
+	                    var width = this.videoWidth;
+	                    $('#videoPreview').html('<video src="' + video.src + '" controls style="width:162px; height:113px;"></video>'); 
+	                };
+	            };
+	        } else {
+	            $('#loader3').hide();
+	            alert("Please upload a valid video file.");
 	        }
 	    } else {
-	        alert("Please upload a valid video file.");
-	    }     
+	        $('#loader3').hide();
+	        alert("No file selected. Please select a video file.");
+	    }
 	} 
 
 	const dropArea = document.querySelector(".addWorkImage"),
@@ -317,7 +348,7 @@
 		var file_data = $('#profile2').prop('files')[0];
 
 		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
-        if (validImageTypes.indexOf(file_data.type) === -1) {
+        if (validImageTypes.indexOf(file_data.type) == -1) {
             alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
             return false;
         }
@@ -440,7 +471,7 @@
 	}
 
 	function removeVideo(imgId, type){
-		var sId = <?php echo $serviceData['id']; ?>;
+		var sId = <?php echo isset($serviceData['id']) ? $serviceData['id'] : 0; ?>;
 		$.ajax({
 			url:site_url+'users/removeServiceVideo',
 			type:"POST",

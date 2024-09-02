@@ -167,8 +167,8 @@
 										<tr>
 											<td>
 												<div class="form-check" style="margin: 0;">
-													<input class="form-check-input" type="checkbox" name="package[basic][attributes][]" value="<?php echo $value['id']?>" id="attCheckBasic<?php echo $value['id']?>" <?php echo $bchecked; ?> style="margin-right:10px;">
-													<label class="form-check-label" for="attCheckBasic<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+													<input class="form-check-input" type="checkbox" name="package[basic][attributes][]" value="<?php echo $value['id']?>" id="attCheckBasic<?php echo $value['id']?>" <?php echo $bchecked; ?> style="margin:0;">
+													<label class="form-check-label" for="attCheckBasic<?php echo $value['id']?>" style="margin:0; font-weight: normal;">
 														<?php echo $value['attribute_name']?>
 													</label>
 													
@@ -176,16 +176,16 @@
 											</td>
 											<td class="multiplePackage">
 												<div class="form-check" style="margin: 0;">
-													<input class="form-check-input" type="checkbox" name="package[standard][attributes][]" value="<?php echo $value['id']?>" id="attCheckStandard<?php echo $value['id']?>" <?php echo $schecked; ?> style="margin-right:10px;">
-													<label class="form-check-label" for="attCheckStandard<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+													<input class="form-check-input" type="checkbox" name="package[standard][attributes][]" value="<?php echo $value['id']?>" id="attCheckStandard<?php echo $value['id']?>" <?php echo $schecked; ?> style="margin:0;">
+													<label class="form-check-label" for="attCheckStandard<?php echo $value['id']?>" style="margin:0; font-weight: normal;">
 														<?php echo $value['attribute_name']?>
 													</label>
 												</div>
 											</td>
 											<td class="multiplePackage">
 												<div class="form-check" style="margin: 0;">
-													<input class="form-check-input" type="checkbox" name="package[premium][attributes][]" value="<?php echo $value['id']?>" id="attCheckPremium<?php echo $value['id']?>" <?php echo $pchecked; ?> style="margin-right:10px;">
-													<label class="form-check-label" for="attCheckPremium<?php echo $value['id']?>" style="margin-top:10px; font-weight: normal;">
+													<input class="form-check-input" type="checkbox" name="package[premium][attributes][]" value="<?php echo $value['id']?>" id="attCheckPremium<?php echo $value['id']?>" <?php echo $pchecked; ?> style="margin:0;">
+													<label class="form-check-label" for="attCheckPremium<?php echo $value['id']?>" style="margin:0; font-weight: normal;">
 														<?php echo $value['attribute_name']?>
 													</label>
 												</div>

@@ -1,4 +1,5 @@
-<form action="<?= $url; ?>" method="post" id="formStep1" enctype="multipart/form-data">  
+<form action="<?= $url; ?>" method="post" id="formStep1" enctype="multipart/form-data"> 
+    <input type="hidden" name="serviceId" id="serviceId" value="<?php echo $serviceId; ?>">
     <div class="edit-user-section">
         <!-- <div class="msg"><?= $this->session->flashdata('msg');?></div> -->
         <div class="row">
@@ -189,6 +190,7 @@
 <div class="edit-user-section gray-bg">
     <div class="row nomargin">
         <div class="col-sm-12 serviceBtn">
+            <button type="button" class="btn btn-warning submit_btn mr-3" id="autoSave">Save</button>
             <button type="submit" class="btn btn-warning submit_btn">Continue</button>
         </div>                                 
     </div>
@@ -231,7 +233,8 @@
             maximumSelectionLength: 5 
         }).on('select2:selecting', function(e) {
             // Regular expression to allow only letters and numbers
-            var regex = /^[a-zA-Z0-9]+$/;
+            // var regex = /^[a-zA-Z0-9]+$/;
+            var regex = /^[a-zA-Z0-9\s]+$/;
             var newTag = e.params.args.data.id; // Get the tag being created or selected
 
             if (!regex.test(newTag)) {
@@ -416,6 +419,26 @@
                 }else{
                     $('#townDiv').addClass('hidden');
                 }
+            }
+        });
+    });
+
+    $('#autoSave').on('click', function(){
+        var $this = $(this); // Save reference to the button
+        $this.text('Saving...');
+        $this.attr('disabled', true);
+        var sId = $('#serviceId').val();
+        var formData = $('#formStep1').serialize();
+        formData += '&serviceId=' + encodeURIComponent(sId);
+        $.ajax({
+            url:site_url+'users/autoSaveService',
+            type:"POST",
+            data: formData,
+            success:function(data){
+                console.log('innn');
+                $('#serviceId').val(data); 
+                $this.text('Save');
+                $this.attr('disabled', false);
             }
         });
     });

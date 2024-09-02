@@ -14,8 +14,16 @@
 							<select name="main_category" id="main_category" class="form-control" onchange="getSubCategory(this.value)">
 								<option value=''>Select</option>
 								<?php foreach($data['parent_category'] as $key => $val): ?>
-									<?php $selected = $data['main_service']['original_cat_id'] == $val['cat_id'] ? 'selected' : ''; ?>
-									<option value="<?php echo $val['cat_id']; ?>" <?php echo $selected; ?> ><?php echo $val['cat_name']; ?></option>
+									<?php 
+										$selected = $data['main_service']['original_cat_id'] == $val['cat_id'] ? 'selected' : ''; 
+										$disabled = '';
+										if($data['main_service']['original_cat_id'] != $val['cat_id']){
+											$disabled = in_array($val['cat_id'], $data['selected_parent_category']) ? 'disabled' : '';	
+										}
+									?>
+									<option value="<?php echo $val['cat_id']; ?>" <?php echo $selected; ?> <?php echo $disabled; ?> >
+										<?php echo $val['cat_name']; ?>
+									</option>
 								<?php endforeach; ?>
 							</select>
 						</div>

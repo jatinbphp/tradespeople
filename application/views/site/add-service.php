@@ -83,7 +83,7 @@
 
 							<!-- <li class="<?php echo ($active == 2) ? 'active ' : ''; echo ($nextStep >= 2) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step2">Categroy</a></li> -->
 							
-							<li class="<?php echo ($active == 7) ? 'active ' : ''; echo ($nextStep >= 7) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step7">Package</a></li>
+							<li class="<?php echo ($active == 2) ? 'active ' : ''; echo ($nextStep >= 2) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step2">Package</a></li>
 							
 							<li class="<?php echo ($active == 3) ? 'active ' : ''; echo ($nextStep >= 3) ? '' : 'disabled' ?>"><a data-toggle="tab" href="#step3">Extra Service</a></li>
 							
@@ -104,8 +104,8 @@
 								<?php //$this->load->view('site/add-service2', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices2']); ?>
 							</div> -->
 
-							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/storeServices7"]); ?>
+							<div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/storeServices2"]); ?>
 							</div>
 
 							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">
@@ -124,8 +124,8 @@
 								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url().'users/storeServices6', 'type' => 'add']); ?>
 							</div>
 							
-							<div id="step8" class="tab-pane fade <?php echo ($active == 8) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service8', ['serviceData' => $serviceData, 'url' => site_url()."users/storeServices8"]); ?>
+							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service8', ['serviceData' => $serviceData, 'url' => site_url()."users/storeServices7"]); ?>
 							</div>
 						</div>
 					</div>
@@ -192,23 +192,19 @@
             image.onload = function () {
                 var height = this.height;
                 var width = this.width;
-                var html = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="padding-left:15px">'+
-                                '<div class="boxImage imgUp">'+
-                                    '<div class="imagePreviewPlus">'+
-                                        '<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
-                                    '</div>'+
+                var html = '<div class="boxImage imgUp">'+
+                                '<div class="imagePreviewPlus">'+
+                                    '<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
                                 '</div>'+
                             '</div>';
                 $('#imgpreview').html('').html(html);
             };
         } else if (fileType === 'video') {
-            var html = '<div class="col-md-4 col-sm-6 col-xs-12" style="padding-left:15px">'+
-                            '<div class="videoPreviewPlus">'+
-                                '<video controls autoplay>'+
-                                    '<source src="'+e.target.result+'" type="'+file.type+'">'+
-                                    'Your browser does not support the video tag.'+
-                                '</video>'+
-                            '</div>'+
+            var html = '<div class="videoPreviewPlus">'+
+                            '<video controls autoplay>'+
+                                '<source src="'+e.target.result+'" type="'+file.type+'">'+
+                                'Your browser does not support the video tag.'+
+                            '</video>'+
                         '</div>';
             $('#imgpreview').html('').html(html);
         } else {

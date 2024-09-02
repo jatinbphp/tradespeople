@@ -81,7 +81,7 @@
 
 							<!-- <li class="<?php echo ($active == 2) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step2">Categroy</a></li> -->
 
-							<li class="<?php echo ($active == 7) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step7">Package</a></li>
+							<li class="<?php echo ($active == 2) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step2">Package</a></li>
 
 							<li class="<?php echo ($active == 3) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step3">Extra Service</a></li>
 
@@ -90,7 +90,8 @@
 							<li class="<?php echo ($active == 5) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step5">FAQs</a></li>
 
 							<li class="<?php echo ($active == 6) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step6">Availability</a></li>
-							<li class="<?php echo ($active == 8) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step8">Profile</a></li>
+
+							<li class="<?php echo ($active == 7) ? 'active ' : ''; ?>"><a data-toggle="tab" href="#step7">Profile</a></li>
 						</ul>
 						<div class="tab-content">
 							<div id="step1" class="tab-pane fade <?php echo ($active == 1) ? 'active in' : '' ?>">
@@ -101,8 +102,8 @@
 								<?php //$this->load->view('site/add-service2', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices2/{$id}"]); ?>
 							</div> -->
 
-							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices7/{$id}"]); ?>
+							<div id="step2" class="tab-pane fade <?php echo ($active == 2) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service7', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices2/{$id}"]); ?>
 							</div>
 
 							<div id="step3" class="tab-pane fade <?php echo ($active == 3) ? 'active in' : '' ?>">
@@ -121,8 +122,8 @@
 								<?php $this->load->view('site/add-service6', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices6/{$id}"]); ?>
 							</div>
 							
-							<div id="step8" class="tab-pane fade <?php echo ($active == 8) ? 'active in' : '' ?>">
-								<?php $this->load->view('site/add-service8', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices8/{$id}"]); ?>
+							<div id="step7" class="tab-pane fade <?php echo ($active == 7) ? 'active in' : '' ?>">
+								<?php $this->load->view('site/add-service8', ['serviceData' => $serviceData, 'url' => site_url()."users/updateServices7/{$id}"]); ?>
 							</div>
 						</div>
 					</div>
@@ -186,23 +187,19 @@
             image.onload = function () {
                 var height = this.height;
                 var width = this.width;
-                var html = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="padding-left:15px">'+
-                                '<div class="boxImage imgUp">'+
-                                    '<div class="imagePreviewPlus">'+
-                                        '<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
-                                    '</div>'+
+                var html ='<div class="boxImage imgUp">'+
+                                '<div class="imagePreviewPlus">'+
+                                    '<img style="width: inherit; height: inherit;" src="'+image.src+'" alt="Image">'+
                                 '</div>'+
                             '</div>';
                 $('#imgpreview').html('').html(html);
             };
         } else if (fileType === 'video') {
-            var html = '<div class="col-md-4 col-sm-6 col-xs-12" style="padding-left:15px">'+
-                            '<div class="videoPreviewPlus">'+
-                                '<video controls autoplay>'+
-                                    '<source src="'+e.target.result+'" type="'+file.type+'">'+
-                                    'Your browser does not support the video tag.'+
-                                '</video>'+
-                            '</div>'+
+            var html = '<div class="videoPreviewPlus">'+
+                            '<video controls autoplay>'+
+                                '<source src="'+e.target.result+'" type="'+file.type+'">'+
+                                'Your browser does not support the video tag.'+
+                            '</video>'+
                         '</div>';
             $('#imgpreview').html('').html(html);
         } else {

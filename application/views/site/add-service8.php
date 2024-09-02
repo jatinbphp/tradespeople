@@ -8,7 +8,7 @@
 					<div class="col-md-12">
 						<div id="imageContainer">
 							<?php if($user_profile['profile']){ ?>
-							<img src="<?php echo base_url();?>img/profile/<?php echo $user_profile['profile'];?>"  width='200' height='217'>
+							<img src="<?php echo base_url();?>img/profile/<?php echo $user_profile['profile'];?>"  width='200' height='217' style="width: 175px!important; height: 175px!important;">
 							<?php }else{ ?>
 							<img src="<?php echo base_url(); ?>img/default-img.png" alt="Click to select image" width="200" height="217">
 							<?php }?>

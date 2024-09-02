@@ -5188,14 +5188,16 @@ margin: 5px 0;
 .service-detail-slider .slider-for .slick-slide img {
     width: 100%;
     border-radius: 10px;
-    max-height: 350px;
+    /*max-height: 350px;*/
+    height: 350px;
     object-fit: cover;
 }
 
 .service-detail-slider .slider-for .slick-slide video {
     width: 100%;
     border-radius: 10px;
-    max-height: 350px;
+    /*max-height: 350px;*/
+    height: 350px;
     object-fit: cover;
 }
 
@@ -5224,7 +5226,8 @@ margin: 5px 0;
     -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .15);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .15);
     height: 48px;
-    margin-top: -24px;
+    /*margin-top: -24px;*/
+    margin-top: 0;
     position: absolute;
     text-align: center;
     width: 48px;
@@ -10574,9 +10577,9 @@ button.switch-month:hover {
 .packages-table .table tr td textarea {
     width: 100%;
 }
-.packages-table .table tr td .form-check {
+/*.packages-table .table tr td .form-check {
     justify-content: center;
-}
+}*/
 .packages-table .table .first-table-col {
     border-bottom: none;
     border-top: none;

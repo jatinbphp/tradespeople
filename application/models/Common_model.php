@@ -3601,7 +3601,7 @@ class Common_model extends CI_Model
 	public function getServiceType($sIds)
 	{
 		$this->db->select('c.*');
-		$this->db->from('category c');
+		$this->db->from('service_category c');
 		
 		if(!empty($sIds)){
 			$this->db->where_in('c.cat_id', $sIds);
