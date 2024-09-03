@@ -342,6 +342,7 @@ class Checkout extends CI_Controller
 
 				$data['status'] = 1;
 				$data['message'] = 'Your order placed succesfully';
+				$data['order_id'] = $newOrder;
 				echo json_encode($data);
 				exit;
 			}else{

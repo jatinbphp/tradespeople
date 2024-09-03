@@ -204,11 +204,9 @@ class Users extends CI_Controller
 			$json['status'] = 0;
 		}
 		echo json_encode($json);
-	}	
-
-  
+	}
  
-  public function review_invitation() {
+  	public function review_invitation() {
 		
 		if($this->session->userdata('user_id')){
 			$invite_by = $_GET['invite_by'];
@@ -320,6 +318,7 @@ class Users extends CI_Controller
 		echo json_encode($json);
 		
 	}
+
   	public function dashboard(){
     	if(isset($_GET['reject_reason'])){
       		$this->session->set_flashdata('reject_reason', $_GET['reject_reason']);
@@ -334,111 +333,112 @@ class Users extends CI_Controller
 				exit();
 			}
 			
-	  	$user_id = $this->session->userdata('user_id');
-	  	$data['category']=$this->common_model->get_all_category('category');
-	  	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
-	  	$data['user_profile']=$user_profile;
+		  	$user_id = $this->session->userdata('user_id');
+		  	$data['category']=$this->common_model->get_all_category('category');
+		  	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
+		  	$data['user_profile']=$user_profile;
 
-	  	$category = $user_profile['category'];			
-			$postal_code1 = $data['user_profile']['postal_code'];
-			$postal_code2 = str_replace(" ","",$postal_code1);
-				
-		  if($category) {
+		  	$category = $user_profile['category'];			
+				$postal_code1 = $data['user_profile']['postal_code'];
+				$postal_code2 = str_replace(" ","",$postal_code1);
 					
-				$get_commision=$this->common_model->get_commision(); 
-				$closed_date=$get_commision[0]['closed_date'];
-				$today = date('Y-m-d');				
-				$datesss= date('Y-m-d', strtotime($today. ' - '.$closed_date.' days'));
+			  if($category) {
+						
+					$get_commision=$this->common_model->get_commision(); 
+					$closed_date=$get_commision[0]['closed_date'];
+					$today = date('Y-m-d');				
+					$datesss= date('Y-m-d', strtotime($today. ' - '.$closed_date.' days'));
+						
+					//$where = "category IN ($category) and (status=0 or status=1 or status=2 or status=3 or  status=4 or status=7 or status=5 or status=8 or status=9) and is_delete=0 and direct_hired = 0 and (select count(id) from tbl_jobpost_bids where tbl_jobpost_bids.job_id = tbl_jobs.job_id and tbl_jobpost_bids.bid_by=$user_id) = 0 and DATE(c_date) > DATE('".$datesss."')";
+						
+						
+					$where = "(status=0 or status=1 or status=2 or status=3 or status=8 or status=9) and is_delete=0 and direct_hired = 0 and (select count(id) from tbl_jobpost_bids where tbl_jobpost_bids.job_id = tbl_jobs.job_id and tbl_jobpost_bids.bid_by=$user_id) = 0 and DATE(c_date) > DATE('".$datesss."')";
+						
+					$latitude = ($user_profile['latitude'] == '')?0:$user_profile['latitude'];
+					$longitude = ($user_profile['longitude'] == '')?0:$user_profile['longitude'];
+					$max_distance = $user_profile['max_distance'];
+						
+					$distance = ", 69.0 * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(".$latitude.")) * COS(RADIANS(tbl_jobs.latitude)) * COS(RADIANS(".$longitude." - tbl_jobs.longitude)) + SIN(RADIANS(".$latitude.")) * SIN(RADIANS(tbl_jobs.latitude))))) AS distance_in_km";
+						
+					$sql ="select *$distance from tbl_jobs where $where HAVING distance_in_km <= '".$max_distance."' order by c_date desc limit 15";
+						
+					$run = $this->db->query($sql);
+						
+					$bids = array();
+						
+					if($run->num_rows() > 0){  
+						$bids = $run->result_array(); 
+					}
+						//echo '<pre>'; print_r($bids); echo '</pre>';
+			    	//$data['bids']=$this->common_model->get_all_data('tbl_jobs',$where,'c_date','desc',15);
+		    	$data['bids']=$bids;
 					
-				//$where = "category IN ($category) and (status=0 or status=1 or status=2 or status=3 or  status=4 or status=7 or status=5 or status=8 or status=9) and is_delete=0 and direct_hired = 0 and (select count(id) from tbl_jobpost_bids where tbl_jobpost_bids.job_id = tbl_jobs.job_id and tbl_jobpost_bids.bid_by=$user_id) = 0 and DATE(c_date) > DATE('".$datesss."')";
-					
-					
-				$where = "(status=0 or status=1 or status=2 or status=3 or status=8 or status=9) and is_delete=0 and direct_hired = 0 and (select count(id) from tbl_jobpost_bids where tbl_jobpost_bids.job_id = tbl_jobs.job_id and tbl_jobpost_bids.bid_by=$user_id) = 0 and DATE(c_date) > DATE('".$datesss."')";
-					
-				$latitude = ($user_profile['latitude'] == '')?0:$user_profile['latitude'];
-				$longitude = ($user_profile['longitude'] == '')?0:$user_profile['longitude'];
-				$max_distance = $user_profile['max_distance'];
-					
-				$distance = ", 69.0 * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(".$latitude.")) * COS(RADIANS(tbl_jobs.latitude)) * COS(RADIANS(".$longitude." - tbl_jobs.longitude)) + SIN(RADIANS(".$latitude.")) * SIN(RADIANS(tbl_jobs.latitude))))) AS distance_in_km";
-					
-				$sql ="select *$distance from tbl_jobs where $where HAVING distance_in_km <= '".$max_distance."' order by c_date desc limit 15";
-					
-				$run = $this->db->query($sql);
-					
-				$bids = array();
-					
-				if($run->num_rows() > 0){  
-					$bids = $run->result_array(); 
-				}
-					//echo '<pre>'; print_r($bids); echo '</pre>';
-		    	//$data['bids']=$this->common_model->get_all_data('tbl_jobs',$where,'c_date','desc',15);
-	    	$data['bids']=$bids;
-				
-	    	$data['bidsss']=$this->common_model->get_user_jobs_bycatid1('tbl_jobs',$category);
-	    	$data['work_progress']=$this->common_model->get_trades_working_progress('tbl_jobpost_bids',$user_id); 
-	    	$data['complete']=$this->common_model->get_complete_job_byid('tbl_jobs',$category);
-	    	$data['dispute_miles']=$this->common_model->get_tradesdispute_milestones(); 
-		  }    
-   
-  		$data['progress']=$this->get_progress_data();
-  		$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
-  		//$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
-  		$data['trade_news']=$this->common_model->get_notification_trades('notification',$this->session->userdata('user_id'));     
-   		// $data['referrals_earn_list'] = $this->db->get('referrals_earn_list')->result();	
-   		$data['setting']=$this->common_model->get_all_data('admin');
-   		$data['total_sale'] = $this->common_model->get_total_sale($user_id);
-   		$data['total_open_order'] = $this->common_model->get_total_open_order($user_id);
-   		$data['all_active_order'] = $this->common_model->getActiveOrder('service_order',$user_id,6);
-   		$data['recently_viewed'] = $this->common_model->recentlyViewedService($user_id);
+		    	$data['bidsss']=$this->common_model->get_user_jobs_bycatid1('tbl_jobs',$category);
+		    	$data['work_progress']=$this->common_model->get_trades_working_progress('tbl_jobpost_bids',$user_id); 
+		    	$data['complete']=$this->common_model->get_complete_job_byid('tbl_jobs',$category);
+		    	$data['dispute_miles']=$this->common_model->get_tradesdispute_milestones(); 
+			  }    
+	   
+	  		$data['progress']=$this->get_progress_data();
+	  		$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
+	  		//$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
+	  		$data['trade_news']=$this->common_model->get_notification_trades('notification',$this->session->userdata('user_id'));     
+	   		// $data['referrals_earn_list'] = $this->db->get('referrals_earn_list')->result();	
+	   		$data['setting']=$this->common_model->get_all_data('admin');
+	   		$data['total_sale'] = $this->common_model->get_total_sale($user_id);
+	   		$data['total_open_order'] = $this->common_model->get_total_open_order($user_id);
+	   		$data['all_active_order'] = $this->common_model->getActiveOrder('service_order',$user_id,6);
+	   		$data['recently_viewed'] = $this->common_model->recentlyViewedService($user_id);
 
-  		$this->load->view('site/dashboard',$data);
-  	}
+	  		$this->load->view('site/dashboard',$data);
+	  	}
 	}
 	
 	public function affiliate_dashboard(){
     
-    if(!$this->session->userdata('user_id')){
-      redirect('login');
-    } else {
+	    if(!$this->session->userdata('user_id')){
+	      redirect('login');
+	    } else {
 			
 			if($this->session->userdata('type')!=3){
 				redirect('dashboard');
 				exit();
 			}
 			
-      $user_id = $this->session->userdata('user_id');
-      $user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
-      $data['user_profile']=$user_profile;
+	      	$user_id = $this->session->userdata('user_id');
+	      	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
+	      	$data['user_profile']=$user_profile;
     
 			
-      $data['marketers_account_info']=$this->common_model->marketers_account_info($user_id);
-			
-      $data['min_cashout']=$this->common_model->get_min_cashout($user_id);
-      $data['balance_amount']=$this->common_model->get_balance_amount($user_id);
-      $data['marketers_referrals_list']=$this->common_model->marketers_referrals_list();
-   
-      
-      $data['county']=$this->common_model->get_countries();
+	      	$data['marketers_account_info']=$this->common_model->marketers_account_info($user_id);
+				
+		    $data['min_cashout']=$this->common_model->get_min_cashout($user_id);
+		    $data['balance_amount']=$this->common_model->get_balance_amount($user_id);
+		    $data['marketers_referrals_list']=$this->common_model->marketers_referrals_list();
+	   
+	      
+	      	$data['county']=$this->common_model->get_countries();
  			
-       $data['settings'] = $this->common_model->get_single_data("admin_settings", array("id"=>1)); 
+       		$data['settings'] = $this->common_model->get_single_data("admin_settings", array("id"=>1)); 
 
 			$data['payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id], 'id', 'desc');
 			$data['affilateMeata'] = $this->common_model->get_single_data('other_content',array('id'=>5));
 			$data['contact_list']=$this->db->query("SELECT * from contact_request where user_id=$user_id OR user_id=0 AND reply_id=$user_id OR reply_id=0 order by id desc")->result_array();
 			// echo $this->db->last_query();
-      //  echo "<pre>"; print_r($data['contact_list']); exit;
+      		//  echo "<pre>"; print_r($data['contact_list']); exit;
 
 			$data['paymentSettings']=$this->common_model->get_all_data('admin');	
-      $this->load->view('site/affiliate-dashboard',$data);
-    }
-  }
-  public function support_msg_unread()
-  {
-  	$unreadMessages = $this->common_model->check_admin_unread('admin_chat_details', array('is_read' => 0, 'receiver_id' => $this->session->userdata('user_id')), 'is_read');
-  	echo json_encode(['status'=>1, 'unreadMessages'=>$unreadMessages]);
-  }
+      		$this->load->view('site/affiliate-dashboard',$data);
+    	}
+  	}
 
-  public function mark_read()
+	public function support_msg_unread()
+	{
+	  	$unreadMessages = $this->common_model->check_admin_unread('admin_chat_details', array('is_read' => 0, 'receiver_id' => $this->session->userdata('user_id')), 'is_read');
+	  	echo json_encode(['status'=>1, 'unreadMessages'=>$unreadMessages]);
+	}
+
+  	public function mark_read()
 	{
 		$result=$this->db->where('id', $this->input->post('row_id'))->update('contact_request', ['status'=>1]); 
 		echo json_encode(1);
@@ -452,8 +452,6 @@ class Users extends CI_Controller
 
 	function send_mail()
 	{
-		
-
 		$user_data = $this->common_model->get_single_data('users', array('id' => $this->session->userdata('user_id')));
 		$admin = $this->common_model->get_single_data('admin', array('id' =>1));
 		
@@ -483,8 +481,7 @@ class Users extends CI_Controller
 				
 			// }
 			return redirect('affiliate-dashboard');
-	} 
-
+	}
 
 	public function update_notification_status($status){
 		
@@ -506,6 +503,7 @@ class Users extends CI_Controller
 			redirect('dashboard');
 		}
 	}
+
 	public function update_notification(){
 	
 		$insert['nt_satus']=1;
@@ -519,6 +517,7 @@ class Users extends CI_Controller
 
 		echo json_encode($json);
 	}
+
 	public function notifications() {
 		// echo $this->session->userdata('user_id'); exit;
 		if($this->session->userdata('user_id')) {
@@ -531,28 +530,28 @@ class Users extends CI_Controller
 	
 	public function submit_verify_phone() {
 		
-    $verification_code = $this->input->post('verification_code');
+    	$verification_code = $this->input->post('verification_code');
 		$user_id = $this->session->userdata('user_id');
 		$user_data = $this->common_model->get_single_data('users', array('id' => $user_id));
 		
-    if($verification_code == $user_data['phone_code']){
-      $user_id = $this->session->userdata('user_id');
-      $update['is_phone_verified'] = 1;
-      $run = $this->common_model->update('users', array('id' => $user_id), $update);
-			$subject = "Phone number verified successfully";
-			$html = '<h2 style="margin:0;font-size:22px;padding-bottom:5px;color:#2875d7">Phone number verified successfully</h2><p style="margin:0;padding:20px 0px">This is mail to informed you that your phone number has been verified successfully.</p>';
-			$sent = $this->common_model->send_mail($user_data['email'],$subject,$html);
-			if($this->session->userdata('homeowner_signup')){
-				$json['status'] = 2;
-			} else {
-				$json['status'] = 1;
-			}
-      
-    }else{
-      $json['status'] = 0;
-    }
-    echo json_encode($json);
-  }
+	    if($verification_code == $user_data['phone_code']){
+	      $user_id = $this->session->userdata('user_id');
+	      $update['is_phone_verified'] = 1;
+	      $run = $this->common_model->update('users', array('id' => $user_id), $update);
+				$subject = "Phone number verified successfully";
+				$html = '<h2 style="margin:0;font-size:22px;padding-bottom:5px;color:#2875d7">Phone number verified successfully</h2><p style="margin:0;padding:20px 0px">This is mail to informed you that your phone number has been verified successfully.</p>';
+				$sent = $this->common_model->send_mail($user_data['email'],$subject,$html);
+				if($this->session->userdata('homeowner_signup')){
+					$json['status'] = 2;
+				} else {
+					$json['status'] = 1;
+				}
+	      
+	    }else{
+	      $json['status'] = 0;
+	    }
+	    echo json_encode($json);
+  	}
 
 	public function verify_phone($id=null) {
 		$user_id = $this->session->userdata('user_id');
@@ -618,7 +617,7 @@ class Users extends CI_Controller
 			//$data['progress']=$this->get_progress_data();
 			$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
 			$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
-			$data['active_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),'completed',0);
+			$data['active_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),'active',0);
 			$this->load->view('site/my_account',$data);
 		}
 	}
@@ -2261,6 +2260,26 @@ class Users extends CI_Controller
 		echo json_encode($data);
 	}
 
+	public function dragDropRequirementAttachment(){
+		$data['status'] = 0;
+		$requirement_id = $this->input->post('requirement_id');
+		if(!empty($_FILES)){
+			$tempFile = $_FILES['file']['tmp_name'];
+			$targetFile = 'img/services/'. $_FILES['file']['name'];
+			$fileName = $_FILES['file']['name'];
+			move_uploaded_file($tempFile, $targetFile);
+			$insert['requirement_id']=$requirement_id;
+			$insert['attachment']=$fileName;
+			$uploaded = $this->common_model->insert('order_requirement_attachment',$insert);
+			if($uploaded){				
+				$data['status'] = 1;
+				$data['id'] = $uploaded;
+				$data['imgName'] = base_url().'img/services/'.$fileName;				
+			}
+		}
+		echo json_encode($data);
+	}
+
 	public function removePortfolio(){
 		$user_id = $this->session->userdata('user_id');
 		$this->db->where('id',$this->input->post('pImgId'))->where('userid', $user_id)->delete('user_portfolio');
@@ -2356,11 +2375,14 @@ class Users extends CI_Controller
 	        		}	        		
 	        	}
 
+	        	$requirements = '<button class="btn btn-warning requirements" data-id="'.$order['id'].'">Requirements</button>';
+
 	          	$data[] = [
 		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name']),
 		            'created_at' => $date->format('F j, Y'),
 		            'total_price' => '£'.number_format($order['total_price'],2),
-		            'status' => $status
+		            'status' => $status,
+		            'requirements' => $requirements
 	          	];
 	        }
 
@@ -2371,7 +2393,25 @@ class Users extends CI_Controller
 	}
 
 	public function addServices(){
+		/*
+			$this->session->unset_userdata('store_service1');
+			$this->session->unset_userdata('store_service2');
+			$this->session->unset_userdata('store_service3');
+			$this->session->unset_userdata('latest_service');
+			$this->reserServiceTabData();
+		*/
+
 		if($this->session->userdata('user_id')) {
+			$serviceData = $this->session->userdata('service_data');
+
+			if(empty($serviceData)){
+				$this->session->unset_userdata('store_service1');
+				$this->session->unset_userdata('store_service2');
+				$this->session->unset_userdata('store_service3');
+				$this->session->unset_userdata('latest_service');
+				$this->reserServiceTabData();
+			}
+
 			$data['cities'] = $this->common_model->get_all_data('location',['is_delete'=>0]);
 			$data['category']=$this->common_model->get_parent_category('service_category',0,1);
 			$sesData = $this->session->userdata('store_service1');
@@ -2389,7 +2429,6 @@ class Users extends CI_Controller
 			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$sesData['category']]);
 			$data['ex_service'] = $this->common_model->get_all_data('extra_service',['category'=>$sesData['category']]);
 			$data['service_category'] = $this->common_model->GetSingleData('service_category',['cat_id'=>$sesData['category']]);
-
 			$data['price_per_type'] = !empty($data['service_category']['price_type_list']) ? explode(',', $data['service_category']['price_type_list']) : [];
 			
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
@@ -3241,6 +3280,17 @@ class Users extends CI_Controller
 		exit;
 	}
 
+	public function removeAttachment(){
+		$user_id = $this->session->userdata('user_id');
+		$imageId = $this->input->post('imgId');
+		$serviceImages = $this->common_model->GetSingleData('order_requirement_attachment',['id'=>$imageId]);
+		if(!empty($serviceImages)){
+			unlink('img/services/'.$serviceImages['image']);
+			$this->db->where('id',$this->input->post('imgId'))->delete('order_requirement_attachment');
+		}
+		exit;
+	}
+
 	public function removeServiceVideo(){
 		$sid = $this->input->post('sId');
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$sid]);
@@ -3887,4 +3937,80 @@ class Users extends CI_Controller
 		echo $sId;
 	}
 
+	public function submitRequirement(){
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}
+
+		$uId = $this->session->userdata('user_id');
+		$insert['user_id'] = $uId;
+		$insert['order_id'] =  $this->input->post('order_id');
+		$insert['requirement'] =  $this->input->post('requirement');
+
+		$requirement = $this->common_model->insert('order_requirement', $insert);
+
+		$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];	
+
+		if($requirement){
+			$input['requirement_id'] = $requirement;
+			if(count($mImgs) > 0){
+				foreach($mImgs as $imgId){					
+					$this->common_model->update('order_requirement_attachment',array('id'=>$imgId),$input);
+				}
+			}
+			$data['status'] = 1;
+			$data['message'] = 'Order requirement submitted succesfully';
+			echo json_encode($data);
+			exit;
+		}else{
+			$data['status'] = 0;
+			$data['message'] = 'Something is wrong. Order requirement not submitted';
+			echo json_encode($data);
+			exit;
+		}
+	}
+
+	public function getRequirements(){
+		$oId =  $this->input->post('oId');
+		$user_id = $this->session->userdata('user_id');
+		$requirements = $this->common_model->GetSingleData('order_requirement',['order_id'=>$oId]);
+		$data['status'] = 0;
+		if(!empty($requirements)){
+			$attachements = $this->common_model->get_all_data('order_requirement_attachment',['requirement_id'=>$requirements['id']]);
+			$attch = '';
+			if(!empty($attachements)){
+				foreach ($attachements as $key => $value) {
+					$image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); 
+					if (file_exists($image_path) && $value['attachment']){
+						$attch .= '<div class="col-md-4 col-sm-6 col-xs-12">
+						<div class="boxImage imgUp">
+						<div class="imagePreviewPlus">
+						<img style="width: inherit; height: inherit;" src="'.base_url('img/services/') . $value['attachment'].'" alt="'. $value['id'].'">
+						</div></div></div>';
+					}
+				}
+			}
+
+			$data['requirements'] = '<div class="col-md-12"><p>'.$requirements['requirement'].'</p></div>';
+			$data['attachements'] = $attch;
+			$data['status'] = 1;
+		}
+		echo json_encode($data);			
+	}
+
+	public function order_tracking($id=""){
+		if(!$id){
+			redirect(base_url());
+			return;
+		}
+		$user_id = $this->session->userdata('user_id');
+		$order = $this->common_model->GetSingleData('service_order',['user_id'=>$user_id, 'id'=>$id]);
+		$requirements = $this->common_model->GetSingleData('order_requirement',['order_id'=>$id]);
+		if(!empty($requirements)){
+			$attachements = $this->common_model->get_all_data('order_requirement_attachment',['requirement_id'=>$requirements['id']]);	
+		}
+		$this->load->view('site/order_tracking',$data);
+	}
 }

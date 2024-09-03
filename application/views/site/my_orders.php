@@ -1,8 +1,24 @@
 <?php include 'include/header.php'; ?>
 <style type="text/css">
-  table{
-    width: 100%;
-  }
+    table{
+        width: 100%;
+    }
+
+    .imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
+    .btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
+    .imgUp{margin-bottom:15px}
+    .boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
+    .boxImage img { height: 100%;object-fit: contain;}
+    #imgpreview {
+        padding-top: 15px;
+    }
+    .boxImage {
+        margin: 0;
+    }
+    .imagePreviewPlus {
+        height: 150px;
+        box-shadow: none;
+    }
 </style>
 <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.min.js"></script>
@@ -56,6 +72,7 @@
                                                         <th>Order Date</th>                     
                                                         <th>Total</th> 
                                                         <th>Status</th>
+                                                        <th>Requirements</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -78,6 +95,34 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade in" id="order_requirement_modal">
+    <div class="modal-body" id="msg">
+        <div class="modal-dialog modal-lg">  
+            <div class="modal-content">             
+                <form method="post" id="order_requirement_form" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title">Order Requirements & Attachments</h4>
+                    </div>
+                    <div class="modal-body form_width100">
+                        <h4 style="margin-top:0px">Order Requirements</h4>
+                        <div class="row" id="requirements" style="border-bottom:1px solid #ddd;">
+                        </div>
+                        <h4>Order Attachments</h4>
+                        <div class="row" id="attachments">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>          
+        </div>
+    </div>
+ </div>
+
 <?php include 'include/footer.php'; ?>
 <script>
 $(function () {
@@ -117,6 +162,9 @@ $(function () {
             { "data": "total_price"},
             { "data": "status", "render": function(data, type, row) {
                 return row.status;
+            }},
+            { "data": "requirements", "render": function(data, type, row) {
+                return row.requirements;
             }}
         ]
     });
@@ -178,5 +226,26 @@ $('#boottable tbody').on('click', '.orderAgain', function (event) {
           }
         });
     });    
+});
+
+$('#boottable tbody').on('click', '.requirements', function (event) {
+    event.preventDefault();
+    var oId = $(this).data('id');
+
+    $.ajax({
+        type:'POST',
+        url:site_url+'users/getRequirements',
+        data:{oId:oId},
+        dataType:'json',
+        success:function(data){
+            if(data.status == 1){
+                $('#requirements').html(data.requirements);
+                $('#attachments').html(data.attachements);
+                $('#order_requirement_modal').modal('show');
+            }else{
+                alert('Order requirement not found.');
+            }
+        }
+    });
 });
 </script>

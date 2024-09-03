@@ -499,7 +499,7 @@ $closed_date = $get_commision[0]['closed_date'];
 												<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
 												<td><?php echo ucfirst($list['status']); ?></td>
 												<td>
-													<a class="btn btn-anil_btn nx_btn" href="#">View Orders</a>
+													<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
 												</td>
 											</tr>
 										<?php endforeach; ?>

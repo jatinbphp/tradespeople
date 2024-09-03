@@ -233,7 +233,8 @@ $route['addons']                                 = 'addon/index';
 $route['make-addon-payment/(:any)']              = 'addon/make_addon_payment/$1';
 $route['my-services']              				 = 'Users/my_services';
 $route['my-orders']              				 = 'Users/my_orders';
-$route['my-faviourits']              				 = 'Users/my_faviourits';
+$route['order-tracking/(:any)']                  = 'Users/order_tracking/$1';
+$route['my-faviourits']              			 = 'Users/my_faviourits';
 $route['add-service']              	 	         = 'Users/addServices';
 $route['add-service2']                           = 'Users/addServices2';
 $route['add-service3']                           = 'Users/addServices3';
@@ -243,6 +244,7 @@ $route['add-service6']                           = 'Users/addServices6';
 $route['edit-service/(:num)']              	 	 = 'Users/editServices/$1';
 $route['test']                    = 'Users/pTest';
 $route['delete-service/(:num)']              	 = 'Users/deleteServices/$1';
+$route['submit-requirement']              = 'Users/submitRequirement';
 
 //$route['blog-detail/(:any)']='home/blog_detail/$1';
 
