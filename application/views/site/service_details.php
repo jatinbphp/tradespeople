@@ -744,6 +744,8 @@
 																	type="<?php echo $mime_type; ?>" loop controls class="profileServiceVideo">
 																	</video>
 																<?php endif; ?>
+															<?php else: ?>
+															<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
 															<?php endif; ?>
 														</a>
 														<div class="names">

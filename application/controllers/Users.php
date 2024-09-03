@@ -4007,10 +4007,37 @@ class Users extends CI_Controller
 		}
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['user_id'=>$user_id, 'id'=>$id]);
-		$requirements = $this->common_model->GetSingleData('order_requirement',['order_id'=>$id]);
-		if(!empty($requirements)){
-			$attachements = $this->common_model->get_all_data('order_requirement_attachment',['requirement_id'=>$requirements['id']]);	
+
+		if(!empty($order)){
+			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
+			$package_data = json_decode($data['service']['package_data'],true);
+
+			$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$order['id']]);	
+			$days = $package_data[$order['package_type']]['days'];
+			$currentDate = new DateTime($statusHistory['created_at']);			
+			$currentDate->modify("+$days days");
+			$data['delivery_date'] = $currentDate->format('D jS F, Y');
+
+			$currentDate1 = new DateTime();
+			$interval = $currentDate1->diff($currentDate);
+
+			$data['rDays'] = $interval->days; 
+			$data['rHours'] = $interval->h;
+			$data['rMinutes'] = $interval->i;			
+
+			$requirements = $this->common_model->GetSingleData('order_requirement',['order_id'=>$id]);
+			if(!empty($requirements)){
+				$data['requirements'] = $requirements;
+				$data['attachements'] = $this->common_model->get_all_data('order_requirement_attachment',['requirement_id'=>$requirements['id']]);	
+			}
+			$data['order'] = $order;
+			$ocDate = new DateTime($order['created_at']);
+			$data['created_date'] = $ocDate->format('D jS F, Y');
+			
+			$this->load->view('site/order_tracking',$data);
+		}else{
+			redirect(base_url());
+			return;
 		}
-		$this->load->view('site/order_tracking',$data);
 	}
 }

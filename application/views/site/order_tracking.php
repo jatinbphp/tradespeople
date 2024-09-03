@@ -2,16 +2,48 @@
 include 'include/header.php';
 $get_commision = $this->common_model->get_commision();
 ?>
-<script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.min.js"></script>
 <style type="text/css">
+	#openChat{cursor: pointer;}
+	.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
+    .btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
+    .imgUp{margin-bottom:15px}
+    .boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
+    .boxImage img { height: 100%;object-fit: contain;}
+    #imgpreview {
+        padding-top: 15px;
+    }
+    .boxImage {
+        margin: 0;
+    }
+    .imagePreviewPlus {
+        height: 150px;
+        box-shadow: none;
+    }
+
+	.tradesmen-top{
+		padding: 15px 15px 10px;
+	}
+	.img-name{
+		display: flex;
+    	gap: 75px;
+	}
+	.img-name img{
+		width: 130px;
+		height: 75px;	
+	}
 	img {
 		display: block;
 		max-width: 100%;
 	}
+
+	.timeline-div{border-radius: 5px;}
 	
 	.faicon{
 		font-size: 30px;
+		color: #2875D7;
+	}
+	.filled-icon svg {
+		fill: #2875D7;
 	}
 
 	.timeline {
@@ -22,19 +54,24 @@ $get_commision = $this->common_model->get_commision();
 		display: flex;
 		flex-direction: column;
 		padding: 32px 0 32px 32px;
-		border-left: 2px solid #000;
-		font-size: 1.125rem;
+		border-left: 2px solid #000;		
+	}
+
+	.timeline li{
+		border-bottom: 1px solid #dbd6d6;
+		padding-bottom: 1.5rem;
+	}
+
+	.delivery-time li{
+		padding-bottom: 0;	
 	}
 
 	.timeline-item {
 		display: flex;
 		gap: 24px;
 		& + * {
-			margin-top: 24px;
-		}
-		& + .extra-space {
-			margin-top: 48px;
-		}
+			margin-top: 6px;
+		}		
 	}
 
 	.new-comment {
@@ -61,25 +98,24 @@ $get_commision = $this->common_model->get_commision();
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		margin-left: -52px;
+		width: 30px;
+		height: 30px;
+		margin-left: -48px;
 		flex-shrink: 0;
 		overflow: hidden;
-		box-shadow: 0 0 0 6px #fff;
+		/*box-shadow: 0 0 0 6px #fff;*/
 		svg {
 			width: 20px;
 			height: 20px;
 		}
 
 		&.faded-icon {
-			background-color: #f1f1f1;
+			background-color: #fff;
 			color: var(--c-grey-400);
 		}
 
 		&.filled-icon {
-			background-color: #f1f1f1;
+			background-color: #fff;
 			color: #fff;
 		}
 	}
@@ -89,7 +125,20 @@ $get_commision = $this->common_model->get_commision();
 		padding-top: 6px;
 		gap: 8px;
 		color: var(--c-grey-400);
-
+		flex-wrap: wrap;
+		.delivery-time {
+		    width: 100%;
+		    background: #dddddd;
+		    margin: 0;
+		    list-style: none;
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-around;
+		    border-radius: 10px;
+		    padding: 10px;
+		    text-align: center;
+		    font-size: 15px;
+		}
 		img {
 			flex-shrink: 0;
 		}
@@ -126,13 +175,10 @@ $get_commision = $this->common_model->get_commision();
 	}
 
 	.comment {
-		margin-top: 12px;
-		color: var(--c-grey-500);
-		border: 1px solid var(--c-grey-200);
-		box-shadow: 0 4px 4px 0 var(--c-grey-100);
+		border: 1px solid #d5d5d5;
+		box-shadow: 0 4px 4px 0 #f1f1f1;
 		border-radius: 6px;
-		padding: 16px;
-		font-size: 1rem;
+		padding: 10px;
 	}
 
 	.button {
@@ -206,6 +252,11 @@ $get_commision = $this->common_model->get_commision();
 			margin-right: -8px;
 		}
 	}
+
+	.timeline-item-description h5{
+		margin-top: 0!important;
+		width: 100%;
+	}
 </style>
 <div class="acount-page membership-page">
 	<div class="container">
@@ -214,74 +265,161 @@ $get_commision = $this->common_model->get_commision();
 				<?php include 'include/sidebar.php'; ?>				
 			</div>
 			<div class="col-md-9">
-				<ol class="timeline">
-					<li class="timeline-item">
-						<span class="timeline-item-icon | faded-icon">
-							<i class="fa fa-clock-o faicon"></i>
-						</span>
-						<div class="timeline-item-description">
-							<h5>Expected delivery 5-17-2024</h5>							
+				<div class="mjq-sh">					
+					<h4 class="pull-left mr-3 pb-2" style="border-bottom: 1px solid #fe8a0f; color: #fe8a0f;">
+						Timeline
+					</h4>
+					<h4 id="openChat" data-id="<?php echo $service['user_id']?>">Chat</h4>
+				</div>
+				<div class="tradesmen-box mt-4">
+					<div class="tradesmen-top" style="border-bottom:0">
+						<?php 
+							$package_data = json_decode($service['package_data'],true);
+							$servicePrice = $package_data['basic']['price'];				
+						?>										
+						<div class="pull-left">
+							<div class="img-name">
+								<a href="<?php echo base_url('service/'.$service['slug']); ?>">
+									<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+									<?php if (file_exists($image_path) && $service['image']): ?>
+										<img src="<?php echo  base_url().'img/services/'.$service['image']; ?>" style="border-radius: 0!important;">
+									<?php else: ?>
+										<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
+									<?php endif; ?>
+								</a>
+								<div class="names">
+									<a href="<?php echo base_url().'service/'.$service['slug']?>">
+										<p>
+											<?php
+												$totalChr = strlen($service['description']);
+												if($totalChr > 120 ){
+													echo substr($service['description'], 0, 120).'...';		
+												}else{
+													echo $service['description'];
+												}
+											?>											
+										</p>
+										<span class="badge bg-dark p-2 pl-4 pr-4">
+											<?php echo ucfirst($order['status']) ?>
+										</span>
+										<span class="pull-right">
+											<?php echo '£'.number_format($servicePrice,2); ?>
+										</span>
+									</a>
+									
+									<a class="text-muted" href="<?php echo base_url('profile/'.$list['user_id']); ?>">
+										<?php echo $list['trading_name'];?>
+									</a>
+								</div>
+							</div>
 						</div>
-					</li>
-					<li class="timeline-item">
-						<span class="timeline-item-icon | faded-icon">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-								<path fill="none" d="M0 0h24v24H0z" />
-								<path fill="currentColor" d="M12 13H4v-2h8V4l8 8-8 8z" />
-							</svg>
-						</span>
-						<div class="timeline-item-description">
-							<i class="avatar | small">
-								<img src="https://assets.codepen.io/285131/hat-man.png" />
-							</i>
-							<span><a href="#">Yoan Almedia</a> moved <a href="#">Eric Lubin</a> to <a href="#">📚 Technical Test</a> on <time datetime="20-01-2021">Jan 20, 2021</time></span>
-						</div>
-					</li>
-					<li class="timeline-item | extra-space">
-						<span class="timeline-item-icon | filled-icon">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-								<path fill="none" d="M0 0h24v24H0z" />
-								<path fill="currentColor" d="M6.455 19L2 22.5V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.455zM7 10v2h2v-2H7zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2z" />
-							</svg>
-						</span>
-						<div class="timeline-item-wrapper">
+					</div>
+				</div>
+				<div class="timeline-div bg-white p-4">
+					<ol class="timeline">
+						<li class="timeline-item">
+							<span class="timeline-item-icon | faded-icon">
+								<i class="fa fa-clock-o faicon"></i>
+							</span>
 							<div class="timeline-item-description">
-								<i class="avatar | small">
-									<img src="https://assets.codepen.io/285131/hat-man.png" />
-								</i>
-								<span><a href="#">Yoan Almedia</a> commented on <time datetime="20-01-2021">Jan 20, 2021</time></span>
+								<h5>Expected delivery <?php echo $delivery_date; ?></h5>						
+								<ul class="delivery-time">
+									<li><b><?php echo $rDays; ?></b><br/>Days</li>
+									<li><b><?php echo $rHours; ?></b><br/>Hours</li>
+									<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
+								</ul>														
 							</div>
-							<div class="comment">
-								<p>I've sent him the assignment we discussed recently, he is coming back to us this week. Regarding to our last call, I really enjoyed talking to him and so far he has the profile we are looking for. Can't wait to see his technical test, I'll keep you posted and we'll debrief it all together!😊</p>
-								<button class="button">👏 2</button>
-								<button class="button | square">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-										<path fill="none" d="M0 0h24v24H0z" />
-										<path fill="currentColor" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zM7 12a5 5 0 0 0 10 0h-2a3 3 0 0 1-6 0H7z" />
-									</svg>
-								</button>
+						</li>
+						<li class="timeline-item">
+							<span class="timeline-item-icon | faded-icon">
+								<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
+							</span>
+							<div class="timeline-item-description">
+								<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
 							</div>
-							<button class="show-replies">
-								<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-forward" width="44" height="44" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-									<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-									<path d="M15 11l4 4l-4 4m4 -4h-11a4 4 0 0 1 0 -8h1" />
-								</svg>
-								Show 3 replies
-								<span class="avatar-list">
-									<i class="avatar | small">
-										<img src="https://assets.codepen.io/285131/hat-man.png" />
-									</i>
-									<i class="avatar | small">
-										<img src="https://assets.codepen.io/285131/winking-girl.png" />
-									</i> <i class="avatar | small">
-										<img src="https://assets.codepen.io/285131/smiling-girl.png" />
-									</i>
-								</span>
-							</button>
-					</li>
-				</ol>
+						</li>
+						<li class="timeline-item | extra-space">
+							<span class="timeline-item-icon | filled-icon ">
+								<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
+							</span>
+							<div class="timeline-item-wrapper">
+								<div class="timeline-item-description">
+									<h5>Order Started</h5>
+								</div>
+							</div>
+						</li>
+						<li class="timeline-item">
+							<span class="timeline-item-icon | faded-icon">
+								<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
+							</span>
+							<div class="timeline-item-description" style="width:100%">
+								<h5 id="order-requirement">
+									Order Requirement Submitted
+									<i class="fa fa-angle-down pull-right"></i>
+								</h5>
+
+								<?php if(!empty($requirements)): ?>
+									<div class="comment" id="requirement-div"  style="display:none;">
+										<h4 style="margin-top:0px">Order Requirements</h4>
+										<p><?php echo $requirements['requirement']; ?></p>
+										<?php if(!empty($attachements)):?>
+											<h4>Order Attachments</h4>
+											<div class="row" id="attachments">
+												<?php foreach ($attachements as $key => $value): ?>
+													<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
+													<?php if (file_exists($image_path) && $value['attachment']):?>
+														<div class="col-md-4 col-sm-6 col-xs-12">
+															<div class="boxImage imgUp">
+																<div class="imagePreviewPlus">
+																	<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
+																</div>
+															</div>
+														</div>
+													<?php endif; ?>
+												<?php endforeach; ?>
+											</div>
+										<?php endif; ?>
+									</div>
+								<?php endif; ?>
+							</div>
+						</li>
+						<li class="timeline-item | extra-space">
+							<span class="timeline-item-icon | filled-icon ">
+								<i class="fa fa-calendar faicon" aria-hidden="true"></i>
+							</span>
+							<div class="timeline-item-description" style="width:100%">
+								<h5 id="order-created">
+									Order Created
+									<i class="fa fa-angle-down pull-right"></i>
+								</h5>
+								<div class="comment" id="order-created-div"  style="display:none; width: 100%;">
+									<p><?php echo $created_date; ?></p>
+								</div>
+							</div>
+						</li>
+					</ol>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <?php include 'include/footer.php'; ?>
+<script>
+$(document).ready(function() {
+    $("#order-requirement").click(function() {
+        $("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
+        $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+    });
+
+    $("#order-created").click(function() {
+        $("#order-created-div").slideToggle(); // Toggle the visibility with sliding effect
+        $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+    });
+});
+
+$('#openChat').on('click', function(){
+	get_chat_onclick(<?php echo $service['user_id'];?>, <?php echo $service['id'];?>);
+	showdiv();
+});
+
+</script>
