@@ -1964,12 +1964,14 @@ class Common_model extends CI_Model
 			}
 		}
 
-		$video_path = FCPATH . 'img/services/' . $mainVideo;
-		if(isset($mainVideo) && file_exists($video_path)){
-			$main_video = base_url('img/services/').$mainVideo;
+		if(!empty($mainVideo)){
+			$video_path = FCPATH . 'img/services/' . $mainVideo;
+			if(isset($mainVideo) && file_exists($video_path)){
+				$main_video = base_url('img/services/').$mainVideo;
 
-			$slider .= '<div><video controls src="'.$main_video.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
-		}
+				$slider .= '<div><video controls src="'.$main_video.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
+			}	
+		}		
 
 		if(count($sliderImgs)){
 			foreach($sliderImgs as $img){
@@ -1983,6 +1985,7 @@ class Common_model extends CI_Model
 					$mime_type = get_mime_by_extension($sliderImgPath);
 		            $is_image = strpos($mime_type, 'image') !== false;
 		            $is_video = strpos($mime_type, 'video') !== false;
+		            $is_pdf = strpos($mime_type, 'pdf') !== false;
 
 					$slider_mage = base_url('img/services/').$img['image'];
 
@@ -1993,6 +1996,10 @@ class Common_model extends CI_Model
 					if($is_video){
 						$slider .= '<div><video controls src="'.$slider_mage.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
 					}
+
+					if($is_pdf){
+				        $slider .= '<div><iframe src="'.$slider_mage.'#toolbar=0&navpanes=0&scrollbar=0" ></iframe></div>';
+				    }
 				}
 			}
 		}

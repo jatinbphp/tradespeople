@@ -358,6 +358,12 @@ $get_commision = $this->common_model->get_commision();
 									<div class="comment" id="requirement-div"  style="display:none;">
 										<h4 style="margin-top:0px">Order Requirements</h4>
 										<p><?php echo $requirements['requirement']; ?></p>
+
+										<?php if(!empty($requirements['location'])):?>
+											<h4 style="margin-top:0px">Order Location</h4>
+											<p><?php echo $requirements['location']; ?></p>
+										<?php endif;?>
+
 										<?php if(!empty($attachements)):?>
 											<h4>Order Attachments</h4>
 											<div class="row" id="attachments">

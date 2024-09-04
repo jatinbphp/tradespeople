@@ -6,7 +6,7 @@
 			<div class="col-sm-12">
 				<div class="form-group">
 					<label class="col-md-12 control-label" for="">
-						What does the offer include?
+						Choose an additional service?
 					</label>
 					<div class="col-md-12">
 						<div id="ex-service-div" style="margin-top:10px">
@@ -16,7 +16,8 @@
 									foreach($ex_service as $key => $exs): 
 										$matchedItem = $this->common_model->findMatchingItem($exs, $serviceData['trades_ex_service']);
 									    $isChecked = $matchedItem ? 'checked' : '';
-									    $price = $matchedItem['price'] ?? $exs['price'];
+									    //$price = $matchedItem['price'] ?? $exs['price'];
+									    $price = $matchedItem['price'] ?? 0;
 									    $additional_working_days = $matchedItem['additional_working_days'] ?? $exs['days'];
 								?>
 									<div class="row" id="newExS<?php echo $i; ?>" style="border:1px solid #b0c0d3; border-radius: 10px; margin: 0; margin-top:10px; margin-bottom:10px;">

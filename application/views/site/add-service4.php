@@ -95,7 +95,7 @@
 								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
 								<input type="file" name="image" id="profile" accept="image/*" onchange="return seepreview();">		
 							</div>
-							<input type="hidden" name="service_image_old" value="" >
+							<input type="hidden" name="service_image_old" value="<?php echo $serviceData['image'];?>" >
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imgpreview">
 							<?php $image_path = FCPATH . 'img/services/' . ($serviceData['image'] ?? ''); ?>
@@ -106,9 +106,12 @@
 				                $is_video = strpos($mime_type, 'video') !== false;
 				                ?>
 				                <?php if ($is_image): ?>
-				                    <div style='padding-left:15px'>
+				                    <div style="padding-left:15px" id="smImage">
 				                        <div class="boxImage imgUp">
 				                            <div class="imagePreviewPlus">
+				                            	<button type="button" class="btn btn-danger removeImage" style="margin-top:15px;" onclick="removeVideo('image')">
+													<i class="fa fa-trash"></i>
+												</button>
 				                                <img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $serviceData['image']; ?>" alt="Image">
 				                            </div>
 				                        </div>
@@ -143,10 +146,6 @@
 							<?php endif; ?>
 						</div>
 					</div>
-
-					<!-- <div class="row" id="imgpreview">
-			            
-					</div> -->
 
 					<div class="row">
 						<div id="loader1" class="loader_ajax_small"></div>
@@ -202,7 +201,7 @@
 						<?php if(isset($serviceData['video']) && $serviceData['video']): ?>
 							<?php $video_path = FCPATH . 'img/services/' . ($serviceData['video'] ?? ''); ?>
 							<?php if(file_exists($video_path) && $video_path): ?>
-								<button type="button" class="btn btn-danger removeVideo" onclick="removeVideo()">
+								<button type="button" class="btn btn-danger removeVideo" onclick="removeVideo('video')">
 									<i class="fa fa-trash"></i>
 								</button>
 								<video src="<?php echo base_url().'img/services/'.$serviceData['video']; ?>" controls style="width:162px;"></video>
@@ -470,18 +469,24 @@
 		});
 	}
 
-	function removeVideo(imgId, type){
+	function removeVideo(type){
 		var sId = <?php echo isset($serviceData['id']) ? $serviceData['id'] : 0; ?>;
 		$.ajax({
 			url:site_url+'users/removeServiceVideo',
 			type:"POST",
-			data:{'sId':sId},
+			data:{'sId':sId,'type':type},
 			success:function(data){
-				$('#videoPreview').remove();
-				alert('video deleted successfully');
+				if(type == 'video'){
+					$('#videoPreview').remove();
+					alert('video deleted successfully');	
+				}
+				if(type == 'image'){
+					$('#smImage').remove();
+					alert('main image deleted successfully');	
+				}
 			}
 		});
-	}	
+	}
 
 	function removeIdFromHiddenField(idToRemove, divId) {
         var hiddenFieldValue = $('#'+divId).val();

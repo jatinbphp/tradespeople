@@ -28,6 +28,8 @@
 						<video src="<?php echo base_url('img/services/') . $list['image']; ?>" 
 						type="<?php echo $mime_type; ?>" loop controls class="profileServiceVideo">
 						</video>
+					<?php else: ?>
+						<img src="<?php echo  base_url().'img/default-image.jpg'; ?>">
 					<?php endif; ?>
 				<?php endif; ?>
 			</a>

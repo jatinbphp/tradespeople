@@ -190,8 +190,8 @@
 <div class="edit-user-section gray-bg">
     <div class="row nomargin">
         <div class="col-sm-12 serviceBtn">
-            <button type="button" class="btn btn-warning submit_btn mr-3" id="autoSave">Save</button>
-            <button type="submit" class="btn btn-warning submit_btn">Continue</button>
+            <!-- <button type="button" class="btn btn-warning submit_btn mr-3" id="autoSave">Save</button> -->
+            <button type="submit" class="btn btn-warning submit_btn">Save & Continue</button>
         </div>                                 
     </div>
 </div>                        
@@ -244,7 +244,6 @@
             }
         });
 
-
         $("#formStep1").validate({
             rules: {
                 service_name: "required",
@@ -258,7 +257,7 @@
             },
             messages: {
                 service_name: "Please enter service name",
-                description: "Please enter description",
+                description: "Please enter about your service",
                 location: "Please enter location",               
                 area: "Please enter area",               
                 category: "Please enter category",               

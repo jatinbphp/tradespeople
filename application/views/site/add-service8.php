@@ -1,3 +1,11 @@
+<style>
+	#tprofileImage {
+		display: none;
+	}
+	#profileImageContainer {
+		cursor: pointer;
+	}
+</style>
 <form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="msg"><?= $this->session->flashdata('msg');?></div>
@@ -6,13 +14,13 @@
 				<div class="form-group">
 					<label class="col-md-12 control-label" for="">Profile Picture*</label>
 					<div class="col-md-12">
-						<div id="imageContainer">
+						<div id="profileImageContainer">
 							<?php if($user_profile['profile']){ ?>
 							<img src="<?php echo base_url();?>img/profile/<?php echo $user_profile['profile'];?>"  width='200' height='217' style="width: 175px!important; height: 175px!important;">
 							<?php }else{ ?>
 							<img src="<?php echo base_url(); ?>img/default-img.png" alt="Click to select image" width="200" height="217">
 							<?php }?>
-							<input type="file" name="profile" id="profile" class="form-control input-md" accept="image/*" onchange="return seepreview();">
+							<input type="file" name="profile" id="tprofileImage" class="form-control input-md" accept="image/*" onchange="return seeProfilePreview();">
 						</div>
 
 						<input type="hidden" name="u_profile_old" value="<?= $user_profile['profile']; ?>" >
@@ -88,3 +96,36 @@
 	</div>                        
 	<!-- Edit-section-->
 </form>
+
+<script type="text/javascript">	
+  	document.getElementById('profileImageContainer').addEventListener('click', function() {
+		document.getElementById('tprofileImage').click();
+	});
+
+	document.getElementById('tprofileImage').addEventListener('change', function(e) {
+		var file = e.target.files[0];
+		var reader = new FileReader();
+
+		reader.onload = function(e) {
+			var image = document.querySelector('#profileImageContainer img');
+			image.src = e.target.result;
+		};
+
+		reader.readAsDataURL(file);
+	});
+
+	function seeProfilePreview(){
+		var fileUploads = $("#tprofileImage")[0];
+	  	var reader = new FileReader();
+	  	reader.readAsDataURL(fileUploads.files[0]);
+	  	reader.onload = function (e) {
+	    	var image = new Image();
+	    	image.src = e.target.result;
+	    	image.onload = function () {
+	      		var height = this.height;
+	      		var width = this.width;
+	      		$('#imgpreview').html('<img src="'+image.src+'"  width="100px" height="100px">'); 
+	    	}
+	  	}     
+	} 
+</script>
