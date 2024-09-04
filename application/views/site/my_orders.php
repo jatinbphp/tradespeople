@@ -112,6 +112,9 @@
                         <h4 style="margin-top:0px">Order Requirements</h4>
                         <div class="row" id="requirements" style="border-bottom:1px solid #ddd;">
                         </div>
+                        <h4>Order Location</h4>
+                        <div class="row" id="location" style="border-bottom:1px solid #ddd;">
+                        </div>
                         <h4>Order Attachments</h4>
                         <div class="row" id="attachments">
                         </div>
@@ -244,6 +247,7 @@ $('#boottable tbody').on('click', '.requirements', function (event) {
         success:function(data){
             if(data.status == 1){
                 $('#requirements').html(data.requirements);
+                $('#location').html(data.location);
                 $('#attachments').html(data.attachements);
                 $('#order_requirement_modal').modal('show');
             }else{

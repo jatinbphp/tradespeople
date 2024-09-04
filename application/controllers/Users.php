@@ -2280,6 +2280,26 @@ class Users extends CI_Controller
 		echo json_encode($data);
 	}
 
+	public function dragDropProjectSubmitAttachment(){
+		$data['status'] = 0;
+		$conversation_id = $this->input->post('conversation_id');
+		if(!empty($_FILES)){
+			$tempFile = $_FILES['file']['tmp_name'];
+			$targetFile = 'img/services/'. $_FILES['file']['name'];
+			$fileName = $_FILES['file']['name'];
+			move_uploaded_file($tempFile, $targetFile);
+			$insert['conversation_id']=$conversation_id;
+			$insert['attachment']=$fileName;
+			$uploaded = $this->common_model->insert('order_submit_attachments',$insert);
+			if($uploaded){				
+				$data['status'] = 1;
+				$data['id'] = $uploaded;
+				$data['imgName'] = base_url().'img/services/'.$fileName;				
+			}
+		}
+		echo json_encode($data);
+	}
+
 	public function removePortfolio(){
 		$user_id = $this->session->userdata('user_id');
 		$this->db->where('id',$this->input->post('pImgId'))->where('userid', $user_id)->delete('user_portfolio');
@@ -2347,6 +2367,7 @@ class Users extends CI_Controller
 		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
 	    if($this->session->userdata('user_id')) {
 	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'), $status);
+
 	        $data = [];
 
 	        $statusArr = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'all'];
@@ -2358,7 +2379,7 @@ class Users extends CI_Controller
 	        		$selected1 = $order['status'] == 'pending' ? 'selected' : '';
 		        	$selected2 = $order['status'] == 'active' ? 'selected' : '';
 		        	$selected3 = $order['status'] == 'completed' ? 'selected' : '';
-		        	$selected3 = $order['status'] == 'delivered' ? 'selected' : '';
+		        	//$selected3 = $order['status'] == 'delivered' ? 'selected' : '';
 		        	$selected4 = $order['status'] == 'cancelled' ? 'selected' : '';
 
 		        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
@@ -2366,7 +2387,7 @@ class Users extends CI_Controller
 	                            <option value="active" '.$selected2.'>Started</option>
 	                            <option value="completed" '.$selected3.'>Completed</option>
 	                            <option value="cancelled" '.$selected4.'>Cancelled</option>
-	                        </select>';
+	                        </select>';       
 	        	}else{
 	        		if($order['status'] == 'completed'){
 	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';	
@@ -3450,11 +3471,28 @@ class Users extends CI_Controller
 
 	public function submitProject(){
 		$oId = $this->input->post('orderId');
+		$tuser_id = $this->session->userdata('user_id');
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		if(!empty($serviceOrder)){
 			$input['status'] = 'completed';
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
+
+			$insert['tradesman_id'] = $tuser_id;
+			$insert['homeowner_id'] = $serviceOrder['user_id'];
+			$insert['order_id'] = $oId;
+			$insert['description'] = $this->input->post('description');
+			$run = $this->common_model->insert('order_submit_conversation', $insert);
+			if($run){
+				$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
+
+				$input1['conversation_id'] = $run;
+				if(count($mImgs) > 0){
+					foreach($mImgs as $imgId){					
+						$this->common_model->update('order_submit_attachments',array('id'=>$imgId),$input1);
+					}
+				}
+			}
 			echo json_encode(['status' => 'success', 'message' => 'Order Submited']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Order Not Submitted']);
@@ -3948,6 +3986,7 @@ class Users extends CI_Controller
 		$insert['user_id'] = $uId;
 		$insert['order_id'] =  $this->input->post('order_id');
 		$insert['requirement'] =  $this->input->post('requirement');
+		$insert['location'] =  $this->input->post('location');
 
 		$requirement = $this->common_model->insert('order_requirement', $insert);
 
@@ -3994,6 +4033,7 @@ class Users extends CI_Controller
 			}
 
 			$data['requirements'] = '<div class="col-md-12"><p>'.$requirements['requirement'].'</p></div>';
+			$data['location'] = '<div class="col-md-12"><p>'.$requirements['location'].'</p></div>';
 			$data['attachements'] = $attch;
 			$data['status'] = 1;
 		}

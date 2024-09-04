@@ -53,8 +53,8 @@ $get_commision = $this->common_model->get_commision();
 		margin-right: auto;
 		display: flex;
 		flex-direction: column;
-		padding: 32px 0 32px 32px;
-		border-left: 2px solid #000;		
+		padding: 0 0 0 32px;
+		border-left: 3px solid #ddd;		
 	}
 
 	.timeline li{
@@ -273,10 +273,6 @@ $get_commision = $this->common_model->get_commision();
 				</div>
 				<div class="tradesmen-box mt-4">
 					<div class="tradesmen-top" style="border-bottom:0">
-						<?php 
-							$package_data = json_decode($service['package_data'],true);
-							$servicePrice = $package_data['basic']['price'];				
-						?>										
 						<div class="pull-left">
 							<div class="img-name">
 								<a href="<?php echo base_url('service/'.$service['slug']); ?>">
@@ -303,7 +299,7 @@ $get_commision = $this->common_model->get_commision();
 											<?php echo ucfirst($order['status']) ?>
 										</span>
 										<span class="pull-right">
-											<?php echo '£'.number_format($servicePrice,2); ?>
+											<?php echo '£'.number_format($order['total_price'],2); ?>
 										</span>
 									</a>
 									
@@ -383,7 +379,7 @@ $get_commision = $this->common_model->get_commision();
 								<?php endif; ?>
 							</div>
 						</li>
-						<li class="timeline-item | extra-space">
+						<li class="timeline-item | extra-space" style="padding-bottom: 0; border-bottom: 0;">
 							<span class="timeline-item-icon | filled-icon ">
 								<i class="fa fa-calendar faicon" aria-hidden="true"></i>
 							</span>

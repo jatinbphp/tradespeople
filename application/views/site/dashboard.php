@@ -123,6 +123,47 @@
 	  100% {opacity:1;}
 	/*  100% {opacity:0;width:355px;}*/
 	}
+
+	/*----------LOADER CSS START----------*/
+	.loader_ajax_small {
+		display: none;
+		border: 2px solid #f3f3f3 !important;
+		border-radius: 50%;
+		border-top: 2px solid #2D2D2D !important;
+		width: 29px;
+		height: 29px;
+		margin: 0 auto;
+		-webkit-animation: spin_loader_ajax_small 2s linear infinite;
+		animation: spin_loader_ajax_small 2s linear infinite;
+	}
+
+	@-webkit-keyframes spin_loader_ajax_small {
+		0% { -webkit-transform: rotate(0deg); }
+		100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin_loader_ajax_small {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+	/*----------LOADER CSS END----------*/
+
+	.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
+	.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
+	.imgUp{margin-bottom:15px}
+	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
+	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
+	.boxImage img { height: 100%;object-fit: contain;}
+	#imgpreview {
+		padding-top: 15px;
+	}
+	.boxImage {
+		margin: 0;
+	}
+	.imagePreviewPlus {
+		height: 150px;
+		box-shadow: none;
+	}
 </style>
 <?php if($this->session->userdata('type')==1) { ?>
 <div class="acount-page membership-page">	
@@ -599,7 +640,7 @@
 				<div class="row" id="OrderList">
 					<div class="col-sm-12">
 						<?php if(!empty($all_active_order) && count($all_active_order)): ?>
-							<div class="row">
+							<div class="row mb-5">
 								<?php foreach($all_active_order as $order):?>
 									<div class="col-sm-6" id="activeOrder<?php echo $order['id']; ?>">
 										<div class="member-summary mjq-sh">
@@ -647,9 +688,9 @@
 													</div>
 													</div>
 													<button type="button" class="btn btn-warning submitProject" data-pid="<?php echo $order['id']; ?>">
-															<i class="fa fa-upload"></i>
-															Submit Order
-														</button>													
+														<i class="fa fa-upload"></i>
+														Submit Order
+													</button>
 												</div>
 											</div>						
 										</div>
@@ -1268,6 +1309,48 @@ th, td {
   </div>
 </div>
 
+<div class="modal fade in" id="order_submit_modal">
+ 	<div class="modal-body" id="msg">
+    	<div class="modal-dialog modal-lg">	 
+	       	<div class="modal-content">         	
+		  		<form method="post" id="order_submit_form" enctype="multipart/form-data">
+		  			<input type="hidden" name="orderId" id="orderId">
+		        	<div class="modal-header">
+		            	<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+		            	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+		            	<h4 class="modal-title">Submit Order</h4>
+		          	</div>
+		          	<div class="modal-body form_width100">
+		          		<div class="form-group">
+							<label for="email"> Description:</label>
+							<textarea rows="5" placeholder="" name="description" id="description" class="form-control"></textarea>
+			 			</div>
+			 			<div class="row">
+							<div id="loader1" class="loader_ajax_small"></div>
+							<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
+								<div class="file-upload-btn addWorkImage imgUp">
+									<div class="btn-text main-label">Attachments</div>
+									<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
+									<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
+									<input type="file" name="attachments" id="attachments">		
+								</div>
+							</div>
+						</div>
+						<input type="hidden" name="multiImgIds" id="multiImgIds">	
+						<div class="row" id="previousImg">
+						</div>
+		          	</div>
+		          	<div class="modal-footer">
+			          	<input type="hidden" name="order_id" value="" id="order_id">
+			          	<button type="button" class="btn btn-info signup_btn" onclick="orderSubmit()">Save</button>
+			            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		          	</div>
+			   	</form>
+	        </div>			
+      	</div>
+    </div>
+ </div>
+
 <?php include 'include/footer.php'; ?>
 <script type="text/javascript">
   <?php
@@ -1319,6 +1402,96 @@ th, td {
 } 
   </script> 
 <script>
+	document.getElementById('imageContainer2').addEventListener('click', function() {
+		document.getElementById('attachments').click();
+	});
+
+	const dropArea = document.querySelector(".addWorkImage"),
+		button = dropArea.querySelector("img"),
+		input = dropArea.querySelector("input");
+	let file;
+	var filename;
+
+	button.onclick = () => {input.click();};
+
+	input.addEventListener("change", function (e) {
+		e.preventDefault();
+		var multiImgIds = $('#multiImgIds').val();
+
+		var idsArray = multiImgIds.split(',');
+    	var totalCount = idsArray.length;
+
+    	if(totalCount >= 3){
+    		alert("Up to 3 images can be uploaded for your service.");
+    		return false;
+    	}
+
+		var file_data = $('#attachments').prop('files')[0];
+
+		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
+        if (validImageTypes.indexOf(file_data.type) == -1) {
+            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+            return false;
+        }
+
+		var form_data = new FormData();
+		form_data.append('file', file_data);
+		form_data.append('conversation_id', 0);
+		$('#loader1').show();
+		$('#previousImg').css('opacity', '0.6');
+		$.ajax({
+			url:site_url+'users/dragDropProjectSubmitAttachment',
+			type: "POST",
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData:false,
+			dataType:'json',
+			success: function(response){
+				if(response.status == 1){
+					if(multiImgIds != ""){
+						var ids = multiImgIds+','+response.id;
+						$('#multiImgIds').val(ids);
+					}else{
+						$('#multiImgIds').val(response.id);
+					}
+					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
+						'<div class="boxImage imgUp">'+
+						'<div class="imagePreviewPlus">'+
+						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
+						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+						'</div></div></div>';
+					$('#previousImg').append(portElement);
+					$('#loader1').hide();
+					$('#previousImg').css('opacity', '1');
+				}
+			}
+		});
+	});
+
+	function removeImage(imgId, type){
+		$.ajax({
+			url:site_url+'users/removeAttachment',
+			type:"POST",
+			data:{'imgId':imgId},
+			success:function(data){
+				$('#portDiv'+imgId).remove();
+				removeIdFromHiddenField(imgId.toString(), 'multiImgIds');
+				alert('Attachment deleted successfully');				
+			}
+		});
+	}
+
+	function removeIdFromHiddenField(idToRemove, divId) {
+        var hiddenFieldValue = $('#'+divId).val();
+        var idsArray = hiddenFieldValue.split(',');
+        var newIdsArray = idsArray.filter(function(id) {
+            return id !== idToRemove.toString();
+        });
+        var newHiddenFieldValue = newIdsArray.join(',');
+        $('#'+divId).val(newHiddenFieldValue);        
+    }
+
     jQuery(document).ready(function(){
         jQuery(document).on('click','.cashout_close',function(){
             jQuery('.cashout_popup').hide();
@@ -1354,7 +1527,9 @@ th, td {
 		    cancelButtonText: 'Cancel'
 		}, function(isConfirm) {
 		    if (isConfirm) {
-		        orderSubmit(orderId);
+		    	$('#orderId').val(orderId);
+		    	$('#order_submit_modal').modal('show');
+		        //orderSubmit(orderId);
 		    } else {
 		        swal({
 		            title: "Error",
@@ -1365,8 +1540,52 @@ th, td {
 		});
     });
 
-	function orderSubmit(orderId){
-		$.ajax({
+	function orderSubmit(){
+		formData = $("#order_submit_form").serialize();
+		var orderId = $('#orderId').val();
+        $.ajax({
+            url: '<?= site_url().'users/submitProject'; ?>',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',		                
+            success: function(result) {
+            	$('#loader').addClass('hide');
+            	if(result.status == 0){
+            		swal({
+		            	title: "Error",
+			            text: result.message,
+			            type: "error"
+			        });	
+            	}else if(result.status == 2){
+            		swal({
+			            title: "Login Required!",
+			            text: "If you want to order the please login first!",
+			            type: "warning"
+			        }, function() {
+			            window.location.href = '<?php echo base_url().'login'; ?>';
+			        });	
+            	}else{
+            		$('#order_submit_modal').modal('hide');
+					swal({
+			            title: "Success",
+			            text: result.message,
+			            type: "success"
+			        }, function() {
+			        	$('#activeOrder'+orderId).remove();
+			        });
+            	}		                    
+            },
+            error: function(xhr, status, error) {
+                swal({
+                    title: "Error",
+                    text: "There was an error submitting your order: " + error,
+                    type: "error"
+                });
+            }
+        }); 
+
+
+		/*$.ajax({
             url: '<?= site_url().'users/submitProject'; ?>',
             type: 'POST',
             data: {
@@ -1397,6 +1616,6 @@ th, td {
                     type: "error"
                 });
             }
-        });
+        });*/
 	}
 </script>

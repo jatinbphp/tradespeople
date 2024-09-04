@@ -328,12 +328,16 @@
 		          	</div>
 		          	<div class="modal-body form_width100">
 		          		<div class="form-group">
-							<label for="email"> Requirements:</label>
+							<label for="email"> What do you need for this order?</label>
 							<textarea rows="5" placeholder="" name="requirement" id="requirement" class="form-control"></textarea>
+			 			</div>
+			 			<div class="form-group">
+							<label for="email"> Where is task located?</label>
+							<textarea rows="5" placeholder="" name="location" id="location" class="form-control"></textarea>
 			 			</div>
 			 			<div class="row">
 							<div id="loader1" class="loader_ajax_small"></div>
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
+							<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 								<div class="file-upload-btn addWorkImage imgUp">
 									<div class="btn-text main-label">Attachments</div>
 									<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
@@ -415,7 +419,7 @@
 					}else{
 						$('#multiImgIds').val(response.id);
 					}
-					var portElement = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
+					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
 						'<div class="boxImage imgUp">'+
 						'<div class="imagePreviewPlus">'+
 						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
