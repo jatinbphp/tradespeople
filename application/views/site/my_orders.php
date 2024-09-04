@@ -72,7 +72,9 @@
                                                         <th>Order Date</th>                     
                                                         <th>Total</th> 
                                                         <th>Status</th>
-                                                        <th>Requirements</th>
+                                                        <?php if($this->session->userdata('type') == 1):?>
+                                                            <th>Requirements</th>
+                                                        <?php endif; ?>    
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -163,9 +165,11 @@ $(function () {
             { "data": "status", "render": function(data, type, row) {
                 return row.status;
             }},
-            { "data": "requirements", "render": function(data, type, row) {
-                return row.requirements;
-            }}
+            <?php if($this->session->userdata('type') == 1):?>
+                { "data": "requirements", "render": function(data, type, row) {
+                    return row.requirements;
+                }}
+            <?php endif; ?>    
         ]
     });
 });
