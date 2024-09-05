@@ -931,6 +931,14 @@ class Common_model extends CI_Model
 		return $obj;
 	}
 
+	public function deleteTradesManExs($where, $column, $value, $table)
+	{
+		$this->db->where($where);
+		$this->db->where_not_in($column, $value);
+		$obj = $this->db->delete($table);
+		return $obj;
+	}
+
 	public function insert_notification($userid, $message)
 	{
 		$data = array(

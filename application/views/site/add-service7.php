@@ -61,7 +61,7 @@
 	}
 </style>
 
-<form action="<?= $url; ?>" method="post" enctype="multipart/form-data">  
+<form action="<?= $url; ?>" id="formStep2" method="post" enctype="multipart/form-data">  
 	<div class="edit-user-section">
 		<div class="row">
 			<div class="col-sm-12" style="border-bottom:1px solid #e1e1e1;">
@@ -81,7 +81,7 @@
 	                    <div class="col-md-12 p-0">
 	                        <label class="col-md-12 control-label pl-0" for="">How do you charge?</label>
 	                        <select class="form-control input-md" name="price_per_type" id="price_per_type">
-	                            <option>Please Select</option>
+	                            <option value="">Please Select</option>
 	                            <?php if(!empty($price_per_type)): ?>
 	                                <?php foreach ($price_per_type as $value): ?>
 	                                    <?php 
@@ -250,7 +250,8 @@
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
 			<div class="col-sm-12 serviceBtn">
-				<button type="submit" class="btn btn-warning submit_btn">Continue</button>
+				<input type="submit" name="submit_listing" class="btn btn-warning submit_btn mr-3" value="Submit Listing">
+				<button type="submit" class="btn btn-warning submit_btn">Save & Continue</button>
 			</div>                                 
 		</div>
 	</div>                        
@@ -258,6 +259,19 @@
 </form>
 <script type="text/javascript">
 	$(document).ready(function() {
+		$("#formStep2").validate({
+            rules: {
+            	<?php if($service_category['price_type'] == 1):?>
+                	price_per_type: "required",
+                <?php endif; ?>	
+            },
+            messages: {
+            	<?php if($service_category['price_type'] == 1):?>
+                	price_per_type: "Please select how you charge for your service",
+                <?php endif; ?>	
+            }
+        });     
+
 		var package_type = <?php echo isset($serviceData['package_type']) ? $serviceData['package_type'] : 0; ?>;
 
 		if (package_type == 0) {

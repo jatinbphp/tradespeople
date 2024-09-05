@@ -6,7 +6,7 @@
 			<div class="col-sm-12">
 				<div class="form-group">
 					<label class="col-md-12 control-label" for="">
-						Choose an additional service?
+						Choose an additional service
 					</label>
 					<div class="col-md-12">
 						<div id="ex-service-div" style="margin-top:10px">
@@ -28,7 +28,7 @@
 
 										<input type="hidden" name="newExS[<?php echo $i; ?>][ex_service_name]" value="<?php echo $exs['ex_service_name'] ?? '' ?>">
 
-										<div class="col-md-5" style="margin-top:10px;">
+										<div class="col-md-8" style="margin-top:10px;">
 											<input class="form-check-input" type="checkbox" name="newExS[<?php echo $i; ?>][id]" value="<?php echo $exs['id']?>" <?php echo $isChecked; ?> style="margin-right:10px;">
 											<label class="form-check-label" style="margin-top:10px; font-weight: normal;"><?php echo $exs['ex_service_name']?></label>
 										</div>
@@ -42,7 +42,7 @@
 												</div>
 											</div>
 										</div>
-										<div class="col-md-3" style="margin-top:10px;">
+										<!--<div class="col-md-3" style="margin-top:10px;">
 											<div class="form-group">
 												<label class="control-label" for="additional_working_days<?php echo $i; ?>" style="width:100%">
 													Additional Working Days
@@ -51,7 +51,7 @@
 													<input type="number" step="1" class="form-control input-md" name="newExS[<?php echo $i; ?>][additional_working_days]" id="additional_working_days<?php echo $i; ?>" placeholder="Additional Working Days" value="<?php echo $additional_working_days; ?>">
 												</div>
 											</div>
-										</div>									
+										</div>-->
 									</div>
 									<?php $i++; ?>
 								<?php endforeach ?>
@@ -79,7 +79,7 @@
 
 										<input type="hidden" name="newExS[<?php echo $i; ?>][ex_service_name]" value="<?php echo $texs['ex_service_name'] ?? '' ?>">
 
-										<div class="col-md-5" style="margin-top:10px;">
+										<div class="col-md-8" style="margin-top:10px;">
 											<div class="form-group">
 												<label class="control-label" for="ex_service_name'+totalnewExService+'">Extra Service Name</label>
 												<div>
@@ -98,7 +98,7 @@
 												</div>
 											</div>
 										</div>
-										<div class="col-md-3" style="margin-top:10px;">
+										<!--<div class="col-md-3" style="margin-top:10px;">
 											<div class="form-group">
 												<label class="control-label" for="additional_working_days<?php echo $i; ?>" style="width:100%">
 													Additional Working Days
@@ -107,7 +107,7 @@
 													<input type="number" step="1" class="form-control input-md" name="newExS[<?php echo $i; ?>][additional_working_days]" id="additional_working_days<?php echo $i; ?>" placeholder="Additional Working Days" value="<?php echo $texs['additional_working_days']; ?>">
 												</div>
 											</div>
-										</div>									
+										</div>-->
 									</div>
 									<?php $i++; ?>
 									<?php endif; ?>
@@ -124,7 +124,8 @@
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
 			<div class="col-sm-12 serviceBtn">
-				<button type="submit" class="btn btn-warning submit_btn">Continue</button>
+				<input type="submit" name="submit_listing" class="btn btn-warning submit_btn mr-3" value="Submit Listing">
+				<button type="submit" class="btn btn-warning submit_btn">Save & Continue</button>
 			</div>                                 
 		</div>
 	</div>                        
@@ -137,7 +138,7 @@
 					'<input type="hidden" name="newExS['+totalnewExService+'][id]" value="0">'+
 					'<input type="hidden" name="newExS['+totalnewExService+'][type]" value="2">'+
 					'<input type="hidden" name="newExS['+totalnewExService+'][category]" value="<?php echo $serviceData['category']?>">'+
-					'<div class="col-md-5" style="margin-top:10px;">'+
+					'<div class="col-md-8" style="margin-top:10px;">'+
 						'<div class="form-group">'+
 							'<label class="control-label" for="ex_service_name'+totalnewExService+'">Extra Service Name</label>'+
 							'<div>'+
@@ -153,14 +154,14 @@
 							'</div>'+
 						'</div>'+
 					'</div>'+
-					'<div class="col-md-3" style="margin-top:10px;">'+
+					/*'<div class="col-md-3" style="margin-top:10px;">'+
 						'<div class="form-group">'+
 							'<label class="control-label" for="additional_working_days'+totalnewExService+'">Additional Working Days</label>'+
 							'<div class="">'+
 								'<input type="number" class="form-control input-md" name="newExS['+totalnewExService+'][additional_working_days]" step="1" id="additional_working_days'+totalnewExService+'" placeholder="Additional Working Days" rows="3" required>'+
 							'</div>'+
 						'</div>'+
-					'</div>'+
+					'</div>'+*/
 					'<div class="col-md-1" style="margin-top:10px;">'+
 						'<div class="form-group">'+
 						'<span id="remove'+totalnewExService+'" class="btn btn-sm btn-danger pull-right removeExService" data-id="'+totalnewExService+'"><i class="fa fa-trash"></i></span></label>'+

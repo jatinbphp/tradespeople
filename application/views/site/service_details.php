@@ -98,11 +98,11 @@
 																<label for="business_<?php echo $exs['id']?>">
 																	<div>
 																		<h6><?php echo $exs['ex_service_name']; ?></h6>
-																		<?php if(!empty($exs['additional_working_days'])): ?>
-																			<span>
-																				Additional Working Days <?php echo $exs['additional_working_days'];?>
-																			</span>
-																		<?php endif; ?>
+																		<?php //if(!empty($exs['additional_working_days'])): ?>
+																			<!--<span>
+																				Additional Working Days <?php //echo $exs['additional_working_days'];?>
+																			</span>-->
+																		<?php //endif; ?>
 																	</div>
 																</label>
 															</div>

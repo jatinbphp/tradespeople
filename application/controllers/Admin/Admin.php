@@ -3743,11 +3743,13 @@ class Admin extends CI_Controller
     public function updateStatus(){
         $sId = $this->input->post('id');
         $status = $this->input->post('status');
+        $reason = $this->input->post('reason');
         $service = $this->Common_model->GetSingleData('my_services',['id'=>$sId]);
 
         if(!empty($service)){
             $update_array = [
-                'status' => $status 
+                'status' => $status,
+                'reason' => $reason 
             ];
             $where_array = ['id' => $sId];
             $result = $this->My_model->update_entry('my_services', $update_array, $where_array);
@@ -3862,6 +3864,19 @@ class Admin extends CI_Controller
         if(!empty($location)){
             $json['status'] = 1;
             $json['location'] = $location;
+        }
+        echo json_encode($json);
+    }
+
+    public function getReason(){
+        $sId = $this->input->post('id');
+        $service = $this->Common_model->get_single_data('my_services',array('id'=>$sId));
+        $json['status'] = 0;
+        if(!empty($service)){
+            if(!empty($service['reason'])){
+                $json['status'] = 1;
+                $json['reason'] = $service['reason'];
+            }
         }
         echo json_encode($json);
     }

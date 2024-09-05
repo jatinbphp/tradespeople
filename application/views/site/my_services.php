@@ -80,7 +80,6 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    
                                                 </tbody>
                                             </table>
                                         <?php }else{ ?>
@@ -100,6 +99,30 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade in" id="view_service_reason">
+    <div class="modal-body" id="msg">
+        <div class="modal-dialog modal-lg">  
+            <div class="modal-content">             
+                <form method="post" id="service_reason_form" enctype="multipart/form-data">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="reason_modal_title">View Reason</h4>
+                </div>
+                <div class="modal-body form_width100">
+                    <div class="form-group">
+                                    <textarea rows="5" placeholder="" name="reason" id="view_service_reason_fields" class="form-control"></textarea>
+                                </div>
+                            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                </form>
+            </div>          
+        </div>
+    </div>
+ </div>
+
 <?php include 'include/footer.php'; ?>
 <script>
 $(function () {
@@ -242,6 +265,24 @@ $(function () {
         }
         var chkLength = $(".checkBoxClass:checked").length;
         $('#defaultOption').text('Action on '+chkLength+' selected');
+    });
+
+    $('#boottable tbody').on('click', '.viewReason', function(event){
+        var sId = $(this).data('id');
+        $.ajax({
+            type:'POST',
+            url:site_url+'users/getReason',
+            data:{id:sId},
+            dataType:'json',
+            success:function(response){
+                if(response.status == 1){
+                    $('#view_service_reason_fields').val(response.reason);
+                    $('#view_service_reason').modal('show');                    
+                }else{
+                    alert('Reson not found.');
+                }
+            }
+        });
     });
 });
 </script>

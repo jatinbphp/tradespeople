@@ -88,7 +88,13 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 								<?php foreach ($service_list as $key => $lists) {?>
 									<tr role="row" class="odd" id="request_<?php echo $lists['id']; ?>">
 										<td><?php echo $key + 1; ?></td>
-										<td><?php echo $lists['service_name']; ?></td>
+										<td>
+											<?php echo $lists['service_name']; ?>
+											<?php if(in_array($lists['status'], ['required_modification','denied'])):?>
+												<br>
+												<span class="viewReason text-danger" data-id="<?php echo $lists['id']; ?>">View Reason</span>
+											<?php endif;?>	
+										</td>
 										<td><?php echo $lists['cat_name']; ?></td>
 										<td><?php echo $lists['trading_name']; ?></td>
 										<td><?php echo $lists['location']; ?></td>
@@ -106,6 +112,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 												
 												<option value="active" <?php echo $lists['status'] == 'active' ? 'selected' : ''; ?>>Approved</option>												
 											</select>	
+
 										</td>
 										<td>
 											<button type="button" class="btn btn-sm btn-primary serviceDetails" data-id="<?php echo $lists['id']; ?>" data-name="<?php echo $lists['service_name']; ?>"><i class="fa fa-eye"></i></button>
@@ -141,6 +148,56 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
     </div>
   </div>
 </div>
+
+<div class="modal fade in" id="view_service_reason">
+ 	<div class="modal-body" id="msg">
+    	<div class="modal-dialog modal-lg">	 
+	       	<div class="modal-content">         	
+		  		<form method="post" id="service_reason_form" enctype="multipart/form-data">
+		        	<div class="modal-header">
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+	            	<h4 class="modal-title" id="reason_modal_title">View Reason</h4>
+	          	</div>
+	          	<div class="modal-body form_width100">
+	          		<div class="form-group">
+									<textarea rows="5" placeholder="" name="reason" id="view_service_reason_fields" class="form-control"></textarea>
+					 			</div>
+							</div>
+	          	<div class="modal-footer">
+		          	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	          	</div>
+			   	</form>
+	        </div>			
+      	</div>
+    </div>
+ </div>
+
+<div class="modal fade in" id="service_reason">
+ 	<div class="modal-body" id="msg">
+    	<div class="modal-dialog modal-lg">	 
+	       	<div class="modal-content">         	
+		  		<form method="post" id="service_reason_form" enctype="multipart/form-data">
+		        	<div class="modal-header">
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+	            	<h4 class="modal-title" id="reason_modal_title">Reason</h4>
+	          	</div>
+	          	<div class="modal-body form_width100">
+	          		<div class="form-group">
+									<label for="reason" id="reasonField"></label>
+									<textarea rows="5" placeholder="" name="reason" id="service_reason_fields" class="form-control"></textarea>
+					 			</div>
+							</div>
+	          	<div class="modal-footer">
+		          	<input type="hidden" name="service_id" value="" id="service_id">
+		          	<input type="hidden" name="status" value="" id="service_status">
+		          	<button type="button" class="btn btn-info signup_btn" id="submitReasonBtn" onclick="submitReason()">Submit</button>
+		            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	          	</div>
+			   	</form>
+	        </div>			
+      	</div>
+    </div>
+ </div>
 
 <?php include_once 'include/footer.php';?>
 
@@ -252,21 +309,65 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
   	var userConfirmed = confirm('Are you sure to update a status of the service?');
 
   	if (userConfirmed) {
-      $.ajax({
-				type:'POST',
-				url:site_url+'Admin/admin/updateStatus',
-				data:{id:sId,status:status},
-				success:function(response){
-					if(response == 1){
-						window.location.reload();
-					}else{
-						alert('Something is wrong.');
-					}
-				}
-			});
+  		if(status == 'required_modification' || status == 'denied'){
+  			if(status == 'required_modification'){
+  				$('#reasonField').text('Reason for required modification');
+  				$('#reason_modal_title').text('Reason For Required Modification');
+  			}else{
+  				$('#reasonField').text('Reason for denied');
+  				$('#reason_modal_title').text('Reason For Denied');
+  			}
+  			var sId = $('#service_id').val(sId);
+  			var status = $('#service_status').val(status);
+  			$('#service_reason').modal('show');  			
+  		}else{
+				updateServiceStatus(sId, status, '');
+  		}      
     } else {
     	$(this).prop('selectedIndex', 0);
     }
+  });
+
+  function submitReason(){
+  	var sId = $('#service_id').val();
+  	var status = $('#service_status').val();
+  	var reason = $('#service_reason_fields').val();
+  	$('#submitReasonBtn').text('Submitting...');
+  	$('#submitReasonBtn').attr('disabled','true');
+  	updateServiceStatus(sId, status, reason);
+  }
+
+  function updateServiceStatus(sId, status, reason){
+  	$.ajax({
+			type:'POST',
+			url:site_url+'Admin/admin/updateStatus',
+			data:{id:sId,status:status,reason:reason},
+			success:function(response){
+				if(response == 1){
+					window.location.reload();
+				}else{
+					alert('Something is wrong.');
+				}
+			}
+		});
+  }
+
+  $('.viewReason').on('click', function(){
+  	var sId = $(this).data('id');
+  	$.ajax({
+			type:'POST',
+			url:site_url+'Admin/admin/getReason',
+			data:{id:sId},
+			dataType:'json',
+			success:function(response){
+				if(response.status == 1){
+					$('#view_service_reason_fields').val(response.reason);
+					$('#view_service_reason').modal('show');					
+				}else{
+					alert('Reson not found.');
+				}
+			}
+		});
   });
 </script>
 

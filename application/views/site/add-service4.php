@@ -160,7 +160,7 @@
 					</div>					
 
 					<input type="hidden" name="multiImgIds" id="multiImgIds">
-					<div class="row" id="previousImg">
+					<div class="row pb-4" id="previousImg">
 						<?php if(isset($serviceData['multi_images']) && $serviceData['multi_images']): ?>
 							<?php foreach($serviceData['multi_images'] as $id => $image): ?>
 								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
@@ -175,7 +175,7 @@
 										</div>
 									</div>
 								</div>		
-							<?php endforeach ?>
+							<?php endforeach; ?>
 						<?php endif; ?>
 					</div>
 				</div>
@@ -210,7 +210,7 @@
 					</div>
 				</div>
 				
-				<div id="doc-div" style="margin-top: 10px;">
+				<div id="doc-div" style="border-bottom:1px solid #b0c0d3; margin-top: 10px;">
 					<label class="col-md-12 control-label" for="" style="padding: 0;">
 						Documents (up to 2)
 					</label>
@@ -220,7 +220,7 @@
 
 					<div class="row ">
 						<div id="loader2" class="loader_ajax_small"></div>
-						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd " id="imageContainer3">
 							<div class="file-upload-btn addWorkDoc imgUp">
 								<img src="<?php echo base_url()?>img/defaultDoc.png" id="defaultDoc">
 								<div class="btn-text">Drag & drop PDF or <span>Browser</span></div>
@@ -229,7 +229,7 @@
 						</div>
 					</div>
 					<input type="hidden" name="multiDocIds" id="multiDocIds">
-					<div class="row" id="previousDoc">
+					<div class="row pb-4" id="previousDoc">
 						<?php if(isset($serviceData['multi_files']) && $serviceData['multi_files']): ?>
 							<?php foreach($serviceData['multi_files'] as $id => $file): ?>
 								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="portDiv<?php echo $id; ?>">
@@ -245,14 +245,52 @@
 							<?php endforeach ?>
 						<?php endif; ?>
 					</div>
-				</div>										
+				</div>
+
+				<div id="portfolio-div" style="margin-top: 10px;">
+					<label class="col-md-12 control-label" for="" style="padding: 0;">
+						Poortfolio
+					</label>
+					<div class="row">
+						<div id="loader4" class="loader_ajax_small"></div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer4">
+							<div class="file-upload-btn addWorkPImage imgUp">
+								<div class="btn-text main-label">Portfolio Image</div>
+								<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
+								<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
+								<input type="file" name="portfolioImage" id="profile4">		
+							</div>
+						</div>
+					</div>					
+
+					<input type="hidden" name="multiPortImgIds" id="multiPortImgIds">
+					<div class="row" id="previousPortImg">
+						<?php if(!empty($portfolio)): ?>
+							<?php foreach($portfolio as $pid => $img): ?>
+								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 pb-4" id="portImageDiv<?php echo $img['id']; ?>">
+									<div class="boxImage imgUp">
+										<div class="imagePreviewPlus">
+											<div class="text-right">
+												<button type="button" class="btn btn-danger removeImage" onclick="removePortfolioImage('<?php echo $img['id']; ?>', 1)">
+													<i class="fa fa-trash"></i>
+												</button>
+											</div>
+											<img style="width: inherit; height: inherit;" src="<?php echo base_url().'img/profile/'.$img['port_image'];?>" alt="">
+										</div>
+									</div>
+								</div>		
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</div>
+				</div>
 			</div>														
 		</div>																
 	</div>
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
 			<div class="col-sm-12 serviceBtn">
-				<button type="submit" class="btn btn-warning submit_btn">Continue</button>
+				<input type="submit" name="submit_listing" class="btn btn-warning submit_btn mr-3" value="Submit Listing">
+				<button type="submit" class="btn btn-warning submit_btn">Save & Continue</button>
 			</div>                                 
 		</div>
 	</div>
@@ -270,6 +308,10 @@
 
 	document.getElementById('imageContainer3').addEventListener('click', function() {
 		document.getElementById('profile3').click();
+	});
+
+	document.getElementById('imageContainer4').addEventListener('click', function() {
+		document.getElementById('profile4').click();
 	});
 
 	document.getElementById('videoprofile').addEventListener('change', function(e) {
@@ -497,4 +539,73 @@
         var newHiddenFieldValue = newIdsArray.join(',');
         $('#'+divId).val(newHiddenFieldValue);        
     }
+
+    const portDropArea = document.querySelector(".addWorkPImage"),
+		port_button = portDropArea.querySelector("img"),
+		port_input = portDropArea.querySelector("input");
+	let file2;
+	var filename2;
+
+	port_button.onclick = () => {port_input.click();};
+
+	port_input.addEventListener("change", function (e) {
+		e.preventDefault();
+		var multiPImgIds = $('#multiPortImgIds').val();
+
+		var idsArray = multiPImgIds.split(',');
+    	var file_data = $('#profile4').prop('files')[0];
+
+		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
+        if (validImageTypes.indexOf(file_data.type) == -1) {
+            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+            return false;
+        }
+		
+		var form_data = new FormData();
+		form_data.append('file', file_data);	
+		$('#loader4').show();
+		$('#previousPortImg').css('opacity', '0.6');
+		$.ajax({
+			url:site_url+'users/dragDrop',
+			type: "POST",
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData:false,
+			dataType:'json',
+			success: function(response){
+				if(response.status == 1){
+					if(multiPImgIds != ""){
+						var ids = multiPImgIds+','+response.id;
+						$('#multiPortImgIds').val(ids);
+					}else{
+						$('#multiPortImgIds').val(response.id);
+					}
+
+					var portElement = '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 pb-4" id="portImageDiv'+response.id+'">' +
+						'<div class="boxImage imgUp">'+
+						'<div class="imagePreviewPlus">'+
+						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removePortfolioImage('+response.id+')"><i class="fa fa-trash"></i></button></div>'+
+						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+						'</div></div></div>';
+					$('#previousPortImg').append(portElement);
+					$('#loader4').hide();
+					$('#previousPortImg').css('opacity', '1');
+				}
+			}
+		});
+	});
+
+	function removePortfolioImage(pImgId){
+		$.ajax({
+			url:site_url+'users/removePortfolio',
+			type:"POST",
+			data:{'pImgId':pImgId},
+			success:function(data){
+				$('#portImageDiv'+pImgId).remove();
+				removeIdFromHiddenField(pImgId.toString(), 'multiPortImgIds');					
+				alert('image deleted successfully');
+			}
+		});
+	}
 </script>
