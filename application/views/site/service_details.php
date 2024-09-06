@@ -83,42 +83,42 @@
 									</div>									
 								<?php endif; ?>
 							</div>
-
-							<div class="order-hourlie-addons">
-								<?php if(!empty($extra_services)): ?>
-									<h2 class="title">Get more with Offer Add-ons</h2>
-									<div class="content-text clear addons-container">
-										<ul class="addons clearfix boxmodelfix">
-											<?php foreach($extra_services as $exs): ?>
-												<li class="item bg-fill clearfix clear">
-													<div class="checkbox col-xs-7 col-sm-9">
-														<div class="form-check">
-															<div class="check-box">
-																<input class="checkbox-effect" data-price="<?php echo $exs['price']?>" data-id="<?php echo $exs['id']?>" id="business_<?php echo $exs['id']?>" type="checkbox" value="<?php echo $exs['id']?>" name="extra_services[]">
-																<label for="business_<?php echo $exs['id']?>">
-																	<div>
-																		<h6><?php echo $exs['ex_service_name']; ?></h6>
-																		<?php //if(!empty($exs['additional_working_days'])): ?>
-																			<!--<span>
-																				Additional Working Days <?php //echo $exs['additional_working_days'];?>
-																			</span>-->
-																		<?php //endif; ?>
-																	</div>
-																</label>
-															</div>
+							
+							<?php if(!empty($extra_services)): ?>
+							<div class="order-hourlie-addons">								
+								<h2 class="title">Get more with Offer Add-ons</h2>
+								<div class="content-text clear addons-container">
+									<ul class="addons clearfix boxmodelfix">
+										<?php foreach($extra_services as $exs): ?>
+											<li class="item bg-fill clearfix clear">
+												<div class="checkbox col-xs-7 col-sm-9">
+													<div class="form-check">
+														<div class="check-box">
+															<input class="checkbox-effect" data-price="<?php echo $exs['price']?>" data-id="<?php echo $exs['id']?>" id="business_<?php echo $exs['id']?>" type="checkbox" value="<?php echo $exs['id']?>" name="extra_services[]">
+															<label for="business_<?php echo $exs['id']?>">
+																<div>
+																	<h6><?php echo $exs['ex_service_name']; ?></h6>
+																	<?php //if(!empty($exs['additional_working_days'])): ?>
+																		<!--<span>
+																			Additional Working Days <?php //echo $exs['additional_working_days'];?>
+																		</span>-->
+																	<?php //endif; ?>
+																</div>
+															</label>
 														</div>
-													</div>	
-													<div class="price-tag text-right col-xs-5 col-sm-3">
-														<span>
-															<i class="fa fa-plus"></i> <?php echo $exs['price']?>
-														</span>
-													</div>							
-												</li>
-											<?php endforeach; ?>							
-										</ul>
-									</div>
-								<?php endif; ?>
+													</div>
+												</div>	
+												<div class="price-tag text-right col-xs-5 col-sm-3">
+													<span>
+														<i class="fa fa-plus"></i> <?php echo $exs['price']?>
+													</span>
+												</div>							
+											</li>
+										<?php endforeach; ?>							
+									</ul>
+								</div>								
 							</div>
+							<?php endif; ?>
 
 							<?php if(!empty($service_faqs)): ?>
 								<div class="faq-accordion help-center">

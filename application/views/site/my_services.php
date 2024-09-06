@@ -76,7 +76,7 @@
                                                         <th>Image</th>                     
                                                         <th>Service Name</th> 
                                                         <th>Date Created</th> 
-                                                        <th>Action</th>     
+                                                        <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -168,6 +168,7 @@ $(function () {
                                 '<span class="sr-only">Toggle Dropdown</span>'+
                             '</button>'+
                             '<div class="dropdown-menu action" role="menu" style="">'+
+                                '<a class="dropdown-item" href="'+site_url+'pre-service/'+row.slug+'"><i class="fa fa-eye pr-3"></i>View Listing</a>'+
                                 '<a class="dropdown-item" href="'+site_url+'edit-service/'+data+'"><i class="fa fa-edit pr-3"></i>Edit</a>'+
                                 '<a class="dropdown-item" href="'+site_url+'delete-service/'+data+'" onclick="return confirm(\'Are you sure want to delete this service?\')"><i class="fa fa-trash pr-3"></i>Delete</a>'+
                             '</div>'+

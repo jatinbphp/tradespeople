@@ -1952,66 +1952,81 @@ class Common_model extends CI_Model
 		return $result;
 	}
 
-	public function make_all_image($mainImg, $mainVideo, $sliderImgs)
-	{
-		$slider = '';
-		$image_path = FCPATH . 'img/services/' . $mainImg;
-		if(isset($mainImg) && file_exists($image_path)){
-			$mime_type = get_mime_by_extension($image_path);
-            $is_image = strpos($mime_type, 'image') !== false;
-            $is_video = strpos($mime_type, 'video') !== false;
+	public function make_all_image($mainImg, $mainVideo, $sliderImgs){
+	    $slider = '';
+	    $pdfs = '';
 
-			$main_image = base_url('img/services/').$mainImg;
+	    // Handle main image/video
+	    $image_path = FCPATH . 'img/services/' . $mainImg;
+	    if (isset($mainImg) && file_exists($image_path)) {
+	        $mime_type = get_mime_by_extension($image_path);
+	        $is_image = strpos($mime_type, 'image') !== false;
+	        $is_video = strpos($mime_type, 'video') !== false;
 
-			if ($is_image){
-				$slider .= '<div><img src="'.$main_image.'" class="img-responsive"></div>';
-			}
+	        $main_image = base_url('img/services/') . $mainImg;
 
-			if($is_video){
-				$slider .= '<div><video controls src="'.$main_image.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
-			}
-		}
+	        if ($is_image) {
+	            $slider .= '<div><img src="' . $main_image . '" class="img-responsive"></div>';
+	        }
 
-		if(!empty($mainVideo)){
-			$video_path = FCPATH . 'img/services/' . $mainVideo;
-			if(isset($mainVideo) && file_exists($video_path)){
-				$main_video = base_url('img/services/').$mainVideo;
+	        if ($is_video) {
+	            $slider .= '<div><video controls src="' . $main_image . '" type="' . $mime_type . '" loop class="serviceVideo"></video></div>';
+	        }
+	    }
 
-				$slider .= '<div><video controls src="'.$main_video.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
-			}	
-		}		
+	    if (!empty($mainVideo)) {
+	        $video_path = FCPATH . 'img/services/' . $mainVideo;
+	        if (isset($mainVideo) && file_exists($video_path)) {
+	            $main_video = base_url('img/services/') . $mainVideo;
 
-		if(count($sliderImgs)){
-			foreach($sliderImgs as $img){
-				$sliderImgPath = FCPATH . 'img/services/' . $img['image'];
-				// if(isset($img['image']) && file_exists($sliderImgPath)){
-				// 	$slider_mage = base_url('img/services/').$img['image'];
-				// 	$slider .= '<div><img src="'.$slider_mage.'" class="img-responsive"></div>';
-				// }
+	            $slider .= '<div><video controls src="' . $main_video . '" type="' . $mime_type . '" loop class="serviceVideo"></video></div>';
+	        }
+	    }
 
-				if(isset($img['image']) && file_exists($sliderImgPath)){
-					$mime_type = get_mime_by_extension($sliderImgPath);
-		            $is_image = strpos($mime_type, 'image') !== false;
-		            $is_video = strpos($mime_type, 'video') !== false;
-		            $is_pdf = strpos($mime_type, 'pdf') !== false;
+	    // Handle slider images/videos
+	    $slider_images_videos = '';
+	    foreach ($sliderImgs as $img) {
+	        $sliderImgPath = FCPATH . 'img/services/' . $img['image'];
+	        if (isset($img['image']) && file_exists($sliderImgPath)) {
+	            $mime_type = get_mime_by_extension($sliderImgPath);
+	            $is_image = strpos($mime_type, 'image') !== false;
+	            $is_video = strpos($mime_type, 'video') !== false;
+	            $is_pdf = strpos($mime_type, 'pdf') !== false;
 
-					$slider_mage = base_url('img/services/').$img['image'];
+	            $slider_mage = base_url('img/services/') . $img['image'];
 
-					if ($is_image){
-						$slider .= '<div><img src="'.$slider_mage.'" class="img-responsive"></div>';
-					}
+	            if ($is_image) {
+	                $slider_images_videos .= '<div><img src="' . $slider_mage . '" class="img-responsive"></div>';
+	            }
 
-					if($is_video){
-						$slider .= '<div><video controls src="'.$slider_mage.'" type="'.$mime_type.'"loop class="serviceVideo"></video></div>';
-					}
+	            if ($is_video) {
+	                $slider_images_videos .= '<div><video controls src="' . $slider_mage . '" type="' . $mime_type . '" loop class="serviceVideo"></video></div>';
+	            }
+	        }
+	    }
 
-					if($is_pdf){
-				        $slider .= '<div><iframe src="'.$slider_mage.'#toolbar=0&navpanes=0&scrollbar=0" ></iframe></div>';
-				    }
-				}
-			}
-		}
-		return $slider;
+	    // Append image/video content first
+	    $slider .= $slider_images_videos;
+
+	    // Handle PDF files
+	    foreach ($sliderImgs as $img) {
+	        $sliderImgPath = FCPATH . 'img/services/' . $img['image'];
+	        if (isset($img['image']) && file_exists($sliderImgPath)) {
+	            $mime_type = get_mime_by_extension($sliderImgPath);
+	            $is_pdf = strpos($mime_type, 'pdf') !== false;
+
+	            $slider_mage = base_url('img/services/') . $img['image'];
+
+	            if ($is_pdf) {
+	                $pdfs .= '<div><iframe src="'.$slider_mage.'#toolbar=0&navpanes=0&scrollbar=0" ></iframe></div>';
+	            }
+	        }
+	    }
+
+	    // Append PDFs last
+	    $slider .= $pdfs;
+
+	    return $slider;
 	}
 
 	public function get_extra_service($table, $ids, $sId)
@@ -3528,6 +3543,54 @@ class Common_model extends CI_Model
 	       LEFT JOIN service_rating srt ON ms.id = srt.service_id
 	       LEFT JOIN service_wishlist sw ON ms.id = sw.service_id AND sw.user_id = $user_id
 	       WHERE ms.slug = '$slug' AND ms.status = 'active'
+	       GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
+	       ORDER BY average_rating DESC");
+		}else{
+			$query = $this->db->query("SELECT ms.*, 
+	              c.cat_name,
+	              l.city_name,
+	              u.trading_name, 
+	              u.profile, 
+	              AVG(srt.rating) AS average_rating, 
+	              COUNT(DISTINCT srt.id) AS total_reviews, 
+	              (SELECT COUNT(*) FROM recently_viewed_service rvs WHERE rvs.service_id = ms.id) AS total_views,
+	              (SELECT COUNT(*) FROM service_wishlist serl WHERE serl.service_id = ms.id) AS total_likes,
+	              (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders
+	       FROM $table ms
+	       LEFT JOIN service_category c ON ms.category = c.cat_id
+	       LEFT JOIN location l ON ms.location = l.id
+	       LEFT JOIN users u ON ms.user_id = u.id
+	       LEFT JOIN service_rating srt ON ms.id = srt.service_id
+	       WHERE ms.slug = '$slug' AND ms.status = 'active'
+	       GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
+	       ORDER BY average_rating DESC");
+		}
+
+		return $query->row_array();
+	}
+
+	public function get_pre_service_details($table, $slug){
+		$user_id = $this->session->userdata('user_id');
+
+		if($user_id){
+			$query = $this->db->query("SELECT ms.*, 
+	              c.cat_name,
+	              l.city_name,
+	              u.trading_name, 
+	              u.profile, 
+	              AVG(srt.rating) AS average_rating, 
+	              COUNT(DISTINCT srt.id) AS total_reviews, 
+	              (SELECT COUNT(*) FROM recently_viewed_service rvs WHERE rvs.service_id = ms.id) AS total_views,
+	              (SELECT COUNT(*) FROM service_wishlist serl WHERE serl.service_id = ms.id) AS total_likes,
+	              (SELECT COUNT(*) FROM service_order sero WHERE sero.service_id = ms.id) AS total_orders,
+	              IF(sw.user_id IS NOT NULL, 1, 0) AS is_liked
+	       FROM $table ms
+	       LEFT JOIN service_category c ON ms.category = c.cat_id
+	       LEFT JOIN location l ON ms.location = l.id
+	       LEFT JOIN users u ON ms.user_id = u.id
+	       LEFT JOIN service_rating srt ON ms.id = srt.service_id
+	       LEFT JOIN service_wishlist sw ON ms.id = sw.service_id AND sw.user_id = $user_id
+	       WHERE ms.slug = '$slug'
 	       GROUP BY ms.id, c.cat_name, u.trading_name, u.profile
 	       ORDER BY average_rating DESC");
 		}else{

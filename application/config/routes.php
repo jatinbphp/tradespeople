@@ -58,6 +58,7 @@ $route['find_tradesmen']       = 'home/find_tradesmen';
 $route['advice-centre']        = 'home/advice_centre';
 $route['tradesman-start']      = 'home/tradesman_start';
 $route['service/(:any)']       = 'home/serviceDetail/$1';
+$route['pre-service/(:any)']   = 'home/preServiceDetail/$1';
 $route['category/(:any)']      = 'home/categoryDetail/$1';
 $route['category/(:any)/(:any)']      = 'home/categoryDetail/$1/$2';
 $route['category/(:any)/(:any)/(:any)']      = 'home/categoryDetail/$1/$2/$3';

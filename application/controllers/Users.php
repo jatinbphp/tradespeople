@@ -2345,7 +2345,8 @@ class Users extends CI_Controller
 	              	'image' => $service['image'],
 	              	'service_name' => $service['service_name'],
 	              	'created_at' => $service['created_at'],
-	              	'price' => $service['price']
+	              	'price' => $service['price'],
+	              	'slug' => $service['slug']
 	          	];
 	        }
 
@@ -2503,7 +2504,7 @@ class Users extends CI_Controller
 	}
 
 	public function storeServices($value=''){
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
@@ -2574,14 +2575,16 @@ class Users extends CI_Controller
 		$this->session->set_userdata('store_service1',$insert);
 		$this->setServiceData($insert);		
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_userdata('next_step',2);
 			$this->session->set_flashdata('success',"Service details added successfully.");			
 			redirect('open-add-service');
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('next_step',2);
+		redirect('open-add-service');
 	}
 
 	public function storeServices2BKP($value=''){
@@ -2610,7 +2613,7 @@ class Users extends CI_Controller
 	}
 
 	public function storeServices2($value=''){
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 
 		$this->form_validation->set_rules('price_per_type','How do you charge your service','required');
 				
@@ -2648,18 +2651,20 @@ class Users extends CI_Controller
 
 		$this->setServiceData($insert);
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_userdata('next_step',3);
 			$this->session->set_flashdata('success',"Package details added successfully.");			
 			redirect('open-add-service');
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('next_step',3);
+		redirect('open-add-service');
 	}
 
 	public function storeServices3($value=''){
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 		$newExS = $this->input->post('newExS', []);
 		$this->setServiceData(['newExService' => $newExS]);
 		$latestServiceId = $this->session->userdata('latest_service');
@@ -2681,14 +2686,16 @@ class Users extends CI_Controller
 			}
 		}
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_userdata('next_step',4);
 			$this->session->set_flashdata('success',"Extra service details added successfully.");
 			redirect('open-add-service');
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}	
+		}*/
+		$this->session->set_userdata('next_step',4);
+		redirect('open-add-service');	
 	}
 
 	public function storeServices4($value=''){
@@ -2708,9 +2715,12 @@ class Users extends CI_Controller
 		  $insert = array_merge($insert, $step3);
 		}*/
 
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 
-		$this->form_validation->set_rules('image','Image','required');
+		if(empty($_FILES['image']['name'])){
+			$this->form_validation->set_rules('image','Main image','required');	
+		}
+		
 		$this->form_validation->set_rules('video', 'Video', 'callback_check_video_size');
 				
 		if ($this->form_validation->run()==false) {
@@ -2767,18 +2777,20 @@ class Users extends CI_Controller
 
 		$this->setServiceData($insert);
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_userdata('next_step',5);
 			$this->session->set_flashdata('success',"Gallary details added successfully.");
 			redirect('open-add-service');
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('next_step',5);
+		redirect('open-add-service');
 	}
 
 	public function storeServices5($value=''){
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 		$faqs = $this->input->post('faq', []);
 		$latestServiceId = $this->session->userdata('latest_service');
 		$this->common_model->delete(['service_id'=>$latestServiceId],'service_faqs');
@@ -2791,18 +2803,20 @@ class Users extends CI_Controller
 				$run = $this->common_model->insert('service_faqs', $insert);
 			}
 		}
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_userdata('next_step',6);
 			$this->session->set_flashdata('success',"FAQ details added successfully.");
 			redirect('open-add-service');
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('next_step',6);
+		redirect('open-add-service');
 	}
 
 	public function storeServices6($value=''){
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 		$this->form_validation->set_rules('available_mon_fri','Available Monday to Friday','required');
 		$this->form_validation->set_rules('weekend_available','Available On Weekends','required');
 		
@@ -2821,14 +2835,16 @@ class Users extends CI_Controller
 		
 		$run = $this->common_model->insert('service_availability', $insert);
 		
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_userdata('next_step',7);
 			$this->session->set_flashdata('success',"Service availability details added successfully.");
 			redirect('open-add-service');
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('next_step',7);
+		redirect('open-add-service');
 	}	
 	
 	public function storeServices7($value=''){
@@ -2972,7 +2988,7 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
@@ -3039,22 +3055,26 @@ class Users extends CI_Controller
 		$insert['sub_category'] = $subCat;
 		$insert['service_type'] = $sType;
 		$insert['status'] = 'approval_pending';
+		$insert['is_view'] = 0;
 		if(!empty($this->input->post('plugins'))){
 			$insert['plugins'] = implode(',', $this->input->post('plugins'));
 		} else {
 			$insert['plugins'] = '';
 		}
 
-		$this->common_model->update('my_services', ['id'=>$id], $insert);		
+		$this->common_model->update('my_services', ['id'=>$id], $insert);
+		$this->setApprovalPending($id);		
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_flashdata('success','Service details updated succesfully.');
 			$this->session->set_userdata('update_next_step',2);
 			redirect("open-edit-service/{$id}");
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}		
+		}*/
+		$this->session->set_userdata('update_next_step',2);
+		redirect("open-edit-service/{$id}");		
 	}
 
 	public function updateServices2BKP($id=''){
@@ -3089,7 +3109,7 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 
 		$this->form_validation->set_rules('price_per_type','How do you charge your service','required');
 				
@@ -3124,14 +3144,16 @@ class Users extends CI_Controller
 		$this->common_model->update('my_services',array('id'=>$id),$insert);
 		$this->setApprovalPending($id);
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_flashdata('success','Service package data updated succesfully');
 			$this->session->set_userdata('update_next_step',3);
 			redirect("open-edit-service/{$id}");
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('update_next_step',3);
+		redirect("open-edit-service/{$id}");
 	}
 
 	public function updateServices3($id=''){
@@ -3139,7 +3161,7 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 
 		$newExS = $this->input->post('newExS', []);
 		$this->setEditServiceData(['newExService' => $newExS]);
@@ -3194,19 +3216,23 @@ class Users extends CI_Controller
 
 		if(!empty($newExIds)){
 			$this->common_model->deleteTradesManExs(['service_id'=>$id],'ex_service_id',$newExIds,'tradesman_extra_service');
+		}else{
+			$this->common_model->delete(['service_id'=>$id],'tradesman_extra_service');
 		}
 		
 		$this->setApprovalPending($id);
 		$serviceData = $this->session->userdata('edit_service_data');		
 
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_flashdata('success','Extra Service details updated succesfully.');
 			$this->session->set_userdata('update_next_step',4);
 			redirect("open-edit-service/{$id}");
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('update_next_step',4);
+		redirect("open-edit-service/{$id}");
 	}
 
 	public function updateServices4($id=''){
@@ -3214,13 +3240,13 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 
 		$user_id = $this->session->userdata('user_id');
 		$serviceData = $this->common_model->GetSingleData('my_services',['user_id'=>$user_id, 'id'=>$id]);
 
 		if(empty($serviceData['image']) && empty($_FILES['image']['name'])){
-			$this->form_validation->set_rules('image','Image','required');
+			$this->form_validation->set_rules('image','Main image','required');
 		}
 		
 		$this->form_validation->set_rules('video', 'Video', 'callback_check_video_size');
@@ -3293,14 +3319,16 @@ class Users extends CI_Controller
 		}
 
 		$this->setApprovalPending($id);		
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_flashdata('success','Gallary details updated succesfully.');
 			$this->session->set_userdata('update_next_step',5);
 			redirect("open-edit-service/{$id}");
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('update_next_step',5);
+		redirect("open-edit-service/{$id}");
 	}
 
 	public function updateServices5($id=''){
@@ -3308,7 +3336,7 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 		$this->common_model->delete(['service_id'=>$id],'service_faqs');
 		$faqs = $this->input->post('faq', []);
 		if(!empty($faqs) && count($faqs) > 0){
@@ -3320,14 +3348,16 @@ class Users extends CI_Controller
 			}
 		}
 		$this->setApprovalPending($id);
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_flashdata('success','FAQs details updated succesfully.');
 			$this->session->set_userdata('update_next_step',6);
 			redirect("open-edit-service/{$id}");
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('update_next_step',6);
+		redirect("open-edit-service/{$id}");
 	}
 
 	public function updateServices6($id=''){
@@ -3335,7 +3365,7 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
-		$submitBtn = $this->input->post('submit_listing');
+		//$submitBtn = $this->input->post('submit_listing');
 		$this->form_validation->set_rules('available_mon_fri','Available Monday to Friday','required');
 		$this->form_validation->set_rules('weekend_available','Available On Weekends','required');
 		
@@ -3365,14 +3395,16 @@ class Users extends CI_Controller
 		}
 		$this->setApprovalPending($id);
 		
-		if(empty($submitBtn)){
+		/*if(empty($submitBtn)){
 			$this->session->set_flashdata('success','Service availability details updated succesfully.');
 			$this->session->set_userdata('update_next_step',7);
 			redirect("open-edit-service/{$id}");
 		}else{
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
 			redirect("my-services");
-		}
+		}*/
+		$this->session->set_userdata('update_next_step',7);
+		redirect("open-edit-service/{$id}");
 	}	
 		
 	public function updateServices7($id=''){
@@ -3434,9 +3466,14 @@ class Users extends CI_Controller
 	}
 
 	public function setApprovalPending($id){
-		//$serviceData = $this->common_model->GetSingleData('my_services',['id'=>$id]);
-		$insert['status'] = 'approval_pending';
-		$this->common_model->update('my_services', ['id'=>$id], $insert);
+		$serviceData = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+
+		if($serviceData['status'] != 'draft'){
+			$insert['status'] = 'approval_pending';
+			$insert['is_view'] = 0;
+			$this->common_model->update('my_services', ['id'=>$id], $insert);
+		}
+		
 		return;
 	}
 

@@ -2450,6 +2450,80 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$this->load->view('site/service_details',$data);
 	}
 
+	public function preServiceDetail($slug=""){
+		$data['service_details'] = $this->common_model->get_pre_service_details('my_services',$slug);
+		$data['is_detail'] = 1;		
+
+		$sId = $data['service_details']['id'];
+		$uId = $data['service_details']['user_id'];
+
+		$category = $data['service_details']['category'];
+
+		$ip_address = $this->input->ip_address();
+		$existViewed = $this->common_model->GetSingleData('recently_viewed_service',['ip_address'=>$ip_address,'service_id'=>$sId]);
+
+		if(empty($existViewed)){
+			$insert['ip_address'] = $ip_address;
+			$insert['service_id'] = $sId;
+			$this->common_model->insert('recently_viewed_service', $insert);		
+		}
+
+		$recentlyViews = $this->common_model->get_all_data('recently_viewed_service', array('ip_address' => $ip_address,'service_id !='=>$sId),array(),array(), array(),'service_id');
+
+		$exIds = [0];
+
+		if(!empty($recentlyViews)){
+			foreach($recentlyViews as $rview){
+				$exIds[] = $rview['service_id'];
+			}
+		}
+
+		$peopleViews = $this->common_model->get_all_data('recently_viewed_service', array('ip_address !=' => $ip_address),array(),array(), array(),'service_id');
+
+		$exPids = [0];
+
+		if(!empty($peopleViews)){
+			foreach($peopleViews as $rview){
+				$exPids[] = $rview['service_id'];
+			}
+		}
+		
+		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exIds);
+		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exPids);
+		$data['similar_service']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,'',$sId);
+
+		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
+
+		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
+		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
+		$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
+		$data['service_rating'] = $this->common_model->getRatingsWithUsers($sId,3);
+		$data['service_user'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
+		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
+		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
+
+		$data['package_data'] = !empty($data['service_details']['package_data']) ? json_decode($data['service_details']['package_data']) : [];
+
+		$data['referalRating']=$this->common_model->get_referral_code_rating($uId);
+		$data['serviceAvgRating']=$this->common_model->get_service_avg_rating($uId);
+		
+		$serviceRating = min($data['serviceAvgRating'][0]['average_rating'], 5);
+		$referralRating = min($data['referalRating'], 5);
+		$data['overallRating'] = ($serviceRating + $referralRating) / 2;
+
+		$attributesArray = [];
+		foreach ($data['package_data'] as $value) {
+		    if (isset($value->attributes)) {
+		        $attributesArray = array_merge($attributesArray, $value->attributes);
+		    }
+		}
+		$attributesArray = array_unique($attributesArray);
+
+		$data['attributes'] = $this->common_model->getAttributes($attributesArray);
+
+		$this->load->view('site/service_details',$data);
+	}
+
 	public function loadMoreReviews() {
     $service_id = $this->input->post('service_id');
     $limit = $this->input->post('limit');

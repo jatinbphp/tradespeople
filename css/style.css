@@ -5189,7 +5189,7 @@ margin: 5px 0;
     width: 100%;
     border-radius: 10px;
     /*max-height: 350px;*/
-    height: 350px;
+    height: 460px;
     object-fit: cover;
 }
 
@@ -5412,6 +5412,7 @@ margin: 5px 0;
     max-height: 65px;
     max-width: 65px;
     border: 1px solid #e1e1e1;
+    object-fit: cover;
 }
 .img-border-round {
     -webkit-border-radius: 50%;
@@ -9311,6 +9312,7 @@ ul.nav.login.d-lg-none {
     border-radius: 5px;
     width: 175px; 
     height: 175px;
+    object-fit: cover;
 }
 
 .tagify {
@@ -10866,4 +10868,8 @@ input:checked + .switch-slider:before {
 
 .viewReason{
     cursor: pointer;
+}
+
+.slider-nav .slick-track{
+    margin-left: 0;
 }

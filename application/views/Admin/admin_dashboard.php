@@ -397,14 +397,19 @@
       <?php
           if (in_array(22, $my_access)) {
           ?>
+          <?php
+              $totalPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->count_all_results();
+              $totalViewdPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->where('is_view',0)->count_all_results();
+          ?>
         <div class="col-md-4 col-sm-6 col-xs-12">
           <div class="info-box">
             <span class="info-box-icon bg-yellow"><i class="fa fa-tasks"></i></span>           
             <div class="info-box-content">
-              <?php
-              $totalPendingService = $this->db->select(['id','status'])->from('my_services')->where('status','approval_pending')->count_all_results();
-              ?>
-              <span class="info-box-text">Approval Pending Service</span>
+              
+              <span class="info-box-text">
+                Approval Pending Service
+                <?=($totalViewdPendingService > 0) ? '<span style="background:red;color:#fff;" class="badge">' . $totalViewdPendingService . '</span>' : '';?>
+              </span>
               <span class="info-box-number"><?=$totalPendingService;?> </span>
             </div>
           </div>

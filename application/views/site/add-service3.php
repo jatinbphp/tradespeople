@@ -124,7 +124,7 @@
 	<div class="edit-user-section gray-bg">
 		<div class="row nomargin">
 			<div class="col-sm-12 serviceBtn">
-				<input type="submit" name="submit_listing" class="btn btn-warning submit_btn mr-3" value="Submit Listing">
+				<!-- <input type="submit" name="submit_listing" class="btn btn-warning submit_btn mr-3" value="Submit Listing"> -->
 				<button type="submit" class="btn btn-warning submit_btn">Save & Continue</button>
 			</div>                                 
 		</div>

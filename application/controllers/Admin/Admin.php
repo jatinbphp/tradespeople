@@ -3078,6 +3078,12 @@ class Admin extends CI_Controller
 
         $data['service_category'] = $service_category;
 
+        $where_array = ['id' => $sId];
+        $update_array = [
+            'is_view' => 1,
+        ];
+        $this->My_model->update_entry('my_services', $update_array, $where_array);
+
         $serviceDetailsView = $this->load->view('Admin/serviceDetails', $data);
         return $serviceDetailsView;        
     }
