@@ -186,7 +186,21 @@
 								</div>
 							</div>
 						<?php endif; ?>
-					</div>											
+					</div>
+
+					<div class="form-group">
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="form-check">
+									<div class="check-box">
+										<input class="checkbox-effect" id="terms" type="checkbox" value="1" name="terms"/>
+										<label for="terms">By clicking at the button you agreed to our<a href="<?php echo base_url('terms-and-conditions'); ?>" target="_blank" class="ml-1">terms & conditions</a>.</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+															
 				</div>
 				<div class="col-sm-4">
 					<div class="card-summary">
@@ -536,6 +550,17 @@
 		$('#checkoutBtn').on('click', function(){
 			$('#checkoutBtn').disabled = true;
 	        var pMethod = $('input[name="payment_method"]:checked').val();
+	        var termsConditions = $('input[name="terms"]:checked').val();
+
+	        if(termsConditions == undefined){
+	        	swal({
+	            	title: "Error",
+		            text: "Please select Terms & Conditions!!",
+		            type: "error"
+		        });	
+
+				return false
+        	}
 	        
 	        if(pMethod != undefined){
 	        	$('#formErrors').text('').parent('div').removeClass('alert alert-danger');

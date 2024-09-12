@@ -499,7 +499,7 @@ $get_commision = $this->common_model->get_commision();
 								<?php endif;?>
 
 								<?php if(!empty($all_conversation)):?>
-									<?php foreach($all_conversation as $list)?>
+									<?php foreach($all_conversation as $list):?>
 									<li class="timeline-item">
 										<span class="timeline-item-icon | faded-icon">
 											<i class="fa fa-edit faicon"></i>
