@@ -306,9 +306,9 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
   	var status = $(this).val();
   	var sId = $(this).data('id');
 
-  	var userConfirmed = confirm('Are you sure to update a status of the service?');
+  	//var userConfirmed = confirm('Are you sure to update a status of the service?');
 
-  	if (userConfirmed) {
+  	//if (userConfirmed) {
   		if(status == 'required_modification' || status == 'denied'){
   			if(status == 'required_modification'){
   				$('#reasonField').text('Reason for required modification');
@@ -323,9 +323,9 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
   		}else{
 				updateServiceStatus(sId, status, '');
   		}      
-    } else {
+    /*} else {
     	$(this).prop('selectedIndex', 0);
-    }
+    }*/
   });
 
   function submitReason(){

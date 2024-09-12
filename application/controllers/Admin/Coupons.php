@@ -40,20 +40,24 @@ class Coupons extends CI_Controller {
 		}
 
         $discountType = $this->input->post('discount_type');
-        $discount     = $this->input->post('discount');
+        $discount = $this->input->post('discount');
 
         if($discountType == 'percentage' && $discount > 100){
             $this->session->set_flashdata('msg','<div class="alert alert-error">You cannot add discount percentage more then 100%.</div>');
 		    redirect('Admin/coupon-management');
         }
 
-        $isLimited     = $this->input->post('is_limited');
+        $isLimited = $this->input->post('is_limited');
 		$limitedUser = $this->input->post('limited_user');
 
         if($isLimited == 'no'){
             $limitedUser = 0;
         }
 
+        $adminId = $this->session->userdata('session_adminId');
+
+		$insert['type']          = 'admin';
+		$insert['user_id'] 		 = $adminId;
 		$insert['code']          = $this->input->post('code');
 		$insert['is_limited']    = $isLimited;
 		$insert['limited_user']  = $limitedUser;

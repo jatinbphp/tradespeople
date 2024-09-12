@@ -3799,4 +3799,23 @@ class Common_model extends CI_Model
 		$suggestions = array_unique($suggestions, SORT_REGULAR);
 		echo json_encode(array_slice($suggestions, 0, 5));
 	}
+
+	public function generateOrderId($length){
+		$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	    $charactersLength = strlen($characters);
+	    $randomString = '';
+	    
+	    for ($i = 0; $i < $length; $i++) {
+	        $randomString .= $characters[rand(0, $charactersLength - 1)];
+	    }
+
+	    $oId = '#' . $randomString;
+
+	    $existOrderId = $this->common_model->GetSingleData('service_order',['order_id'=>$oId]);
+	    if(!empty($existOrderId)){
+	    	$this->generateOrderId();
+	    }
+
+	    return $oId;
+	}
 }

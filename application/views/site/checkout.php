@@ -1,5 +1,9 @@
 <?php include ("include/header.php") ?>
 <style>
+	.payment_method{
+		margin-right: 10px!important;
+	}
+
 	/*----------LOADER CSS START----------*/
 	.loader_ajax_small {
 		display: none;
@@ -92,6 +96,7 @@
 
 
 							<div class="form__radio">
+								<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
 								<label for="stripe"><svg class="icon">
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
 										<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
@@ -100,12 +105,13 @@
 										<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
 									</svg>
 								</svg>New Card</label>
-								<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
+								
 							</div>
 							<!-- <p><b>Tradespeople Hub accepts all Visa, MasterCard and Maestro cards.</b></p> -->
 						</div>
 						<div class="col-sm-12">
 							<div class="form__radio">
+								<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
 								<label for="wallet"><svg class="icon">
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
 										<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
@@ -113,8 +119,7 @@
 										<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
 										<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
 									</svg>
-								</svg>Wallet</label>
-								<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
+								</svg>Wallet</label>								
 							</div>
 							<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
 						</div>
@@ -209,7 +214,7 @@
 						</div>
 						<div class="summary-box">
 							<div class="summary-box-heding">
-								<h4>summary</h4>
+								<h4>Order Summary</h4>
 								<div>
 									<span id="original_price">
 										<?php echo '£'.number_format($totalPrice,2); ?>
@@ -235,7 +240,7 @@
 							</div>
 							<ul>
 								<li>
-									<p>Unit price (per <?php echo lcfirst($service_details['price_per_type']); ?>)</p> 
+									<p>Price (per <?php echo lcfirst($service_details['price_per_type']); ?>)</p> 
 									<b><?php echo '£'.number_format($package_price,2); ?></b>
 								</li>
 								<li>
@@ -537,7 +542,7 @@
 	        	$('#formErrors').closest('.col-sm-12').removeClass('mb-4');
 	            $('#formErrors').fadeOut();
 
-	        	swal({
+	        	/*swal({
 		            title: "Confirm Order",
 		            text: "Are you sure you want to place this order?",
 		            type: "warning",
@@ -545,56 +550,58 @@
 			        confirmButtonText: 'Place Order',
 			        cancelButtonText: 'Cancel'
 		        }, function() {
-		    		if (pMethod == 'wallet') {
-		    			var promo_code = $('#promo_code').val();
-			           	$('#loader').removeClass('hide');
+		    			
+		        });*/
 
-		    			$.ajax({
-			                url: '<?= site_url().'checkout/placeOrder'; ?>',
-			                type: 'POST',
-			                data: {'payment_method':pMethod, 'promo_code':promo_code},
-			                dataType: 'json',		                
-			                success: function(result) {
-			                	$('#loader').addClass('hide');
-			                	if(result.status == 0){
-			                		swal({
-						            	title: "Error",
-							            text: result.message,
-							            type: "error"
-							        });	
-			                	}else if(result.status == 2){
-			                		swal({
-							            title: "Login Required!",
-							            text: "If you want to order the please login first!",
-							            type: "warning"
-							        }, function() {
-							            window.location.href = '<?php echo base_url().'login'; ?>';
-							        });	
-			                	}else{
-									swal({
-							            title: "Success",
-							            text: result.message,
-							            type: "success"
-							        }, function() {
-							        	//window.location.href = '<?php echo base_url(""); ?>';
-							        	$('#order_id').val(result.order_id);
-							        	$('#order_requirement_modal').modal('show');
-							        });
-			                	}		                    
-			                },
-			                error: function(xhr, status, error) {
-			                    // Handle error
-			                }
-			            });
-			        }
-			        else{
-			        	if(pMethod == 'card'){
-			        		payWithStripe();
-			        	}else{
-			        		payWithOldCard();
-			        	}			        	
-			        } 	
-		        });
+	            if (pMethod == 'wallet') {
+	    			var promo_code = $('#promo_code').val();
+		           	$('#loader').removeClass('hide');
+
+	    			$.ajax({
+		                url: '<?= site_url().'checkout/placeOrder'; ?>',
+		                type: 'POST',
+		                data: {'payment_method':pMethod, 'promo_code':promo_code},
+		                dataType: 'json',		                
+		                success: function(result) {
+		                	$('#loader').addClass('hide');
+		                	if(result.status == 0){
+		                		swal({
+					            	title: "Error",
+						            text: result.message,
+						            type: "error"
+						        });	
+		                	}else if(result.status == 2){
+		                		swal({
+						            title: "Login Required!",
+						            text: "If you want to order the please login first!",
+						            type: "warning"
+						        }, function() {
+						            window.location.href = '<?php echo base_url().'login'; ?>';
+						        });	
+		                	}else{
+								swal({
+						            title: "Success",
+						            text: result.message,
+						            type: "success"
+						        }, function() {
+						        	window.location.href = '<?php echo base_url("my-account"); ?>';
+						        	/*$('#order_id').val(result.order_id);
+						        	$('#order_requirement_modal').modal('show');*/
+						        });
+		                	}		                    
+		                },
+		                error: function(xhr, status, error) {
+		                    // Handle error
+		                }
+		            });
+		        }
+		        else{
+		        	if(pMethod == 'card'){
+		        		payWithStripe();
+		        	}else{
+		        		payWithOldCard();
+		        	}			        	
+		        }
 	        }else{
 	    		$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
 	    		$('#formErrors').closest('.col-sm-12').addClass('mb-4');
@@ -861,9 +868,9 @@
 				            text: result.message,
 				            type: "success"
 				        }, function() {
-				        	//window.location.href = '<?php echo base_url(""); ?>';
-				        	$('#order_id').val(result.order_id);
-				        	$('#order_requirement_modal').modal('show');
+				        	window.location.href = '<?php echo base_url("my-account"); ?>';
+				        	/*$('#order_id').val(result.order_id);
+				        	$('#order_requirement_modal').modal('show');*/
 				        });
 	            	}		                    
 	            },

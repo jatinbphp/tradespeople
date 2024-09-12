@@ -7,7 +7,7 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Main Category</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md mainCategory" name="category" data-section="subcategories" id="category">
+                        <select class="form-control input-md mainCategory" name="category" data-section="subcategories" id="category" <?php echo isset($serviceData) && ($serviceData['status_approved']==1) ? 'disabled' : ''; ?>>
                             <option value="">Select Category</option>
                             <?php $selected = $serviceData['category'] ?? '' ?>
                             <?php foreach ($category as $cat) { ?>
@@ -16,6 +16,8 @@
                                 </option>
                             <?php } ?>
                         </select>
+
+                        <input type="hidden" value="<?php echo isset($serviceData) && ($serviceData['status_approved']==1) ? 1 : ''; ?>" name="service_status">
                     </div>
                 </div>
             </div>           
@@ -284,12 +286,18 @@
     $('.mainCategory').on('change', function(){
         var cat_id = $(this).val();
         var sectionId = $(this).attr('data-section');
+        var status_approved = '';
+        <?php 
+        if(isset($serviceData) && $serviceData['status_approved']==1): ?>
+            var status_approved = 1;
+        <?php endif ?>
+
         $('.categories').empty();
         $('.categories_div').addClass('hidden');
         $.ajax({
             url:site_url+'users/getSubCategory',
             type:"POST",
-            data:{'cat_id':cat_id,'type':1},
+            data:{'cat_id':cat_id,'type':1,'status_approved':status_approved},
             success:function(data){
                 if(data != ""){
                     $('#'+sectionId+'_div').removeClass('hidden');
@@ -305,10 +313,17 @@
     $('.subCategory').on('change', function(){
         var cat_id = $(this).val();
         var sectionId = $(this).attr('data-section');
+
+        var status_approved = '';
+        <?php 
+        if(isset($serviceData) && $serviceData['status_approved']==1): ?>
+            var status_approved = 1;
+        <?php endif ?>
+
         $.ajax({
             url:site_url+'users/getSubCategory',
             type:"POST",
-            data:{'cat_id':cat_id,'type':2},
+            data:{'cat_id':cat_id,'type':2,'status_approved':status_approved},
             success:function(data){
                 if(data != ""){
                     $('#'+sectionId+'_div').removeClass('hidden');
@@ -334,10 +349,16 @@
             return $(this).val();
         }).get();
 
+        var status_approved = '';
+        <?php 
+        if(isset($serviceData) && $serviceData['status_approved']==1): ?>
+            var status_approved = 1;
+        <?php endif ?>
+
         $.ajax({
             url:site_url+'users/getSubCategory',
             type:"POST",
-            data:{'cat_id':checkedValues,'type':2},
+            data:{'cat_id':checkedValues,'type':2,'status_approved':status_approved},
             success:function(data){
                 if(data != ""){
                     $('#service_type_div').removeClass('hidden');

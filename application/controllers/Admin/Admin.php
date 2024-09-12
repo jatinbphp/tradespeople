@@ -3757,6 +3757,10 @@ class Admin extends CI_Controller
                 'status' => $status,
                 'reason' => $reason 
             ];
+
+            if($status=='active'){
+                $update_array['status_approved'] = 1;
+            }
             $where_array = ['id' => $sId];
             $result = $this->My_model->update_entry('my_services', $update_array, $where_array);
 

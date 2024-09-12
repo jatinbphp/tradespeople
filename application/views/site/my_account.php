@@ -139,6 +139,21 @@ $closed_date = $get_commision[0]['closed_date'];
 
 		/*  100% {opacity:0;width:355px;}*/
 	}
+
+	#activeOrderTable tbody tr{
+		cursor: pointer;
+	}
+
+	#activeOrderTable .tr_class td:nth-of-type(1){
+		background: #fff!important;
+		color: #464c5b!important;
+	}
+
+	#activeOrderTable .tr_class:hover td {
+	    background: #ff7353!important;
+	    color: #fff!important;
+	    font-weight: 600!important;
+	}
 </style>
 <div class="acount-page membership-page">
 	<div class="container">
@@ -460,59 +475,60 @@ $closed_date = $get_commision[0]['closed_date'];
 				</div>
 				
 				<?php if ($active_orders) {  ?>
-							<table class="table table_nw" id="activeOrderTable">
-								<thead>
-									<tr class="th_class">
-										<th style="display: none;"></th>
-										<th>Image/Video</th>                     
-                                        <th>Service Name</th>                     
-                                        <th>Order Date</th>                     
-                                        <th>Total</th> 
-                                        <th>Status</th>
-                                        <th>Action</th>
-									</tr>
-								</thead>
-								<tbody>
-									<?php if(!empty($active_orders)):?>
-										<?php foreach ($active_orders as $okey => $list): ?>
-											<?php 
-												$date = new DateTime($order['created_at']);
+					<table class="table table_nw" id="activeOrderTable">
+						<thead>
+							<tr class="th_class">
+								<th>Order Id</th>
+								<th>Image/Video</th>                     
+                                <th>Service Name</th>                     
+                                <th>Order Date</th>                     
+                                <th>Total</th> 
+                                <th>Status</th>
+                                <th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if(!empty($active_orders)):?>
+								<?php foreach ($active_orders as $okey => $list): ?>
+									<?php 
+										$date = new DateTime($order['created_at']);
 
-												$image_path = FCPATH . 'img/services/' . ($list['image'] ?? '');
-												$mime_type = get_mime_by_extension($image_path);
-								                $is_image = strpos($mime_type, 'image') !== false;
-								                $is_video = strpos($mime_type, 'video') !== false;
-											?>
-											<tr class="tr_class">
-												<td style="display: none;"><?php echo $okey + 1; ?></td>
-												<td>
-													<?php if ($is_image): ?>
-														<img class="mr-4" src="<?php echo base_url('img/services/') . $list['image']; ?>" alt="Service Image" width="100">               
-									                <?php elseif ($is_video): ?>
-									                	<video class="mr-4" width="100" controls autoplay><source src="<?php echo base_url('img/services/') . $list['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
-									                <?php else:?>
-									                	<img class="mr-4" src="<?php echo base_url('img/default-image.jpg'); ?>" alt="Service Image" width="100">
-									                <?php endif; ?>	
-												</td>
-												<td><?php echo $list['service_name']; ?></td>
-												<td><?php echo $date->format('F j, Y'); ?></td>
-												<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
-												<td><?php echo ucfirst($list['status']); ?></td>
-												<td>
-													<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
-												</td>
-											</tr>
-										<?php endforeach; ?>
-									<?php endif;?>
-								</tbody>
-							</table>
-						<?php } else { ?>
-							<div class="verify-page">
-								<div style="background-color:#fff;padding: 20px;" class="">
-									<p>No active orders found.</p>
-								</div>
-							</div> <br><br>
-						<?php }  ?>	
+										$image_path = FCPATH . 'img/services/' . ($list['image'] ?? '');
+										$mime_type = get_mime_by_extension($image_path);
+						                $is_image = strpos($mime_type, 'image') !== false;
+						                $is_video = strpos($mime_type, 'video') !== false;
+									?>
+									<tr class="tr_class" data-href="<?php echo base_url('order-tracking/'.$list['id']); ?>">
+
+										<td><?php echo $list['id']; ?></td>
+										<td>
+											<?php if ($is_image): ?>
+												<img class="mr-4" src="<?php echo base_url('img/services/') . $list['image']; ?>" alt="Service Image" width="100">               
+							                <?php elseif ($is_video): ?>
+							                	<video class="mr-4" width="100" controls autoplay><source src="<?php echo base_url('img/services/') . $list['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+							                <?php else:?>
+							                	<img class="mr-4" src="<?php echo base_url('img/default-image.jpg'); ?>" alt="Service Image" width="100">
+							                <?php endif; ?>	
+										</td>
+										<td><?php echo $list['service_name']; ?></td>
+										<td><?php echo $date->format('F j, Y'); ?></td>
+										<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
+										<td><?php echo ucfirst($list['status']); ?></td>
+										<td>
+											<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php endif;?>
+						</tbody>
+					</table>
+				<?php } else { ?>
+					<div class="verify-page">
+						<div style="background-color:#fff;padding: 20px;" class="">
+							<p>No active orders found.</p>
+						</div>
+					</div> <br><br>
+				<?php }  ?>	
 
 				<div class="mjq-sh">
 					<h2><strong>Work in Progress</strong> </h2>
@@ -918,6 +934,13 @@ function get_unread_msg_count(post_id, rid) {
 			"pageLength": 5
 		});
 		$('.dataTables_filter').addClass('pull-left');
+
+		$('#activeOrderTable tbody').on('click', 'tr', function() {
+		    var href = $(this).data('href');
+		    if (href) {
+		        window.location.href = href;
+		    }
+		});
 	});
 	/*
   function edit_post(id){

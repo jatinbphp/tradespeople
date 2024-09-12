@@ -2990,13 +2990,16 @@ class Users extends CI_Controller
 		}
 		//$submitBtn = $this->input->post('submit_listing');
 
+		if($this->input->post('service_status')!=1){
+			$this->form_validation->set_rules('category','Category','required');
+			$this->form_validation->set_rules('sub_category[]','Sub Category','required');
+			$this->form_validation->set_rules('service_type[]','Service Type','required');
+		}
+
 		$this->form_validation->set_rules('service_name','Service Name','required');
 		$this->form_validation->set_rules('description','Description','required');
 		$this->form_validation->set_rules('location','Location','required');
 		$this->form_validation->set_rules('area','City/Town','required');
-		$this->form_validation->set_rules('category','Category','required');
-		$this->form_validation->set_rules('sub_category[]','Sub Category','required');
-		$this->form_validation->set_rules('service_type[]','Service Type','required');
 		$this->form_validation->set_rules('positive_keywords[]','Positive Keywords','required');
 		
 		if ($this->form_validation->run()==false) {
@@ -3005,10 +3008,12 @@ class Users extends CI_Controller
 			redirect("open-edit-service/{$id}");
 		}		
 
-		if(count($this->input->post('service_type')) > 3){
-			$this->session->set_flashdata('error',"You need to select only 3 service types");
-			$this->session->set_userdata('next_step',1);
-			redirect("open-edit-service/{$id}");
+		if($this->input->post('service_status')!=1){
+			if(count($this->input->post('service_type')) > 3){
+				$this->session->set_flashdata('error',"You need to select only 3 service types");
+				$this->session->set_userdata('next_step',1);
+				redirect("open-edit-service/{$id}");
+			}
 		}
 
 		$insert = [];
@@ -3051,9 +3056,12 @@ class Users extends CI_Controller
 		$insert['location'] = $this->input->post('location');
 		$insert['area'] = $this->input->post('area');
 		$insert['positive_keywords'] = implode(',', $this->input->post('positive_keywords'));
-		$insert['category'] = $this->input->post('category');
-		$insert['sub_category'] = $subCat;
-		$insert['service_type'] = $sType;
+
+		if($this->input->post('service_status')!=1){
+			$insert['category'] = $this->input->post('category');
+			$insert['sub_category'] = $subCat;
+			$insert['service_type'] = $sType;
+		}
 		$insert['status'] = 'approval_pending';
 		$insert['is_view'] = 0;
 		if(!empty($this->input->post('plugins'))){
@@ -3510,6 +3518,16 @@ class Users extends CI_Controller
 		exit;
 	}
 
+	public function removeOrderSubmitAttachment(){
+		$imageId = $this->input->post('imgId');
+		$orderImages = $this->common_model->GetSingleData('order_submit_attachments',['id'=>$imageId]);
+		if(!empty($orderImages)){
+			unlink('img/services/'.$orderImages['image']);
+			$this->db->where('id',$this->input->post('imgId'))->delete('order_submit_attachments');
+		}
+		exit;
+	}
+
 	public function removeServiceVideo(){
 		$sid = $this->input->post('sId');
 		$type = $this->input->post('type');
@@ -3570,6 +3588,7 @@ class Users extends CI_Controller
 			$chkName = $type == 1 ? 'sub_category[]' : 'service_type[]';
 			$inputType = $type == 1 ? 'radio' : 'checkbox';
 			$className = $type == 1 ? '' : 'serviceCheck';
+			$disabledVar = $this->input->post('status_approved')==1 ? 'disabled' : '';
 
 			// $option .= '<option value="">Please Select</option>';
 			foreach($subCategory as $sCat){
@@ -3581,7 +3600,7 @@ class Users extends CI_Controller
 					$checked = in_array($sCat['cat_id'], $existSType) ? 'checked' : '';
 				}
 
-				$option .= '<div class="col-sm-6"><div class=""><label><input type="'.$inputType.'" name="'.$chkName.'" class="subCategory '.$className.'" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
+				$option .= '<div class="col-sm-6"><div class=""><label><input type="'.$inputType.'" name="'.$chkName.'" class="subCategory '.$className.'" '.$jsFunction.' id="subcategory'.$sCat['cat_id'].'" value="'.$sCat['cat_id'].'" '.$checked.' '.$disabledVar.'>'.$sCat['cat_name'].'<span class="outside"><span class="inside"></span></span></label></div></div>';
 			}
 			$option .= '</div>';
 		}		
@@ -3681,12 +3700,21 @@ class Users extends CI_Controller
 		$tuser_id = $this->session->userdata('user_id');
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		if(!empty($serviceOrder)){
-			$input['status'] = 'completed';
+			$input['status'] = 'delivered';
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
-			$insert['tradesman_id'] = $tuser_id;
-			$insert['homeowner_id'] = $serviceOrder['user_id'];
+			/*Manage Order History*/
+            $insert1 = [
+	            'user_id' => $tuser_id,
+	            'service_id' => $serviceOrder['service_id'],
+	            'order_id' => $oId,
+	            'status' => 'delivered'
+	        ];
+	        $this->common_model->insert('service_order_status_history', $insert1);
+
+			$insert['sender'] = $tuser_id;
+			$insert['receiver'] = $serviceOrder['user_id'];
 			$insert['order_id'] = $oId;
 			$insert['description'] = $this->input->post('description');
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
@@ -3698,7 +3726,7 @@ class Users extends CI_Controller
 					foreach($mImgs as $imgId){					
 						$this->common_model->update('order_submit_attachments',array('id'=>$imgId),$input1);
 					}
-				}
+				}		        
 			}
 			echo json_encode(['status' => 'success', 'message' => 'Order Submited']);
 		}else{
@@ -4190,10 +4218,21 @@ class Users extends CI_Controller
     	}
 
 		$uId = $this->session->userdata('user_id');
+		$oId = $this->input->post('order_id');
+
 		$insert['user_id'] = $uId;
-		$insert['order_id'] =  $this->input->post('order_id');
+		$insert['order_id'] =  $oId;
 		$insert['requirement'] =  $this->input->post('requirement');
 		$insert['location'] =  $this->input->post('location');
+
+		$existRequirement = $this->common_model->GetSingleData('order_requirement',['user_id'=>$uId,'order_id'=>$oId]);
+
+		if(!empty($existRequirement)){
+			$data['status'] = 0;
+			$data['message'] = 'Order requirement is already submitted';
+			echo json_encode($data);
+			exit;
+		}
 
 		$requirement = $this->common_model->insert('order_requirement', $insert);
 
@@ -4252,35 +4291,77 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
+
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['user_id'=>$user_id, 'id'=>$id]);
-
+		$data['user'] = $this->common_model->GetSingleData('users',['id'=>$user_id]);
+		
 		if(!empty($order)){
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
-			$package_data = json_decode($data['service']['package_data'],true);
+			$package_data = json_decode($data['service']['package_data'],true);	
+			$data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$data['service']['user_id']]);
 
-			$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$order['id']]);	
-			$days = $package_data[$order['package_type']]['days'];
-			$currentDate = new DateTime($statusHistory['created_at']);			
-			$currentDate->modify("+$days days");
-			$data['delivery_date'] = $currentDate->format('D jS F, Y');
+			$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$order['id'],'status'=>'active']);
 
-			$currentDate1 = new DateTime();
-			$interval = $currentDate1->diff($currentDate);
+			$delivery_date = '';
+			$rDays = '';
+			$rHours = '';
+			$rMinutes = '';
+			$days = 0;
 
-			$data['rDays'] = $interval->days; 
-			$data['rHours'] = $interval->h;
-			$data['rMinutes'] = $interval->i;			
+			if(!empty($statusHistory)){
+				$days = $package_data[$order['package_type']]['days'];
+				$currentDate = new DateTime($statusHistory['created_at']);			
+				$currentDate->modify("+$days days");
+				$delivery_date = $currentDate->format('D jS F, Y H:i');	
+
+				$currentDate1 = new DateTime();
+				$interval = $currentDate1->diff($currentDate);
+
+				$rDays = $interval->days; 
+				$rHours = $interval->h;
+				$rMinutes = $interval->i;
+			}
 
 			$requirements = $this->common_model->GetSingleData('order_requirement',['order_id'=>$id]);
 			if(!empty($requirements)){
 				$data['requirements'] = $requirements;
 				$data['attachements'] = $this->common_model->get_all_data('order_requirement_attachment',['requirement_id'=>$requirements['id']]);	
 			}
+
+			$data['duration'] = $days;
 			$data['order'] = $order;
+			$data['delivery_date'] = $delivery_date;
+			$data['rDays'] = $rDays;
+			$data['rHours'] = $rHours;
+			$data['rMinutes'] = $rMinutes;
+
 			$ocDate = new DateTime($order['created_at']);
-			$data['created_date'] = $ocDate->format('D jS F, Y');
+			$data['created_date'] = $ocDate->format('D jS F, Y H:i');
+
+			$attributesArray = $package_data[$order['package_type']]['attributes'];
 			
+			$data['attributes'] = $this->common_model->getAttributes($attributesArray);
+			$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$order['service_id']]);
+
+			$selectedExs = !empty($order['ex_services']) ? explode(',', $order['ex_services']) : [];
+
+			$existExs = [];
+
+			foreach($selectedExs as $exs){
+				$exIds = explode('-', $exs);
+				$existExs[] = $exIds[0];
+			}
+
+			$data['selectedExs'] = $existExs;
+			$data['conversation'] = $this->common_model->GetSingleData('order_submit_conversation',['order_id'=>$order['id']]);
+
+			$data['all_conversation']=$this->common_model->get_all_data('order_submit_conversation',['order_id'=>$order['id'], 'sender'=>$user_id]);
+
+			// echo '<pre>';
+			// print_r($data['all_conversation']);
+			// exit;
+
 			$this->load->view('site/order_tracking',$data);
 		}else{
 			redirect(base_url());
@@ -4299,5 +4380,211 @@ class Users extends CI_Controller
             }
         }
         echo json_encode($json);
+	}
+
+	public function promo_code($value=''){
+		if($this->session->userdata('user_id')) {
+			$user_id = $this->session->userdata('user_id');
+			$data['promo_code']=$this->common_model->get_my_service('my_services',$this->session->userdata('user_id'),$status);
+
+			$data['promo_code']=$this->common_model->get_all_data('promo_code',['type'=>'tradesman','user_id'=>$user_id]);
+
+			$this->load->view('site/promo_code',$data);
+		} else {
+			redirect('login');
+		}		
+	}
+
+	public function getAllPromoCode(){
+		if($this->session->userdata('user_id')) {
+			$user_id = $this->session->userdata('user_id');
+	        $promo_code = $this->common_model->get_all_data('promo_code', ['type'=>'tradesman','user_id'=>$user_id]);
+	        $data = [];
+
+	        foreach($promo_code as $pcode) {
+	        	if($pcode['is_limited'] && $pcode['is_limited'] == 'yes'){
+                	$is_limited = '<span class="label label-success">Yes</span>';
+                }else{
+                	$is_limited = '<span class="label label-danger">No</span>';
+                }
+
+	          	$data[] = [
+	            	'id' => $pcode['id'],
+	              	'code' => $pcode['code'],
+	              	'is_limited' => $is_limited,
+	              	'limited_user' => $pcode['limited_user'],
+	              	'exceeded_limit' => $pcode['exceeded_limit'],
+	              	'discount' => $pcode['discount'],
+	              	'discount_type' => $pcode['discount_type'],
+	              	'status' => ucfirst($pcode['status']),
+	          	];
+	        }
+
+	        echo json_encode(['data' => $data]);
+	    } else {
+	        echo json_encode(['data' => []]);
+	    }
+	}
+
+	public function add_coupon(){
+
+		$this->form_validation->set_rules('discount_type','Discount Type','required');
+		$this->form_validation->set_rules('discount','Discount','required|numeric');
+		$this->form_validation->set_rules('is_limited','Is Limited','required');
+		$this->form_validation->set_rules('status','Status','required');
+		$this->form_validation->set_rules('code','Code','required');
+
+		if($this->input->post('is_limited') == 'yes'){
+			$this->form_validation->set_rules('limited_user','Limited User','required|numeric');
+		}
+				
+		if ($this->form_validation->run()==false) {
+            $this->session->set_flashdata('error',validation_errors());
+		    redirect('promo-code');
+		}
+
+        $discountType = $this->input->post('discount_type');
+        $discount = $this->input->post('discount');
+
+        if($discountType == 'percentage' && $discount > 100){
+            $this->session->set_flashdata('error','You cannot add discount percentage more then 100%.');
+		    redirect('promo-code');
+        }
+
+        $isLimited = $this->input->post('is_limited');
+		$limitedUser = $this->input->post('limited_user');
+
+        if($isLimited == 'no'){
+            $limitedUser = 0;
+        }
+
+        $user_id = $this->session->userdata('user_id');
+
+		$insert['type']          = 'tradesman';
+		$insert['user_id'] 		 = $user_id;
+		$insert['code']          = $this->input->post('code');
+		$insert['is_limited']    = $isLimited;
+		$insert['limited_user']  = $limitedUser;
+		$insert['discount_type'] = $discountType;
+		$insert['discount']      = $discount;
+		$insert['status']        = $this->input->post('status');
+		
+		$run = $this->common_model->insert('promo_code',$insert);
+		if($run){
+			$this->session->set_flashdata('success','Coupon has been added successfully.');
+		}else{
+			$this->session->set_flashdata('error','You cannot add discount percentage more then 100%.');
+		}
+		
+		redirect('promo-code');
+	}
+	
+	public function edit_coupon($id){
+        if(!$id){
+    		$this->session->set_flashdata('error','Something went wrong.');
+        }
+
+		$this->form_validation->set_rules('discount_type','Discount Type','required');
+		$this->form_validation->set_rules('discount','Discount','required|numeric');
+		$this->form_validation->set_rules('is_limited','Is Limited','required');
+		$this->form_validation->set_rules('status','Status','required');
+		$this->form_validation->set_rules('code','Code','required');
+
+		if($this->input->post('is_limited') == 'yes'){
+			$this->form_validation->set_rules('limited_user','Limited User','required|numeric');
+		}
+
+		if ($this->form_validation->run()==false) {
+            $this->session->set_flashdata('error',validation_errors());
+		    redirect('promo-code');
+		}
+
+        $discountType = $this->input->post('discount_type');
+        $discount     = $this->input->post('discount');
+
+        if($discountType == 'percentage' && $discount > 100){
+            $this->session->set_flashdata('error','You cannot add discount percentage more then 100%.');
+		    redirect('promo-code');
+        }
+		
+		$isLimited   = $this->input->post('is_limited');
+		$limitedUser = $this->input->post('limited_user');
+
+        if($isLimited == 'no'){
+            $limitedUser = 0;
+        }
+
+		$insert['code']          = $this->input->post('code');
+		$insert['is_limited']    = $isLimited;
+		$insert['limited_user']  = $limitedUser;
+		$insert['discount_type'] = $discountType;
+		$insert['discount']      = $discount;
+		$insert['status']        = $this->input->post('status');
+
+		$this->common_model->update_data('promo_code',['id' => $id],$insert);
+		$this->session->set_flashdata('success','Coupon has been updated successfully.');
+        redirect('promo-code');
+	}
+	
+	public function delete_coupons($id=null){
+		$insert['id'] = $id;
+		$this->common_model->delete($insert,'promo_code');
+		$this->session->set_flashdata('success','Coupon has been deleted successfully.');
+        redirect('promo-code');
+	}
+
+	public function submitModification(){
+		$oId = $this->input->post('order_id');
+		$tuser_id = $this->input->post('tradesman_id');
+		$homeowner_id = $this->input->post('homeowner_id');
+		
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		if(!empty($serviceOrder)){
+			$input['status'] = 'request_modification';
+			$input['status_update_time'] = date('Y-m-d H:i:s');
+			$this->common_model->update('service_order',array('id'=>$oId),$input);
+
+			/*Manage Order History*/
+            $insert1 = [
+	            'user_id' => $tuser_id,
+	            'service_id' => $serviceOrder['service_id'],
+	            'order_id' => $oId,
+	            'status' => 'request_modification'
+	        ];
+	        $this->common_model->insert('service_order_status_history', $insert1);
+
+			$insert['sender'] = $homeowner_id;
+			$insert['receiver'] = $tuser_id;			
+			$insert['order_id'] = $oId;
+			$insert['description'] = $this->input->post('modification_decription');
+			$run = $this->common_model->insert('order_submit_conversation', $insert);
+			if($run){
+				$mImgs = !empty($this->input->post('multiModificationImgIds')) ? explode(',', $this->input->post('multiModificationImgIds')) : [];
+
+				$input1['conversation_id'] = $run;
+				if(count($mImgs) > 0){
+					foreach($mImgs as $imgId){					
+						$this->common_model->update('order_submit_attachments',array('id'=>$imgId),$input1);
+					}
+				}
+
+				/*Tradesman Email Code*/
+                $homeOwner = $this->common_model->GetSingleData('users',['id'=>$homeowner_id]);
+                $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
+                $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+                $newStatus = ucwords(str_replace('_',' ',$status));                
+
+                if($tradesman){
+                    $subject = "You received request of modification for order number: “".$serviceOrder['order_id']."”"; 
+                    $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';     
+                    $html .= '<p style="margin:0;padding:10px 0px"><b>Description:</b></p>';
+                    $html .= '<p style="margin:0;padding:10px 0px">'. $this->input->post('modification_decription').'</p>';                    
+                    $this->common_model->send_mail($tradesman['email'],$subject,$html);
+                }		        
+			}
+			echo json_encode(['status' => 'success', 'message' => 'Modification Request Submited']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Modification Request Not Submitted']);
+		}
 	}
 }

@@ -123,6 +123,12 @@ $settings = $this->common_model->get_all_data('admin');
 			</div>
 		<?php } ?>
 
+		<?php if($this->session->userdata('type')==1){ ?>
+			<p>
+				<a href="<?php echo base_url('promo-code'); ?>" class="active"><span><i class="fa fa-gift" aria-hidden="true"></i></span> Promo Code</a>
+			</p>
+		<?php } ?>
+
 		<?php if($page_name=='dashboard'){ ?>
       <p>
 				<a href="<?php echo base_url('dashboard'); ?>" class="active"><span><i class="fa fa-home" aria-hidden="true"></i></span> My Account</a>

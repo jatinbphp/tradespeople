@@ -40,7 +40,7 @@
 								</div>
 								<div class="slider slider-nav">
 									<?php
-									echo $this->common_model->make_all_image($service_details['image'], $service_details['video'], $service_images);										
+									echo $this->common_model->make_all_image($service_details['image'], $service_details['video'], $service_images);
 									?>									
 								</div>
 							</div>
@@ -380,7 +380,7 @@
 														<?php endif; ?>	
 														<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>"> 
 														
-														<input class="orderBtn btn btn-warning btn-lg " type="submit" id="orderBasicBtn" data-package="basic" value="Continue (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
+														<input class="orderBtn btn btn-warning btn-lg " type="submit" id="orderBasicBtn" data-package="basic" value="Buy Now (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
 													</form>
 												</div>
 
@@ -440,7 +440,7 @@
 														
 														<input type="hidden" name="main_price" class="main_price" id="main_price_standard" value="<?php echo isset($package_data) ? $package_data->standard->price : 0;?>"> 
 														
-														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderStandardBtn" data-package="standard" value="Continue (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>)">
+														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderStandardBtn" data-package="standard" value="Buy Now (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->standard->price,2)) : '';?>)">
 													</form>
 												</div>
 
@@ -499,7 +499,7 @@
 														
 														<input type="hidden" name="main_price" class="main_price" id="main_price_premium" value="<?php echo isset($package_data) ? $package_data->premium->price : 0;?>"> 
 														
-														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderPremiumBtn" data-package="premium" value="Continue (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>)">
+														<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderPremiumBtn" data-package="premium" value="Buy Now (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->premium->price,2)) : '';?>)">
 													</form>
 												</div>
 											</div>
@@ -562,7 +562,7 @@
 											
 											<input type="hidden" name="main_price" class="main_price" id="main_price_basic" value="<?php echo isset($package_data) ? $package_data->basic->price : 0;?>">
 											
-											<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderBasicBtn" data-package="basic" value="Continue (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
+											<input class="orderBtn btn btn-warning btn-lg" type="submit" id="orderBasicBtn" data-package="basic" value="Buy Now (<?php echo isset($package_data) ? '£'.trim(number_format($package_data->basic->price,2)) : '';?>)">
 										</form>
 									<?php endif; ?>
 								</div>
@@ -988,7 +988,7 @@
 			});
 
 			var newPrice = parseFloat(mainPrice) + parseFloat(totalPrice);
-			var priceText = 'Continue (£' + newPrice.toFixed(2) + ')';
+			var priceText = 'Buy Now (£' + newPrice.toFixed(2) + ')';
 			orderBtn.val(priceText);
 			mainPriceInput.closest('form').find('.selected_exsIds').val(selectedIds.join(','));	        
 		});

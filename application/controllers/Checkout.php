@@ -272,6 +272,7 @@ class Checkout extends CI_Controller
 
 			$pmtype = !in_array($payment_method, ['card','wallet']) ? 'card' : $payment_method;
 
+			$insert['order_id'] = $this->common_model->generateOrderId(13);
 			$insert['user_id'] = $uId;
 			$insert['service_id'] = $service_id;
 			$insert['ex_services'] = rtrim($extraService,',');
@@ -293,11 +294,24 @@ class Checkout extends CI_Controller
 			$newOrder = $this->common_model->insert('service_order', $insert);
 
 			if($newOrder){
+				
+				/*Update Promo Code*/
+				if($promo_code['is_limited'] == 'yes'){
+					$exceeded_limit = $promo_code['exceeded_limit'] + 1;
+					$pUpdate['exceeded_limit'] = $exceeded_limit;
+
+					if($exceeded_limit == $promo_code['limited_user']){
+						$pUpdate['status'] = 'inactive';
+					}
+					$this->common_model->update('promo_code',array('id'=>$promo_code['id']),$pUpdate);
+				}
 
 				/*Update User Wallet*/
-				$update12['u_wallet']=$users['u_wallet']-$mainPrice;
-				$update12['spend_amount']=$users['spend_amount']+$mainPrice;						
-				$this->common_model->update('users',array('id'=>$uId),$update12);
+				if($payment_method == 'wallet'){
+					$update12['u_wallet']=$users['u_wallet']-$mainPrice;
+					$update12['spend_amount']=$users['spend_amount']+$mainPrice;	
+					$this->common_model->update('users',array('id'=>$uId),$update12);	
+				}				
 									
 				$tr_message='£'.$mainPrice.'  has been debited to your wallet for ordering a service <a href="'.site_url().'service/'.$service_id.'">'.$service_details['service_name'].'.</a>';
 					
