@@ -7,7 +7,7 @@
                 <div class="form-group">
                     <label class="col-md-12 control-label" for="">Main Category</label>
                     <div class="col-md-12">
-                        <select class="form-control input-md mainCategory" name="category" data-section="subcategories" id="category" <?php echo isset($serviceData) && ($serviceData['status_approved']==1) ? 'disabled' : ''; ?>>
+                        <select class="form-control input-md mainCategory" name="category" data-section="subcategories" id="category" <?php //echo isset($serviceData) && ($serviceData['status_approved']==1) ? 'disabled' : ''; ?>>
                             <option value="">Select Category</option>
                             <?php $selected = $serviceData['category'] ?? '' ?>
                             <?php foreach ($category as $cat) { ?>
@@ -288,9 +288,9 @@
         var sectionId = $(this).attr('data-section');
         var status_approved = '';
         <?php 
-        if(isset($serviceData) && $serviceData['status_approved']==1): ?>
-            var status_approved = 1;
-        <?php endif ?>
+        //if(isset($serviceData) && $serviceData['status_approved']==1): ?>
+            //var status_approved = 1;
+        <?php //endif ?>
 
         $('.categories').empty();
         $('.categories_div').addClass('hidden');
@@ -316,9 +316,9 @@
 
         var status_approved = '';
         <?php 
-        if(isset($serviceData) && $serviceData['status_approved']==1): ?>
-            var status_approved = 1;
-        <?php endif ?>
+        //if(isset($serviceData) && $serviceData['status_approved']==1): ?>
+            //var status_approved = 1;
+        <?php //endif ?>
 
         $.ajax({
             url:site_url+'users/getSubCategory',
@@ -351,9 +351,9 @@
 
         var status_approved = '';
         <?php 
-        if(isset($serviceData) && $serviceData['status_approved']==1): ?>
-            var status_approved = 1;
-        <?php endif ?>
+        //if(isset($serviceData) && $serviceData['status_approved']==1): ?>
+            //var status_approved = 1;
+        <?php //endif ?>
 
         $.ajax({
             url:site_url+'users/getSubCategory',

@@ -101,7 +101,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<td><?php echo '£'.number_format($lists['price'],2); ?></td>
 										<td><?php echo $lists['created_at']; ?></td>
 										<td>
-											<select class="form-control serviceStatus" data-id="<?php echo $lists['id']; ?>" <?php echo $lists['status'] == 'active' ? 'disabled' : ''; ?>>
+											<select class="form-control serviceStatus" data-id="<?php echo $lists['id']; ?>" <?php //echo $lists['status'] == 'active' ? 'disabled' : ''; ?>>
 												<option value="approval_pending" <?php echo $lists['status'] == 'approval_pending' ? 'selected' : ''; ?> >Approval Pending</option>
 
 												<option value="required_modification" <?php echo $lists['status'] == 'required_modification' ? 'selected' : ''; ?>>Required Modification</option>
@@ -110,7 +110,9 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 
 												<option value="paused" <?php echo $lists['status'] == 'paused' ? 'selected' : ''; ?>>Paused</option>
 												
-												<option value="active" <?php echo $lists['status'] == 'active' ? 'selected' : ''; ?>>Approved</option>												
+												<option value="active" <?php echo $lists['status'] == 'active' ? 'selected' : ''; ?>>Approved</option>
+
+												<option value="inactive" <?php echo $lists['status'] == 'inactive' ? 'selected' : ''; ?>>Inactive</option>												
 											</select>	
 
 										</td>
