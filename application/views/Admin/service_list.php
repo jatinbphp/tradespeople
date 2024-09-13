@@ -306,26 +306,27 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
   	var status = $(this).val();
   	var sId = $(this).data('id');
 
-  	//var userConfirmed = confirm('Are you sure to update a status of the service?');
+  	if(status == 'required_modification' || status == 'denied'){
+		if(status == 'required_modification'){
+			$('#reasonField').text('Reason for required modification');
+			$('#reason_modal_title').text('Reason For Required Modification');
+		}else{
+			$('#reasonField').text('Reason for denied');
+			$('#reason_modal_title').text('Reason For Denied');
+		}
+		var sId = $('#service_id').val(sId);
+		var status = $('#service_status').val(status);
+		$('#service_reason').modal('show');  			
+	} else {
 
-  	//if (userConfirmed) {
-  		if(status == 'required_modification' || status == 'denied'){
-  			if(status == 'required_modification'){
-  				$('#reasonField').text('Reason for required modification');
-  				$('#reason_modal_title').text('Reason For Required Modification');
-  			}else{
-  				$('#reasonField').text('Reason for denied');
-  				$('#reason_modal_title').text('Reason For Denied');
-  			}
-  			var sId = $('#service_id').val(sId);
-  			var status = $('#service_status').val(status);
-  			$('#service_reason').modal('show');  			
-  		}else{
-				updateServiceStatus(sId, status, '');
-  		}      
-    /*} else {
-    	$(this).prop('selectedIndex', 0);
-    }*/
+		var userConfirmed = confirm('Are you sure to update a status of the service?');
+		
+	  	if (userConfirmed) {
+			updateServiceStatus(sId, status, '');
+	    } else {
+	    	$(this).prop('selectedIndex', 0);
+	    }
+   	}
   });
 
   function submitReason(){

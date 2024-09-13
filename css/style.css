@@ -4004,7 +4004,7 @@ a:focus
     vertical-align: middle;
     /* border: 5px solid #f6f6f6; */
     border-top: 0;
-    flex-grow: 1;
+/*    flex-grow: 1;*/
     list-style: none;
 }
 .verification-checklist ul.list li:first-of-type{
@@ -10067,6 +10067,44 @@ button.switch-month:hover {
     margin: 0;
     padding: 0;
     text-align: left;
+    position: relative;
+}
+.verification-checklist.order-metrics .list li:after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    width: 0; 
+    height: 0;
+    opacity: 0;
+    left: calc(50% - 4px); 
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #fe8a0f;
+    transition: ease 0.5s;
+}
+.verification-checklist.order-metrics .list li.active:after {
+    opacity: 1;
+}
+.verification-checklist.order-metrics .list li:before {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    width: 0; 
+    height: 2px;
+    left: 0; 
+    background-color: #fe8a0f;
+    transition: ease 0.5s;
+    z-index: 1;
+}
+.verification-checklist.order-metrics .list li.active:before {
+    width: 100%;
+}
+.verification-checklist.order-metrics .list li.active a {
+    color: #fe8a0f;
+    font-weight: 700;
+}
+.verification-checklist.order-metrics .list li.active .bg-yellow {
+    background-color: #fe8a0f;
 }
 
 .verification-checklist.order-metrics .list li span { 
@@ -10872,4 +10910,29 @@ input:checked + .switch-slider:before {
 
 .slider-nav .slick-track{
     margin-left: 0;
+}
+.delivery-address-radio {
+    flex-wrap: wrap;
+}
+.delivery-address {
+    margin-right: 10px !important;
+}
+.delivery-address-radio .address {
+    width: 100%;
+    padding-left: 32px;
+    padding-right: 32px;
+    display: none;
+    transition: ease 0.5s;
+}
+.delivery-address-radio input[type="radio"]:checked~.address {
+    display: block;
+}
+.delivery-address-radio .address .form-group {
+    margin-bottom: 15px;
+}
+.delivery-address-radio .address .form-group label {
+    font-weight: normal;
+}
+.delivery-address-radio .address-form {
+    padding-top: 10px;
 }

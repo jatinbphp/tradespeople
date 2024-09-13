@@ -78,6 +78,67 @@
 					<h2 class="title">Select your payment method</h2>
 					<div class="row">
 						<div class="col-sm-12">
+							<h4>Delivery Address</h4>
+							<div class="form__radio delivery-address-radio">
+								<input id="" name="Address" class="delivery-address" type="radio" value="" checked>
+								<label for="address">Delivery Address</label>
+								<div class="address">
+									<h4>Delivery Address</h4>
+									<p>Nxsolteam <br/> Raj Complex, <br/> 123564789 - Rajkot, Canada, United Kingdom </p>
+									<p><span>Call:</span> <a href="tel:1234567890">1234567890</a></p>
+								</div>
+							</div>
+
+							<div class="form__radio delivery-address-radio">
+								<input id="" name="Address" class="delivery-address" type="radio" value="">
+								<label for="address">Add a New Address</label>
+								<div class="address address-form">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+            									<label class="">Full Name :</label>
+    											<input class="form-control" placeholder="Full Name" name="" type="text">
+    										</div>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+            									<label class="">Address :</label>
+    											<input class="form-control" placeholder="Address" name="" type="text">
+    										</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+            									<label class="">City / Town :</label>
+    											<input class="form-control" placeholder="City / Town" name="" type="text">
+    										</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+            									<label class="">Zip / Pincode :</label>
+    											<input class="form-control" placeholder="Zip / Pincode" name="" type="text">
+    										</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+            									<label class="">Phone Number :</label>
+    											<input class="form-control" placeholder="Phone Number" name="" type="text">
+    										</div>
+										</div>
+
+									</div>
+									<div class="form-group">
+										<button class="btn btn-warning sendbtn1" type="submit" id="">Save</button>
+									</div>
+
+									
+
+
+								</div>
+							</div>
+
 							<?php if(isset($userCardData) && count($userCardData)): ?>
 								<h4>Your Saved Card</h4>
                                     <?php $i=1; ?>

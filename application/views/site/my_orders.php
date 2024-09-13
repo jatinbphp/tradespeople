@@ -50,10 +50,10 @@
                                 <div class="verification-checklist order-metrics mb-5">
                                     <ul class="list">
                                         <?php foreach($statusArr as $list): ?>
-                                            <li>
+                                            <li class="<?php echo $list == $_GET['status'] ? 'active' : ''; ?>">
                                                 <a href="<?php echo base_url().'my-orders?status='.$list; ?>">
                                                     <?php echo ucfirst($list); ?> 
-                                                    <span class="<?php echo $list == $_GET['status'] ? 'bg-green text-white' : 'bg-gray'; ?>">
+                                                    <span class="<?php echo $list == $_GET['status'] ? 'bg-yellow text-white' : 'bg-gray'; ?>">
                                                         <?php echo $totalStatusOrder['total_'.$list]; ?>
                                                     </span>
                                                 </a>
