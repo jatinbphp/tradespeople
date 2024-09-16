@@ -68,76 +68,108 @@
 					</div>
 				<?php endif; ?>
 
-				<div class="col-sm-12">
-                    <div class="form-group">
-                        <span id='formErrors' class='text-danger'></span>
-                    </div>
-                </div>
-
 				<div class="col-sm-8">
-					<h2 class="title">Select your payment method</h2>
-					<div class="row">
-						<div class="col-sm-12">
-							<h4>Delivery Address</h4>
-							<div class="form__radio delivery-address-radio">
-								<input id="" name="Address" class="delivery-address" type="radio" value="" checked>
-								<label for="address">Delivery Address</label>
-								<div class="address">
-									<h4>Delivery Address</h4>
-									<p>Nxsolteam <br/> Raj Complex, <br/> 123564789 - Rajkot, Canada, United Kingdom </p>
-									<p><span>Call:</span> <a href="tel:1234567890">1234567890</a></p>
+					<div class="addressDiv checkout-form mb-2 p-5">
+						<div class="row">
+							<h2 class="title">Task Location Address</h2>
+							<div class="">
+								<p>If the task needs to be performed at a physical localtion, Please enter the address where the tasker should come to complete the job.</p>
+
+								<div class="row">
+									<div class="col-sm-4">
+										<div class="form-group form__radio">
+											<div class="form-check" style="margin: 0;">
+												<input class="form-check-input" checked type="radio" name="address_type" value="yes" style="margin-right:10px;">
+												<label class="form-check-label">Add Address</label>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-4">
+										<div class="form-group form__radio">
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="address_type" value="no" style="margin-right:10px;">
+												<label class="form-check-label">Skip Address</label>
+											</div>
+										</div>
+									</div>
 								</div>
-							</div>
 
-							<div class="form__radio delivery-address-radio">
-								<input id="" name="Address" class="delivery-address" type="radio" value="">
-								<label for="address">Add a New Address</label>
-								<div class="address address-form">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group">
-            									<label class="">Full Name :</label>
-    											<input class="form-control" placeholder="Full Name" name="" type="text">
-    										</div>
+								<?php 
+								if(!empty($task_addresses)) { 
+									foreach ($task_addresses as $key => $value) { ?>
+										<div class="form__radio delivery-address-radio">
+											<input name="select_address" class="delivery-address" type="radio" value="<?php echo $value['id']; ?>" <?php if($key==0){ echo 'checked'; } ?>>
+											<label for="address"><?php echo $value['title']; ?></label>
+											<div class="address">
+												<p><?php echo $value['full_name']; ?> <br/> <?php echo $value['address']; ?>, <br/> <?php echo $value['zip_code']; ?> - <?php echo $value['city']; ?> </p>
+												<p><span>Call:</span> <a href="tel:<?php echo $value['phone_number']; ?>"><?php echo $value['phone_number']; ?></a></p>
+											</div>
 										</div>
-										<div class="col-md-12">
-											<div class="form-group">
-            									<label class="">Address :</label>
-    											<input class="form-control" placeholder="Address" name="" type="text">
-    										</div>
+								<?php	
+									}
+								} ?>
+
+								<div class="form__radio delivery-address-radio">
+									<input name="select_address" class="delivery-address" type="radio" value="0">
+									<label for="address">Add a New Address</label>
+									<div class="address address-form">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group">
+	            									<label class="">Title :</label>
+	    											<input class="form-control" placeholder="Title" name="title" type="text">
+	    										</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+	            									<label class="">Full Name :</label>
+	    											<input class="form-control" placeholder="Full Name" name="full_name" type="text">
+	    										</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+	            									<label class="">Address :</label>
+	    											<input class="form-control" placeholder="Address" name="address" type="text">
+	    										</div>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-4">
+												<div class="form-group">
+	            									<label class="">City / Town :</label>
+	    											<input class="form-control" placeholder="City / Town" name="city" type="text">
+	    										</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+	            									<label class="">Zip / Pincode :</label>
+	    											<input class="form-control" placeholder="Zip / Pincode" name="zip_code" type="text">
+	    										</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+	            									<label class="">Phone Number :</label>
+	    											<input class="form-control" placeholder="Phone Number" name="phone_number" type="text">
+	    										</div>
+											</div>
 										</div>
 									</div>
-
-									<div class="row">
-										<div class="col-md-4">
-											<div class="form-group">
-            									<label class="">City / Town :</label>
-    											<input class="form-control" placeholder="City / Town" name="" type="text">
-    										</div>
-										</div>
-										<div class="col-md-4">
-											<div class="form-group">
-            									<label class="">Zip / Pincode :</label>
-    											<input class="form-control" placeholder="Zip / Pincode" name="" type="text">
-    										</div>
-										</div>
-										<div class="col-md-4">
-											<div class="form-group">
-            									<label class="">Phone Number :</label>
-    											<input class="form-control" placeholder="Phone Number" name="" type="text">
-    										</div>
-										</div>
-
-									</div>
-									<div class="form-group">
-										<button class="btn btn-warning sendbtn1" type="submit" id="">Save</button>
-									</div>
-
-									
-
-
 								</div>
+
+			                    <div class="form-group">
+			                        <span id='addressErrors' class='text-danger'></span>
+				               </div>
 							</div>
+						</div>
+					</div>
+
+					<div class="addressDiv checkout-form mb-2 p-5">
+						<div class="row">
+
+							<h2 class="title">Select your payment method</h2>
 
 							<?php if(isset($userCardData) && count($userCardData)): ?>
 								<h4>Your Saved Card</h4>
@@ -168,9 +200,7 @@
 								</svg>New Card</label>
 								
 							</div>
-							<!-- <p><b>Tradespeople Hub accepts all Visa, MasterCard and Maestro cards.</b></p> -->
-						</div>
-						<div class="col-sm-12">
+							
 							<div class="form__radio">
 								<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
 								<label for="wallet"><svg class="icon">
@@ -184,69 +214,76 @@
 							</div>
 							<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
 						</div>
-					</div>
-					<div id="card-detail" style="display:none; margin-bottom: 15px;">
-						<div class="form-group">
-							<div class="row">
-								<div class="col-sm-12">
-                                    <div class="form-group">
-                                        <span id='StripePaymentErrors' class='text-danger'></span>
-                                    </div>
-                                </div>
-
-								<div class="col-sm-12">
-									<label class="control-label">Card number</label>
-									<!-- <input type="text" class="form-control input-lg" minlength="16" maxlength="16" id="card-number-element" name="card" placeholder="0000 0000 0000 0000"> -->
-									<div class='form-control input-lg ' id="card-number-element"></div>
-									<span class='incomplete_number text-danger error-card'></span>
-								</div>
-							</div>
-						</div>
-						<!-- <div class="form-group">
-							<div class="row">
-								<div class="col-sm-12">
-									<label class="control-label">Name on card</label>
-									<input type="text" name="name" class="form-control input-lg" placeholder="Name on card">
-								</div>
-							</div>
-						</div> -->
-						<div class="form-group">
-							<div class="row">
-								<div class="col-sm-4">
-									<label class="control-label">Expiry date</label>
-									<!-- <input class="form-control input-lg" name="expiry" id="expiry" type="text" placeholder="MM/YY"> -->
-									<div class='form-control input-lg' id="card-expiry-element"></div>
-                                    <span class='incomplete_expiry invalid_expiry_year_past text-danger error-card'></span>
-								</div>
-								<div class="col-sm-4">
-									<label class="control-label">CVV <i class="fa fa-info-circle" aria-hidden="true"></i></label>
-									<!-- <input type="text" class="form-control input-lg" minlength="3" maxlength="4" id="cvc" name="cvc" placeholder="123"> -->
-									<div class='form-control input-lg' id="card-cvc-element"></div>
-                                    <span class='incomplete_cvc text-danger error-card'></span>
-								</div>
-								<div class="col-sm-4">
-                                    <div class="form-group">
-                                    	<label class="control-label">Postal Code</label>
-                                        <div class='form-control input-lg' id="postal-code-element"></div>
-                                        <span class='incomplete_zip text-danger error-card'></span>
-                                    </div>
-                                </div>
-							</div>
-						</div>
-						<?php if($this->session->userdata('user_id')):?>
+					
+						<div id="card-detail" style="display:none; margin-bottom: 15px;">
 							<div class="form-group">
 								<div class="row">
 									<div class="col-sm-12">
-										<div class="form-check">
-											<div class="check-box">
-												<input class="checkbox-effect" id="Save_Card" type="checkbox" value="Save-Card" name="save_card"/>
-												<label for="Save_Card">Save Card</label>
+	                                    <div class="form-group">
+	                                        <span id='StripePaymentErrors' class='text-danger'></span>
+	                                    </div>
+	                                </div>
+
+									<div class="col-sm-12">
+										<label class="control-label">Card number</label>
+										<!-- <input type="text" class="form-control input-lg" minlength="16" maxlength="16" id="card-number-element" name="card" placeholder="0000 0000 0000 0000"> -->
+										<div class='form-control input-lg ' id="card-number-element"></div>
+										<span class='incomplete_number text-danger error-card'></span>
+									</div>
+								</div>
+							</div>
+							<!-- <div class="form-group">
+								<div class="row">
+									<div class="col-sm-12">
+										<label class="control-label">Name on card</label>
+										<input type="text" name="name" class="form-control input-lg" placeholder="Name on card">
+									</div>
+								</div>
+							</div> -->
+							<div class="form-group">
+								<div class="row">
+									<div class="col-sm-4">
+										<label class="control-label">Expiry date</label>
+										<!-- <input class="form-control input-lg" name="expiry" id="expiry" type="text" placeholder="MM/YY"> -->
+										<div class='form-control input-lg' id="card-expiry-element"></div>
+	                                    <span class='incomplete_expiry invalid_expiry_year_past text-danger error-card'></span>
+									</div>
+									<div class="col-sm-4">
+										<label class="control-label">CVV <i class="fa fa-info-circle" aria-hidden="true"></i></label>
+										<!-- <input type="text" class="form-control input-lg" minlength="3" maxlength="4" id="cvc" name="cvc" placeholder="123"> -->
+										<div class='form-control input-lg' id="card-cvc-element"></div>
+	                                    <span class='incomplete_cvc text-danger error-card'></span>
+									</div>
+									<div class="col-sm-4">
+	                                    <div class="form-group">
+	                                    	<label class="control-label">Postal Code</label>
+	                                        <div class='form-control input-lg' id="postal-code-element"></div>
+	                                        <span class='incomplete_zip text-danger error-card'></span>
+	                                    </div>
+	                                </div>
+								</div>
+							</div>
+							<?php if($this->session->userdata('user_id')):?>
+								<div class="form-group">
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="form-check">
+												<div class="check-box">
+													<input class="checkbox-effect" id="Save_Card" type="checkbox" value="Save-Card" name="save_card"/>
+													<label for="Save_Card">Save Card</label>
+												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-						<?php endif; ?>
+							<?php endif; ?>
+						</div>
+
+						<div class="row">
+		                    <div class="form-group">
+		                        <span id='formErrors' class='text-danger'></span>
+		                    </div>			                
+		               </div>
 					</div>
 
 					<div class="form-group">
@@ -315,7 +352,7 @@
 							</div>
 							<ul>
 								<li>
-									<p>Price (per <?php echo lcfirst($service_details['price_per_type']); ?>)</p> 
+									<p>Price per <?php echo lcfirst($service_details['price_per_type']); ?></p> 
 									<b><?php echo '£'.number_format($package_price,2); ?></b>
 								</li>
 								<li>
@@ -623,9 +660,30 @@
 				return false
         	}
 	        
+	        var addressType = $('input[name="address_type"]:checked').val();
+	        if(addressType=='yes'){
+
+	        	var selectedAddress = $('input[name="select_address"]:checked').val();
+
+	        	if(selectedAddress==0){
+	        		var title = $('input[name="title"]').val();
+	        		var full_name = $('input[name="full_name"]').val();
+	        		var address = $('input[name="address"]').val();
+	        		var city = $('input[name="city"]').val();
+	        		var zip_code = $('input[name="zip_code"]').val();
+	        		var phone_number = $('input[name="phone_number"]').val();
+
+	        		if (title === '' || full_name === '' || address === '' || city === '' || zip_code === '' || phone_number === '') {
+					    $('#addressErrors').text('All address fields is required').parent('div').addClass('alert alert-danger');
+			            $('#addressErrors').fadeIn();
+			            return false;
+					}
+	        	}
+           	}
+
 	        if(pMethod != undefined){
+	        	
 	        	$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
-	        	$('#formErrors').closest('.col-sm-12').removeClass('mb-4');
 	            $('#formErrors').fadeOut();
 
 	        	/*swal({
@@ -646,7 +704,7 @@
 	    			$.ajax({
 		                url: '<?= site_url().'checkout/placeOrder'; ?>',
 		                type: 'POST',
-		                data: {'payment_method':pMethod, 'promo_code':promo_code},
+		                data: {'payment_method':pMethod, 'promo_code':promo_code, 'address_type':addressType, 'select_address':selectedAddress, 'title':title, 'full_name':full_name, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number},
 		                dataType: 'json',		                
 		                success: function(result) {
 		                	$('#loader').addClass('hide');
@@ -689,8 +747,11 @@
 		        	}			        	
 		        }
 	        }else{
+
+	        	$('#addressErrors').text('').parent('div').removeClass('alert alert-danger');
+	            $('#addressErrors').fadeOut();
+
 	    		$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
-	    		$('#formErrors').closest('.col-sm-12').addClass('mb-4');
 	            $('#formErrors').fadeIn();
 	            return false;
 	    	}
@@ -784,12 +845,29 @@
 	        var price = $('#totalPrice').text().trim();
             var mainPrice = price.replace("£", "");
 
+            var addressType = $('input[name="address_type"]:checked').val();
+        	var selectedAddress = $('input[name="select_address"]:checked').val();
+			var title = $('input[name="title"]').val();
+    		var full_name = $('input[name="full_name"]').val();
+    		var address = $('input[name="address"]').val();
+    		var city = $('input[name="city"]').val();
+    		var zip_code = $('input[name="zip_code"]').val();
+    		var phone_number = $('input[name="phone_number"]').val();
+
             var dataObj = {
                 payment_method: 'card',
                 payment_method_id: intentId,
                 promo_code: promo_code,
                 saveCard: saveCard,
                 mainPrice: mainPrice,
+                address_type: addressType,
+                select_address: selectedAddress,
+                title: title,
+                full_name: full_name,
+                address: address,
+                city: city,
+                zip_code: zip_code,
+                phone_number: phone_number,
             };
 
             $("#stripe-payment-success-3ds").modal('show');
@@ -833,12 +911,29 @@
 	            var price = $('#totalPrice').text().trim();
 	            var mainPrice = price.replace("£", "");
 
+	            var addressType = $('input[name="address_type"]:checked').val();
+	        	var selectedAddress = $('input[name="select_address"]:checked').val();
+				var title = $('input[name="title"]').val();
+	    		var full_name = $('input[name="full_name"]').val();
+	    		var address = $('input[name="address"]').val();
+	    		var city = $('input[name="city"]').val();
+	    		var zip_code = $('input[name="zip_code"]').val();
+	    		var phone_number = $('input[name="phone_number"]').val();
+
 	            var dataObj = {
 	                payment_method_id: result.paymentMethod.id,
 	                payment_method: pMethod,
 	                promo_code: promo_code,
 	                saveCard: saveCard,
 	                mainPrice: mainPrice,
+	                address_type: addressType,
+	                select_address: selectedAddress,
+	                title: title,
+	                full_name: full_name,
+	                address: address,
+	                city: city,
+	                zip_code: zip_code,
+	                phone_number: phone_number,
 	            };
 
 	            $.ajax({
@@ -1030,6 +1125,29 @@
 			window.location.href = '<?php echo base_url(""); ?>';
         });
 	}
+
+	$(document).ready(function() {
+	    // On page load, check the selected radio button and toggle the visibility accordingly
+	    toggleAddressSection();
+
+	    // Listen for changes on the radio buttons
+	    $('input[name="address_type"]').change(function() {
+	        toggleAddressSection();
+	    });
+
+	    function toggleAddressSection() {
+	        // Check which radio button is selected
+	        var selectedValue = $('input[name="address_type"]:checked').val();
+	        
+	        if (selectedValue === 'yes') {
+	            // Show the address section
+	            $('.delivery-address-radio').show();
+	        } else {
+	            // Hide the address section
+	            $('.delivery-address-radio').hide();
+	        }
+	    }
+	});
 
 </script>
 <?php include ("include/footer.php") ?>

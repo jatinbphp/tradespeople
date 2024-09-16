@@ -3818,4 +3818,10 @@ class Common_model extends CI_Model
 
 	    return $oId;
 	}
+
+	public function getTaskAddresses($user_id){
+		$this->db->where('user_id', $user_id);
+		$query = $this->db->get('task_addresses');
+		return $query->result_array();
+	}
 }

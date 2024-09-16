@@ -99,6 +99,8 @@ class Checkout extends CI_Controller
 		$data['package_price'] = $package_data[$cartData['package_type']]['price'];
 		$data['package_description'] = $package_data[$cartData['package_type']]['description'];
 		$data['delivery_date'] = $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']);
+		$data['task_addresses'] = $this->common_model->getTaskAddresses($uId);
+
 		$this->load->view('site/checkout',$data);
 	}
 
@@ -180,6 +182,27 @@ class Checkout extends CI_Controller
 		return $data;
 	}
 
+	public function addAddresssToOrder($data){
+		if ($data['address_type'] == 'yes') {
+		    if ($data['select_address'] > 0) {
+		    	return $data['select_address'];
+		    } else {
+		    	$data1 = array(
+					'user_id'=>$this->session->userdata('user_id'), 
+					'title'=>$data['title'], 
+					'full_name'=>$data['full_name'],
+					'address'=>$data['address'],
+					'city'=>$data['city'],
+					'zip_code'=>$data['zip_code'],
+					'phone_number'=>$data['phone_number'],
+				);				 
+				return $this->common_model->insert('task_addresses',$data1);
+		    }
+		}
+
+		return 0;
+	}
+
 	public function placeOrder(){
 		if(in_array($this->session->userdata('type'),[1,3])){
 			redirect('dashboard');
@@ -192,6 +215,8 @@ class Checkout extends CI_Controller
     	}
 
 		$this->form_validation->set_rules('payment_method','Payment Method','required');
+
+		$task_address_id = $this->addAddresssToOrder($this->input->post());
 				
 		if ($this->form_validation->run()==false) {
 			$data['status'] = 0;
@@ -291,6 +316,7 @@ class Checkout extends CI_Controller
 			$insert['status'] = 'placed';
 			$insert['date'] = date('Y-m-d', strtotime($cartData['date']));
 			$insert['time'] = $cartData['time'];
+			$insert['task_address_id'] = $task_address_id;
 			$newOrder = $this->common_model->insert('service_order', $insert);
 
 			if($newOrder){
