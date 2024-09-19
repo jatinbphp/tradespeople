@@ -64,6 +64,7 @@ $route['category/(:any)/(:any)']      = 'home/categoryDetail/$1/$2';
 $route['category/(:any)/(:any)/(:any)']      = 'home/categoryDetail/$1/$2/$3';
 $route['checkout']		       = 'home/checkout';
 $route['serviceCheckout']		= 'checkout/serviceCheckout';
+$route['submitRequirements']		= 'checkout/submitRequirements';
 $route['thakyou']		= 'checkout/thankyou';
 
 $route['affiliate']           = 'home/view_affiliate';

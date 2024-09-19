@@ -50,7 +50,11 @@
 </div>
 <div class="checkout-page">
 	<div class="container">
-		<div class="row checkout-form">
+
+		
+
+		<div class="checkout-form">
+		<div class="row">
 			<form action="<?= site_url().'checkout/placeOrder'; ?>" id="checkoutForm" method="post">
 				<input type="hidden" name="service_id" value="<?php echo $service_details['id']; ?>">
 				<input type="hidden" name="ex_service_id" value="<?php echo $exIds; ?>">
@@ -68,23 +72,25 @@
 					</div>
 				<?php endif; ?>
 
+
+
 				<div class="col-sm-8">
-					<div class="addressDiv checkout-form mb-2 p-5">
-						<div class="row">
+					<div class="addressDiv checkout-form mb-4 p-4">
+						
 							<h2 class="title">Task Location Address</h2>
 							<div class="">
 								<p>If the task needs to be performed at a physical localtion, Please enter the address where the tasker should come to complete the job.</p>
 
 								<div class="row">
-									<div class="col-sm-4">
+									<div class="col-sm-6">
 										<div class="form-group form__radio">
 											<div class="form-check" style="margin: 0;">
 												<input class="form-check-input" checked type="radio" name="address_type" value="yes" style="margin-right:10px;">
-												<label class="form-check-label">Add Address</label>
+												<label class="form-check-label">Select / New Address</label>
 											</div>
 										</div>
 									</div>
-									<div class="col-sm-4">
+									<div class="col-sm-6">
 										<div class="form-group form__radio">
 											<div class="form-check">
 												<input class="form-check-input" type="radio" name="address_type" value="no" style="margin-right:10px;">
@@ -99,34 +105,18 @@
 									foreach ($task_addresses as $key => $value) { ?>
 										<div class="form__radio delivery-address-radio">
 											<input name="select_address" class="delivery-address" type="radio" value="<?php echo $value['id']; ?>" <?php if($key==0){ echo 'checked'; } ?>>
-											<label for="address"><?php echo $value['title']; ?></label>
 											<div class="address">
-												<p><?php echo $value['full_name']; ?> <br/> <?php echo $value['address']; ?>, <br/> <?php echo $value['zip_code']; ?> - <?php echo $value['city']; ?> </p>
-												<p><span>Call:</span> <a href="tel:<?php echo $value['phone_number']; ?>"><?php echo $value['phone_number']; ?></a></p>
+												<p><?php echo $value['address']; ?>, <?php echo $value['zip_code']; ?> - <?php echo $value['city']; ?>, <a href="tel:<?php echo $value['phone_number']; ?>"><?php echo $value['phone_number']; ?></a> </p>
 											</div>
 										</div>
 								<?php	
 									}
 								} ?>
 
-								<div class="form__radio delivery-address-radio">
+								<div class="form__radio delivery-address-radio add-new-delivery-address-radio">
 									<input name="select_address" class="delivery-address" type="radio" value="0">
 									<label for="address">Add a New Address</label>
 									<div class="address address-form">
-										<div class="row">
-											<div class="col-md-6">
-												<div class="form-group">
-	            									<label class="">Title :</label>
-	    											<input class="form-control" placeholder="Title" name="title" type="text">
-	    										</div>
-											</div>
-											<div class="col-md-6">
-												<div class="form-group">
-	            									<label class="">Full Name :</label>
-	    											<input class="form-control" placeholder="Full Name" name="full_name" type="text">
-	    										</div>
-											</div>
-										</div>
 										<div class="row">
 											<div class="col-md-12">
 												<div class="form-group">
@@ -145,8 +135,8 @@
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
-	            									<label class="">Zip / Pincode :</label>
-	    											<input class="form-control" placeholder="Zip / Pincode" name="zip_code" type="text">
+	            									<label class="">Postcode :</label>
+	    											<input class="form-control" placeholder="Postcode" name="zip_code" type="text">
 	    										</div>
 											</div>
 											<div class="col-md-4">
@@ -163,11 +153,11 @@
 			                        <span id='addressErrors' class='text-danger'></span>
 				               </div>
 							</div>
-						</div>
+						
 					</div>
 
-					<div class="addressDiv checkout-form mb-2 p-5">
-						<div class="row">
+					<div class="addressDiv checkout-form mb-4 p-4">
+						
 
 							<h2 class="title">Select your payment method</h2>
 
@@ -213,7 +203,7 @@
 								</svg>Wallet</label>								
 							</div>
 							<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
-						</div>
+						
 					
 						<div id="card-detail" style="display:none; margin-bottom: 15px;">
 							<div class="form-group">
@@ -419,6 +409,8 @@
 				</div>
 			</form>
 		</div>
+		</div>
+
 	</div>
 </div>
 
@@ -666,14 +658,12 @@
 	        	var selectedAddress = $('input[name="select_address"]:checked').val();
 
 	        	if(selectedAddress==0){
-	        		var title = $('input[name="title"]').val();
-	        		var full_name = $('input[name="full_name"]').val();
 	        		var address = $('input[name="address"]').val();
 	        		var city = $('input[name="city"]').val();
 	        		var zip_code = $('input[name="zip_code"]').val();
 	        		var phone_number = $('input[name="phone_number"]').val();
 
-	        		if (title === '' || full_name === '' || address === '' || city === '' || zip_code === '' || phone_number === '') {
+	        		if (address === '' || city === '' || zip_code === '' || phone_number === '') {
 					    $('#addressErrors').text('All address fields is required').parent('div').addClass('alert alert-danger');
 			            $('#addressErrors').fadeIn();
 			            return false;
@@ -704,7 +694,7 @@
 	    			$.ajax({
 		                url: '<?= site_url().'checkout/placeOrder'; ?>',
 		                type: 'POST',
-		                data: {'payment_method':pMethod, 'promo_code':promo_code, 'address_type':addressType, 'select_address':selectedAddress, 'title':title, 'full_name':full_name, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number},
+		                data: {'payment_method':pMethod, 'promo_code':promo_code, 'address_type':addressType, 'select_address':selectedAddress, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number},
 		                dataType: 'json',		                
 		                success: function(result) {
 		                	$('#loader').addClass('hide');
@@ -847,8 +837,6 @@
 
             var addressType = $('input[name="address_type"]:checked').val();
         	var selectedAddress = $('input[name="select_address"]:checked').val();
-			var title = $('input[name="title"]').val();
-    		var full_name = $('input[name="full_name"]').val();
     		var address = $('input[name="address"]').val();
     		var city = $('input[name="city"]').val();
     		var zip_code = $('input[name="zip_code"]').val();
@@ -862,8 +850,6 @@
                 mainPrice: mainPrice,
                 address_type: addressType,
                 select_address: selectedAddress,
-                title: title,
-                full_name: full_name,
                 address: address,
                 city: city,
                 zip_code: zip_code,
@@ -913,8 +899,6 @@
 
 	            var addressType = $('input[name="address_type"]:checked').val();
 	        	var selectedAddress = $('input[name="select_address"]:checked').val();
-				var title = $('input[name="title"]').val();
-	    		var full_name = $('input[name="full_name"]').val();
 	    		var address = $('input[name="address"]').val();
 	    		var city = $('input[name="city"]').val();
 	    		var zip_code = $('input[name="zip_code"]').val();
@@ -928,8 +912,6 @@
 	                mainPrice: mainPrice,
 	                address_type: addressType,
 	                select_address: selectedAddress,
-	                title: title,
-	                full_name: full_name,
 	                address: address,
 	                city: city,
 	                zip_code: zip_code,

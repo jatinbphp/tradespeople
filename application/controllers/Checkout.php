@@ -104,6 +104,24 @@ class Checkout extends CI_Controller
 		$this->load->view('site/checkout',$data);
 	}
 
+	public function submitRequirements(){
+		if(in_array($this->session->userdata('type'),[1,3])){
+			redirect('dashboard');
+		}
+
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+      		echo json_encode($json);
+      		exit;
+    	}
+
+		$uId = $this->session->userdata('user_id');
+
+		$data = [];
+
+		$this->load->view('site/submit-requirements',$data);
+	}
+
 	public function checkPromoCode(){
 		if(!$this->session->userdata('user_id')){
 			$json['status'] = 2;
@@ -189,8 +207,6 @@ class Checkout extends CI_Controller
 		    } else {
 		    	$data1 = array(
 					'user_id'=>$this->session->userdata('user_id'), 
-					'title'=>$data['title'], 
-					'full_name'=>$data['full_name'],
 					'address'=>$data['address'],
 					'city'=>$data['city'],
 					'zip_code'=>$data['zip_code'],

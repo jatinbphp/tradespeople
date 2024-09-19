@@ -9789,7 +9789,7 @@ button.switch-month:hover {
 }
 .checkout-form {
     border: 1px solid #efeff0;
-    padding: 15px 0;
+    padding: 15px;
 }
 .checkout-form .title {
     margin-top: 0;
@@ -10910,21 +10910,15 @@ input:checked + .switch-slider:before {
     margin-left: 0;
 }
 .delivery-address-radio {
-    flex-wrap: wrap;
     margin-top: 15px;
+    align-items: flex-start;
 }
 .delivery-address {
     margin-right: 10px !important;
 }
 .delivery-address-radio .address {
     width: 100%;
-    padding-left: 32px;
-    padding-right: 32px;
-    display: none;
     transition: ease 0.5s;
-}
-.delivery-address-radio input[type="radio"]:checked~.address {
-    display: block;
 }
 .delivery-address-radio .address .form-group {
     margin-bottom: 15px;
@@ -10934,4 +10928,122 @@ input:checked + .switch-slider:before {
 }
 .delivery-address-radio .address-form {
     padding-top: 10px;
+}
+.add-new-delivery-address-radio {
+    flex-wrap: wrap;
+}
+.add-new-delivery-address-radio .address.address-form {
+    padding-left: 32px;
+    padding-right: 32px;
+    display: none;
+    transition: ease 0.5s;
+}
+
+.add-new-delivery-address-radio input[type="radio"]:checked~ .address.address-form {
+    display: block;
+}
+
+
+.submit-requirements {
+    border: 1px solid #efeff0;
+}
+.submit-requirements .submit-title {
+    margin: 0;
+    padding: 15px;
+    background: #f1f1f1;
+}
+.submit-requirements h4 {
+    font-weight: 600;
+}
+.submit-requirements .form-check label:hover {
+    background-color: #fff;
+}
+.submit-requirements label {
+    font-weight: normal;
+    padding: 0;
+}
+.submit-requirements textarea {
+    width: 100%;
+    border: 1px solid #efeff0;
+}
+.submit-requirements .btn-group-div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    align-items: center;
+}
+.submit-requirements .btn-group-div p {
+    margin: 0;
+}
+.box-border {
+    border: 1px solid #efeff0;
+}
+.submit-requirements-sidebar h4 {
+    font-weight: 600;
+    margin: 0 0 15px 0;
+}
+.submit-requirements-sidebar .fix-block-website {
+    margin: 0 0 15px 0;
+    padding: 0;
+    list-style: none;
+}
+.submit-requirements-sidebar .fix-block-website li {
+    padding-bottom: 8px;
+    display: flex;
+    gap: 5px;
+}
+.submit-requirements-sidebar .fix-block-website li i { 
+    margin-top: 3px;
+}
+
+.status-order {
+    margin: 0 0 15px 0;
+    padding: 15px 0 0 0;
+    list-style: none;
+    border-top: 1px solid #efeff0;
+}
+.status-order li {
+    padding-bottom: 10px;
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+    align-items: center;
+}
+.status-order li .bg-warning {
+    background: #fe8a0f;
+    padding: 2px 10px;
+    color: #fff;
+    border-radius: 4px;
+}
+.thank-purchase-msg {
+    display: flex;
+    align-items: center;
+    gap: 10px 20px;
+    position: relative;
+}
+.thank-purchase-msg .icon {
+    border: 1px solid #468847;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    font-size: 26px;
+}
+.thank-purchase-msg h2,
+.thank-purchase-msg p {
+    font-weight: 600;
+    color: #464c5b;
+    margin: 0;
+}
+.thank-purchase-msg .btn-close {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    line-height: initial;
+    font-size: 20px;
 }
