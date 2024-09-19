@@ -54,51 +54,32 @@
 		
 
 		<div class="checkout-form">
-		<div class="row">
-			<form action="<?= site_url().'checkout/placeOrder'; ?>" id="checkoutForm" method="post">
-				<input type="hidden" name="service_id" value="<?php echo $service_details['id']; ?>">
-				<input type="hidden" name="ex_service_id" value="<?php echo $exIds; ?>">
+			<div class="row">
+				<form action="<?= site_url().'checkout/placeOrder'; ?>" id="checkoutForm" method="post">
+					<input type="hidden" name="service_id" value="<?php echo $service_details['id']; ?>">
+					<input type="hidden" name="ex_service_id" value="<?php echo $exIds; ?>">
 
-				<?php if($this->session->flashdata('error')): ?>
-					<div class="col-md-12">
-						<div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
-						<?php unset($_SESSION['error']) ?>
-					</div>	
-				<?php endif; ?>
-				<?php if($this->session->flashdata('success')): ?>
-					<div class="col-md-12">
-						<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
-						<?php unset($_SESSION['success']) ?>
-					</div>
-				<?php endif; ?>
+					<?php if($this->session->flashdata('error')): ?>
+						<div class="col-md-12">
+							<div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
+							<?php unset($_SESSION['error']) ?>
+						</div>	
+					<?php endif; ?>
+					<?php if($this->session->flashdata('success')): ?>
+						<div class="col-md-12">
+							<p class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></p>
+							<?php unset($_SESSION['success']) ?>
+						</div>
+					<?php endif; ?>
 
 
 
-				<div class="col-sm-8">
-					<div class="addressDiv checkout-form mb-4 p-4">
-						
+					<div class="col-sm-8">
+						<div class="addressDiv checkout-form mb-4 p-4">
+
 							<h2 class="title">Task Location Address</h2>
 							<div class="">
 								<p>If the task needs to be performed at a physical localtion, Please enter the address where the tasker should come to complete the job.</p>
-
-								<div class="row">
-									<div class="col-sm-6">
-										<div class="form-group form__radio">
-											<div class="form-check" style="margin: 0;">
-												<input class="form-check-input" checked type="radio" name="address_type" value="yes" style="margin-right:10px;">
-												<label class="form-check-label">Select / New Address</label>
-											</div>
-										</div>
-									</div>
-									<div class="col-sm-6">
-										<div class="form-group form__radio">
-											<div class="form-check">
-												<input class="form-check-input" type="radio" name="address_type" value="no" style="margin-right:10px;">
-												<label class="form-check-label">Skip Address</label>
-											</div>
-										</div>
-									</div>
-								</div>
 
 								<?php 
 								if(!empty($task_addresses)) { 
@@ -109,110 +90,122 @@
 												<p><?php echo $value['address']; ?>, <?php echo $value['zip_code']; ?> - <?php echo $value['city']; ?>, <a href="tel:<?php echo $value['phone_number']; ?>"><?php echo $value['phone_number']; ?></a> </p>
 											</div>
 										</div>
-								<?php	
+										<?php	
 									}
 								} ?>
 
-								<div class="form__radio delivery-address-radio add-new-delivery-address-radio">
-									<input name="select_address" class="delivery-address" type="radio" value="0">
-									<label for="address">Add a New Address</label>
-									<div class="address address-form">
-										<div class="row">
-											<div class="col-md-12">
-												<div class="form-group">
-	            									<label class="">Address :</label>
-	    											<input class="form-control" placeholder="Address" name="address" type="text">
-	    										</div>
+								<div class="row">
+									<div class="col-sm-12">
+										<div class="form__radio add-new-delivery-address-radio">
+											<input name="select_address" class="delivery-address" type="radio" value="yes">
+											<label for="address">Add a New Address</label>
+											<div class="address address-form">
+												<div class="row">
+													<div class="col-sm-12">
+														<div class="form-group">
+															<label class="">Address :</label>
+															<input class="form-control" placeholder="Address" name="address" type="text">
+														</div>
+													</div>
+
+													<div class="col-sm-4">
+														<div class="form-group">
+															<label class="">City / Town :</label>
+															<input class="form-control" placeholder="City / Town" name="city" type="text">
+														</div>
+													</div>
+
+													<div class="col-sm-4">
+														<div class="form-group">
+															<label class="">Postcode :</label>
+															<input class="form-control" placeholder="Postcode" name="zip_code" type="text">
+														</div>
+													</div>
+
+													<div class="col-sm-4">
+														<div class="form-group">
+															<label class="">Phone Number :</label>
+															<input class="form-control" placeholder="Phone Number" name="phone_number" type="text">
+														</div>
+													</div>
+												</div>
+
 											</div>
 										</div>
-
-										<div class="row">
-											<div class="col-md-4">
-												<div class="form-group">
-	            									<label class="">City / Town :</label>
-	    											<input class="form-control" placeholder="City / Town" name="city" type="text">
-	    										</div>
-											</div>
-											<div class="col-md-4">
-												<div class="form-group">
-	            									<label class="">Postcode :</label>
-	    											<input class="form-control" placeholder="Postcode" name="zip_code" type="text">
-	    										</div>
-											</div>
-											<div class="col-md-4">
-												<div class="form-group">
-	            									<label class="">Phone Number :</label>
-	    											<input class="form-control" placeholder="Phone Number" name="phone_number" type="text">
-	    										</div>
+									</div>
+									<div class="col-sm-12">
+										<div class="form-group form__radio">
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="select_address" value="no" style="margin-right:10px;">
+												<label class="form-check-label">Skip Address</label>
 											</div>
 										</div>
 									</div>
 								</div>
-
-			                    <div class="form-group">
-			                        <span id='addressErrors' class='text-danger'></span>
-				               </div>
+								<div class="form-group mt-2">
+									<span id='addressErrors' class='text-danger mt-2'></span>
+								</div>
 							</div>
-						
-					</div>
 
-					<div class="addressDiv checkout-form mb-4 p-4">
-						
+						</div>
+
+						<div class="addressDiv checkout-form mb-4 p-4">
+
 
 							<h2 class="title">Select your payment method</h2>
 
 							<?php if(isset($userCardData) && count($userCardData)): ?>
-								<h4>Your Saved Card</h4>
-                                    <?php $i=1; ?>
-                                    <div class="user-card-box">
-                                    <?php foreach($userCardData as $key => $data): ?>
-                                    	
-                                        <div>
-                                            <input id="card_<?php echo $key; ?>" class='user-card' type="radio" name="payment_method" value="<?php echo $key; ?>">
-                                            <label class="article-lable" for="card_<?php echo $key; ?>"><h5><?php echo ($data['brand'] ?? '').' - '. ($data['last4'] ?? ''); ?></h5></label>
-                                        </div>
-                                        
-                                        <?php $i++; ?>
-                                    <?php endforeach; ?>                                   
-                                </div>
-                            <?php endif; ?>
+							<h4>Your Saved Card</h4>
+							<?php $i=1; ?>
+							<div class="user-card-box">
+								<?php foreach($userCardData as $key => $data): ?>
+
+									<div>
+										<input id="card_<?php echo $key; ?>" class='user-card' type="radio" name="payment_method" value="<?php echo $key; ?>">
+										<label class="article-lable" for="card_<?php echo $key; ?>"><h5><?php echo ($data['brand'] ?? '').' - '. ($data['last4'] ?? ''); ?></h5></label>
+									</div>
+
+									<?php $i++; ?>
+								<?php endforeach; ?>                                   
+							</div>
+						<?php endif; ?>
 
 
-							<div class="form__radio">
-								<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
-								<label for="stripe"><svg class="icon">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-										<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
-										<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-										<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-										<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-									</svg>
-								</svg>New Card</label>
-								
-							</div>
-							
-							<div class="form__radio">
-								<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
-								<label for="wallet"><svg class="icon">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-										<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
-										<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-										<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-										<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
-									</svg>
-								</svg>Wallet</label>								
-							</div>
-							<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
+						<div class="form__radio">
+							<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
+							<label for="stripe"><svg class="icon">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+									<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
+									<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+									<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+									<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+								</svg>
+							</svg>New Card</label>
+
+						</div>
+
+						<div class="form__radio">
+							<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
+							<label for="wallet"><svg class="icon">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+									<path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="#fe8a0f" stroke-width="1.5"/>
+									<path d="M10 16H6" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+									<path d="M14 16H12.5" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+									<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
+								</svg>
+							</svg>Wallet</label>								
+						</div>
+						<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
 						
-					
+
 						<div id="card-detail" style="display:none; margin-bottom: 15px;">
 							<div class="form-group">
 								<div class="row">
 									<div class="col-sm-12">
-	                                    <div class="form-group">
-	                                        <span id='StripePaymentErrors' class='text-danger'></span>
-	                                    </div>
-	                                </div>
+										<div class="form-group">
+											<span id='StripePaymentErrors' class='text-danger'></span>
+										</div>
+									</div>
 
 									<div class="col-sm-12">
 										<label class="control-label">Card number</label>
@@ -236,21 +229,21 @@
 										<label class="control-label">Expiry date</label>
 										<!-- <input class="form-control input-lg" name="expiry" id="expiry" type="text" placeholder="MM/YY"> -->
 										<div class='form-control input-lg' id="card-expiry-element"></div>
-	                                    <span class='incomplete_expiry invalid_expiry_year_past text-danger error-card'></span>
+										<span class='incomplete_expiry invalid_expiry_year_past text-danger error-card'></span>
 									</div>
 									<div class="col-sm-4">
 										<label class="control-label">CVV <i class="fa fa-info-circle" aria-hidden="true"></i></label>
 										<!-- <input type="text" class="form-control input-lg" minlength="3" maxlength="4" id="cvc" name="cvc" placeholder="123"> -->
 										<div class='form-control input-lg' id="card-cvc-element"></div>
-	                                    <span class='incomplete_cvc text-danger error-card'></span>
+										<span class='incomplete_cvc text-danger error-card'></span>
 									</div>
 									<div class="col-sm-4">
-	                                    <div class="form-group">
-	                                    	<label class="control-label">Postal Code</label>
-	                                        <div class='form-control input-lg' id="postal-code-element"></div>
-	                                        <span class='incomplete_zip text-danger error-card'></span>
-	                                    </div>
-	                                </div>
+										<div class="form-group">
+											<label class="control-label">Postal Code</label>
+											<div class='form-control input-lg' id="postal-code-element"></div>
+											<span class='incomplete_zip text-danger error-card'></span>
+										</div>
+									</div>
 								</div>
 							</div>
 							<?php if($this->session->userdata('user_id')):?>
@@ -269,11 +262,9 @@
 							<?php endif; ?>
 						</div>
 
-						<div class="row">
-		                    <div class="form-group">
-		                        <span id='formErrors' class='text-danger'></span>
-		                    </div>			                
-		               </div>
+						<div class="form-group">
+							<span id='formErrors' class='text-danger'></span>
+						</div>			                
 					</div>
 
 					<div class="form-group">
@@ -288,7 +279,7 @@
 							</div>
 						</div>
 					</div>
-															
+
 				</div>
 				<div class="col-sm-4">
 					<div class="card-summary">
@@ -328,15 +319,15 @@
 							<div class="summary-feature-article">
 								<a href="<?php echo base_url().'service/'.$service_details['slug']?>">
 									<?php $image_path = FCPATH . 'img/services/' . ($service_details['image'] ?? ''); ?>
-	            					<?php if (file_exists($image_path) && $service_details['image']): ?>
-	            						<img src="<?php echo base_url('img/services/') . $service_details['image']; ?>" class="img-responsive">
-	            					<?php else: ?>	
+									<?php if (file_exists($image_path) && $service_details['image']): ?>
+										<img src="<?php echo base_url('img/services/') . $service_details['image']; ?>" class="img-responsive">
+									<?php else: ?>	
 										<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
-	            					<?php endif; ?>
+									<?php endif; ?>
 									
 									<span>
 										<h4 style="margin-top:0px;"><b><?php echo $service_details['service_name']; ?></b></h4>
-                                    	<p class="text-muted"><?php echo $package_description; ?></p>
+										<p class="text-muted"><?php echo $package_description; ?></p>
 									</span>
 								</a>
 							</div>
@@ -350,101 +341,101 @@
 									<b><?php echo $serviceQty; ?></b>
 								</li>
 								<?php if(!empty($ex_services) && count($ex_services) > 0): ?>
+								<li>
+									<b>Extra Services</b> 
+								</li>
+								<?php foreach($ex_services as $exs):?>
 									<li>
-										<b>Extra Services</b> 
+										<p><?php echo $exs['ex_service_name']; ?></p> 
+										<b><?php echo '£'.number_format($exs['price'],2); ?></b>
 									</li>
-									<?php foreach($ex_services as $exs):?>
-										<li>
-											<p><?php echo $exs['ex_service_name']; ?></p> 
-											<b><?php echo '£'.number_format($exs['price'],2); ?></b>
-										</li>
-									<?php endforeach; ?>
-								<?php endif; ?>
-								<li>
-									<p>Service fee <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
-									<b>
-										<span id="serviceFee"><?php echo '£'.number_format($service_fee,2)?></span>
-									</b>
-								</li>
-								<li><p>Discount</p><b id="discountVal">-</b></li>
-								<li><b>Promo codes</b></li>
-								<li id="promoCodeLi">
-									<input class="form-control input-lg" name="promo_code" id="promo_code" type="text" placeholder="Enter code">
-									<button type="button" id="codeApply" class="btn">APPLY</button>
-									<button type="button" id="codeRemove" class="btn hide">Remove</button>
-								</li>
-									
-								<li>
-									<p>Total</p>
-									<?php 
-										$mainTotalPrice = $totalPrice + $service_fee;
-									?>
-									<b id="totalPrice">
-										<?php echo '£'.number_format($mainTotalPrice,2); ?>
-									</b>	
-								</li>
-								<?php if(!empty($delivery_date)): ?>
+								<?php endforeach; ?>
+							<?php endif; ?>
+							<li>
+								<p>Service fee <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
+								<b>
+									<span id="serviceFee"><?php echo '£'.number_format($service_fee,2)?></span>
+								</b>
+							</li>
+							<li><p>Discount</p><b id="discountVal">-</b></li>
+							<li><b>Promo codes</b></li>
+							<li id="promoCodeLi">
+								<input class="form-control input-lg" name="promo_code" id="promo_code" type="text" placeholder="Enter code">
+								<button type="button" id="codeApply" class="btn">APPLY</button>
+								<button type="button" id="codeRemove" class="btn hide">Remove</button>
+							</li>
+
+							<li>
+								<p>Total</p>
+								<?php 
+								$mainTotalPrice = $totalPrice + $service_fee;
+								?>
+								<b id="totalPrice">
+									<?php echo '£'.number_format($mainTotalPrice,2); ?>
+								</b>	
+							</li>
+							<?php if(!empty($delivery_date)): ?>
 								<li style="font-size:14px;">
 									<p>Delivered By</p>
 									<b style="color:#4B8024">
 										<?php echo $delivery_date; ?>
 									</b>	
 								</li>
-								<?php endif; ?>
-							</ul>
-							
-							<input type="hidden" name="pay_intent" id="pay_intent">
- 
-							<div class="form-group" style="margin-top:15px;">
-								<div class="row">
-									<div class="col-sm-12 text-center">										
-										<button class="btn btn-warning btn-lg" type="button" id="checkoutBtn">
-												Checkout											
-										</button>
-									</div>
+							<?php endif; ?>
+						</ul>
+
+						<input type="hidden" name="pay_intent" id="pay_intent">
+
+						<div class="form-group" style="margin-top:15px;">
+							<div class="row">
+								<div class="col-sm-12 text-center">										
+									<button class="btn btn-warning btn-lg" type="button" id="checkoutBtn">
+										Checkout											
+									</button>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</form>
-		</div>
-		</div>
-
+			</div>
+		</form>
 	</div>
 </div>
 
+</div>
+</div>
+
 <div class="modal fade" id="stripe-payment-success-3ds" role="dialog" aria-labelledby="stripe-payment-success-3ds" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <div class="payment-process-content loader-spinner">Loading...</div>
-                <h3 class="payment-process-content">Please wait! while we verify your payment.</h3>
-            </div>
-        </div>
-    </div>
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-body text-center">
+				<div class="payment-process-content loader-spinner">Loading...</div>
+				<h3 class="payment-process-content">Please wait! while we verify your payment.</h3>
+			</div>
+		</div>
+	</div>
 </div>
 
 <div class="modal fade in" id="order_requirement_modal">
- 	<div class="modal-body" id="msg">
-    	<div class="modal-dialog modal-lg">	 
-	       	<div class="modal-content">         	
-		  		<form method="post" id="order_requirement_form" enctype="multipart/form-data">
-		        	<div class="modal-header">
-		            	<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
-		            	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-		            	<h4 class="modal-title">Add Order Requirement</h4>
-		          	</div>
-		          	<div class="modal-body form_width100">
-		          		<div class="form-group">
+	<div class="modal-body" id="msg">
+		<div class="modal-dialog modal-lg">	 
+			<div class="modal-content">         	
+				<form method="post" id="order_requirement_form" enctype="multipart/form-data">
+					<div class="modal-header">
+						<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+						<h4 class="modal-title">Add Order Requirement</h4>
+					</div>
+					<div class="modal-body form_width100">
+						<div class="form-group">
 							<label for="email"> What do you need for this order?</label>
 							<textarea rows="5" placeholder="" name="requirement" id="requirement" class="form-control"></textarea>
-			 			</div>
-			 			<div class="form-group">
+						</div>
+						<div class="form-group">
 							<label for="email"> Where is task located?</label>
 							<textarea rows="5" placeholder="" name="location" id="location" class="form-control"></textarea>
-			 			</div>
-			 			<div class="row">
+						</div>
+						<div class="row">
 							<div id="loader1" class="loader_ajax_small"></div>
 							<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 								<div class="file-upload-btn addWorkImage imgUp">
@@ -458,20 +449,20 @@
 						<input type="hidden" name="multiImgIds" id="multiImgIds">	
 						<div class="row" id="previousImg">
 						</div>
-		          	</div>
-		          	<div class="modal-footer">
-			          	<input type="hidden" name="order_id" value="" id="order_id">
-			          	<button type="button" class="btn btn-info signup_btn" onclick="submitRequirement()">Save</button>
-			            <button type="button" class="btn btn-default" onclick="stopRequirement()">Close</button>
-		          	</div>
-			   	</form>
-	        </div>			
-      	</div>
-    </div>
- </div>
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" name="order_id" value="" id="order_id">
+						<button type="button" class="btn btn-info signup_btn" onclick="submitRequirement()">Save</button>
+						<button type="button" class="btn btn-default" onclick="stopRequirement()">Close</button>
+					</div>
+				</form>
+			</div>			
+		</div>
+	</div>
+</div>
 
 <?php
-  	require_once('application/libraries/stripe-php-7.49.0/init.php');
+require_once('application/libraries/stripe-php-7.49.0/init.php');
 ?>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
@@ -480,8 +471,8 @@
 	});
 
 	const dropArea = document.querySelector(".addWorkImage"),
-		button = dropArea.querySelector("img"),
-		input = dropArea.querySelector("input");
+	button = dropArea.querySelector("img"),
+	input = dropArea.querySelector("input");
 	let file;
 	var filename;
 
@@ -492,20 +483,20 @@
 		var multiImgIds = $('#multiImgIds').val();
 
 		var idsArray = multiImgIds.split(',');
-    	var totalCount = idsArray.length;
+		var totalCount = idsArray.length;
 
-    	if(totalCount >= 3){
-    		alert("Up to 3 images can be uploaded for your service.");
-    		return false;
-    	}
+		if(totalCount >= 3){
+			alert("Up to 3 images can be uploaded for your service.");
+			return false;
+		}
 
 		var file_data = $('#attachments').prop('files')[0];
 
 		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
-        if (validImageTypes.indexOf(file_data.type) == -1) {
-            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
-            return false;
-        }
+		if (validImageTypes.indexOf(file_data.type) == -1) {
+			alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+			return false;
+		}
 
 		var form_data = new FormData();
 		form_data.append('file', file_data);
@@ -529,11 +520,11 @@
 						$('#multiImgIds').val(response.id);
 					}
 					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
-						'<div class="boxImage imgUp">'+
-						'<div class="imagePreviewPlus">'+
-						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
-						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-						'</div></div></div>';
+					'<div class="boxImage imgUp">'+
+					'<div class="imagePreviewPlus">'+
+					'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
+					'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+					'</div></div></div>';
 					$('#previousImg').append(portElement);
 					$('#loader1').hide();
 					$('#previousImg').css('opacity', '1');
@@ -556,125 +547,131 @@
 	}
 
 	function removeIdFromHiddenField(idToRemove, divId) {
-        var hiddenFieldValue = $('#'+divId).val();
-        var idsArray = hiddenFieldValue.split(',');
-        var newIdsArray = idsArray.filter(function(id) {
-            return id !== idToRemove.toString();
-        });
-        var newHiddenFieldValue = newIdsArray.join(',');
-        $('#'+divId).val(newHiddenFieldValue);        
-    }
+		var hiddenFieldValue = $('#'+divId).val();
+		var idsArray = hiddenFieldValue.split(',');
+		var newIdsArray = idsArray.filter(function(id) {
+			return id !== idToRemove.toString();
+		});
+		var newHiddenFieldValue = newIdsArray.join(',');
+		$('#'+divId).val(newHiddenFieldValue);        
+	}
 
 	$(document).ready(function() {
-	    $('input[type=radio][name=payment_method]').change(function(){
-	        if (this.value == 'card') {
-	            $('#card-detail').show();            
-	        }
-	        else{
-	            $('#card-detail').hide();            
-	        }
-	    });
+		$('input[type=radio][name=payment_method]').change(function(){
+			if (this.value == 'card') {
+				$('#card-detail').show();            
+			}
+			else{
+				$('#card-detail').hide();            
+			}
+		});
 
-	    $('#codeApply').on('click', function(){
+		$('#codeApply').on('click', function(){
 			var promo_code= $('#promo_code').val();
 			$.ajax({
-		        url: "<?= site_url().'checkout/checkPromoCode'; ?>", 
-		        type: "POST", 
-		        data: {"promo_code":promo_code},
-		        dataType: 'json',
-		        success: function (data) {
-		        	if(data.status == 1){
-		        		swal({
-				            title: "Promo Code Applied",
-				            text: data.message,
-				            type: "success"
-				        }, function() {
-				        	$('#discountVal').text('£'+data.discount);
-		        			$('#totalPrice').text('£'+data.discounted_amount);
-				            $('#promo_code').prop('readonly', true);
-				            $('#codeApply').addClass('hide');
-				            $('#codeRemove').removeClass('hide');			            
-				        });	        		
-		        	}else{
-		        		swal({
-				            title: "Error",
-				            text: "Invalid Promocode",
-				            type: "error"
-				        }, function() {
-				            $('#promo_code').val('');
-				            $('#discountVal').text('-');
-		        			$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
-				        });
-		        	}            
-		        },
-		        error:function(e){
-		            swal({
-			            title: "Error",
-			            text: "Somethig is wrong. Try again!!!",
-			            type: "error"
-			        }, function() {
-			            $('#promo_code').val('');
-			        });
-		        }
-		    }); 
+				url: "<?= site_url().'checkout/checkPromoCode'; ?>", 
+				type: "POST", 
+				data: {"promo_code":promo_code},
+				dataType: 'json',
+				success: function (data) {
+					if(data.status == 1){
+						swal({
+							title: "Promo Code Applied",
+							text: data.message,
+							type: "success"
+						}, function() {
+							$('#discountVal').text('£'+data.discount);
+							$('#totalPrice').text('£'+data.discounted_amount);
+							$('#promo_code').prop('readonly', true);
+							$('#codeApply').addClass('hide');
+							$('#codeRemove').removeClass('hide');			            
+						});	        		
+					}else{
+						swal({
+							title: "Error",
+							text: "Invalid Promocode",
+							type: "error"
+						}, function() {
+							$('#promo_code').val('');
+							$('#discountVal').text('-');
+							$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
+						});
+					}            
+				},
+				error:function(e){
+					swal({
+						title: "Error",
+						text: "Somethig is wrong. Try again!!!",
+						type: "error"
+					}, function() {
+						$('#promo_code').val('');
+					});
+				}
+			}); 
 		});
 
 		$('#codeRemove').on('click', function(){
 			swal({
-	            title: "Confirm?",
-	            text: "Are you sure you want to remove this promo code?",
-	            type: "warning",
-	            showCancelButton: true,
-		        confirmButtonText: 'Yes',
-		        cancelButtonText: 'Cancel'
-	        }, function() {
-	            $('#promo_code').val('');
-	            $('#discountVal').text('-');
+				title: "Confirm?",
+				text: "Are you sure you want to remove this promo code?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes',
+				cancelButtonText: 'Cancel'
+			}, function() {
+				$('#promo_code').val('');
+				$('#discountVal').text('-');
 				$('#totalPrice').text('<?php echo '£'.number_format($mainTotalPrice,2); ?>');
 				$('#promo_code').prop('readonly', false);
-	            $('#codeApply').removeClass('hide');
-	            $('#codeRemove').addClass('hide');
-	        });
+				$('#codeApply').removeClass('hide');
+				$('#codeRemove').addClass('hide');
+			});
 		});
 
 		$('#checkoutBtn').on('click', function(){
 			$('#checkoutBtn').disabled = true;
-	        var pMethod = $('input[name="payment_method"]:checked').val();
-	        var termsConditions = $('input[name="terms"]:checked').val();
+			var pMethod = $('input[name="payment_method"]:checked').val();
+			var termsConditions = $('input[name="terms"]:checked').val();
 
-	        if(termsConditions == undefined){
-	        	swal({
-	            	title: "Error",
-		            text: "Please select Terms & Conditions!!",
-		            type: "error"
-		        });	
+			if(termsConditions == undefined){
+				swal({
+					title: "Error",
+					text: "Please select Terms & Conditions!!",
+					type: "error"
+				});	
 
 				return false
-        	}
-	        
-	        var addressType = $('input[name="address_type"]:checked').val();
-	        if(addressType=='yes'){
+			}
 
-	        	var selectedAddress = $('input[name="select_address"]:checked').val();
+			var selectedAddress = $('input[name="select_address"]:checked').val();
 
-	        	if(selectedAddress==0){
-	        		var address = $('input[name="address"]').val();
-	        		var city = $('input[name="city"]').val();
-	        		var zip_code = $('input[name="zip_code"]').val();
-	        		var phone_number = $('input[name="phone_number"]').val();
+			if(selectedAddress == undefined){
+				$('#addressErrors').text('Please select Address').parent('div').addClass('alert alert-danger');
+				$('#addressErrors').fadeIn();
+				return false;
+			} else {
+				$('#addressErrors').text('').parent('div').removeClass('alert alert-danger');
+				$('#addressErrors').fadeOut();
+			}
 
-	        		if (address === '' || city === '' || zip_code === '' || phone_number === '') {
-					    $('#addressErrors').text('All address fields is required').parent('div').addClass('alert alert-danger');
-			            $('#addressErrors').fadeIn();
-			            return false;
-					}
-	        	}
-           	}
+			if(selectedAddress=='yes'){
 
-	        if(pMethod != undefined){
-	        	
-	        	$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
-	            $('#formErrors').fadeOut();
+				var address = $('input[name="address"]').val();
+				var city = $('input[name="city"]').val();
+				var zip_code = $('input[name="zip_code"]').val();
+				var phone_number = $('input[name="phone_number"]').val();
+
+				if (address === '' || city === '' || zip_code === '' || phone_number === '') {
+					$('#addressErrors').text('All address fields is required').parent('div').addClass('alert alert-danger');
+					$('#addressErrors').fadeIn();
+					return false;
+				}
+			}
+
+			if(pMethod != undefined){
+
+				$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
+				$('#formErrors').fadeOut();
 
 	        	/*swal({
 		            title: "Confirm Order",
@@ -685,451 +682,442 @@
 			        cancelButtonText: 'Cancel'
 		        }, function() {
 		    			
-		        });*/
+		        });*/ 
 
-	            if (pMethod == 'wallet') {
-	    			var promo_code = $('#promo_code').val();
-		           	$('#loader').removeClass('hide');
+				if (pMethod == 'wallet') {
+					var promo_code = $('#promo_code').val();
+					$('#loader').removeClass('hide');
 
-	    			$.ajax({
-		                url: '<?= site_url().'checkout/placeOrder'; ?>',
-		                type: 'POST',
-		                data: {'payment_method':pMethod, 'promo_code':promo_code, 'address_type':addressType, 'select_address':selectedAddress, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number},
-		                dataType: 'json',		                
-		                success: function(result) {
-		                	$('#loader').addClass('hide');
-		                	if(result.status == 0){
-		                		swal({
-					            	title: "Error",
-						            text: result.message,
-						            type: "error"
-						        });	
-		                	}else if(result.status == 2){
-		                		swal({
-						            title: "Login Required!",
-						            text: "If you want to order the please login first!",
-						            type: "warning"
-						        }, function() {
-						            window.location.href = '<?php echo base_url().'login'; ?>';
-						        });	
-		                	}else{
+					$.ajax({
+						url: '<?= site_url().'checkout/placeOrder'; ?>',
+						type: 'POST',
+						data: {'payment_method':pMethod, 'promo_code':promo_code, 'select_address':selectedAddress, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number},
+						dataType: 'json',		                
+						success: function(result) {
+							$('#loader').addClass('hide');
+							if(result.status == 0){
 								swal({
-						            title: "Success",
-						            text: result.message,
-						            type: "success"
-						        }, function() {
-						        	window.location.href = '<?php echo base_url("my-account"); ?>';
+									title: "Error",
+									text: result.message,
+									type: "error"
+								});	
+							}else if(result.status == 2){
+								swal({
+									title: "Login Required!",
+									text: "If you want to order the please login first!",
+									type: "warning"
+								}, function() {
+									window.location.href = '<?php echo base_url().'login'; ?>';
+								});	
+							}else{
+								swal({
+									title: "Success",
+									text: result.message,
+									type: "success"
+								}, function() {
+									window.location.href = '<?php echo base_url("my-account"); ?>';
 						        	/*$('#order_id').val(result.order_id);
 						        	$('#order_requirement_modal').modal('show');*/
-						        });
-		                	}		                    
-		                },
-		                error: function(xhr, status, error) {
+								});
+							}		                    
+						},
+						error: function(xhr, status, error) {
 		                    // Handle error
-		                }
-		            });
-		        }
-		        else{
-		        	if(pMethod == 'card'){
-		        		payWithStripe();
-		        	}else{
-		        		payWithOldCard();
-		        	}			        	
-		        }
-	        }else{
-
-	        	$('#addressErrors').text('').parent('div').removeClass('alert alert-danger');
-	            $('#addressErrors').fadeOut();
-
-	    		$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
-	            $('#formErrors').fadeIn();
-	            return false;
-	    	}
+						}
+					});
+				} else{
+					if(pMethod == 'card'){
+						payWithStripe();
+					}else{
+						payWithOldCard();
+					}			        	
+				}
+			}else{
+				$('#formErrors').text('Please select payment method').parent('div').addClass('alert alert-danger');
+				$('#formErrors').fadeIn();
+				return false;
+			}
 		});
 
 		/*Strope Code Start*/
 
 		var stripePublishableKey = '<?php echo $this->config->item('stripe_key');?>';
-	    var stripe = Stripe(stripePublishableKey);
-	    var elements = stripe.elements();
-	    var style = {
-	        base: {
-	            color: "#000000",
-	            fontSize: '18px',		   
-	            "::placeholder": {
-	                color: "#aab7c4"
-	            }
-	        },
-	        invalid: {
-	            color: "#fa755a",
-	            iconColor: "#fa755a"
-	        },
-	    };
+		var stripe = Stripe(stripePublishableKey);
+		var elements = stripe.elements();
+		var style = {
+			base: {
+				color: "#000000",
+				fontSize: '18px',		   
+				"::placeholder": {
+					color: "#aab7c4"
+				}
+			},
+			invalid: {
+				color: "#fa755a",
+				iconColor: "#fa755a"
+			},
+		};
 
-	    var cardNumber = elements.create('cardNumber', {
-	        style: style,
-	        showIcon: true,
-	        iconStyle : 'solid',
-	        placeholder : 'Ex. 0000 0000 0000 0000'
-	    });
-	    cardNumber.mount('#card-number-element');
+		var cardNumber = elements.create('cardNumber', {
+			style: style,
+			showIcon: true,
+			iconStyle : 'solid',
+			placeholder : 'Ex. 0000 0000 0000 0000'
+		});
+		cardNumber.mount('#card-number-element');
 
-	    var cardExpiry = elements.create('cardExpiry', {
-	        style: style
-	    });
-	    cardExpiry.mount('#card-expiry-element');
+		var cardExpiry = elements.create('cardExpiry', {
+			style: style
+		});
+		cardExpiry.mount('#card-expiry-element');
 
-	    var cardCvc = elements.create('cardCvc', {
-	        style: style
-	    });
-	    cardCvc.mount('#card-cvc-element');
+		var cardCvc = elements.create('cardCvc', {
+			style: style
+		});
+		cardCvc.mount('#card-cvc-element');
 
-	    var postalCode = elements.create('postalCode', {
-	        style: style
-	    });
-	    postalCode.mount('#postal-code-element');
+		var postalCode = elements.create('postalCode', {
+			style: style
+		});
+		postalCode.mount('#postal-code-element');
 
 	    // Handle real-time validation errors from the card Elements.
-	    [cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
-	       element.on('change', function(event) {
-	            if (event.error) {
-	                $('#StripePaymentErrors').text(event.error.message).parent('div').addClass('alert alert-danger');
-	                $('#StripePaymentErrors').fadeIn();
-	            } else {
-	                $('#StripePaymentErrors').text('').parent('div').removeClass('alert alert-danger');
-	                $('#StripePaymentErrors').fadeOut();
-	            }
-	        });
-	    });
+		[cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
+			element.on('change', function(event) {
+				if (event.error) {
+					$('#StripePaymentErrors').text(event.error.message).parent('div').addClass('alert alert-danger');
+					$('#StripePaymentErrors').fadeIn();
+				} else {
+					$('#StripePaymentErrors').text('').parent('div').removeClass('alert alert-danger');
+					$('#StripePaymentErrors').fadeOut();
+				}
+			});
+		});
 
-	    async function payWithStripe() {
-	        $('#loader').removeClass('hide');
+		async function payWithStripe() {
+			$('#loader').removeClass('hide');
 
 	        // console.log(cardNumber);
 
-	        var {token, error} = await stripe.createToken(cardNumber);
+			var {token, error} = await stripe.createToken(cardNumber);
 
-	        if (error) {
-	            $('#loader').addClass('hide');
-	            var code = error.code ? error.code : '';
-	            var message = error.message ? error.message : '';
-	            if(code && message){
-	                $('#StripePaymentErrors').text(message);
-	                $('#StripePaymentErrors').fadeIn();
-	                $('.error-card').text('');
-	                $('.'+code).text(message);
-	            }
-	            return;
-	        }
+			if (error) {
+				$('#loader').addClass('hide');
+				var code = error.code ? error.code : '';
+				var message = error.message ? error.message : '';
+				if(code && message){
+					$('#StripePaymentErrors').text(message);
+					$('#StripePaymentErrors').fadeIn();
+					$('.error-card').text('');
+					$('.'+code).text(message);
+				}
+				return;
+			}
 
-	        stripe.createPaymentMethod({
-	            type: 'card',
-	            card: cardNumber,
-	        }).then(stripePaymentMethodHandler);
-	    }
+			stripe.createPaymentMethod({
+				type: 'card',
+				card: cardNumber,
+			}).then(stripePaymentMethodHandler);
+		}
 
-	    function payWithOldCard() {
-	    	var intentId = $('input[name="payment_method"]:checked').val();
-	        var saveCard = $('#Save_Card').is(':checked');
-	        var promo_code = $('#promo_code').val();
-	        var price = $('#totalPrice').text().trim();
-            var mainPrice = price.replace("£", "");
+		function payWithOldCard() {
+			var intentId = $('input[name="payment_method"]:checked').val();
+			var saveCard = $('#Save_Card').is(':checked');
+			var promo_code = $('#promo_code').val();
+			var price = $('#totalPrice').text().trim();
+			var mainPrice = price.replace("£", "");
 
-            var addressType = $('input[name="address_type"]:checked').val();
-        	var selectedAddress = $('input[name="select_address"]:checked').val();
-    		var address = $('input[name="address"]').val();
-    		var city = $('input[name="city"]').val();
-    		var zip_code = $('input[name="zip_code"]').val();
-    		var phone_number = $('input[name="phone_number"]').val();
+			var selectedAddress = $('input[name="select_address"]:checked').val();
+			var address = $('input[name="address"]').val();
+			var city = $('input[name="city"]').val();
+			var zip_code = $('input[name="zip_code"]').val();
+			var phone_number = $('input[name="phone_number"]').val();
 
-            var dataObj = {
-                payment_method: 'card',
-                payment_method_id: intentId,
-                promo_code: promo_code,
-                saveCard: saveCard,
-                mainPrice: mainPrice,
-                address_type: addressType,
-                select_address: selectedAddress,
-                address: address,
-                city: city,
-                zip_code: zip_code,
-                phone_number: phone_number,
-            };
+			var dataObj = {
+				payment_method: 'card',
+				payment_method_id: intentId,
+				promo_code: promo_code,
+				saveCard: saveCard,
+				mainPrice: mainPrice,
+				select_address: selectedAddress,
+				address: address,
+				city: city,
+				zip_code: zip_code,
+				phone_number: phone_number,
+			};
 
-            $("#stripe-payment-success-3ds").modal('show');
+			$("#stripe-payment-success-3ds").modal('show');
 
-	        $.ajax({
-	            url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
-	            type: 'POST',
-	            dataType: 'json',
-	            data: dataObj,
-	            success: function(result) {
-	                handleServerResponse(result);
-	            },
-	            error: function(xhr, status, error) {
-	            	console.log(xhr);
-	            	console.log(status);
-	            	console.log(error);
+			$.ajax({
+				url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
+				type: 'POST',
+				dataType: 'json',
+				data: dataObj,
+				success: function(result) {
+					handleServerResponse(result);
+				},
+				error: function(xhr, status, error) {
+					console.log(xhr);
+					console.log(status);
+					console.log(error);
 	                // Handle error
-	            }
-	        });
-	    }
+				}
+			});
+		}
 
-	    function stripePaymentMethodHandler(result) {
-	        $('#loader').addClass('hide');
-	        if (result.error) {
+		function stripePaymentMethodHandler(result) {
+			$('#loader').addClass('hide');
+			if (result.error) {
 	            // Show error in payment form
-	            $('#StripePaymentErrors').text(result.error.message);
-	            $('#StripePaymentErrors').fadeIn();
-	            $("#stripe-payment-success-3ds").modal('hide');
-	        } else {
-	            $("#stripe-payment-success-3ds").modal('show');
-	            var promo_code = $('#promo_code').val();
-	            var saveCard = $('#Save_Card').is(':checked');
-	            
-	            var dataObj = {
-	                payment_method_id: result.paymentMethod.id,
-	                promo_code: promo_code,
-	                saveCard: saveCard,
-	            };
+				$('#StripePaymentErrors').text(result.error.message);
+				$('#StripePaymentErrors').fadeIn();
+				$("#stripe-payment-success-3ds").modal('hide');
+			} else {
+				$("#stripe-payment-success-3ds").modal('show');
+				var promo_code = $('#promo_code').val();
+				var saveCard = $('#Save_Card').is(':checked');
 
-	            var pMethod = $('input[name="payment_method"]:checked').val();
-	            var price = $('#totalPrice').text().trim();
-	            var mainPrice = price.replace("£", "");
+				var dataObj = {
+					payment_method_id: result.paymentMethod.id,
+					promo_code: promo_code,
+					saveCard: saveCard,
+				};
 
-	            var addressType = $('input[name="address_type"]:checked').val();
-	        	var selectedAddress = $('input[name="select_address"]:checked').val();
-	    		var address = $('input[name="address"]').val();
-	    		var city = $('input[name="city"]').val();
-	    		var zip_code = $('input[name="zip_code"]').val();
-	    		var phone_number = $('input[name="phone_number"]').val();
+				var pMethod = $('input[name="payment_method"]:checked').val();
+				var price = $('#totalPrice').text().trim();
+				var mainPrice = price.replace("£", "");
 
-	            var dataObj = {
-	                payment_method_id: result.paymentMethod.id,
-	                payment_method: pMethod,
-	                promo_code: promo_code,
-	                saveCard: saveCard,
-	                mainPrice: mainPrice,
-	                address_type: addressType,
-	                select_address: selectedAddress,
-	                address: address,
-	                city: city,
-	                zip_code: zip_code,
-	                phone_number: phone_number,
-	            };
+				var selectedAddress = $('input[name="select_address"]:checked').val();
+				var address = $('input[name="address"]').val();
+				var city = $('input[name="city"]').val();
+				var zip_code = $('input[name="zip_code"]').val();
+				var phone_number = $('input[name="phone_number"]').val();
 
-	            $.ajax({
-	                url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
-	                type: 'POST',
-	                data: dataObj,
-	                dataType: 'json',                
-	                success: function(result) {
-	                	if(result.status == 2){
-	                		swal({
-					            title: "Login Required!",
-					            text: "If you want to order the please login first!",
-					            type: "warning"
-					        }, function() {
-					            window.location.href = '<?php echo base_url().'login'; ?>';
-					        });	
-	                	}else{
-	                		handleServerResponse(result);	
-	                	}
-	                },
-	                error: function(xhr, status, error) {
+				var dataObj = {
+					payment_method_id: result.paymentMethod.id,
+					payment_method: pMethod,
+					promo_code: promo_code,
+					saveCard: saveCard,
+					mainPrice: mainPrice,
+					select_address: selectedAddress,
+					address: address,
+					city: city,
+					zip_code: zip_code,
+					phone_number: phone_number,
+				};
+
+				$.ajax({
+					url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
+					type: 'POST',
+					data: dataObj,
+					dataType: 'json',                
+					success: function(result) {
+						if(result.status == 2){
+							swal({
+								title: "Login Required!",
+								text: "If you want to order the please login first!",
+								type: "warning"
+							}, function() {
+								window.location.href = '<?php echo base_url().'login'; ?>';
+							});	
+						}else{
+							handleServerResponse(result);	
+						}
+					},
+					error: function(xhr, status, error) {
 	                    // Handle error
-	                }
-	            });
-	        }
-	    }
+					}
+				});
+			}
+		}
 
-	    function handleServerResponse(response) {
-	    	if (response.error) {
-	            $("#stripe-payment-success-3ds").modal('hide');
-	            swal("Error", response.error, "error");
-	            $("#pay_intent").val('');
+		function handleServerResponse(response) {
+			if (response.error) {
+				$("#stripe-payment-success-3ds").modal('hide');
+				swal("Error", response.error, "error");
+				$("#pay_intent").val('');
 	            // Show error from server on payment form
-	        } else if (response.requires_action) {
-	            stripe.confirmCardPayment(
-	                response.payment_intent_client_secret
-	            ).then(handleStripeJsResult);
-	        } else {
+			} else if (response.requires_action) {
+				stripe.confirmCardPayment(
+					response.payment_intent_client_secret
+					).then(handleStripeJsResult);
+			} else {
 	            // Show success message
-	            $("#stripe-payment-success-3ds").modal('show');
-	            payment_intent_ID = response.intent;
-	            $("#pay_intent").val(payment_intent_ID);
-	            $("#stripe-payment-success-3ds").modal('hide');
-	            submitForm();
-	        }
-	    }
+				$("#stripe-payment-success-3ds").modal('show');
+				payment_intent_ID = response.intent;
+				$("#pay_intent").val(payment_intent_ID);
+				$("#stripe-payment-success-3ds").modal('hide');
+				submitForm();
+			}
+		}
 
-	    function handleStripeJsResult(result) {
+		function handleStripeJsResult(result) {
 	        //console.log(result);
-	        if (result.error) {
-	            $("#stripe-payment-success-3ds").modal('hide');
-	            swal("Error", result.error.message, "error");
-	        } else {
-	        	payment_intent_ID = result.paymentIntent.id;
-		        var pMethod = $('input[name="payment_method"]:checked').val();
-		        var promo_code = $('#promo_code').val();
-	            var price = $('#totalPrice').text().trim();
-	            var mainPrice = price.replace("£", "");
-	            var saveCard = $('#Save_Card').is(':checked');
+			if (result.error) {
+				$("#stripe-payment-success-3ds").modal('hide');
+				swal("Error", result.error.message, "error");
+			} else {
+				payment_intent_ID = result.paymentIntent.id;
+				var pMethod = $('input[name="payment_method"]:checked').val();
+				var promo_code = $('#promo_code').val();
+				var price = $('#totalPrice').text().trim();
+				var mainPrice = price.replace("£", "");
+				var saveCard = $('#Save_Card').is(':checked');
 
-	            var dataObj = {
-	                payment_intent_id: result.paymentIntent.id,
-	                payment_method: pMethod,
-	                promo_code: promo_code,
-	                saveCard: saveCard,
-	                mainPrice: mainPrice,
-	            };
+				var dataObj = {
+					payment_intent_id: result.paymentIntent.id,
+					payment_method: pMethod,
+					promo_code: promo_code,
+					saveCard: saveCard,
+					mainPrice: mainPrice,
+				};
 
-	            $.ajax({
-	                url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
-	                type: 'POST',
-	                dataType: 'json',
-	                data: dataObj,
-	                success: function(confirmResult) {
-	                    handleServerResponse(confirmResult);
-	                },
-	                error: function(xhr, status, error) {
+				$.ajax({
+					url: '<?= site_url().'checkout/placeOrderWithStripe'; ?>',
+					type: 'POST',
+					dataType: 'json',
+					data: dataObj,
+					success: function(confirmResult) {
+						handleServerResponse(confirmResult);
+					},
+					error: function(xhr, status, error) {
 	                    // Handle the error if needed
-	                    console.error('AJAX request failed:', status, error);
-	                }
-	            });
-	        }
-	    }
+						console.error('AJAX request failed:', status, error);
+					}
+				});
+			}
+		}
 
-	    function submitForm(){
-	    	$('#loader').removeClass('hide');
-	        formData = $("#checkoutForm").serialize();
+		function submitForm(){
+			$('#loader').removeClass('hide');
+			formData = $("#checkoutForm").serialize();
 
-	        $.ajax({
-	            url: '<?= site_url().'checkout/placeOrder'; ?>',
-	            type: 'POST',
-	            data: formData,
-	            dataType: 'json',		                
-	            success: function(result) {
-	            	$('#loader').addClass('hide');
-	            	if(result.status == 0){
-	            		swal({
-			            	title: "Error",
-				            text: result.message,
-				            type: "error"
-				        });	
-	            	}else if(result.status == 2){
-	            		swal({
-				            title: "Login Required!",
-				            text: "If you want to order the please login first!",
-				            type: "warning"
-				        }, function() {
-				            window.location.href = '<?php echo base_url().'login'; ?>';
-				        });	
-	            	}else{
+			$.ajax({
+				url: '<?= site_url().'checkout/placeOrder'; ?>',
+				type: 'POST',
+				data: formData,
+				dataType: 'json',		                
+				success: function(result) {
+					$('#loader').addClass('hide');
+					if(result.status == 0){
 						swal({
-				            title: "Success",
-				            text: result.message,
-				            type: "success"
-				        }, function() {
-				        	window.location.href = '<?php echo base_url("my-account"); ?>';
+							title: "Error",
+							text: result.message,
+							type: "error"
+						});	
+					}else if(result.status == 2){
+						swal({
+							title: "Login Required!",
+							text: "If you want to order the please login first!",
+							type: "warning"
+						}, function() {
+							window.location.href = '<?php echo base_url().'login'; ?>';
+						});	
+					}else{
+						swal({
+							title: "Success",
+							text: result.message,
+							type: "success"
+						}, function() {
+							window.location.href = '<?php echo base_url("my-account"); ?>';
 				        	/*$('#order_id').val(result.order_id);
 				        	$('#order_requirement_modal').modal('show');*/
-				        });
-	            	}		                    
-	            },
-	            error: function(xhr, status, error) {
+						});
+					}		                    
+				},
+				error: function(xhr, status, error) {
 	                // Handle error
-	            }
-	        });
-	    }
+				}
+			});
+		}
 		/*Strope Code End*/
 	});
 
-	function submitRequirement(){
-		swal({
-            title: "Submit Attachment",
-            text: "Are you sure you want to submit requirements for this order?",
-            type: "warning",
-            showCancelButton: true,
-	        confirmButtonText: 'Yes, Submit',
-	        cancelButtonText: 'Cancel'
-        }, function() {
-    		$('#loader').removeClass('hide');
-	        formData = $("#order_requirement_form").serialize();
+function submitRequirement(){
+	swal({
+		title: "Submit Attachment",
+		text: "Are you sure you want to submit requirements for this order?",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonText: 'Yes, Submit',
+		cancelButtonText: 'Cancel'
+	}, function() {
+		$('#loader').removeClass('hide');
+		formData = $("#order_requirement_form").serialize();
 
-	        $.ajax({
-	            url: '<?= site_url().'users/submitRequirement'; ?>',
-	            type: 'POST',
-	            data: formData,
-	            dataType: 'json',		                
-	            success: function(result) {
-	            	$('#loader').addClass('hide');
-	            	if(result.status == 0){
-	            		swal({
-			            	title: "Error",
-				            text: result.message,
-				            type: "error"
-				        });	
-	            	}else if(result.status == 2){
-	            		swal({
-				            title: "Login Required!",
-				            text: "If you want to order the please login first!",
-				            type: "warning"
-				        }, function() {
-				            window.location.href = '<?php echo base_url().'login'; ?>';
-				        });	
-	            	}else{
-						swal({
-				            title: "Success",
-				            text: result.message,
-				            type: "success"
-				        }, function() {
-				        	window.location.href = '<?php echo base_url(""); ?>';
-				        });
-	            	}		                    
-	            },
-	            error: function(xhr, status, error) {
+		$.ajax({
+			url: '<?= site_url().'users/submitRequirement'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				$('#loader').addClass('hide');
+				if(result.status == 0){
+					swal({
+						title: "Error",
+						text: result.message,
+						type: "error"
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.href = '<?php echo base_url(""); ?>';
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
 	                // Handle error
-	            }
-	        }); 	
-        });
-	}
-
-	function stopRequirement(){
-		swal({
-            title: "Stop Submit Requirements",
-            text: "Are you sure you don't want to submit requirements for this order?",
-            type: "warning",
-            showCancelButton: true,
-	        confirmButtonText: "Yes, Don't Submit",
-	        cancelButtonText: 'Cancel'
-        }, function() {
-			window.location.href = '<?php echo base_url(""); ?>';
-        });
-	}
-
-	$(document).ready(function() {
-	    // On page load, check the selected radio button and toggle the visibility accordingly
-	    toggleAddressSection();
-
-	    // Listen for changes on the radio buttons
-	    $('input[name="address_type"]').change(function() {
-	        toggleAddressSection();
-	    });
-
-	    function toggleAddressSection() {
-	        // Check which radio button is selected
-	        var selectedValue = $('input[name="address_type"]:checked').val();
-	        
-	        if (selectedValue === 'yes') {
-	            // Show the address section
-	            $('.delivery-address-radio').show();
-	        } else {
-	            // Hide the address section
-	            $('.delivery-address-radio').hide();
-	        }
-	    }
+			}
+		}); 	
 	});
+}
+
+function stopRequirement(){
+	swal({
+		title: "Stop Submit Requirements",
+		text: "Are you sure you don't want to submit requirements for this order?",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Yes, Don't Submit",
+		cancelButtonText: 'Cancel'
+	}, function() {
+		window.location.href = '<?php echo base_url(""); ?>';
+	});
+}
+
+	// $(document).ready(function() {
+	//     // On page load, check the selected radio button and toggle the visibility accordingly
+	//     toggleAddressSection();
+
+	//     // Listen for changes on the radio buttons
+	//     $('input[name="address_type"]').change(function() {
+	//         toggleAddressSection();
+	//     });
+
+	//     function toggleAddressSection() {
+	//         // Check which radio button is selected
+	//         var selectedValue = $('input[name="address_type"]:checked').val();
+
+	//         if (selectedValue === 'yes') {
+	//             // Show the address section
+	//             $('.delivery-address-radio').show();
+	//         } else {
+	//             // Hide the address section
+	//             $('.delivery-address-radio').hide();
+	//         }
+	//     }
+	// });
 
 </script>
 <?php include ("include/footer.php") ?>

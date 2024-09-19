@@ -201,22 +201,21 @@ class Checkout extends CI_Controller
 	}
 
 	public function addAddresssToOrder($data){
-		if ($data['address_type'] == 'yes') {
-		    if ($data['select_address'] > 0) {
-		    	return $data['select_address'];
-		    } else {
-		    	$data1 = array(
-					'user_id'=>$this->session->userdata('user_id'), 
-					'address'=>$data['address'],
-					'city'=>$data['city'],
-					'zip_code'=>$data['zip_code'],
-					'phone_number'=>$data['phone_number'],
-				);				 
-				return $this->common_model->insert('task_addresses',$data1);
-		    }
-		}
 
-		return 0;
+		if($data['select_address']=='no'){
+			return 0;	
+		} else if ($data['select_address'] == 'yes') {
+	    	$data1 = array(
+				'user_id'=>$this->session->userdata('user_id'), 
+				'address'=>$data['address'],
+				'city'=>$data['city'],
+				'zip_code'=>$data['zip_code'],
+				'phone_number'=>$data['phone_number'],
+			);				 
+			return $this->common_model->insert('task_addresses',$data1);
+		} else {
+			return $data['select_address'];
+		}
 	}
 
 	public function placeOrder(){
