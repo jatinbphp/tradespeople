@@ -2428,14 +2428,20 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
 		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
 
+		// echo '<pre>';
+		// print_r($data['service_details']);
+		// exit;
+
 		$data['package_data'] = !empty($data['service_details']['package_data']) ? json_decode($data['service_details']['package_data']) : [];
 
-		$data['referalRating']=$this->common_model->get_referral_code_rating($uId);
-		$data['serviceAvgRating']=$this->common_model->get_service_avg_rating($uId);
+		$data['referalRating'] = $this->common_model->get_referral_code_rating($uId);
+		$data['sellerCommunication'] = $this->common_model->get_service_avg_rating($uId);
+		$data['serviceAsDescribed'] = $data['service_details']['average_rating'];
 		
-		$serviceRating = min($data['serviceAvgRating'][0]['average_rating'], 5);
+		$sellerCommunication = min($data['serviceAvgRating'][0]['average_rating'], 5);
 		$referralRating = min($data['referalRating'], 5);
-		$data['overallRating'] = ($serviceRating + $referralRating) / 2;
+		$serviceAsDescribed = min($data['service_details']['average_rating'], 5);
+		$data['overallRating'] = ($sellerCommunication + $referralRating + $serviceAsDescribed) / 3;
 
 		$attributesArray = [];
 		foreach ($data['package_data'] as $value) {

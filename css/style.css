@@ -9795,9 +9795,9 @@ button.switch-month:hover {
     margin-top: 0;
     margin-bottom: 15px;
 }
-.checkout-form .form-group:last-child {
+/*.checkout-form .form-group:last-child {
     margin-bottom: 0
-}
+}*/
 .checkout-form .form-check label {
     padding: 0;
     margin: 0; 
@@ -10920,6 +10920,32 @@ input:checked + .switch-slider:before {
     width: 100%;
     transition: ease 0.5s;
 }
+.add-new-address-skip-address .address.address-form {
+    width: 100%;
+    display: none;
+}
+.add-new-address-skip-address .skip-address .form-check-input {
+    opacity: 0;
+}
+.add-new-address-skip-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 0 8px;
+    flex-wrap: wrap;
+}
+.add-new-address-skip-address label {
+    margin-right: 30px;
+}
+.delivery-address-radio input[type="radio"] {
+    width: 13px;
+    height: 13px;
+    margin-top: 4px;
+}
+.add-new-address-skip-address .form__radio {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+}
 .delivery-address-radio .address .form-group {
     margin-bottom: 15px;
 }
@@ -10961,10 +10987,6 @@ input:checked + .switch-slider:before {
 .add-new-delivery-address-radio input {
     position: relative;
 }
-.add-new-delivery-address-radio input[type="radio"]:checked ~ .address {
-    display: block;
-}
-
 .submit-requirements {
     border: 1px solid #efeff0;
 }

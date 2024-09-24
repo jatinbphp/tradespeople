@@ -3,6 +3,15 @@ include 'include/header.php';
 $get_commision = $this->common_model->get_commision();
 ?>
 <style type="text/css">
+	.member-summary .member-image{
+		width: 165px;
+		height: 165px;
+		max-width: none;
+		max-height: none;
+	}
+	.order-details{
+		cursor: pointer;
+	}
 	.names{
 		color: #3d78cb;
 	}
@@ -314,7 +323,7 @@ $get_commision = $this->common_model->get_commision();
 
 	.verification-checklist.order-metrics .list .active a{
 		color: #3d78cb;
-		border-bottom: 2px solid #fe8a0f;
+		/*border-bottom: 2px solid #fe8a0f;*/
 		padding-bottom: 8px;
 	}
 
@@ -325,6 +334,44 @@ $get_commision = $this->common_model->get_commision();
 	#approved-btn-div{
 		width: 100%;
 		text-align: center;
+	}
+
+	.rating {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		grid-gap: .5rem;
+		font-size: 2rem;
+		color: var(--yellow);
+		margin-bottom: 2rem;
+	}
+
+	.rating .star {
+		cursor: pointer;
+	}
+
+	.rating .star.active {
+		color: gold;
+		animation: animate .5s calc(var(--i) * .1s) ease-in-out forwards;
+	}
+
+	@keyframes animate {
+		0% {
+			opacity: 0;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.2);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.rating .star:hover {
+		transform: scale(1.1);
 	}
 </style>
 <div class="loader-bg hide" id='loader'>
@@ -352,6 +399,11 @@ $get_commision = $this->common_model->get_commision();
 	                    	<li>
 	                    		<a data-toggle="tab" href="#Delivery">Delivery</a>
 	                    	</li>
+	                    	<?php if($order['status'] == 'completed'):?>
+	                    		<li>
+		                    		<a data-toggle="tab" href="#Rating">Review & Rating</a>
+		                    	</li>
+	                    	<?php endif;?>
 	                    </ul>
 	                </div>
 				</div>
@@ -369,7 +421,7 @@ $get_commision = $this->common_model->get_commision();
 											<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
 										<?php endif; ?>
 									</a>
-									<div class="names" style="width:100%">										
+									<div class="names" style="width:100%">
 										<span>
 											<a href="<?php echo base_url().'service/'.$service['slug']?>">
 												<p>
@@ -383,14 +435,11 @@ $get_commision = $this->common_model->get_commision();
 													?>
 													<?php echo '£'.number_format($order['total_price'],2); ?>
 												</p>
-											</a>
-											<span>
-												<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-											</span>
+											</a>											
 										</span>
 										
 										<span class="badge bg-dark p-2 pl-4 pr-4">
-											<?php echo ucfirst($order['status']) ?>
+											<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 										</span>
 										<span class="pull-right">
 											<span class="mr-3" id="openChat" data-id="<?php echo $service['user_id']?>">Chat</span>
@@ -437,16 +486,22 @@ $get_commision = $this->common_model->get_commision();
 											<span class="delivery-conversation text-left">
 												<?php echo $conversation['description']; ?>
 											</span>
-											<textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea>
+											<form id="approved_order_form" style="width:100%">
+													<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
+													<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
+													<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
+													<input type="hidden" name="status" value="completed">
+													<textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea>
+											</form>
 											<div id="approved-btn-div">
-												<button type="button" id="approved-btn" class="btn btn-warning mr-3">
+												<button type="button" id="approved-btn" class="btn btn-warning mr-3" onclick="submitModification('approved_order_form');">
 													Approve
 												</button>
 												<button type="button" id="modification-btn" class="btn btn-default">
 													Request Modification
 												</button>
 											</div>
-											<div id="modification-div">
+											<div id="modification-div" style="display:none;">
 												<p>
 													Lorem ipsum dolor sit amet . The graphic and typographic operators know this well, in reality all the professions dealing with the universe of communication have a stable relationship with these words, but what is it? Lorem ipsum is a dummy text without any sense.
 												</p>
@@ -454,6 +509,7 @@ $get_commision = $this->common_model->get_commision();
 													<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
 													<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
 													<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
+													<input type="hidden" name="status" value="request_modification">
 													<textarea rows="7" class="form-control" id="modification-decription" name="modification_decription"></textarea>
 													<div class="row">
 														<div id="loader2" class="loader_ajax_small"></div>
@@ -470,7 +526,7 @@ $get_commision = $this->common_model->get_commision();
 													<div class="row" id="previousModificationImg">
 													</div>
 													<div class="text-center">
-														<button type="button" onclick="submitModification()" class="btn btn-warning mr-3">
+														<button type="button" onclick="submitModification('request_modification_form')" class="btn btn-warning mr-3">
 															Submit request
 														</button>
 													</div>
@@ -478,7 +534,7 @@ $get_commision = $this->common_model->get_commision();
 											</div>
 										</div>
 									</li>
-									<li class="timeline-item">
+									<!--<li class="timeline-item">
 										<span class="timeline-item-icon | faded-icon">
 											<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
 										</span>
@@ -495,28 +551,84 @@ $get_commision = $this->common_model->get_commision();
 												<h5>Order Started</h5>
 											</div>
 										</div>
-									</li>
+									</li>-->
 								<?php endif;?>
 
 								<?php if(!empty($all_conversation)):?>
 									<?php foreach($all_conversation as $list):?>
 									<li class="timeline-item">
 										<span class="timeline-item-icon | faded-icon">
-											<i class="fa fa-edit faicon"></i>
+											<?php if($user['id'] == $list['sender']):?>
+												<?php if($list['status'] == 'completed'):?>
+													<i class="fa fa-check-square-o faicon"></i>
+												<?php else:?>
+													<i class="fa fa-edit faicon"></i>
+												<?php endif;?>
+											<?php else: ?>
+												<i class="fa fa-truck faicon"></i>
+											<?php endif; ?>	
 										</span>
 										<div class="timeline-item-description">
-											<h5>Requested Modification</h5>
+											<?php 
+												$conDate = new DateTime($list['created_at']);
+												$conversation_date = $conDate->format('D jS F, Y H:i');
+											?>
+
+											<?php if($user['id'] == $list['sender']):?>
+												<h5>
+													<?php if($list['status'] == 'completed'):?>
+														You approved order
+													<?php else:?>
+														You requested a modification 
+													<?php endif;?>		
+													<span class="text-muted" style="font-size: 12px;">
+														<i><?php echo $conversation_date ?></i>
+													</span>
+												</h5>
+											<?php else: ?>
+												<h5>
+													<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+														<?php echo $tradesman['trading_name']; ?>
+													</a>
+													 delivered your order 
+													<span class="text-muted" style="font-size: 12px;">
+														<i><?php echo $conversation_date ?></i>
+													</span>
+												</h5>
+											<?php endif; ?>
+
 											<span class="delivery-conversation text-left">
-												<?php echo $conversation['description']; ?>
-											</span>											
+												<?php echo $list['description']; ?>
+											</span>
+
+											<?php 
+												$conAttachments = $this->common_model->get_all_data('order_submit_attachments',['conversation_id'=>$list['id']])
+											?>
+
+											<?php if(!empty($conAttachments)):?>
+												<h4 style="width: 100%;">Attachments</h4>
+												<div class="row" style="width: 100%;" id="con_attachments">
+													<?php foreach ($conAttachments as $con_key => $con_value): ?>
+														<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
+														<?php if (file_exists($image_path) && $con_value['attachment']):?>
+															<div class="col-md-4 col-sm-6 col-xs-12">
+																<div class="boxImage imgUp">
+																	<div class="imagePreviewPlus">
+																		<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$con_value['attachment']?>" alt="<?php echo $con_value['id']; ?>">
+																	</div>
+																</div>
+															</div>
+														<?php endif; ?>
+													<?php endforeach; ?>
+												</div>
+											<?php endif; ?>
 										</div>
 									</li>
 									<?php endforeach;?>
 								<?php endif;?>	
 
 								<?php if($order['status'] == 'request_modification'):?>
-
-									<li class="timeline-item">
+									<!--<li class="timeline-item">
 										<span class="timeline-item-icon | faded-icon">
 											<i class="fa fa-edit faicon"></i>
 										</span>
@@ -526,7 +638,7 @@ $get_commision = $this->common_model->get_commision();
 												<?php echo $conversation['description']; ?>
 											</span>											
 										</div>
-									</li>
+									</li>-->
 								<?php endif;?>
 
 								<?php if(!empty($delivery_date)):?>
@@ -551,12 +663,12 @@ $get_commision = $this->common_model->get_commision();
 								<?php endif; ?>
 								
 
-								<li class="timeline-item">
+								<li class="timeline-item order-details">
 									<span class="timeline-item-icon | faded-icon">
 										<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
 									</span>
 									<div class="timeline-item-description" style="width:100%">
-										<h5 id="order-requirement">
+										<h5 id="order-requirement" onclick="toggleOrderReq();"> 
 											Order Requirement Submitted
 											<i class="fa fa-angle-down pull-right"></i>
 										</h5>
@@ -592,12 +704,12 @@ $get_commision = $this->common_model->get_commision();
 										<?php endif; ?>
 									</div>
 								</li>
-								<li class="timeline-item | extra-space" style="padding-bottom: 0; border-bottom: 0;">
+								<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
 									<span class="timeline-item-icon | filled-icon ">
 										<i class="fa fa-calendar faicon" aria-hidden="true"></i>
 									</span>
 									<div class="timeline-item-description" style="width:100%">
-										<h5 id="order-created">
+										<h5 id="order-created" onclick="toggleOrderCreated();">
 											Order Created
 											<i class="fa fa-angle-down pull-right"></i>
 										</h5>
@@ -791,6 +903,53 @@ $get_commision = $this->common_model->get_commision();
 							<?php endif; ?>	
 						</div>
 					</div>
+					<div id="Rating" class="tab-pane fade">
+						<div class="timeline-div bg-white p-5">
+							<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+								<div class="col-md-12 pl-0 text-center">
+									<div class="member-summary">
+										<div class="summary member-summary-section">
+											<div class="member-image-container">
+												<?php 
+												if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+													$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
+												}else{
+													$uprofileImg = base_url('img/default-img.png');
+												}
+												$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
+												?>
+												<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
+											</div>											
+										</div>
+									</div>
+									<span class="mt-3">
+										Based on your expectations, how would you rate the quality of this delivery?
+									</span>
+									<form class="mt-3" id="order_service_review_form" style="width:100%">
+										<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+										<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+										<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+										<div class="rating">
+											<input type="hidden" name="rating" id="ratingValue">
+											 <i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
+									        <i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
+									        <i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
+									        <i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
+									        <i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
+										</div>
+										<div class="review-div">
+											<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
+										</div>
+										<div class="btn-group mt-3">
+											<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
+												Submit
+											</button>											
+										</div>
+									</form>
+								</div>								
+							</div>							
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -976,7 +1135,7 @@ $get_commision = $this->common_model->get_commision();
 
 	/*End Code For Submit Requirement */
 
-	/*Start Code For Submit Request Modification */
+	/* Start Code For Submit Request Modification & Approved Order */
 	const dropArea1 = document.querySelector(".addWorkImage1"),
 		button1 = dropArea1.querySelector("img"),
 		input1 = dropArea1.querySelector("input");
@@ -1044,9 +1203,9 @@ $get_commision = $this->common_model->get_commision();
 		});
 	}
 
-    function submitModification(){
+    function submitModification(frmId){
 		$('#loader').removeClass('hide');
-        formData = $("#request_modification_form").serialize();
+        formData = $("#"+frmId).serialize();
 
         $.ajax({
             url: '<?= site_url().'users/submitModification'; ?>',
@@ -1088,23 +1247,91 @@ $get_commision = $this->common_model->get_commision();
         });
 	}
 
-	/*End Code For Submit Request Modification */
+	/* End Code For Submit Request Modification & Approved Order */
 
-	$(document).ready(function() {
-	    $("#order-requirement").click(function() {
-	        $("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
-	        $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
-	    });
+	/* Start Code For Submit Review & Rating */
+	function giveRating(){
+		$('#loader').removeClass('hide');
+        formData = $("#order_service_review_form").serialize();
 
-	    $("#order-created").click(function() {
-	        $("#order-created-div").slideToggle(); // Toggle the visibility with sliding effect
-	        $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
-	    });
-	});
+        $.ajax({
+            url: '<?= site_url().'users/submitReviewRating'; ?>',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',		                
+            success: function(result) {
+            	$('#loader').addClass('hide');
+            	if(result.status == 0){
+            		swal({
+		            	title: "Error",
+			            text: result.message,
+			            type: "error"
+			        }, function() {
+			        	window.location.reload();
+			        });	
+            	}else if(result.status == 2){
+            		swal({
+			            title: "Login Required!",
+			            text: "If you want to order the please login first!",
+			            type: "warning"
+			        }, function() {
+			            window.location.href = '<?php echo base_url().'login'; ?>';
+			        });	
+            	}else{
+					swal({
+			            title: "Success",
+			            text: result.message,
+			            type: "success"
+			        }, function() {
+			        	window.location.reload();
+			        });
+            	}		                    
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+            }
+        });
+	}
+	/* End Code For Submit Review & Rating */
+
+	function toggleOrderReq(){
+		$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
+	    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+	}
+
+	function toggleOrderCreated(){
+		$("#order-created-div").slideToggle(); // Toggle the visibility with sliding effect
+	    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+	}
 
 	$('#openChat').on('click', function(){
 		get_chat_onclick(<?php echo $service['user_id'];?>, <?php echo $service['id'];?>);
 		showdiv();
 	});
 
+	$('#modification-btn').on('click', function (){
+		$('#modification-div').show();
+	});
+
+	function handleStarClick(index) {
+	    const allStar = document.getElementsByClassName('star');
+	    const ratingValue = document.querySelector('.rating input');
+
+	    if (allStar && ratingValue) {
+	        ratingValue.value = index + 1;
+
+	        for (let i = 0; i < allStar.length; i++) {
+	            allStar[i].classList.remove('active');
+	        }
+
+	        for (let i = 0; i <= index; i++) {
+	            allStar[i].classList.add('active');  // Mark as active
+	        }
+	    } else {
+	        console.error('Rating stars or input element not found.');
+	    }
+
+	    const activeStars = document.getElementsByClassName('star active').length;
+	    $('#ratingValue').val(activeStars);        
+	}
 </script>

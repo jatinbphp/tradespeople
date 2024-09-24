@@ -651,7 +651,7 @@
 												Read Less
 											</p>
 										</div>
-										<div class="location member-summary-section clearfix">
+										<div class="location member-summary-section clearfix mt-3">
 											<div class="location-container crop">
 												<i class="fa fa-map-marker"></i>
 												<?php //echo $service_user['city'];?>
@@ -659,7 +659,7 @@
 												<?php echo $service_details['city_name']; ?>
 											</div>
 										</div>
-										<div class="contact member-summary-section clearfix">
+										<div class="contact member-summary-section clearfix mt-3">
 											<a class="btn btn-warning contact-button" id="contactBtn" rel="nofollow" href="javascript:void(0)">Contact</a>
 										</div>
 									</div>
@@ -675,7 +675,7 @@
 											<p>Seller communication level</p>
 											<div class="star">
 												<span></span> 
-												4.9
+												<?php echo number_format($sellerCommunication[0]['average_rating'],1); ?>
 											</div>
 										</li>
 										<li>
@@ -687,10 +687,9 @@
 										</li>
 										<li>
 											<p>Service as described</p>
-											
 											<div class="star">
 												<span></span> 
-												<?php echo number_format($serviceAvgRating[0]['average_rating'],1); ?>
+												<?php echo number_format($serviceAsDescribed,1); ?>
 											</div>
 										</li>
 									</ul>

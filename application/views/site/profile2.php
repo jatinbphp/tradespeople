@@ -496,7 +496,7 @@
 									<div class="rating">
 										<ul>
 											<li>
-												<p>Overall Rating</p><div class="star"><span></span> <?php echo number_format($overallRating,2); ?></div>
+												<p>Overall Rating</p><div class="star"><span></span> <?php echo number_format($overallRating,1); ?></div>
 											</li>
 
 											<li>
@@ -509,7 +509,7 @@
 											<li>
 												<p>Service as described</p>
 												<div class="star"><span></span>
-													<?php echo !empty($serviceAvgRating[0]['average_rating']) ? number_format($serviceAvgRating[0]['average_rating'],2) : 0; ?>
+													<?php echo !empty($serviceAvgRating[0]['average_rating']) ? number_format($serviceAvgRating[0]['average_rating'],1) : 0; ?>
 												</div>
 											</li>
 										</ul>

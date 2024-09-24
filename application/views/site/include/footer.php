@@ -2493,3 +2493,12 @@ $(document).ready(function(){
 
   video.addEventListener("mouseover", () => playing ? pauseVideo() : playVideo());
 </script>
+
+<?php 
+  if($this->session->flashdata('success')){
+      unset($_SESSION['success']);
+  }
+  if($this->session->flashdata('error')){
+      unset($_SESSION['error']);
+  }
+?>

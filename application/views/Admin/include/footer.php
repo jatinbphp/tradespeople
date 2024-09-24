@@ -163,5 +163,15 @@ $('ul.treeview-menu a').filter(function() {
 <?php  
     unset($_SESSION['msg']);
 ?>
+
+<?php 
+    if($this->session->flashdata('success')){
+        unset($_SESSION['success']);
+    }
+    if($this->session->flashdata('error')){
+        unset($_SESSION['error']);
+    }
+?>
+
 </body>
 </html>

@@ -44,6 +44,10 @@
 		height: 150px;
 		box-shadow: none;
 	}
+	.address-form{display:none}
+	.otherOption{display:none}
+	label{cursor:pointer;margin-right:10px}
+	input[name="select_address"]:checked + label{color:blue}
 </style>
 <div class="loader-bg hide" id='loader'>
 	<span class="loader"></span>
@@ -82,6 +86,7 @@
 								<p>If the task needs to be performed at a physical localtion, Please enter the address where the tasker should come to complete the job.</p>
 
 								<?php 
+
 								if(!empty($task_addresses)) { 
 									foreach ($task_addresses as $key => $value) { ?>
 										<div class="form__radio delivery-address-radio">
@@ -94,57 +99,51 @@
 									}
 								} ?>
 
-								<div class="row">
-									<div class="col-sm-12">
-										<div class="form__radio add-new-delivery-address-radio">
-											<input name="select_address" class="delivery-address" type="radio" value="yes">
-											<label for="address">Add a New Address</label>
-											<div class="address address-form">
-												<div class="row">
-													<div class="col-sm-12">
-														<div class="form-group">
-															<label class="">Address :</label>
-															<input class="form-control" placeholder="Address" name="address" type="text">
-														</div>
-													</div>
+								<div class="add-new-address-skip-address">
 
-													<div class="col-sm-4">
-														<div class="form-group">
-															<label class="">City / Town :</label>
-															<input class="form-control" placeholder="City / Town" name="city" type="text">
-														</div>
-													</div>
+									<input type="radio" name="select_address" value="yes" id="addAddress" class="otherOption">
+								    <label for="addAddress"> + Add a New Address</label>
+								    
+								    <input type="radio" name="select_address" value="no" id="skipAddress" class="otherOption1">
+								    <label for="skipAddress"> Skip Address</label>
 
-													<div class="col-sm-4">
-														<div class="form-group">
-															<label class="">Postcode :</label>
-															<input class="form-control" placeholder="Postcode" name="zip_code" type="text">
-														</div>
-													</div>
-
-													<div class="col-sm-4">
-														<div class="form-group">
-															<label class="">Phone Number :</label>
-															<input class="form-control" placeholder="Phone Number" name="phone_number" type="text">
-														</div>
-													</div>
+									<div class="address address-form">
+										<div class="row">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<label class="">Address :</label>
+													<input class="form-control" placeholder="Address" name="address" type="text">
 												</div>
+											</div>
 
+											<div class="col-sm-4">
+												<div class="form-group">
+													<label class="">City / Town :</label>
+													<input class="form-control" placeholder="City / Town" name="city" type="text">
+												</div>
+											</div>
+
+											<div class="col-sm-4">
+												<div class="form-group">
+													<label class="">Postcode :</label>
+													<input class="form-control" placeholder="Postcode" name="zip_code" type="text">
+												</div>
+											</div>
+
+											<div class="col-sm-4">
+												<div class="form-group">
+													<label class="">Phone Number :</label>
+													<input class="form-control" placeholder="Phone Number" name="phone_number" type="text">
+												</div>
 											</div>
 										</div>
+
 									</div>
-									<div class="col-sm-12">
-										<div class="form-group form__radio">
-											<div class="form-check">
-												<input class="form-check-input" type="radio" name="select_address" value="no" style="margin-right:10px;">
-												<label class="form-check-label">Skip Address</label>
-											</div>
-										</div>
-									</div>
+									
 								</div>
-								<div class="form-group mt-2">
-									<span id='addressErrors' class='text-danger mt-2'></span>
-								</div>
+								
+								<div id='addressErrors' class='text-danger'></div>
+
 							</div>
 
 						</div>
@@ -646,12 +645,18 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 			var selectedAddress = $('input[name="select_address"]:checked').val();
 
 			if(selectedAddress == undefined){
-				$('#addressErrors').text('Please select Address').parent('div').addClass('alert alert-danger');
+				$('#addressErrors').text('Please select Address').addClass('alert alert-danger');
 				$('#addressErrors').fadeIn();
 				return false;
 			} else {
-				$('#addressErrors').text('').parent('div').removeClass('alert alert-danger');
+				$('#addressErrors').text('').removeClass('alert alert-danger');
 				$('#addressErrors').fadeOut();
+			}
+
+			if(selectedAddress=='no'){
+				$('#delivery-address-radio').css('display' , 'none');
+			} else {
+				$('#delivery-address-radio').text('All address fields is required').addClass('alert alert-danger');
 			}
 
 			if(selectedAddress=='yes'){
@@ -662,7 +667,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 				var phone_number = $('input[name="phone_number"]').val();
 
 				if (address === '' || city === '' || zip_code === '' || phone_number === '') {
-					$('#addressErrors').text('All address fields is required').parent('div').addClass('alert alert-danger');
+					$('#addressErrors').text('All address fields is required').addClass('alert alert-danger');
 					$('#addressErrors').fadeIn();
 					return false;
 				}
@@ -1096,6 +1101,15 @@ function stopRequirement(){
 	});
 }
 
+$(document).ready(function() {
+    $('input[name="select_address"]').change(function() {
+        if ($(this).val() === 'yes') {
+            $('.address-form').show(); // Show the div
+        } else {
+            $('.address-form').hide(); // Hide the div
+        }
+    });
+});
 	// $(document).ready(function() {
 	//     // On page load, check the selected radio button and toggle the visibility accordingly
 	//     toggleAddressSection();

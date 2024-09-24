@@ -2397,7 +2397,7 @@ class Users extends CI_Controller
 	        		if($order['status'] == 'completed'){
 	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';	
 	        		}else{
-	        			$status = '<label class="badge bg-dark p-3">'.ucfirst($order['status']).'</label>';
+	        			$status = '<label class="badge bg-dark p-3">'.ucfirst(str_replace('_',' ',$order['status'])).'</label>';
 	        		}	        		
 	        	}
 
@@ -3716,6 +3716,7 @@ class Users extends CI_Controller
 			$insert['sender'] = $tuser_id;
 			$insert['receiver'] = $serviceOrder['user_id'];
 			$insert['order_id'] = $oId;
+			$insert['order_id'] = 'delivered';
 			$insert['description'] = $this->input->post('description');
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 			if($run){
@@ -4356,10 +4357,10 @@ class Users extends CI_Controller
 			$data['selectedExs'] = $existExs;
 			$data['conversation'] = $this->common_model->GetSingleData('order_submit_conversation',['order_id'=>$order['id']]);
 
-			$data['all_conversation']=$this->common_model->get_all_data('order_submit_conversation',['order_id'=>$order['id'], 'sender'=>$user_id]);
+			$data['all_conversation']=$this->common_model->get_all_data('order_submit_conversation',['order_id'=>$order['id']],'id');
 
 			// echo '<pre>';
-			// print_r($data['all_conversation']);
+			// print_r($data);
 			// exit;
 
 			$this->load->view('site/order_tracking',$data);
@@ -4537,10 +4538,24 @@ class Users extends CI_Controller
 		$oId = $this->input->post('order_id');
 		$tuser_id = $this->input->post('tradesman_id');
 		$homeowner_id = $this->input->post('homeowner_id');
-		
+		$status = $this->input->post('status');
+
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		
 		if(!empty($serviceOrder)){
-			$input['status'] = 'request_modification';
+			if($status == 'request_modification'){
+				$description = $this->input->post('modification_decription');
+				$subject = "You received request of modification for order number: “".$serviceOrder['order_id']."”";
+				$flashMsg = 'Modification Request Submited';
+				$flashErrMsg = 'Modification Request Not Submitted';
+			}else{
+				$description = $this->input->post('approve_decription');
+				$subject = "Order approved for order number: “".$serviceOrder['order_id']."”"; 
+				$flashMsg = 'Order Approved';
+				$flashErrMsg = 'Order Not Approved';
+			}
+
+			$input['status'] = $status;
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
@@ -4549,14 +4564,15 @@ class Users extends CI_Controller
 	            'user_id' => $tuser_id,
 	            'service_id' => $serviceOrder['service_id'],
 	            'order_id' => $oId,
-	            'status' => 'request_modification'
+	            'status' => $status
 	        ];
 	        $this->common_model->insert('service_order_status_history', $insert1);
 
 			$insert['sender'] = $homeowner_id;
 			$insert['receiver'] = $tuser_id;			
 			$insert['order_id'] = $oId;
-			$insert['description'] = $this->input->post('modification_decription');
+			$insert['status'] = $status;
+			$insert['description'] = $description;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 			if($run){
 				$mImgs = !empty($this->input->post('multiModificationImgIds')) ? explode(',', $this->input->post('multiModificationImgIds')) : [];
@@ -4574,17 +4590,33 @@ class Users extends CI_Controller
                 $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
                 $newStatus = ucwords(str_replace('_',' ',$status));                
 
-                if($tradesman){
-                    $subject = "You received request of modification for order number: “".$serviceOrder['order_id']."”"; 
+                if($tradesman){                   
                     $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';     
                     $html .= '<p style="margin:0;padding:10px 0px"><b>Description:</b></p>';
                     $html .= '<p style="margin:0;padding:10px 0px">'. $this->input->post('modification_decription').'</p>';                    
                     $this->common_model->send_mail($tradesman['email'],$subject,$html);
                 }		        
 			}
-			echo json_encode(['status' => 'success', 'message' => 'Modification Request Submited']);
+			echo json_encode(['status' => 'success', 'message' => $flashMsg]);
 		}else{
-			echo json_encode(['status' => 'error', 'message' => 'Modification Request Not Submitted']);
+			echo json_encode(['status' => 'error', 'message' => $flashErrMsg]);
 		}
+	}
+
+	public function submitReviewRating(){
+		$insert1 = [
+            'rate_by' => $this->session->userdata('user_id'),
+            'rate_to' => $this->input->post('rate_to'),
+            'order_id' => $this->input->post('order_id'),
+            'service_id' => $this->input->post('service_id'),
+            'rating' => $this->input->post('rating'),
+            'review' => $this->input->post('reviews')
+        ];
+        $run = $this->common_model->insert('service_rating', $insert1);
+        if($run){
+			echo json_encode(['status' => 'success', 'message' => 'Review & Rating submitted successfully']);
+        }else{
+			echo json_encode(['status' => 'error', 'message' => 'Review & Rating not submitted']);
+        }
 	}
 }
