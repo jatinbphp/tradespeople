@@ -2696,11 +2696,13 @@ class Common_model extends CI_Model
 	}
 	function get_all_chats($receiver_id, $sender_id, $post_id)
 	{
-		if($post_id == 0){
+		/*if($post_id == 0){
 			$query = $this->db->query("SELECT * FROM chat WHERE ((sender_id = '$sender_id' and receiver_id = '$receiver_id') or (sender_id = '$receiver_id' and receiver_id = '$sender_id'))");	
 		}else{
 			$query = $this->db->query("SELECT * FROM chat WHERE ((sender_id = '$sender_id' and receiver_id = '$receiver_id') or (sender_id = '$receiver_id' and receiver_id = '$sender_id')) AND post_id = '$post_id'");
-		}
+		}*/
+
+		$query = $this->db->query("SELECT * FROM chat WHERE ((sender_id = '$sender_id' and receiver_id = '$receiver_id') or (sender_id = '$receiver_id' and receiver_id = '$sender_id'))");
 		
 		return $query->result_array();
 	}

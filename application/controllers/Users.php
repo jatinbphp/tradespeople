@@ -2384,14 +2384,15 @@ class Users extends CI_Controller
 	        		$selected1 = $order['status'] == 'pending' ? 'selected' : '';
 		        	$selected2 = $order['status'] == 'active' ? 'selected' : '';
 		        	$selected3 = $order['status'] == 'completed' ? 'selected' : '';
-		        	//$selected3 = $order['status'] == 'delivered' ? 'selected' : '';
 		        	$selected4 = $order['status'] == 'cancelled' ? 'selected' : '';
+		        	$selected5 = $order['status'] == 'request_modification' ? 'selected' : '';
 
 		        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
 	                            <option value="pending" '.$selected1.'>Pending</option>
 	                            <option value="active" '.$selected2.'>Started</option>
 	                            <option value="completed" '.$selected3.'>Completed</option>
 	                            <option value="cancelled" '.$selected4.'>Cancelled</option>
+	                            <option value="request_modification" '.$selected5.'>Request Modification</option>
 	                        </select>';       
 	        	}else{
 	        		if($order['status'] == 'completed'){
@@ -3821,13 +3822,13 @@ class Users extends CI_Controller
 	                    $sent = $this->common_model->send_mail($has_email_noti['email'], $subject, $html, null, $user_namess . ' via Tradespeoplehub');
 	                    
 	                    // Log successful email sending
-	                    $file = 'logFile.txt';
+	                    /*$file = 'logFile.txt';
 	                    $handle = fopen($file, 'a');
 	                    $data = date('Y-m-d h:i:s') . '-----' . $has_email_noti['email'] . "\n";
 	                    if (fwrite($handle, $data) === false) {
 	                        die('Could not write to file');
 	                    }
-	                    fclose($handle);
+	                    fclose($handle);*/
 	                } catch (Exception $e) {
 	                    // Log email sending error
 	                    $file = 'errorLogFile.txt';

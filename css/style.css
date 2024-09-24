@@ -3993,7 +3993,8 @@ a:focus
 }
 .verification-checklist ul.list li {
     border: 0;
-    padding: 28px 0px;
+    /*padding: 28px 0px;*/
+    padding: 28px 28px;
     margin: 0;
     max-width: 130px;
     background-color: #fff;
