@@ -74,10 +74,10 @@
 								<label for="requirement"> What do you need for this order?</label>
 								<textarea rows="5" placeholder="" name="requirement" id="requirement" class="form-control"></textarea>
 							</div>
-							<div class="form-group">
+							<!-- <div class="form-group">
 								<label for="location"> Where is task located?</label>
 								<textarea rows="5" placeholder="" name="location" id="location" class="form-control"></textarea>
-							</div>
+							</div> -->
 
 							<div class="row">
 								<div id="loader1" class="loader_ajax_small"></div>
@@ -108,7 +108,7 @@
 								</div>
 							</div>
 							<div class="btn-group-div">
-								<p><a href="<?php echo base_url('my-account'); ?>">Remind Me Latter</a></p>
+								<p><a href="<?php echo base_url('order-tracking/'.$order['id']); ?>">Remind Me Latter</a></p>
 								<button class="btn btn-success btn-lg sendbtn1" type="submit">Start Order</button>
 							</div>
 						</form>
@@ -118,7 +118,15 @@
 
 			<div class="col-sm-4">
 				<div class="box-border p-4 submit-requirements-sidebar">
-					<h3 style="margin-top: 0; font-weight: bold;"><?php echo $service['service_name'];?></h3>
+
+					<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+					<?php if (file_exists($image_path) && $service['image']): ?>
+						<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+					<?php else: ?>	
+						<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
+					<?php endif; ?>
+
+					<h3 style="margin-top: 10px; font-weight: bold;"><?php echo $service['service_name'];?></h3>
 					<?php if(!empty($ex_services)): ?>
 						<h5 class="mt-3"><b>Extra Services</b></h5>
 						<ul class="fix-block-website">
@@ -294,13 +302,14 @@
 			            window.location.href = '<?php echo base_url().'login'; ?>';
 			        });	
             	}else{
-					swal({
+					/*swal({
 			            title: "Success",
 			            text: result.message,
 			            type: "success"
 			        }, function() {
-			        	window.location.href = '<?php echo base_url().'my-account'; ?>';			        	
-			        });
+			        	window.location.href = '<?php echo base_url('order-tracking/'.$order['id']); ?>';
+			        });*/
+			        window.location.href = '<?php echo base_url('order-tracking/'.$order['id']); ?>';
             	}		                    
             },
             error: function(xhr, status, error) {

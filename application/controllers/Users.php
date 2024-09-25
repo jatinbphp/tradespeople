@@ -2361,7 +2361,7 @@ class Users extends CI_Controller
 		if($this->session->userdata('user_id')) {
 			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),$status,0);
 			$data['totalStatusOrder'] = $this->common_model->getTotalStatusOrder($this->session->userdata('user_id'));
-			$data['statusArr'] = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'all'];
+			$data['statusArr'] = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'disputed', 'all'];
 			$this->load->view('site/my_orders',$data);
 		} else {
 			redirect('login');
@@ -2375,7 +2375,7 @@ class Users extends CI_Controller
 
 	        $data = [];
 
-	        $statusArr = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'all'];
+	        $statusArr = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'disputed', 'all'];
 
 	        foreach($orders as $order) {
 	        	$date = new DateTime($order['created_at']);
@@ -2386,6 +2386,7 @@ class Users extends CI_Controller
 		        	$selected3 = $order['status'] == 'completed' ? 'selected' : '';
 		        	$selected4 = $order['status'] == 'cancelled' ? 'selected' : '';
 		        	$selected5 = $order['status'] == 'request_modification' ? 'selected' : '';
+		        	$selected6 = $order['status'] == 'disputed' ? 'selected' : '';
 
 		        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
 	                            <option value="pending" '.$selected1.'>Pending</option>
@@ -2393,6 +2394,7 @@ class Users extends CI_Controller
 	                            <option value="completed" '.$selected3.'>Completed</option>
 	                            <option value="cancelled" '.$selected4.'>Cancelled</option>
 	                            <option value="request_modification" '.$selected5.'>Request Modification</option>
+	                            <option value="disputed" '.$selected6.'>Disputed</option>
 	                        </select>';
 
 	                if(in_array($order['status'], ['disputed','cancelled'])){
@@ -3723,7 +3725,7 @@ class Users extends CI_Controller
 			$insert['sender'] = $tuser_id;
 			$insert['receiver'] = $serviceOrder['user_id'];
 			$insert['order_id'] = $oId;
-			$insert['order_id'] = 'delivered';
+			$insert['status'] = 'delivered';
 			$insert['description'] = $this->input->post('description');
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 			if($run){
@@ -4231,7 +4233,7 @@ class Users extends CI_Controller
 		$insert['user_id'] = $uId;
 		$insert['order_id'] =  $oId;
 		$insert['requirement'] =  $this->input->post('requirement');
-		$insert['location'] =  $this->input->post('location');
+		// $insert['location'] =  $this->input->post('location');
 
 		$existRequirement = $this->common_model->GetSingleData('order_requirement',['user_id'=>$uId,'order_id'=>$oId]);
 

@@ -3453,7 +3453,8 @@ class Common_model extends CI_Model
 			        SUM(CASE WHEN so.status = 'active' THEN 1 ELSE 0 END) AS total_active,
 			        SUM(CASE WHEN so.status = 'completed' THEN 1 ELSE 0 END) AS total_completed,
 			        SUM(CASE WHEN so.status = 'cancelled' THEN 1 ELSE 0 END) AS total_cancelled,
-			        SUM(CASE WHEN so.status = 'delivered' THEN 1 ELSE 0 END) AS total_delivered
+			        SUM(CASE WHEN so.status = 'delivered' THEN 1 ELSE 0 END) AS total_delivered,
+			        SUM(CASE WHEN so.status = 'disputed' THEN 1 ELSE 0 END) AS total_disputed
 			    FROM
 			        service_order so
 			    JOIN

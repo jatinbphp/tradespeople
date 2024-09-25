@@ -674,7 +674,7 @@ $get_commision = $this->common_model->get_commision();
 										</h5>
 
 										<?php if(!empty($requirements)): ?>
-											<div class="comment" id="requirement-div"  style="display:none;">
+											<div class="comment" id="requirement-div"  style="display:none; width: 100%;">
 												<h4 style="margin-top:0px">Order Requirements</h4>
 												<p><?php echo $requirements['requirement']; ?></p>
 
@@ -971,10 +971,10 @@ $get_commision = $this->common_model->get_commision();
 							<label for="requirement"> What do you need for this order?</label>
 							<textarea rows="5" placeholder="" name="requirement" id="requirement" class="form-control"></textarea>
 						</div>
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<label for="location"> Where is task located?</label>
 							<textarea rows="5" placeholder="" name="location" id="location" class="form-control"></textarea>
-						</div>
+						</div> -->
 						<div class="row">
 							<div id="loader1" class="loader_ajax_small"></div>
 							<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
@@ -1057,9 +1057,12 @@ $get_commision = $this->common_model->get_commision();
 
 <?php include 'include/footer.php'; ?>
 <script>
-	document.getElementById('imageContainer1').addEventListener('click', function() {
-		document.getElementById('modification_attachments').click();
-	});
+	const el = document.getElementById('imageContainer1');
+	if (el) {
+		document.getElementById('imageContainer1').addEventListener('click', function() {
+			document.getElementById('modification_attachments').click();
+		});
+	}	
 
 	document.getElementById('imageContainer2').addEventListener('click', function() {
 		document.getElementById('attachments').click();
@@ -1190,116 +1193,119 @@ $get_commision = $this->common_model->get_commision();
 	/*End Code For Submit Requirement */
 
 	/* Start Code For Submit Request Modification & Approved Order */
-	const dropArea1 = document.querySelector(".addWorkImage1"),
-	button1 = dropArea1.querySelector("img"),
-	input1 = dropArea1.querySelector("input");
-	let file1;
-	var filename1;
+	const el1 = document.getElementsByClassName('addWorkImage1');
+	if(el1){
+		const dropArea1 = document.querySelector(".addWorkImage1"),
+		button1 = dropArea1.querySelector("img"),
+		input1 = dropArea1.querySelector("input");
+		let file1;
+		var filename1;
 
-	button1.onclick = () => {input1.click();};
+		button1.onclick = () => {input1.click();};
 
-	input1.addEventListener("change", function (e) {
-		e.preventDefault();
-		var multiImgIds = $('#multiModificationImgIds').val();    	
-		var file_data = $('#modification_attachments').prop('files')[0];
+		input1.addEventListener("change", function (e) {
+			e.preventDefault();
+			var multiImgIds = $('#multiModificationImgIds').val();    	
+			var file_data = $('#modification_attachments').prop('files')[0];
 
-		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
-		if (validImageTypes.indexOf(file_data.type) == -1) {
-			alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
-			return false;
+			var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
+			if (validImageTypes.indexOf(file_data.type) == -1) {
+				alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+				return false;
+			}
+
+			var form_data = new FormData();
+			form_data.append('file', file_data);
+			form_data.append('conversation_id', 0);
+			$('#loader2').show();
+			$('#previousModificationImg').css('opacity', '0.6');
+			$.ajax({
+				url:site_url+'users/dragDropProjectSubmitAttachment',
+				type: "POST",
+				data: form_data,
+				contentType: false,
+				cache: false,
+				processData:false,
+				dataType:'json',
+				success: function(response){
+					if(response.status == 1){
+						if(multiImgIds != ""){
+							var ids = multiImgIds+','+response.id;
+							$('#multiModificationImgIds').val(ids);
+						}else{
+							$('#multiModificationImgIds').val(response.id);
+						}
+						var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
+						'<div class="boxImage imgUp">'+
+						'<div class="imagePreviewPlus">'+
+						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeModificationImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
+						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+						'</div></div></div>';
+						$('#previousModificationImg').append(portElement);
+						$('#loader2').hide();
+						$('#previousModificationImg').css('opacity', '1');
+					}
+				}
+			});
+		});
+
+		function removeModificationImage(imgId, type){
+			$.ajax({
+				url:site_url+'users/removeOrderSubmitAttachment',
+				type:"POST",
+				data:{'imgId':imgId},
+				success:function(data){
+					$('#portDiv'+imgId).remove();
+					removeIdFromHiddenField(imgId.toString(), 'multiModificationImgIds');
+					alert('Attachment deleted successfully');				
+				}
+			});
 		}
 
-		var form_data = new FormData();
-		form_data.append('file', file_data);
-		form_data.append('conversation_id', 0);
-		$('#loader2').show();
-		$('#previousModificationImg').css('opacity', '0.6');
-		$.ajax({
-			url:site_url+'users/dragDropProjectSubmitAttachment',
-			type: "POST",
-			data: form_data,
-			contentType: false,
-			cache: false,
-			processData:false,
-			dataType:'json',
-			success: function(response){
-				if(response.status == 1){
-					if(multiImgIds != ""){
-						var ids = multiImgIds+','+response.id;
-						$('#multiModificationImgIds').val(ids);
+		function submitModification(frmId){
+			$('#loader').removeClass('hide');
+			formData = $("#"+frmId).serialize();
+
+			$.ajax({
+				url: '<?= site_url().'users/submitModification'; ?>',
+				type: 'POST',
+				data: formData,
+				dataType: 'json',		                
+				success: function(result) {
+					console.log(result);
+					$('#loader').addClass('hide');
+					if(result.status == 0){
+						swal({
+							title: "Error",
+							text: result.message,
+							type: "error"
+						}, function() {
+							window.location.reload();
+						});	
+					}else if(result.status == 2){
+						swal({
+							title: "Login Required!",
+							text: "If you want to order the please login first!",
+							type: "warning"
+						}, function() {
+							window.location.href = '<?php echo base_url().'login'; ?>';
+						});	
 					}else{
-						$('#multiModificationImgIds').val(response.id);
-					}
-					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
-					'<div class="boxImage imgUp">'+
-					'<div class="imagePreviewPlus">'+
-					'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeModificationImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
-					'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-					'</div></div></div>';
-					$('#previousModificationImg').append(portElement);
-					$('#loader2').hide();
-					$('#previousModificationImg').css('opacity', '1');
+						swal({
+							title: "Success",
+							text: result.message,
+							type: "success"
+						}, function() {
+							window.location.reload();
+						});
+					}		                    
+				},
+				error: function(xhr, status, error) {
+	                // Handle error
 				}
-			}
-		});
-	});
-
-	function removeModificationImage(imgId, type){
-		$.ajax({
-			url:site_url+'users/removeOrderSubmitAttachment',
-			type:"POST",
-			data:{'imgId':imgId},
-			success:function(data){
-				$('#portDiv'+imgId).remove();
-				removeIdFromHiddenField(imgId.toString(), 'multiModificationImgIds');
-				alert('Attachment deleted successfully');				
-			}
-		});
-	}
-
-	function submitModification(frmId){
-		$('#loader').removeClass('hide');
-		formData = $("#"+frmId).serialize();
-
-		$.ajax({
-			url: '<?= site_url().'users/submitModification'; ?>',
-			type: 'POST',
-			data: formData,
-			dataType: 'json',		                
-			success: function(result) {
-				console.log(result);
-				$('#loader').addClass('hide');
-				if(result.status == 0){
-					swal({
-						title: "Error",
-						text: result.message,
-						type: "error"
-					}, function() {
-						window.location.reload();
-					});	
-				}else if(result.status == 2){
-					swal({
-						title: "Login Required!",
-						text: "If you want to order the please login first!",
-						type: "warning"
-					}, function() {
-						window.location.href = '<?php echo base_url().'login'; ?>';
-					});	
-				}else{
-					swal({
-						title: "Success",
-						text: result.message,
-						type: "success"
-					}, function() {
-						window.location.reload();
-					});
-				}		                    
-			},
-			error: function(xhr, status, error) {
-                // Handle error
-			}
-		});
-	}
+			});
+		}	
+	}	
 
 	/* End Code For Submit Request Modification & Approved Order */
 
