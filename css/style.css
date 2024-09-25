@@ -11091,3 +11091,18 @@ input:checked + .switch-slider:before {
     line-height: initial;
     font-size: 20px;
 }
+.services-description {
+    display: flex;
+    justify-content: space-between;
+}
+.ellipsis-btn {
+    position: relative;
+}
+.ellipsis-btn button {
+    background: transparent;
+    border: none;
+}
+.ellipsis-btn.open>.dropdown-menu {
+    left: auto;
+    right: 0;
+}

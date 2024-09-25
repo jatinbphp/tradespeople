@@ -54,9 +54,6 @@
 </div>
 <div class="checkout-page">
 	<div class="container">
-
-		
-
 		<div class="checkout-form">
 			<div class="row">
 				<form action="<?= site_url().'checkout/placeOrder'; ?>" id="checkoutForm" method="post">
@@ -75,8 +72,6 @@
 							<?php unset($_SESSION['success']) ?>
 						</div>
 					<?php endif; ?>
-
-
 
 					<div class="col-sm-8">
 						<div class="addressDiv checkout-form mb-4 p-4">
@@ -1019,15 +1014,14 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 							window.location.href = '<?php echo base_url().'login'; ?>';
 						});	
 					}else{
-						swal({
+						/*swal({
 							title: "Success",
 							text: result.message,
 							type: "success"
 						}, function() {
-							window.location.href = '<?php echo base_url("my-account"); ?>';
-				        	/*$('#order_id').val(result.order_id);
-				        	$('#order_requirement_modal').modal('show');*/
-						});
+							window.location.href = '<?php echo base_url("submitRequirements"); ?>';
+						});*/
+						window.location.href = '<?php echo base_url("submitRequirements"); ?>';
 					}		                    
 				},
 				error: function(xhr, status, error) {

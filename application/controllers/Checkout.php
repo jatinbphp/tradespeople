@@ -116,8 +116,34 @@ class Checkout extends CI_Controller
     	}
 
 		$uId = $this->session->userdata('user_id');
+		$latestOrderId = $this->session->userdata('latest_order');
+		$data['order'] = $this->common_model->GetSingleData('service_order',['id'=>$latestOrderId]);
+		$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$data['order']['service_id']]);
 
-		$data = [];
+		$ocDate = new DateTime($data['order']['created_at']);
+		$data['created_date'] = $ocDate->format('D jS F, Y H:i');
+
+		$exsIdsArr = !empty($data['order']['ex_services']) ? explode(',', $data['order']['ex_services']) : [];
+		$exIds = '';
+		if(!empty($exsIdsArr)){
+			foreach($exsIdsArr as $exid){
+				$eId = explode('-', $exid);
+				$exIds .= $eId[0].',';
+			}
+		}
+
+		$ex_services = [];
+
+		if(!empty($exIds)){
+			$ex_services = $this->common_model->get_extra_service('tradesman_extra_service',substr($exIds, 0,-1), $data['order']['service_id']);
+		}
+
+		$data['ex_services'] = $ex_services;
+
+		// echo '<pre>';
+		// print_r($data);
+		// exit;
+
 
 		$this->load->view('site/submit-requirements',$data);
 	}
@@ -394,6 +420,7 @@ class Checkout extends CI_Controller
 				}
 				
 				$this->common_model->delete(['id'=>$latestCartId],'cart');
+				$this->session->set_userdata('latest_order',$newOrder);
 
 				$data['status'] = 1;
 				$data['message'] = 'Your order placed succesfully';

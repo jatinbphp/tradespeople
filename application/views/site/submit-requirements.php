@@ -60,50 +60,83 @@
 						<h2>Thank You for your Purchase</h2>
 						<p><b>A recept wes sent to your email address</b></p>
 					</div>
-					<button type="button" class="btn-close" aria-label="Close">&times;</button>
+					<!-- <button type="button" class="btn-close" aria-label="Close">&times;</button> -->
 				</div>
 			</div>
 
-			<div class="col-sm-8">
-					<div class="submit-requirements">
+			<div class="col-sm-8 checkout-form">
+				<div class="submit-requirements">
 					<h4 class="submit-title">Submit Requirements to Start Your Order</h4>
 					<div class="p-4">
+						<h4>The tradesman needs the following information to start working on your order:</h4>
+						<form method="post" id="order_requirement_form" enctype="multipart/form-data">
+							<div class="form-group">
+								<label for="requirement"> What do you need for this order?</label>
+								<textarea rows="5" placeholder="" name="requirement" id="requirement" class="form-control"></textarea>
+							</div>
+							<div class="form-group">
+								<label for="location"> Where is task located?</label>
+								<textarea rows="5" placeholder="" name="location" id="location" class="form-control"></textarea>
+							</div>
 
-						<h4>The seller needs the following information to start working on your order:</h4>
-						<form>
-						<div class="form-group">
-							<label>1. website link</label>
+							<div class="row">
+								<div id="loader1" class="loader_ajax_small"></div>
+								<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
+									<div class="file-upload-btn addWorkImage imgUp">
+										<div class="btn-text main-label">Attachments</div>
+										<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
+										<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
+										<input type="file" name="attachments" id="attachments">		
+									</div>
+								</div>
+							</div>
+							<input type="hidden" name="multiImgIds" id="multiImgIds">
+							<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
+							<div class="row" id="previousImg">
+							</div>
 
-							<textarea rows="3"></textarea>
-						</div>
-						<div class="form-check">
-								<div class="check-box">
-									<input class="checkbox-effect" id="the" type="checkbox" value="1" name="terms">
-									<label for="the">By clicking at the button you agreed to our<a href="http://localhost/tradespeople/terms-and-conditions" target="_blank" class="ml-1">terms &amp; conditions</a>.</label>
+							<div class="form-group mt-3">
+								<div class="row">
+									<div class="col-sm-12">
+										<div class="form-check" id="term-chk">
+											<div class="check-box">
+												<input class="checkbox-effect" id="terms" type="checkbox" value="1" name="terms"/>
+												<label for="terms">By clicking at the button you agreed to our<a href="<?php echo base_url('terms-and-conditions'); ?>" target="_blank" class="ml-1">terms & conditions</a>.</label>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 							<div class="btn-group-div">
-							<p>Remind Me Latter</p>
-							<button class="btn btn-success btn-lg sendbtn1" type="submit" >Start Order</button>
-						</div>
-							</form>
+								<p><a href="<?php echo base_url('my-account'); ?>">Remind Me Latter</a></p>
+								<button class="btn btn-success btn-lg sendbtn1" type="submit">Start Order</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 
 			<div class="col-sm-4">
 				<div class="box-border p-4 submit-requirements-sidebar">
-					<h4>I will fix block website domain URL form facebook</h4>
-					<ul class="fix-block-website">
-						<li><i class="fa fa-check" aria-hidden="true"></i> 1 Revision</li>
-					</ul>
+					<h3 style="margin-top: 0; font-weight: bold;"><?php echo $service['service_name'];?></h3>
+					<?php if(!empty($ex_services)): ?>
+						<h5 class="mt-3"><b>Extra Services</b></h5>
+						<ul class="fix-block-website">
+							<?php foreach($ex_services as $exs): ?>
+								<li>
+									<i class="fa fa-check" aria-hidden="true"></i> 
+									<?php echo $exs['ex_service_name']; ?>
+								</li>
+							<?php endforeach; ?>	
+						</ul>
+					<?php endif; ?>
 
 					<ul class="status-order">
-						<li><span>Status</span> <span class="bg-warning">Status</span></li>
-						<li><span>Order</span> <span>#F06115ACCoPBc6</span></li>
-						<li><span>Order Date</span> <span>Jul 10, 2020</span></li>
-						<li><span>Quantity</span> <span>X1</span></li>
-						<li><span>Price</span> <span>$9.31</span></li>
+						<li><span>Status</span> <span class="bg-warning"><?php echo ucfirst($order['status'])?></span></li>
+						<li><span>Order</span> <span><?php echo ucfirst($order['order_id'])?></span></li>
+						<li><span>Order Date</span> <span><?php echo $created_date; ?></span></li>
+						<li><span>Quantity</span> <span><?php echo $order['service_qty']; ?></span></li>
+						<li><span>Price</span> <span><?php echo '£'.number_format($order['total_price'],2); ?></span></li>
 					</ul>
 				</div>
 			</div>
@@ -111,3 +144,170 @@
 	</div>
 </div>
 <?php include ("include/footer.php") ?>
+<script>
+	$(document).ready(function(){
+        $("#order_requirement_form").validate({
+            rules: {
+                requirement: "required",
+                location: "required",                
+                terms: "required",                
+            },
+            messages: {
+                requirement: "Please enter requirement for your order",
+                location: "Please enter location for your order",
+                terms: "Please select Terms & Conditions!!!",
+            },
+            errorPlacement: function(error, element) {
+                if (element.attr("name") == "terms") {
+                    error.insertAfter("#term-chk");
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            submitHandler: function(form) {
+	            submitRequirement();
+	        }
+        });     
+    });
+
+
+	document.getElementById('imageContainer2').addEventListener('click', function() {
+		document.getElementById('attachments').click();
+	});
+
+	/*Start Code For Submit Requirement */
+	const dropArea = document.querySelector(".addWorkImage"),
+		button = dropArea.querySelector("img"),
+		input = dropArea.querySelector("input");
+	let file;
+	var filename;
+
+	button.onclick = () => {input.click();};
+
+	input.addEventListener("change", function (e) {
+		e.preventDefault();
+		var multiImgIds = $('#multiImgIds').val();    	
+		var file_data = $('#attachments').prop('files')[0];
+
+		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
+        if (validImageTypes.indexOf(file_data.type) == -1) {
+            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+            return false;
+        }
+
+		var form_data = new FormData();
+		form_data.append('file', file_data);
+		form_data.append('requirement_id', 0);
+		$('#loader1').show();
+		$('#previousImg').css('opacity', '0.6');
+		$.ajax({
+			url:site_url+'users/dragDropRequirementAttachment',
+			type: "POST",
+			data: form_data,
+			contentType: false,
+			cache: false,
+			processData:false,
+			dataType:'json',
+			success: function(response){
+				if(response.status == 1){
+					if(multiImgIds != ""){
+						var ids = multiImgIds+','+response.id;
+						$('#multiImgIds').val(ids);
+					}else{
+						$('#multiImgIds').val(response.id);
+					}
+					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
+						'<div class="boxImage imgUp">'+
+						'<div class="imagePreviewPlus">'+
+						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
+						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+						'</div></div></div>';
+					$('#previousImg').append(portElement);
+					$('#loader1').hide();
+					$('#previousImg').css('opacity', '1');
+				}
+			}
+		});
+	});
+
+	function removeImage(imgId, type){
+		$.ajax({
+			url:site_url+'users/removeAttachment',
+			type:"POST",
+			data:{'imgId':imgId},
+			success:function(data){
+				$('#portDiv'+imgId).remove();
+				removeIdFromHiddenField(imgId.toString(), 'multiImgIds');
+				alert('Attachment deleted successfully');				
+			}
+		});
+	}
+
+	function removeIdFromHiddenField(idToRemove, divId) {
+        var hiddenFieldValue = $('#'+divId).val();
+        var idsArray = hiddenFieldValue.split(',');
+        var newIdsArray = idsArray.filter(function(id) {
+            return id !== idToRemove.toString();
+        });
+        var newHiddenFieldValue = newIdsArray.join(',');
+        $('#'+divId).val(newHiddenFieldValue);        
+    }
+
+    function submitRequirement(){
+    	var termsConditions = $('input[name="terms"]:checked').val();
+
+		if(termsConditions == undefined){
+			swal({
+				title: "Error",
+				text: "Please select Terms & Conditions!!!",
+				type: "error"
+			});	
+
+			return false
+		}
+
+		$('#loader').removeClass('hide');
+        formData = $("#order_requirement_form").serialize();
+
+        $.ajax({
+            url: '<?= site_url().'users/submitRequirement'; ?>',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',		                
+            success: function(result) {
+            	console.log(result);
+            	$('#loader').addClass('hide');
+            	if(result.status == 0){
+            		swal({
+		            	title: "Error",
+			            text: result.message,
+			            type: "error"
+			        }, function() {
+			        	window.location.reload();
+			        });	
+            	}else if(result.status == 2){
+            		swal({
+			            title: "Login Required!",
+			            text: "If you want to order the please login first!",
+			            type: "warning"
+			        }, function() {
+			            window.location.href = '<?php echo base_url().'login'; ?>';
+			        });	
+            	}else{
+					swal({
+			            title: "Success",
+			            text: result.message,
+			            type: "success"
+			        }, function() {
+			        	window.location.href = '<?php echo base_url().'my-account'; ?>';			        	
+			        });
+            	}		                    
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+            }
+        });
+	}
+
+	/*End Code For Submit Requirement */
+</script>

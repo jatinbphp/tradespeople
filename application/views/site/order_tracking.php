@@ -63,7 +63,7 @@ $get_commision = $this->common_model->get_commision();
 	}
 	.img-name{
 		display: flex;
-    	gap: 75px;
+		gap: 75px;
 	}
 	.img-name img{
 		width: 130px;
@@ -163,29 +163,29 @@ $get_commision = $this->common_model->get_commision();
 		color: var(--c-grey-400);
 		flex-wrap: wrap;
 		.delivery-time {
-		    width: 100%;
-		    background: #dddddd;
-		    margin: 0;
-		    list-style: none;
-		    display: flex;
-		    align-items: center;
-		    justify-content: space-around;
-		    border-radius: 10px;
-		    padding: 10px;
-		    text-align: center;
-		    font-size: 15px;
+			width: 100%;
+			background: #dddddd;
+			margin: 0;
+			list-style: none;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			border-radius: 10px;
+			padding: 10px;
+			text-align: center;
+			font-size: 15px;
 		}
 		.delivery-conversation {
-		    width: 100%;
-		    background: #dddddd;
-		    margin: 0;
-		    list-style: none;
-		    display: flex;
-		    align-items: center;
-		    justify-content: space-around;
-		    border-radius: 10px;
-		    padding: 10px;		    
-		    font-size: 15px;
+			width: 100%;
+			background: #dddddd;
+			margin: 0;
+			list-style: none;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			border-radius: 10px;
+			padding: 10px;		    
+			font-size: 15px;
 		}
 		img {
 			flex-shrink: 0;
@@ -386,26 +386,26 @@ $get_commision = $this->common_model->get_commision();
 			<div class="col-md-9">
 				<div class="mjq-sh p-4">					
 					<div class="verification-checklist order-metrics">
-	                    <ul class="list">
-	                    	<li class="active">
-	                    		<a data-toggle="tab" href="#Timeline">Timeline</a>
-		                    </li>
-	                    	<li>
-	                    		<a data-toggle="tab" href="#Details">Details</a>
-	                    	</li>
-	                    	<li>
-	                    		<a data-toggle="tab" href="#Requirements">Requirements</a>
-	                    	</li>
-	                    	<li>
-	                    		<a data-toggle="tab" href="#Delivery">Delivery</a>
-	                    	</li>
-	                    	<?php if($order['status'] == 'completed'):?>
-	                    		<li>
-		                    		<a data-toggle="tab" href="#Rating">Review & Rating</a>
-		                    	</li>
-	                    	<?php endif;?>
-	                    </ul>
-	                </div>
+						<ul class="list">
+							<li class="active">
+								<a data-toggle="tab" href="#Timeline">Timeline</a>
+							</li>
+							<li>
+								<a data-toggle="tab" href="#Details">Details</a>
+							</li>
+							<li>
+								<a data-toggle="tab" href="#Requirements">Requirements</a>
+							</li>
+							<li>
+								<a data-toggle="tab" href="#Delivery">Delivery</a>
+							</li>
+							<?php if($order['status'] == 'completed'):?>
+								<li>
+									<a data-toggle="tab" href="#Rating">Review & Rating</a>
+								</li>
+							<?php endif;?>
+						</ul>
+					</div>
 				</div>
 
 				<div class="tab-content">
@@ -422,20 +422,29 @@ $get_commision = $this->common_model->get_commision();
 										<?php endif; ?>
 									</a>
 									<div class="names" style="width:100%">
-										<span>
+										<span class="services-description">
 											<a href="<?php echo base_url().'service/'.$service['slug']?>">
 												<p>
 													<?php
-														$totalChr = strlen($service['description']);
-														if($totalChr > 50 ){
-															echo substr($service['description'], 0, 50).'...';		
-														}else{
-															echo $service['description'];
-														}
+													$totalChr = strlen($service['description']);
+													if($totalChr > 50 ){
+														echo substr($service['description'], 0, 50).'...';		
+													}else{
+														echo $service['description'];
+													}
 													?>
 													<?php echo '£'.number_format($order['total_price'],2); ?>
 												</p>
-											</a>											
+											</a>
+											<div class="ellipsis-btn">
+												<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+												</button>
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+													<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a></li>
+													<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+												</ul>
+											</div>											
 										</span>
 										
 										<span class="badge bg-dark p-2 pl-4 pr-4">
@@ -445,16 +454,7 @@ $get_commision = $this->common_model->get_commision();
 											<span class="mr-3" id="openChat" data-id="<?php echo $service['user_id']?>">Chat</span>
 											<span class="openRequirementModal" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
 										</span>										
-									</div>
-									<!--<div class="names" style="width:100%">
-										<p class="text-right">
-											<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-										</p>
-										<span class="pull-right">
-											<span class="mr-2" id="openChat" data-id="<?php echo $service['user_id']?>">Chat</span>
-											<span>Submit Requirement</span>
-										</span>
-									</div>-->
+									</div>									
 								</div>
 							</div>
 						</div>
@@ -487,11 +487,11 @@ $get_commision = $this->common_model->get_commision();
 												<?php echo $conversation['description']; ?>
 											</span>
 											<form id="approved_order_form" style="width:100%">
-													<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
-													<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
-													<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
-													<input type="hidden" name="status" value="completed">
-													<textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea>
+												<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
+												<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
+												<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
+												<input type="hidden" name="status" value="completed">
+												<textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea>
 											</form>
 											<div id="approved-btn-div">
 												<button type="button" id="approved-btn" class="btn btn-warning mr-3" onclick="submitModification('approved_order_form');">
@@ -518,7 +518,7 @@ $get_commision = $this->common_model->get_commision();
 																<div class="btn-text main-label">Attachments</div>
 																<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
 																<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
-																<input type="file" name="modification_attachments" id="modification_attachments">		
+																<input type="file" name="modification_attachments" id="modification_attachments">	
 															</div>
 														</div>
 													</div>
@@ -556,74 +556,74 @@ $get_commision = $this->common_model->get_commision();
 
 								<?php if(!empty($all_conversation)):?>
 									<?php foreach($all_conversation as $list):?>
-									<li class="timeline-item">
-										<span class="timeline-item-icon | faded-icon">
-											<?php if($user['id'] == $list['sender']):?>
-												<?php if($list['status'] == 'completed'):?>
-													<i class="fa fa-check-square-o faicon"></i>
-												<?php else:?>
-													<i class="fa fa-edit faicon"></i>
-												<?php endif;?>
-											<?php else: ?>
-												<i class="fa fa-truck faicon"></i>
-											<?php endif; ?>	
-										</span>
-										<div class="timeline-item-description">
-											<?php 
+										<li class="timeline-item">
+											<span class="timeline-item-icon | faded-icon">
+												<?php if($user['id'] == $list['sender']):?>
+													<?php if($list['status'] == 'completed'):?>
+														<i class="fa fa-check-square-o faicon"></i>
+													<?php else:?>
+														<i class="fa fa-edit faicon"></i>
+													<?php endif;?>
+												<?php else: ?>
+													<i class="fa fa-truck faicon"></i>
+												<?php endif; ?>	
+											</span>
+											<div class="timeline-item-description">
+												<?php 
 												$conDate = new DateTime($list['created_at']);
 												$conversation_date = $conDate->format('D jS F, Y H:i');
-											?>
+												?>
 
-											<?php if($user['id'] == $list['sender']):?>
-												<h5>
-													<?php if($list['status'] == 'completed'):?>
-														You approved order
-													<?php else:?>
-														You requested a modification 
-													<?php endif;?>		
-													<span class="text-muted" style="font-size: 12px;">
-														<i><?php echo $conversation_date ?></i>
-													</span>
-												</h5>
-											<?php else: ?>
-												<h5>
-													<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-														<?php echo $tradesman['trading_name']; ?>
-													</a>
-													 delivered your order 
-													<span class="text-muted" style="font-size: 12px;">
-														<i><?php echo $conversation_date ?></i>
-													</span>
-												</h5>
-											<?php endif; ?>
+												<?php if($user['id'] == $list['sender']):?>
+													<h5>
+														<?php if($list['status'] == 'completed'):?>
+															You approved order
+														<?php else:?>
+															You requested a modification 
+														<?php endif;?>		
+														<span class="text-muted" style="font-size: 12px;">
+															<i><?php echo $conversation_date ?></i>
+														</span>
+													</h5>
+												<?php else: ?>
+													<h5>
+														<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+															<?php echo $tradesman['trading_name']; ?>
+														</a>
+														delivered your order 
+														<span class="text-muted" style="font-size: 12px;">
+															<i><?php echo $conversation_date ?></i>
+														</span>
+													</h5>
+												<?php endif; ?>
 
-											<span class="delivery-conversation text-left">
-												<?php echo $list['description']; ?>
-											</span>
+												<span class="delivery-conversation text-left">
+													<?php echo $list['description']; ?>
+												</span>
 
-											<?php 
+												<?php 
 												$conAttachments = $this->common_model->get_all_data('order_submit_attachments',['conversation_id'=>$list['id']])
-											?>
+												?>
 
-											<?php if(!empty($conAttachments)):?>
-												<h4 style="width: 100%;">Attachments</h4>
-												<div class="row" style="width: 100%;" id="con_attachments">
-													<?php foreach ($conAttachments as $con_key => $con_value): ?>
-														<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
-														<?php if (file_exists($image_path) && $con_value['attachment']):?>
-															<div class="col-md-4 col-sm-6 col-xs-12">
-																<div class="boxImage imgUp">
-																	<div class="imagePreviewPlus">
-																		<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$con_value['attachment']?>" alt="<?php echo $con_value['id']; ?>">
+												<?php if(!empty($conAttachments)):?>
+													<h4 style="width: 100%;">Attachments</h4>
+													<div class="row" style="width: 100%;" id="con_attachments">
+														<?php foreach ($conAttachments as $con_key => $con_value): ?>
+															<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
+															<?php if (file_exists($image_path) && $con_value['attachment']):?>
+																<div class="col-md-4 col-sm-6 col-xs-12">
+																	<div class="boxImage imgUp">
+																		<div class="imagePreviewPlus">
+																			<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$con_value['attachment']?>" alt="<?php echo $con_value['id']; ?>">
+																		</div>
 																	</div>
 																</div>
-															</div>
-														<?php endif; ?>
-													<?php endforeach; ?>
-												</div>
-											<?php endif; ?>
-										</div>
-									</li>
+															<?php endif; ?>
+														<?php endforeach; ?>
+													</div>
+												<?php endif; ?>
+											</div>
+										</li>
 									<?php endforeach;?>
 								<?php endif;?>	
 
@@ -758,27 +758,27 @@ $get_commision = $this->common_model->get_commision();
 								<div class="col-md-12">
 									<table class="table table-striped">
 										<thead class="bg-gray">
-                                        	<tr>
-                                                <td colspan="4">
-	                                                <b>Your Order</b>
+											<tr>
+												<td colspan="4">
+													<b>Your Order</b>
 													<span class="ml-2" style="font-size:12px;">
 														<i><?php echo $created_date; ?></i>
 													</span>
-	                                            </td>
-                                            </tr>
-                                            <tr>
-                                                <th>Item</th>                     
-                                                <th>Qty</th>                     
-                                                <th class="text-right">Duration</th> 
-                                                <th class="text-right">Price</th>                                                 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        	<tr>
-                                        		<td>
-                                        			<b><?php echo $service['service_name']; ?></b>
-                                        			<?php if(!empty($attributes)): ?>
-                                        				<ul>
+												</td>
+											</tr>
+											<tr>
+												<th>Item</th>                     
+												<th>Qty</th>                     
+												<th class="text-right">Duration</th> 
+												<th class="text-right">Price</th>                                                 
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													<b><?php echo $service['service_name']; ?></b>
+													<?php if(!empty($attributes)): ?>
+														<ul>
 															<?php foreach($attributes as $att):?>
 																<li>
 																	<?php echo $att['attribute_name']; ?>
@@ -789,193 +789,193 @@ $get_commision = $this->common_model->get_commision();
 													<?php if(!empty($order['ex_services'])):?>
 														<b>Extra Services</b>
 														<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
-	                                        				<ul>
-																<?php foreach($extra_services as $exs):?>
-																	<?php if(in_array($exs['id'], $selectedExs)): ?>
-																		<li>
-																			<?php echo $exs['ex_service_name']; ?>
-																		</li>
-																	<?php endif;?>
-																<?php endforeach; ?>
-															</ul>
-														<?php endif; ?>
-													<?php endif;?>	
-                                        		</td>
-                                        		<td class="text-center">
-                                        			<?php echo $order['service_qty'];?>
-                                        		</td>
-                                        		<td class="text-right"><?php echo $duration.' Days'; ?></td>
-                                        		<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
-                                        	</tr>                                        	
-                                        </tbody>
-                                        <tfoot>
-                                        	<tr class="bg-gray">
-                                        		<td><b>Sub Total</b></td>
-                                        		<td colspan="3" class="text-right">
-                                        			<b>
-                                        			<?php 
-                                        				$subTotal = $order['total_price'] - $order['service_fee'];
-                                        				echo '£'.number_format($subTotal,2); 
-                                        			?>
-                                        			</b>
-                                        		</td>
-                                        	</tr>
-                                        	<tr class="bg-gray">
-                                        		<td><b>Service Fee</b></td>
-                                        		<td colspan="3" class="text-right">
-                                        			<b>
-                                        				<?php echo '£'.number_format($order['service_fee'],2); ?>
-                                        			</b>
-                                        		</td>
-                                        	</tr>
-                                        	<tr class="bg-gray">
-                                        		<td>
-                                        			<b>Total</b>
-                                        		</td>
-                                        		<td colspan="3" class="text-right">
-                                        			<b>
-                                        				<?php echo '£'.number_format($order['total_price'],2); ?>
-                                        			</b>
-                                        		</td>
-                                        	</tr>
-                                        </tfoot>
-                                    </table>
-								</div>
+														<ul>
+															<?php foreach($extra_services as $exs):?>
+																<?php if(in_array($exs['id'], $selectedExs)): ?>
+																	<li>
+																		<?php echo $exs['ex_service_name']; ?>
+																	</li>
+																<?php endif;?>
+															<?php endforeach; ?>
+														</ul>
+													<?php endif; ?>
+												<?php endif;?>	
+											</td>
+											<td class="text-center">
+												<?php echo $order['service_qty'];?>
+											</td>
+											<td class="text-right"><?php echo $duration.' Days'; ?></td>
+											<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
+										</tr>                                        	
+									</tbody>
+									<tfoot>
+										<tr class="bg-gray">
+											<td><b>Sub Total</b></td>
+											<td colspan="3" class="text-right">
+												<b>
+													<?php 
+													$subTotal = $order['total_price'] - $order['service_fee'];
+													echo '£'.number_format($subTotal,2); 
+													?>
+												</b>
+											</td>
+										</tr>
+										<tr class="bg-gray">
+											<td><b>Service Fee</b></td>
+											<td colspan="3" class="text-right">
+												<b>
+													<?php echo '£'.number_format($order['service_fee'],2); ?>
+												</b>
+											</td>
+										</tr>
+										<tr class="bg-gray">
+											<td>
+												<b>Total</b>
+											</td>
+											<td colspan="3" class="text-right">
+												<b>
+													<?php echo '£'.number_format($order['total_price'],2); ?>
+												</b>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
 							</div>
 						</div>
 					</div>
-					<div id="Requirements" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5">
-							<?php if(!empty($requirements)): ?>
-								<div class="comment">
-									<h4 style="margin-top:0px">Order Requirements</h4>
-									<p><?php echo $requirements['requirement']; ?></p>
+				</div>
+				<div id="Requirements" class="tab-pane fade">
+					<div class="timeline-div bg-white p-5">
+						<?php if(!empty($requirements)): ?>
+							<div class="comment">
+								<h4 style="margin-top:0px">Order Requirements</h4>
+								<p><?php echo $requirements['requirement']; ?></p>
 
-									<?php if(!empty($requirements['location'])):?>
-										<h4 style="margin-top:0px">Order Location</h4>
-										<p><?php echo $requirements['location']; ?></p>
-									<?php endif;?>
+								<?php if(!empty($requirements['location'])):?>
+									<h4 style="margin-top:0px">Order Location</h4>
+									<p><?php echo $requirements['location']; ?></p>
+								<?php endif;?>
 
-									<?php if(!empty($attachements)):?>
-										<h4>Order Attachments</h4>
-										<div class="row" id="attachments">
-											<?php foreach ($attachements as $key => $value): ?>
-												<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
-												<?php if (file_exists($image_path) && $value['attachment']):?>
-													<div class="col-md-4 col-sm-6 col-xs-12">
-														<div class="boxImage imgUp">
-															<div class="imagePreviewPlus">
-																<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
-															</div>
+								<?php if(!empty($attachements)):?>
+									<h4>Order Attachments</h4>
+									<div class="row" id="attachments">
+										<?php foreach ($attachements as $key => $value): ?>
+											<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
+											<?php if (file_exists($image_path) && $value['attachment']):?>
+												<div class="col-md-4 col-sm-6 col-xs-12">
+													<div class="boxImage imgUp">
+														<div class="imagePreviewPlus">
+															<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
 														</div>
 													</div>
-												<?php endif; ?>
-											<?php endforeach; ?>
-										</div>
-									<?php endif; ?>
-								</div>
-							<?php else:?>
-								<div class="comment">
-									<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
-								</div>
-							<?php endif; ?>
-						</div>
-					</div>
-					<div id="Delivery" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5" style="height:400px;">
-							<div class="text-center">
-								<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
-							</div>
-							<?php if(!empty($delivery_date)):?>
-								<div class="text-center">
-									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-										<?php echo $tradesman['trading_name'];?> 
-									</a>
-									should deliver this order by <?php echo $delivery_date; ?>
-								</div>
-							<?php else:?>
-								<div class="text-center">
-									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-										<?php echo $tradesman['trading_name'];?>
-									</a> 
-									should deliver this order as soon as
-								</div>
-							<?php endif; ?>	
-						</div>
-					</div>
-					<div id="Rating" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5">
-							<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-								<div class="col-md-12 pl-0 text-center">
-									<div class="member-summary">
-										<div class="summary member-summary-section">
-											<div class="member-image-container">
-												<?php 
-												if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-													$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
-												}else{
-													$uprofileImg = base_url('img/default-img.png');
-												}
-												$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
-												?>
-												<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
-											</div>											
-										</div>
+												</div>
+											<?php endif; ?>
+										<?php endforeach; ?>
 									</div>
-									<span class="mt-3">
-										Based on your expectations, how would you rate the quality of this delivery?
-									</span>
-									<form class="mt-3" id="order_service_review_form" style="width:100%">
-										<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-										<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
-										<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
-										<div class="rating">
-											<input type="hidden" name="rating" id="ratingValue">
-											 <i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
-									        <i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
-									        <i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
-									        <i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
-									        <i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
-										</div>
-										<div class="review-div">
-											<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
-										</div>
-										<div class="btn-group mt-3">
-											<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
-												Submit
-											</button>											
-										</div>
-									</form>
-								</div>								
-							</div>							
+								<?php endif; ?>
+							</div>
+						<?php else:?>
+							<div class="comment">
+								<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
+							</div>
+						<?php endif; ?>
+					</div>
+				</div>
+				<div id="Delivery" class="tab-pane fade">
+					<div class="timeline-div bg-white p-5" style="height:400px;">
+						<div class="text-center">
+							<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
 						</div>
+						<?php if(!empty($delivery_date)):?>
+							<div class="text-center">
+								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+									<?php echo $tradesman['trading_name'];?> 
+								</a>
+								should deliver this order by <?php echo $delivery_date; ?>
+							</div>
+						<?php else:?>
+							<div class="text-center">
+								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+									<?php echo $tradesman['trading_name'];?>
+								</a> 
+								should deliver this order as soon as
+							</div>
+						<?php endif; ?>	
+					</div>
+				</div>
+				<div id="Rating" class="tab-pane fade">
+					<div class="timeline-div bg-white p-5">
+						<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+							<div class="col-md-12 pl-0 text-center">
+								<div class="member-summary">
+									<div class="summary member-summary-section">
+										<div class="member-image-container">
+											<?php 
+											if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+												$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
+											}else{
+												$uprofileImg = base_url('img/default-img.png');
+											}
+											$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
+											?>
+											<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
+										</div>											
+									</div>
+								</div>
+								<span class="mt-3">
+									Based on your expectations, how would you rate the quality of this delivery?
+								</span>
+								<form class="mt-3" id="order_service_review_form" style="width:100%">
+									<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+									<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+									<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+									<div class="rating">
+										<input type="hidden" name="rating" id="ratingValue">
+										<i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
+										<i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
+										<i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
+										<i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
+										<i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
+									</div>
+									<div class="review-div">
+										<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
+									</div>
+									<div class="btn-group mt-3">
+										<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
+											Submit
+										</button>											
+									</div>
+								</form>
+							</div>								
+						</div>							
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+</div>
 
 <div class="modal fade in" id="order_requirement_modal">
- 	<div class="modal-body" id="msg">
-    	<div class="modal-dialog modal-lg">	 
-	       	<div class="modal-content">         	
-		  		<form method="post" id="order_requirement_form" enctype="multipart/form-data">
-		        	<div class="modal-header">
-		            	<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
-		            	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-		            	<h4 class="modal-title">Add Order Requirement</h4>
-		          	</div>
-		          	<div class="modal-body form_width100">
-		          		<div class="form-group">
-							<label for="email"> What do you need for this order?</label>
+	<div class="modal-body" id="msg">
+		<div class="modal-dialog modal-lg">	 
+			<div class="modal-content">         	
+				<form method="post" id="order_requirement_form" enctype="multipart/form-data">
+					<div class="modal-header">
+						<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+						<h4 class="modal-title">Add Order Requirement</h4>
+					</div>
+					<div class="modal-body form_width100">
+						<div class="form-group">
+							<label for="requirement"> What do you need for this order?</label>
 							<textarea rows="5" placeholder="" name="requirement" id="requirement" class="form-control"></textarea>
-			 			</div>
-			 			<div class="form-group">
-							<label for="email"> Where is task located?</label>
+						</div>
+						<div class="form-group">
+							<label for="location"> Where is task located?</label>
 							<textarea rows="5" placeholder="" name="location" id="location" class="form-control"></textarea>
-			 			</div>
-			 			<div class="row">
+						</div>
+						<div class="row">
 							<div id="loader1" class="loader_ajax_small"></div>
 							<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 								<div class="file-upload-btn addWorkImage imgUp">
@@ -989,17 +989,71 @@ $get_commision = $this->common_model->get_commision();
 						<input type="hidden" name="multiImgIds" id="multiImgIds">	
 						<div class="row" id="previousImg">
 						</div>
-		          	</div>
-		          	<div class="modal-footer">
-			          	<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
-			          	<button type="button" class="btn btn-info signup_btn" onclick="submitRequirement()">Save</button>
-			            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		          	</div>
-			   	</form>
-	        </div>			
-      	</div>
-    </div>
- </div>
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
+						<button type="button" class="btn btn-info signup_btn" onclick="submitRequirement()">Save</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>			
+		</div>
+	</div>
+</div>
+
+<div class="modal fade in" id="order_dispute_modal">
+	<div class="modal-body" id="msg">
+		<div class="modal-dialog modal-lg">	 
+			<div class="modal-content">         	
+				<form method="post" id="order_dispute_form" enctype="multipart/form-data">
+					<div class="modal-header">
+						<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+						<h4 class="modal-title">Dispute Order</h4>
+					</div>
+					<div class="modal-body form_width100">
+						<div class="form-group">
+							<label for="reason"> Reason of Dispute</label>
+							<textarea rows="5" placeholder="" name="reason" id="reason" class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
+						<button type="button" class="btn btn-info signup_btn" onclick="disputeOrder()">Submit</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>			
+		</div>
+	</div>
+</div>
+
+<div class="modal fade in" id="order_cancel_modal">
+	<div class="modal-body" id="msg">
+		<div class="modal-dialog modal-lg">	 
+			<div class="modal-content">         	
+				<form method="post" id="order_cancel_form" enctype="multipart/form-data">
+					<div class="modal-header">
+						<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+						<h4 class="modal-title">Cancel Order</h4>
+					</div>
+					<div class="modal-body form_width100">
+						<div class="form-group">
+							<label for="reason"> Reason of Cancel</label>
+							<textarea rows="5" placeholder="" name="reason" id="reason" class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
+						<button type="button" class="btn btn-info signup_btn" onclick="cancelOrder()">Submit</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>			
+		</div>
+	</div>
+</div>
 
 <?php include 'include/footer.php'; ?>
 <script>
@@ -1013,8 +1067,8 @@ $get_commision = $this->common_model->get_commision();
 
 	/*Start Code For Submit Requirement */
 	const dropArea = document.querySelector(".addWorkImage"),
-		button = dropArea.querySelector("img"),
-		input = dropArea.querySelector("input");
+	button = dropArea.querySelector("img"),
+	input = dropArea.querySelector("input");
 	let file;
 	var filename;
 
@@ -1026,10 +1080,10 @@ $get_commision = $this->common_model->get_commision();
 		var file_data = $('#attachments').prop('files')[0];
 
 		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
-        if (validImageTypes.indexOf(file_data.type) == -1) {
-            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
-            return false;
-        }
+		if (validImageTypes.indexOf(file_data.type) == -1) {
+			alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+			return false;
+		}
 
 		var form_data = new FormData();
 		form_data.append('file', file_data);
@@ -1053,11 +1107,11 @@ $get_commision = $this->common_model->get_commision();
 						$('#multiImgIds').val(response.id);
 					}
 					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
-						'<div class="boxImage imgUp">'+
-						'<div class="imagePreviewPlus">'+
-						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
-						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-						'</div></div></div>';
+					'<div class="boxImage imgUp">'+
+					'<div class="imagePreviewPlus">'+
+					'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
+					'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+					'</div></div></div>';
 					$('#previousImg').append(portElement);
 					$('#loader1').hide();
 					$('#previousImg').css('opacity', '1');
@@ -1080,65 +1134,65 @@ $get_commision = $this->common_model->get_commision();
 	}
 
 	function removeIdFromHiddenField(idToRemove, divId) {
-        var hiddenFieldValue = $('#'+divId).val();
-        var idsArray = hiddenFieldValue.split(',');
-        var newIdsArray = idsArray.filter(function(id) {
-            return id !== idToRemove.toString();
-        });
-        var newHiddenFieldValue = newIdsArray.join(',');
-        $('#'+divId).val(newHiddenFieldValue);        
-    }
+		var hiddenFieldValue = $('#'+divId).val();
+		var idsArray = hiddenFieldValue.split(',');
+		var newIdsArray = idsArray.filter(function(id) {
+			return id !== idToRemove.toString();
+		});
+		var newHiddenFieldValue = newIdsArray.join(',');
+		$('#'+divId).val(newHiddenFieldValue);        
+	}
 
-    function submitRequirement(){
+	function submitRequirement(){
 		$('#loader').removeClass('hide');
-        formData = $("#order_requirement_form").serialize();
+		formData = $("#order_requirement_form").serialize();
 
-        $.ajax({
-            url: '<?= site_url().'users/submitRequirement'; ?>',
-            type: 'POST',
-            data: formData,
-            dataType: 'json',		                
-            success: function(result) {
-            	console.log(result);
-            	$('#loader').addClass('hide');
-            	if(result.status == 0){
-            		swal({
-		            	title: "Error",
-			            text: result.message,
-			            type: "error"
-			        }, function() {
-			        	window.location.reload();
-			        });	
-            	}else if(result.status == 2){
-            		swal({
-			            title: "Login Required!",
-			            text: "If you want to order the please login first!",
-			            type: "warning"
-			        }, function() {
-			            window.location.href = '<?php echo base_url().'login'; ?>';
-			        });	
-            	}else{
+		$.ajax({
+			url: '<?= site_url().'users/submitRequirement'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				console.log(result);
+				$('#loader').addClass('hide');
+				if(result.status == 0){
 					swal({
-			            title: "Success",
-			            text: result.message,
-			            type: "success"
-			        }, function() {
-			        	window.location.reload();
-			        });
-            	}		                    
-            },
-            error: function(xhr, status, error) {
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
                 // Handle error
-            }
-        });
+			}
+		});
 	}
 
 	/*End Code For Submit Requirement */
 
 	/* Start Code For Submit Request Modification & Approved Order */
 	const dropArea1 = document.querySelector(".addWorkImage1"),
-		button1 = dropArea1.querySelector("img"),
-		input1 = dropArea1.querySelector("input");
+	button1 = dropArea1.querySelector("img"),
+	input1 = dropArea1.querySelector("input");
 	let file1;
 	var filename1;
 
@@ -1150,10 +1204,10 @@ $get_commision = $this->common_model->get_commision();
 		var file_data = $('#modification_attachments').prop('files')[0];
 
 		var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
-        if (validImageTypes.indexOf(file_data.type) == -1) {
-            alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
-            return false;
-        }
+		if (validImageTypes.indexOf(file_data.type) == -1) {
+			alert("Please upload a valid image file (GIF, JPEG, JPG, PNG, or WEBP).");
+			return false;
+		}
 
 		var form_data = new FormData();
 		form_data.append('file', file_data);
@@ -1177,11 +1231,11 @@ $get_commision = $this->common_model->get_commision();
 						$('#multiModificationImgIds').val(response.id);
 					}
 					var portElement = '<div class="col-md-4 col-sm-6 col-xs-12" id="portDiv'+response.id+'">' +
-						'<div class="boxImage imgUp">'+
-						'<div class="imagePreviewPlus">'+
-						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeModificationImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
-						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-						'</div></div></div>';
+					'<div class="boxImage imgUp">'+
+					'<div class="imagePreviewPlus">'+
+					'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeModificationImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
+					'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
+					'</div></div></div>';
 					$('#previousModificationImg').append(portElement);
 					$('#loader2').hide();
 					$('#previousModificationImg').css('opacity', '1');
@@ -1203,48 +1257,48 @@ $get_commision = $this->common_model->get_commision();
 		});
 	}
 
-    function submitModification(frmId){
+	function submitModification(frmId){
 		$('#loader').removeClass('hide');
-        formData = $("#"+frmId).serialize();
+		formData = $("#"+frmId).serialize();
 
-        $.ajax({
-            url: '<?= site_url().'users/submitModification'; ?>',
-            type: 'POST',
-            data: formData,
-            dataType: 'json',		                
-            success: function(result) {
-            	console.log(result);
-            	$('#loader').addClass('hide');
-            	if(result.status == 0){
-            		swal({
-		            	title: "Error",
-			            text: result.message,
-			            type: "error"
-			        }, function() {
-			        	window.location.reload();
-			        });	
-            	}else if(result.status == 2){
-            		swal({
-			            title: "Login Required!",
-			            text: "If you want to order the please login first!",
-			            type: "warning"
-			        }, function() {
-			            window.location.href = '<?php echo base_url().'login'; ?>';
-			        });	
-            	}else{
+		$.ajax({
+			url: '<?= site_url().'users/submitModification'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				console.log(result);
+				$('#loader').addClass('hide');
+				if(result.status == 0){
 					swal({
-			            title: "Success",
-			            text: result.message,
-			            type: "success"
-			        }, function() {
-			        	window.location.reload();
-			        });
-            	}		                    
-            },
-            error: function(xhr, status, error) {
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
                 // Handle error
-            }
-        });
+			}
+		});
 	}
 
 	/* End Code For Submit Request Modification & Approved Order */
@@ -1252,47 +1306,139 @@ $get_commision = $this->common_model->get_commision();
 	/* Start Code For Submit Review & Rating */
 	function giveRating(){
 		$('#loader').removeClass('hide');
-        formData = $("#order_service_review_form").serialize();
+		formData = $("#order_service_review_form").serialize();
 
-        $.ajax({
-            url: '<?= site_url().'users/submitReviewRating'; ?>',
-            type: 'POST',
-            data: formData,
-            dataType: 'json',		                
-            success: function(result) {
-            	$('#loader').addClass('hide');
-            	if(result.status == 0){
-            		swal({
-		            	title: "Error",
-			            text: result.message,
-			            type: "error"
-			        }, function() {
-			        	window.location.reload();
-			        });	
-            	}else if(result.status == 2){
-            		swal({
-			            title: "Login Required!",
-			            text: "If you want to order the please login first!",
-			            type: "warning"
-			        }, function() {
-			            window.location.href = '<?php echo base_url().'login'; ?>';
-			        });	
-            	}else{
+		$.ajax({
+			url: '<?= site_url().'users/submitReviewRating'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				$('#loader').addClass('hide');
+				if(result.status == 0){
 					swal({
-			            title: "Success",
-			            text: result.message,
-			            type: "success"
-			        }, function() {
-			        	window.location.reload();
-			        });
-            	}		                    
-            },
-            error: function(xhr, status, error) {
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
                 // Handle error
-            }
-        });
+			}
+		});
 	}
 	/* End Code For Submit Review & Rating */
+
+	/* Start Code For Dispute Order */
+
+	function disputeOrder(){
+		$('#loader').removeClass('hide');
+		formData = $("#order_dispute_form").serialize();
+
+		$.ajax({
+			url: '<?= site_url().'users/orderDispute'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				$('#loader').addClass('hide');
+				if(result.status == 0){
+					swal({
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
+                // Handle error
+			}
+		});
+	}
+	/* End Code For Dispute Order */
+
+	/* Start Code For Dispute Order */
+
+	function cancelOrder(){
+		$('#loader').removeClass('hide');
+		formData = $("#order_cancel_form").serialize();
+
+		$.ajax({
+			url: '<?= site_url().'users/orderCancel'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				$('#loader').addClass('hide');
+				if(result.status == 0){
+					swal({
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
+                // Handle error
+			}
+		});
+	}
+	/* End Code For Dispute Order */
 
 	function toggleOrderReq(){
 		$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
@@ -1314,21 +1460,21 @@ $get_commision = $this->common_model->get_commision();
 	});
 
 	function handleStarClick(index) {
-	    const allStar = document.getElementsByClassName('star');
-	    const ratingValue = document.querySelector('.rating input');
+		const allStar = document.getElementsByClassName('star');
+		const ratingValue = document.querySelector('.rating input');
 
-	    if (allStar && ratingValue) {
-	        ratingValue.value = index + 1;
+		if (allStar && ratingValue) {
+			ratingValue.value = index + 1;
 
-	        for (let i = 0; i < allStar.length; i++) {
-	            allStar[i].classList.remove('active');
-	        }
+			for (let i = 0; i < allStar.length; i++) {
+				allStar[i].classList.remove('active');
+			}
 
-	        for (let i = 0; i <= index; i++) {
+			for (let i = 0; i <= index; i++) {
 	            allStar[i].classList.add('active');  // Mark as active
 	        }
 	    } else {
-	        console.error('Rating stars or input element not found.');
+	    	console.error('Rating stars or input element not found.');
 	    }
 
 	    const activeStars = document.getElementsByClassName('star active').length;

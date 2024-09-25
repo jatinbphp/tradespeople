@@ -101,6 +101,29 @@
     </div>
 </div>
 
+<div class="modal fade in" id="order_reason_modal">
+    <div class="modal-body" id="msg">
+        <div class="modal-dialog modal-lg">  
+            <div class="modal-content">             
+                <form method="post" id="order_requirement_form" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title" id="reasonTitle"></h4>
+                    </div>
+                    <div class="modal-body form_width100">
+                        <h4 style="margin-top:0px" id="orderReason"></h4>
+                        <div class="row" id="reason"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>          
+        </div>
+    </div>
+ </div>
+
 <div class="modal fade in" id="order_requirement_modal">
     <div class="modal-body" id="msg">
         <div class="modal-dialog modal-lg">  
@@ -155,16 +178,36 @@ $(function () {
             { "data": "service_name", "render": function(data, type, row) {
                if (row.service_name.file) {
                     if (row.service_name.file.endsWith('.mp4')) {
+                        <?php if($this->session->userdata('type') == 1):?>
                         return '<video class="mr-4" width="100" controls autoplay><source src="'+site_url+'img/services/'+row.service_name.file+'" type="video/mp4">Your browser does not support the video tag.</video>';
+                        <?php endif; ?>
+                        <?php if($this->session->userdata('type') == 2):?>
+                            return '<a href="'+row.service_name.link+'"><video class="mr-4" width="100" controls autoplay><source src="'+site_url+'img/services/'+row.service_name.file+'" type="video/mp4">Your browser does not support the video tag.</video></a>';
+                        <?php endif; ?>
                     } else {
-                        return '<img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="100">';
+                        <?php if($this->session->userdata('type') == 1):?>
+                            return '<img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="100">';
+                        <?php endif; ?>
+                        <?php if($this->session->userdata('type') == 2):?>
+                            return '<a href="'+row.service_name.link+'"><img class="mr-4" src="'+site_url+'img/services/'+row.service_name.file+'" alt="Service Image" width="100"></a>';
+                        <?php endif; ?>
                     }
                 } else {
-                    return '<img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="100">';
+                    <?php if($this->session->userdata('type') == 1):?>
+                        return '<img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="100">';
+                    <?php endif; ?>
+                    <?php if($this->session->userdata('type') == 2):?>
+                        return '<a href="'+row.service_name.link+'"><img class="mr-4" src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="100"></a>';
+                    <?php endif; ?>
                 }
             }},
             { "data": "service_name", "render": function(data, type, row) {
-                return row.service_name.service_name;                    
+                <?php if($this->session->userdata('type') == 1):?>
+                    return row.service_name.service_name;
+                <?php endif; ?>
+                <?php if($this->session->userdata('type') == 2):?>
+                    return '<a href="'+row.service_name.link+'">'+row.service_name.service_name+'</a>';
+                <?php endif; ?>
             }},
             { "data": "created_at"},
             { "data": "total_price"},
@@ -260,6 +303,36 @@ $('#boottable tbody').on('click', '.requirements', function (event) {
                 $('#order_requirement_modal').modal('show');
             }else{
                 alert('Order requirement not found.');
+            }
+        }
+    });
+});
+
+$('#boottable tbody').on('click', '.orderReason', function (event) {
+    event.preventDefault();
+    var oId = $(this).data('id');
+
+    $.ajax({
+        type:'POST',
+        url:site_url+'users/getOrderReason',
+        data:{oId:oId},
+        dataType:'json',
+        success:function(data){
+            if(data.status == 1){
+                if(data.order_status == 'cancelled'){
+                    $('#reasonTitle').text('Order Cancelled');
+                    $('#orderReason').text('Reason For Cancelled');
+                }
+
+                if(data.order_status == 'disputed'){
+                    $('#reasonTitle').text('Order Disputed');
+                    $('#orderReason').text('Reason For Disputed');
+                }
+
+                $('#reason').html(data.reason);
+                $('#order_reason_modal').modal('show');
+            }else{
+                alert('Reason not found.');
             }
         }
     });

@@ -2393,7 +2393,11 @@ class Users extends CI_Controller
 	                            <option value="completed" '.$selected3.'>Completed</option>
 	                            <option value="cancelled" '.$selected4.'>Cancelled</option>
 	                            <option value="request_modification" '.$selected5.'>Request Modification</option>
-	                        </select>';       
+	                        </select>';
+
+	                if(in_array($order['status'], ['disputed','cancelled'])){
+						$status .= '<span class="text-danger orderReason" data-id="'.$order['id'].'">View Reason</span>';
+	                }
 	        	}else{
 	        		if($order['status'] == 'completed'){
 	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';	
@@ -2406,8 +2410,10 @@ class Users extends CI_Controller
 
 	        	$viewOrder = '<a class="btn btn-anil_btn nx_btn" href="'.base_url('order-tracking/'.$order['id']).'">View Orders</a>';
 
+	        	$link = base_url('order-tracking/'.$order['id']);
+
 	          	$data[] = [
-		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name']),
+		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name'], 'link'=>$link),
 		            'created_at' => $date->format('F j, Y'),
 		            'total_price' => '£'.number_format($order['total_price'],2),
 		            'status' => $status,
@@ -4288,6 +4294,19 @@ class Users extends CI_Controller
 		echo json_encode($data);			
 	}
 
+	public function getOrderReason(){
+		$oId =  $this->input->post('oId');
+		$user_id = $this->session->userdata('user_id');
+		$order = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		$data['status'] = 0;
+		if(!empty($order)){
+			$data['order_status'] = $order['status'];
+			$data['reason'] = '<div class="col-md-12"><p>'.$order['reason'].'</p></div>';
+			$data['status'] = 1;
+		}
+		echo json_encode($data);			
+	}
+
 	public function order_tracking($id=""){
 		if(!$id){
 			redirect(base_url());
@@ -4619,5 +4638,85 @@ class Users extends CI_Controller
         }else{
 			echo json_encode(['status' => 'error', 'message' => 'Review & Rating not submitted']);
         }
+	}
+
+	public function orderDispute(){
+		$oId = $this->input->post('order_id');
+		$reason = $this->input->post('reason');
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+
+		$input['status'] = 'disputed';
+		$input['reason'] = $reason;
+		$input['status_update_time'] = date('Y-m-d H:i:s');
+		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
+		if($run){
+			$hId = $this->session->userdata('user_id');
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+            $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+            $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
+
+			/*Manage Order History*/
+            $insert1 = [
+	            'user_id' => $hId,
+	            'service_id' => $serviceOrder['service_id'],
+	            'order_id' => $oId,
+	            'status' => 'disputed'
+	        ];
+	        $this->common_model->insert('service_order_status_history', $insert1);
+
+			/*Tradesman Email Code*/
+            if($tradesman){
+            	$subject = "Order disputed for order number: “".$serviceOrder['order_id']."”"; 
+
+                $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
+                $html = '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is disputed</p>';                
+                $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Dispute:</b></p>';
+                $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
+                $this->common_model->send_mail($tradesman['email'],$subject,$html);
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not disputed.']);
+		}
+	}
+
+	public function orderCancel(){
+		$oId = $this->input->post('order_id');
+		$reason = $this->input->post('reason');
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+
+		$input['status'] = 'cancelled';
+		$input['reason'] = $reason;
+		$input['status_update_time'] = date('Y-m-d H:i:s');
+		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
+		if($run){
+			$hId = $this->session->userdata('user_id');
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+            $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+            $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
+
+			/*Manage Order History*/
+            $insert1 = [
+	            'user_id' => $hId,
+	            'service_id' => $serviceOrder['service_id'],
+	            'order_id' => $oId,
+	            'status' => 'cancelled'
+	        ];
+	        $this->common_model->insert('service_order_status_history', $insert1);
+
+			/*Tradesman Email Code*/
+            if($tradesman){
+            	$subject = "Order cancelled for order number: “".$serviceOrder['order_id']."”"; 
+
+                $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
+                $html = '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is cancelled</p>';                
+                $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Cancel:</b></p>';
+                $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
+                $this->common_model->send_mail($tradesman['email'],$subject,$html);
+            }
+            echo json_encode(['status' => 'error', 'message' => 'Order cancelled successfully.']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
+		}
 	}
 }
