@@ -95,18 +95,18 @@
 							<div class="row" id="previousImg">
 							</div>
 
-							<div class="form-group mt-3">
+							<!--<div class="form-group mt-3">
 								<div class="row">
 									<div class="col-sm-12">
 										<div class="form-check" id="term-chk">
 											<div class="check-box">
 												<input class="checkbox-effect" id="terms" type="checkbox" value="1" name="terms"/>
-												<label for="terms">By clicking at the button you agreed to our<a href="<?php echo base_url('terms-and-conditions'); ?>" target="_blank" class="ml-1">terms & conditions</a>.</label>
+												<label for="terms">By clicking at the button you agreed to our<a href="<?php //echo base_url('terms-and-conditions'); ?>" target="_blank" class="ml-1">terms & conditions</a>.</label>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
+							</div>-->
 							<div class="btn-group-div">
 								<p><a href="<?php echo base_url('order-tracking/'.$order['id']); ?>">Remind Me Latter</a></p>
 								<button class="btn btn-success btn-lg sendbtn1" type="submit">Start Order</button>
@@ -139,13 +139,17 @@
 						</ul>
 					<?php endif; ?>
 
-					<ul class="status-order">
+					<ul class="status-order" style="border-bottom: 1px solid #efeff0;">
 						<li><span>Status</span> <span class="bg-warning"><?php echo ucfirst($order['status'])?></span></li>
 						<li><span>Order</span> <span><?php echo ucfirst($order['order_id'])?></span></li>
 						<li><span>Order Date</span> <span><?php echo $created_date; ?></span></li>
 						<li><span>Quantity</span> <span><?php echo $order['service_qty']; ?></span></li>
 						<li><span>Price</span> <span><?php echo '£'.number_format($order['total_price'],2); ?></span></li>
 					</ul>
+					<?php if(!empty($taskAddress)):?>
+						<h5 class="mt-3"><b>Task Address</b></h5>
+						<span><?php echo $taskAddress['address']; ?></span></li>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
@@ -157,13 +161,13 @@
         $("#order_requirement_form").validate({
             rules: {
                 requirement: "required",
-                location: "required",                
-                terms: "required",                
+                //location: "required",                
+               //terms: "required",                
             },
             messages: {
                 requirement: "Please enter requirement for your order",
-                location: "Please enter location for your order",
-                terms: "Please select Terms & Conditions!!!",
+                //location: "Please enter location for your order",
+                //terms: "Please select Terms & Conditions!!!",
             },
             errorPlacement: function(error, element) {
                 if (element.attr("name") == "terms") {
@@ -262,7 +266,7 @@
     }
 
     function submitRequirement(){
-    	var termsConditions = $('input[name="terms"]:checked').val();
+    	/*var termsConditions = $('input[name="terms"]:checked').val();
 
 		if(termsConditions == undefined){
 			swal({
@@ -272,7 +276,7 @@
 			});	
 
 			return false
-		}
+		}*/
 
 		$('#loader').removeClass('hide');
         formData = $("#order_requirement_form").serialize();

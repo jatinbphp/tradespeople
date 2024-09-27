@@ -120,6 +120,8 @@ class Checkout extends CI_Controller
 		$data['order'] = $this->common_model->GetSingleData('service_order',['id'=>$latestOrderId]);
 		$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$data['order']['service_id']]);
 
+		$data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$data['order']['task_address_id']]);
+
 		$ocDate = new DateTime($data['order']['created_at']);
 		$data['created_date'] = $ocDate->format('D jS F, Y H:i');
 

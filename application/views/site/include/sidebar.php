@@ -103,12 +103,12 @@ $settings = $this->common_model->get_all_data('admin');
 				<div class="panel panel-default">
 					<div class="panel-heading" role="tab" id="headingOne">
 						<h4 class="panel-title">
-							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseService" aria-expanded="true" aria-controls="collapseService">
 							<span><i class="fa fa-th" aria-hidden="true"></i></span> My Services
 							</a>
 						</h4>
 					</div>
-					<div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+					<div id="collapseService" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
 						<div class="panel-body">
                   
 							<p><a href="<?php echo base_url('my-services'); ?>"> <span><i class="fa fa-list-ul" aria-hidden="true"></i></span> List Service</a></p>

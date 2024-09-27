@@ -238,6 +238,16 @@ $route['promo-code']              				 = 'Users/promo_code';
 $route['delete-promo-code/(:any)']                  = 'Users/delete_coupons/$1';
 $route['my-orders']              				 = 'Users/my_orders';
 $route['order-tracking/(:any)']                  = 'Users/order_tracking/$1';
+
+$route['order-dispute-job/(:any)']                     = 'Order_dispute/dispute_job/$1';
+$route['order-dispute/(:any)']                         = 'Order_dispute/dispute/$1';
+$route['order_reject_dispute_offer']                   = 'Order_dispute/reject_offer';
+$route['order_submit_dispute_offer']                   = 'Order_dispute/submit_offer';
+$route['order_submitAsktoAdmin']                       = 'Order_dispute/submitAsktoAdmin';
+$route['order_dispute_accept_and_close/(:any)/(:any)'] = 'Order_dispute/accept_and_close/$1/$2';
+$route['order_cancel_dispute/(:any)/(:any)']           = 'Order_dispute/cancel_dispute/$1/$2';
+$route['order_sen_comment']                            = 'Order_dispute/send_massege';
+
 $route['my-faviourits']              			 = 'Users/my_faviourits';
 $route['add-service']              	 	         = 'Users/addServices';
 $route['open-add-service']              	 	 = 'Users/openAddServiceForm';

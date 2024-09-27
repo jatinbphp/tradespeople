@@ -411,7 +411,7 @@ $get_commision = $this->common_model->get_commision();
 				<div class="tab-content">
 					<div id="Timeline" class="tab-pane fade active in">
 						<div class="tradesmen-box mt-4">
-							<div class="tradesmen-top" style="border-bottom:0">
+							<!--<div class="tradesmen-top" style="border-bottom:0">
 								<div class="img-name">
 									<a href="<?php echo base_url('service/'.$service['slug']); ?>">
 										<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
@@ -441,8 +441,15 @@ $get_commision = $this->common_model->get_commision();
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 												</button>
 												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-													<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a></li>
-													<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+													<?php if($order['status'] == 'disputed'):?>
+														<a class="dropdown-item" href="javascript:void(0)">View Dispute</a>
+														<a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a>
+													<?php else: ?>
+														<li>
+															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+														</li>
+														<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+													<?php endif; ?>
 												</ul>
 											</div>											
 										</span>
@@ -452,7 +459,57 @@ $get_commision = $this->common_model->get_commision();
 										</span>
 										<span class="pull-right">
 											<span class="mr-3" id="openChat" data-id="<?php echo $service['user_id']?>">Chat</span>
-											<span class="openRequirementModal" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
+											<?php if(empty($requirements)):?>
+												<span class="openRequirementModal" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
+											<?php endif; ?>
+										</span>										
+									</div>									
+								</div>
+							</div>-->
+							<div class="tradesmen-top" style="border-bottom:0">
+								<div class="img-name p-0">
+									<div class="names" style="width:100%">
+										<span class="services-description">
+											<?php if(empty($requirements)):?>
+												<span>
+													<h4 style="color: #000;">One last step to get your order started!</h4>
+													<span class="text-muted">
+														We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
+													</span>
+												</span>												
+											<?php else:?>	
+												<span>
+													<h4 style="color: #000;">Your order is now in the works</h4>
+													<span class="text-muted">
+														We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
+														You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+													</span>
+												</span>												
+											<?php endif; ?>
+											
+											<div class="ellipsis-btn">
+												<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+												</button>
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+													<?php if($order['status'] == 'disputed'):?>
+														<a class="dropdown-item" href="<?php echo base_url().'order-dispute/'.$order['id']?>">View Dispute</a>
+														<a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a>
+													<?php else: ?>
+														<li>
+															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+														</li>
+														<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+													<?php endif; ?>
+												</ul>
+											</div>											
+										</span>
+										<span class="pull-right">											
+											<?php if(empty($requirements)):?>
+												<span class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
+											<?php else:?>
+												<span class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">Chat</span>
+											<?php endif; ?>
 										</span>										
 									</div>									
 								</div>
@@ -789,171 +846,180 @@ $get_commision = $this->common_model->get_commision();
 													<?php if(!empty($order['ex_services'])):?>
 														<b>Extra Services</b>
 														<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
-														<ul>
-															<?php foreach($extra_services as $exs):?>
-																<?php if(in_array($exs['id'], $selectedExs)): ?>
-																	<li>
-																		<?php echo $exs['ex_service_name']; ?>
-																	</li>
-																<?php endif;?>
-															<?php endforeach; ?>
-														</ul>
-													<?php endif; ?>
-												<?php endif;?>	
-											</td>
-											<td class="text-center">
-												<?php echo $order['service_qty'];?>
-											</td>
-											<td class="text-right"><?php echo $duration.' Days'; ?></td>
-											<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
-										</tr>                                        	
-									</tbody>
-									<tfoot>
-										<tr class="bg-gray">
-											<td><b>Sub Total</b></td>
-											<td colspan="3" class="text-right">
-												<b>
-													<?php 
-													$subTotal = $order['total_price'] - $order['service_fee'];
-													echo '£'.number_format($subTotal,2); 
-													?>
-												</b>
-											</td>
-										</tr>
-										<tr class="bg-gray">
-											<td><b>Service Fee</b></td>
-											<td colspan="3" class="text-right">
-												<b>
-													<?php echo '£'.number_format($order['service_fee'],2); ?>
-												</b>
-											</td>
-										</tr>
-										<tr class="bg-gray">
-											<td>
-												<b>Total</b>
-											</td>
-											<td colspan="3" class="text-right">
-												<b>
-													<?php echo '£'.number_format($order['total_price'],2); ?>
-												</b>
-											</td>
-										</tr>
-									</tfoot>
-								</table>
+															<ul>
+																<?php foreach($extra_services as $exs):?>
+																	<?php if(in_array($exs['id'], $selectedExs)): ?>
+																		<li>
+																			<?php echo $exs['ex_service_name']; ?>
+																		</li>
+																	<?php endif;?>
+																<?php endforeach; ?>
+															</ul>
+														<?php endif; ?>
+													<?php endif;?>	
+												</td>
+												<td class="text-center">
+													<?php echo $order['service_qty'];?>
+												</td>
+												<td class="text-right"><?php echo $duration.' Days'; ?></td>
+												<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
+											</tr>                                        	
+										</tbody>
+										<tfoot>
+											<tr class="bg-gray">
+												<td><b>Sub Total</b></td>
+												<td colspan="3" class="text-right">
+													<b>
+														<?php 
+														$subTotal = $order['total_price'] - $order['service_fee'];
+														echo '£'.number_format($subTotal,2); 
+														?>
+													</b>
+												</td>
+											</tr>
+											<tr class="bg-gray">
+												<td><b>Service Fee</b></td>
+												<td colspan="3" class="text-right">
+													<b>
+														<?php echo '£'.number_format($order['service_fee'],2); ?>
+													</b>
+												</td>
+											</tr>
+											<tr class="bg-gray">
+												<td>
+													<b>Total</b>
+												</td>
+												<td colspan="3" class="text-right">
+													<b>
+														<?php echo '£'.number_format($order['total_price'],2); ?>
+													</b>
+												</td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-				<div id="Requirements" class="tab-pane fade">
-					<div class="timeline-div bg-white p-5">
-						<?php if(!empty($requirements)): ?>
-							<div class="comment">
-								<h4 style="margin-top:0px">Order Requirements</h4>
-								<p><?php echo $requirements['requirement']; ?></p>
+					<div id="Requirements" class="tab-pane fade">
+						<div class="timeline-div bg-white p-5">
+							<?php if(!empty($requirements)): ?>
+								<div class="comment">
+									<h4 style="margin-top:0px">Order Requirements</h4>
+									<p><?php echo $requirements['requirement']; ?></p>
 
-								<?php if(!empty($requirements['location'])):?>
-									<h4 style="margin-top:0px">Order Location</h4>
-									<p><?php echo $requirements['location']; ?></p>
-								<?php endif;?>
+									<?php if(!empty($requirements['location'])):?>
+										<h4 style="margin-top:0px">Order Location</h4>
+										<p><?php echo $requirements['location']; ?></p>
+									<?php endif;?>
 
-								<?php if(!empty($attachements)):?>
-									<h4>Order Attachments</h4>
-									<div class="row" id="attachments">
-										<?php foreach ($attachements as $key => $value): ?>
-											<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
-											<?php if (file_exists($image_path) && $value['attachment']):?>
-												<div class="col-md-4 col-sm-6 col-xs-12">
-													<div class="boxImage imgUp">
-														<div class="imagePreviewPlus">
-															<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
+									<?php if(!empty($attachements)):?>
+										<h4>Order Attachments</h4>
+										<div class="row" id="attachments">
+											<?php foreach ($attachements as $key => $value): ?>
+												<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
+												<?php if (file_exists($image_path) && $value['attachment']):?>
+													<div class="col-md-4 col-sm-6 col-xs-12">
+														<div class="boxImage imgUp">
+															<div class="imagePreviewPlus">
+																<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
+															</div>
 														</div>
 													</div>
-												</div>
-											<?php endif; ?>
-										<?php endforeach; ?>
-									</div>
-								<?php endif; ?>
-							</div>
-						<?php else:?>
-							<div class="comment">
-								<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
-							</div>
-						<?php endif; ?>
-					</div>
-				</div>
-				<div id="Delivery" class="tab-pane fade">
-					<div class="timeline-div bg-white p-5" style="height:400px;">
-						<div class="text-center">
-							<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
-						</div>
-						<?php if(!empty($delivery_date)):?>
-							<div class="text-center">
-								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-									<?php echo $tradesman['trading_name'];?> 
-								</a>
-								should deliver this order by <?php echo $delivery_date; ?>
-							</div>
-						<?php else:?>
-							<div class="text-center">
-								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-									<?php echo $tradesman['trading_name'];?>
-								</a> 
-								should deliver this order as soon as
-							</div>
-						<?php endif; ?>	
-					</div>
-				</div>
-				<div id="Rating" class="tab-pane fade">
-					<div class="timeline-div bg-white p-5">
-						<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-							<div class="col-md-12 pl-0 text-center">
-								<div class="member-summary">
-									<div class="summary member-summary-section">
-										<div class="member-image-container">
-											<?php 
-											if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-												$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
-											}else{
-												$uprofileImg = base_url('img/default-img.png');
-											}
-											$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
-											?>
-											<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
-										</div>											
-									</div>
+												<?php endif; ?>
+											<?php endforeach; ?>
+										</div>
+									<?php endif; ?>
+
+									
 								</div>
-								<span class="mt-3">
-									Based on your expectations, how would you rate the quality of this delivery?
-								</span>
-								<form class="mt-3" id="order_service_review_form" style="width:100%">
-									<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-									<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
-									<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
-									<div class="rating">
-										<input type="hidden" name="rating" id="ratingValue">
-										<i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
-										<i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
-										<i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
-										<i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
-										<i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
+							<?php else:?>
+								<div class="comment">
+									<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
+								</div>
+							<?php endif; ?>
+
+							<?php if(!empty($taskAddress)):?>
+								<div class="comment mt-3">
+									<h4 style="margin-top:0px">Task Address</h4>
+									<p><?php echo $taskAddress['address']; ?></p>
+								</div>
+							<?php endif; ?>
+						</div>
+					</div>
+					<div id="Delivery" class="tab-pane fade">
+						<div class="timeline-div bg-white p-5" style="height:400px;">
+							<div class="text-center">
+								<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
+							</div>
+							<?php if(!empty($delivery_date)):?>
+								<div class="text-center">
+									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+										<?php echo $tradesman['trading_name'];?> 
+									</a>
+									should deliver this order by <?php echo $delivery_date; ?>
+								</div>
+							<?php else:?>
+								<div class="text-center">
+									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+										<?php echo $tradesman['trading_name'];?>
+									</a> 
+									should deliver this order as soon as
+								</div>
+							<?php endif; ?>	
+						</div>
+					</div>
+					<div id="Rating" class="tab-pane fade">
+						<div class="timeline-div bg-white p-5">
+							<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+								<div class="col-md-12 pl-0 text-center">
+									<div class="member-summary">
+										<div class="summary member-summary-section">
+											<div class="member-image-container">
+												<?php 
+												if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+													$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
+												}else{
+													$uprofileImg = base_url('img/default-img.png');
+												}
+												$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
+												?>
+												<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
+											</div>											
+										</div>
 									</div>
-									<div class="review-div">
-										<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
-									</div>
-									<div class="btn-group mt-3">
-										<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
-											Submit
-										</button>											
-									</div>
-								</form>
-							</div>								
-						</div>							
+									<span class="mt-3">
+										Based on your expectations, how would you rate the quality of this delivery?
+									</span>
+									<form class="mt-3" id="order_service_review_form" style="width:100%">
+										<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+										<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+										<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+										<div class="rating">
+											<input type="hidden" name="rating" id="ratingValue">
+											<i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
+											<i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
+											<i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
+											<i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
+											<i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
+										</div>
+										<div class="review-div">
+											<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
+										</div>
+										<div class="btn-group mt-3">
+											<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
+												Submit
+											</button>											
+										</div>
+									</form>
+								</div>								
+							</div>							
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 </div>
 
 <div class="modal fade in" id="order_requirement_modal">
@@ -1456,10 +1522,10 @@ $get_commision = $this->common_model->get_commision();
 	    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 	}
 
-	$('#openChat').on('click', function(){
+	function openChat(){
 		get_chat_onclick(<?php echo $service['user_id'];?>, <?php echo $service['id'];?>);
 		showdiv();
-	});
+	}
 
 	$('#modification-btn').on('click', function (){
 		$('#modification-div').show();

@@ -617,7 +617,7 @@ class Users extends CI_Controller
 			//$data['progress']=$this->get_progress_data();
 			$data['posts']=$this->common_model->get_post_jobs('tbl_jobs',$this->session->userdata('user_id'));
 			$data['notification']=$this->common_model->get_all_notification('notification',$this->session->userdata('user_id'));
-			$data['active_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),'active',0);
+			$data['active_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),'active',0,1);
 			$this->load->view('site/my_account',$data);
 		}
 	}
@@ -2388,21 +2388,23 @@ class Users extends CI_Controller
 		        	$selected5 = $order['status'] == 'request_modification' ? 'selected' : '';
 		        	$selected6 = $order['status'] == 'disputed' ? 'selected' : '';
 
-		        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
+		        	if($order['status'] == 'disputed'){
+		        		$status = '<a href="'.base_url('order-dispute/'.$order['id']).'" class="btn btn-success btn-sm">View Dispute</button>';
+		        		$status .= '<a href="'.base_url('order-dispute/'.$order['id']).'" class="mt-2 btn btn-danger btn-sm">Cancel Dispute</button>';
+
+		        	}else{
+		        		$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
 	                            <option value="pending" '.$selected1.'>Pending</option>
 	                            <option value="active" '.$selected2.'>Started</option>
 	                            <option value="completed" '.$selected3.'>Completed</option>
 	                            <option value="cancelled" '.$selected4.'>Cancelled</option>
 	                            <option value="request_modification" '.$selected5.'>Request Modification</option>
 	                            <option value="disputed" '.$selected6.'>Disputed</option>
-	                        </select>';
-
-	                if(in_array($order['status'], ['disputed','cancelled'])){
-						$status .= '<span class="text-danger orderReason" data-id="'.$order['id'].'">View Reason</span>';
-	                }
+	                        </select>';	
+		        	}
 	        	}else{
 	        		if($order['status'] == 'completed'){
-	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';	
+	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';
 	        		}else{
 	        			$status = '<label class="badge bg-dark p-3">'.ucfirst(str_replace('_',' ',$order['status'])).'</label>';
 	        		}	        		
@@ -4236,6 +4238,7 @@ class Users extends CI_Controller
 		// $insert['location'] =  $this->input->post('location');
 
 		$existRequirement = $this->common_model->GetSingleData('order_requirement',['user_id'=>$uId,'order_id'=>$oId]);
+		$order = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 
 		if(!empty($existRequirement)){
 			$data['status'] = 0;
@@ -4255,6 +4258,22 @@ class Users extends CI_Controller
 					$this->common_model->update('order_requirement_attachment',array('id'=>$imgId),$input);
 				}
 			}
+
+			$update_array = [
+                'status' => 'active'
+            ];
+            $where_array = ['id' => $oId];
+            $result = $this->common_model->update('service_order',array('id'=>$oId),$update_array);
+
+            /*Manage Order History*/
+            $insert1 = [
+	            'user_id' => $uId,
+	            'service_id' => $order['service_id'],
+	            'order_id' => $oId,
+	            'status' => 'active',
+	        ];
+	        $this->common_model->insert('service_order_status_history', $insert1);
+
 			$data['status'] = 1;
 			$data['message'] = 'Order requirement submitted succesfully';
 			echo json_encode($data);
@@ -4321,6 +4340,9 @@ class Users extends CI_Controller
 		
 		if(!empty($order)){
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
+			
+			$data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$order['task_address_id']]);
+
 			$package_data = json_decode($data['service']['package_data'],true);	
 			$data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$data['service']['user_id']]);
 
@@ -4331,6 +4353,7 @@ class Users extends CI_Controller
 			$rHours = '';
 			$rMinutes = '';
 			$days = 0;
+			$data['requirements'] = [];
 
 			if(!empty($statusHistory)){
 				$days = $package_data[$order['package_type']]['days'];
@@ -4636,6 +4659,9 @@ class Users extends CI_Controller
         ];
         $run = $this->common_model->insert('service_rating', $insert1);
         if($run){
+        	$input['is_review'] = 1;
+        	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input);
+
 			echo json_encode(['status' => 'success', 'message' => 'Review & Rating submitted successfully']);
         }else{
 			echo json_encode(['status' => 'error', 'message' => 'Review & Rating not submitted']);
@@ -4652,30 +4678,151 @@ class Users extends CI_Controller
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 		if($run){
-			$hId = $this->session->userdata('user_id');
+			$userid = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-            $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+            $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
             $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
 
 			/*Manage Order History*/
             $insert1 = [
-	            'user_id' => $hId,
+	            'user_id' => $userid,
 	            'service_id' => $serviceOrder['service_id'],
 	            'order_id' => $oId,
 	            'status' => 'disputed'
 	        ];
 	        $this->common_model->insert('service_order_status_history', $insert1);
 
-			/*Tradesman Email Code*/
-            if($tradesman){
-            	$subject = "Order disputed for order number: “".$serviceOrder['order_id']."”"; 
+	        /*Entry in Dispute Table*/
 
-                $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
-                $html = '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is disputed</p>';                
-                $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Dispute:</b></p>';
-                $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
-                $this->common_model->send_mail($tradesman['email'],$subject,$html);
-            }
+	        $dispute_to = ($userid == $serviceOrder['user_id']) ? $tradesman['id'] : $userid;
+
+		    $insert['ds_in_id'] = $userid;
+		    $insert['dispute_type'] = 2;
+		    $insert['ds_job_id'] = $serviceOrder['id'];
+			$insert['ds_buser_id'] = $service['user_id'];
+			$insert['ds_puser_id'] = $serviceOrder['user_id'];		
+			$insert['caseid'] = time();
+			$insert['ds_status'] = 0;
+			$insert['total_amount'] = $serviceOrder['total_price'];
+			$insert['disputed_by'] = $userid;
+			$insert['dispute_to'] = $dispute_to;
+			$insert['ds_comment'] = $reason;
+			$insert['ds_create_date'] = date('Y-m-d H:i:s');
+
+			if($userid == $service['user_id']) {				
+				$run = $this->common_model->insert('tbl_dispute',$insert);
+
+				$login_user = $this->common_model->get_userDataByid($homeOwner['id']);
+
+				$insertn['nt_userId'] = $serviceOrder['user_id'];
+				$insertn['nt_message'] = ''.$login_user['f_name'].' '.$login_user['l_name'].' has opened an order dispute. <a href="'.site_url('order-dispute/'.$serviceOrder['id']).'">View & respond!</a>';
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_apstatus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $serviceOrder['id'];
+				$insertn['posted_by'] = $userid;
+				$run2 = $this->common_model->insert('notification',$insertn);
+			} else {
+				$run = $this->common_model->insert('tbl_dispute',$insert);
+
+				$login_user = $this->common_model->get_userDataByid($tradesman['id']);
+
+				$insertn['nt_userId'] = $service['user_id'];
+				$insertn['nt_message'] = ''.$login_user['trading_name'] .' opened a milestone dispute. <a href="'.site_url('order-dispute/'.$serviceOrder['id']).'">View & respond!</a>';
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_apstatus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $serviceOrder['id'];
+				$insertn['posted_by'] = $userid;
+				$run2 = $this->common_model->insert('notification',$insertn);
+			}
+
+			if($run){
+				$login_users=$this->common_model->get_single_data('users',array('id'=>$userid));					
+				$bid_users=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+				$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time'));					
+				$today = date('Y-m-d H:i:s');		
+				$newTime = date('Y-m-d H:i:s',strtotime($today.' +'.$setting['waiting_time'].' days'));
+				
+				if($serviceOrder['user_id'] == $userid){ // open by home owner
+					$by_name= $homeOwner['f_name'].' '.$homeOwner['l_name'];				
+					
+					$subject = "Action required: Order Payment is being Disputed, Order “" .$serviceOrder['order_id']."”"; 
+					$contant = '<p style="margin:0;padding:10px 0px">Your Order Payment is being Disputed and required your response!</p>';
+					$contant .= '<br><p style="margin:0;padding:10px 0px">Hi ' .$tradesman['f_name'] .',</p>';
+					$contant .= '<br><p style="margin:0;padding:10px 0px"> ' .$by_name .' is disputing their payment for order “' .$serviceOrder['order_id'].'”</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">Order Dispute Amount: £' .$serviceOrder['total_price'] .'</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">We encourage you to respond and resolve this issue with the ' .$by_name .'. If you can\'t solve this problem, you or  ' .$by_name .' can ask us to step in.</p>';
+					
+					$contant .= '<br><div style="text-align:center"><a href="' .site_url('order-dispute/' .$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason and Respond</a></div><br>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' .date("d-M-Y H:i:s", strtotime($newTime)) .' will result in closing this case and deciding in the client favour.  Any decision reached is final and irrevocable. Once a case has been closed, it can\'t be reopened.</p>';
+					
+					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
+					
+					$this->common_model->send_mail($homeOwner['email'],$subject,$contant);
+					
+
+					$subject = "Your order payment dispute has been opened: “" .$job['title']."”.";
+					$contant = 'Hi '.$tradesman['f_name'].',<br><br>';
+					$contant.= 'Your order payment dispute against '.$tradesman['trading_name'].' has been opened successfully and awaits their response.<br><br>';
+					$contant.= 'Order number: '.$serviceOrder['order_id'].'<br>';
+					$contant.= 'Order Dispute Amount: £'.$serviceOrder['total_price'].'<br><br>';
+					$contant.= "We encourage to respond and resolve this issue you amicably. If you can't solve it, you or ".$tradesman['trading_name']." can ask us to step in.<br>";
+					$contant .= '<br><div style="text-align:center"><a href="' .site_url('order-dispute/' .$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View  dispute</a></div><br>';
+					$contant.= $tradesman['trading_name'].' not responding within '.date("d-M-Y H:i:s", strtotime($newTime)).' (i.e. '.$setting['waiting_time'].' days) will result in closing this case and deciding in your favour.<br><br>';
+					$contant.= 'If you receive a reply from  '.$tradesman['trading_name'].', please respond as soon as you can as not responding within 2 days closes the case automatically and decided in favour of '.$tradesman['trading_name'].'.<br><br>';
+					$contant.= "Any decision reached is final and irrevocable. Once a case is close, it can't reopen.<br><br>";
+					
+					$contant.= "Visit our Order Payment system on the homeowner help page or contact our customer services if you have any specific questions using our service.<br>";
+					$this->common_model->send_mail($tradesman['email'],$subject,$contant);
+					
+				} else {
+
+					$to_mail= $tradesman['email'];	
+					$to_name= $tradesman['f_name'];
+					$type= $tradesman['type'];
+					$to_first_name= $tradesman['f_name'];
+					
+					$by_name= $bid_users['f_name'].' '.$bid_users['l_name'];
+					
+					$by_mail= $bid_users['email'];
+					
+					$subject = "Action required: Your Milestone Payment is being Disputed: “" .$serviceOrder['order_id']."”"; 
+					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' .$tradesman['f_name'] .',</p>';
+					$contant .= '<br><p style="margin:0;padding:10px 0px"> ' .$tradesman['trading_name'] .' is disputing your order payment to them & need your response.</p>';
+					
+					$contant .= '<p style="margin:0;padding:0px 0px">Order number: ' .$serviceOrder['order_id'].'</p>';
+					$contant .= '<p style="margin:0;padding:0px 0px">Order Dispute Amount: £' .$serviceOrder['total_price'] .'</p>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">We encourage you to respond and resolve this issue with ' .$tradesman['trading_name'] .'. If you can\'t solve it, you or  '.$tradesman['trading_name'].' can ask us to step in.</p>';
+					
+					$contant .= '<br><div style="text-align:center"><a href="' .site_url('order-dispute/'.$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason and Respond</a></div><br>';
+					
+					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' .date("d-M-Y H:i:s", strtotime($newTime)) .' will result in closing this case and deciding in '.$tradesman['trading_name'].' favour.  Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
+					
+					$contant .= '<br><p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
+					$this->common_model->send_mail($tradesman['email'],$subject,$contant);						
+					
+					
+					$subject = "Your order payment dispute has been opened: “" .$serviceOrder['order_id']."”.";
+					$contant = 'Hi '.$homeOwner['f_name'].',<br><br>';
+					$contant.= 'Your order payment dispute against '.$tradesman['trading_name'].' has been opened successfully and awaits their response.<br><br>';
+					$contant.= 'Order number: '.$serviceOrder['order_id'].'<br>';
+					$contant.= 'Order Dispute Amount: £'.$serviceOrder['total_price'].'<br><br>';
+					$contant.= "We encourage ".$tradesman['trading_name']." to respond and resolve this issue with you amicably. If you can't solve it, you or '".$tradesman['trading_name']."' can ask us to step in.<br><br>";
+					$contant .= '<div style="text-align:center"><a href="' .site_url('order-dispute/'.$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View dispute</a></div><br>';
+					$contant.= 'Please note: '.$tradesman['trading_name'].' not responding within '.date("d-M-Y H:i:s", strtotime($newTime)).' (i.e. '.$setting['waiting_time'].' days) will result in closing this case and deciding in your favour. <br><br>';
+					$contant.= 'If you receive a reply from '.$tradesman['trading_name'].', please respond as soon as you can as not responding within 2 days closes the case automatically and decides in favour of '.$tradesman['trading_name'].'. <br><br>';
+					$contant.= "Any decision reached is final and irrevocable. Once a case is closed, it can't reopen.<br><br>";
+					$contant.= "Visit our Order Payment system on the tradespeople  help page or contact our customer services if you have any specific questions using our service.<br>";
+
+					$this->common_model->send_mail($homeOwner['email'],$subject,$contant);
+				}				
+			}
             echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not disputed.']);

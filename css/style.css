@@ -11105,4 +11105,6 @@ input:checked + .switch-slider:before {
 .ellipsis-btn.open>.dropdown-menu {
     left: auto;
     right: 0;
+    border: 1px solid #f1f1f1;
+    top: 32%;
 }

@@ -3413,10 +3413,16 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getAllOrder($table, $user_id, $status='', $limit=0){
-		$statusWhere = '';
-		if(!empty($status) && $status != 'all'){
-			$statusWhere = 'AND so.status = "'.$status.'"';
+	public function getAllOrder($table, $user_id, $status='', $limit=0, $dashboard=0){
+		$statusWhere = '';		
+
+		if ($dashboard == 1) {
+		    $statusWhere = ' AND so.status NOT IN ("disputed", "cancelled", "completed")';
+		    $statusWhere .= ' AND so.is_review = 0';
+		}else{
+			if(!empty($status) && $status != 'all'){
+				$statusWhere = 'AND so.status = "'.$status.'"';
+			}
 		}
 
 		$dataLimit = $limit != 0 ? $limit : 500;
