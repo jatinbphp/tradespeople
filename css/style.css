@@ -11108,3 +11108,51 @@ input:checked + .switch-slider:before {
     border: 1px solid #f1f1f1;
     top: 32%;
 }
+
+.order-detail-box {
+    background: #fff;
+    padding: 15px;
+}
+
+.order-detail-box ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.order-detail-box ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.order-detail-box ul li p {
+    margin: 0;
+}
+.order-detail-box ul li+li {
+    margin-top: 10px;
+}
+.order-detail-box ul li .price .line-through {
+    text-decoration: line-through;
+}
+
+.order-detail-box .summary-box-heding {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dfdfdf;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.order-detail-box .summary-box-heding h4 {
+    margin: 0;
+}
+.order-detail-box .summary-box-heding span {
+    font-weight: 600;
+    display: block;
+}
+.order-detail-box .summary-box-heding span:last-child {
+    text-decoration: line-through;
+    color: #ff7300;
+}
+.bg-warning{
+    background: #fe8a0f
+}

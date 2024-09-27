@@ -72,12 +72,16 @@ $get_commision = $this->common_model->get_commision();
 		max-width: 100%;	
 	}
 	
-	.timeline-div{border-radius: 5px;}
-	
 	.faicon{
 		font-size: 30px;
 		color: #2875D7;
 	}
+
+	.order-faicon{
+		font-size: 20px;
+		color: #35a311;
+	}
+
 	.filled-icon svg {
 		fill: #2875D7;
 	}
@@ -91,6 +95,22 @@ $get_commision = $this->common_model->get_commision();
 		flex-direction: column;
 		padding: 0 0 0 32px;
 		border-left: 3px solid #ddd;		
+	}
+
+	#Timeline .tradesmen-box{
+		box-shadow: none;
+		border: 0;
+	}
+
+	#track-order-div .timeline {
+		width: 85%;
+		max-width: 700px;
+		margin-left: auto;
+		margin-right: auto;
+		display: flex;
+		flex-direction: column;
+		padding: 0 0 0 32px;
+		border-left: 3px solid #35a311;		
 	}
 
 	.timeline li{
@@ -136,6 +156,32 @@ $get_commision = $this->common_model->get_commision();
 		justify-content: center;
 		width: 30px;
 		height: 30px;
+		margin-left: -48px;
+		flex-shrink: 0;
+		overflow: hidden;
+		/*box-shadow: 0 0 0 6px #fff;*/
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		&.faded-icon {
+			background-color: #fff;
+			color: var(--c-grey-400);
+		}
+
+		&.filled-icon {
+			background-color: #fff;
+			color: #fff;
+		}
+	}
+
+	#track-order-div .timeline-item-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 30px;
+		height: fit-content;
 		margin-left: -48px;
 		flex-shrink: 0;
 		overflow: hidden;
@@ -384,109 +430,662 @@ $get_commision = $this->common_model->get_commision();
 				<?php include 'include/sidebar.php'; ?>				
 			</div>
 			<div class="col-md-9">
-				<div class="mjq-sh p-4">					
-					<div class="verification-checklist order-metrics">
-						<ul class="list">
-							<li class="active">
-								<a data-toggle="tab" href="#Timeline">Timeline</a>
-							</li>
-							<li>
-								<a data-toggle="tab" href="#Details">Details</a>
-							</li>
-							<li>
-								<a data-toggle="tab" href="#Requirements">Requirements</a>
-							</li>
-							<li>
-								<a data-toggle="tab" href="#Delivery">Delivery</a>
-							</li>
-							<?php if($order['status'] == 'completed'):?>
-								<li>
-									<a data-toggle="tab" href="#Rating">Review & Rating</a>
-								</li>
-							<?php endif;?>
-						</ul>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="mjq-sh p-4">					
+							<div class="verification-checklist order-metrics">
+								<ul class="list">
+									<li class="active">
+										<a data-toggle="tab" href="#Timeline">Timeline</a>
+									</li>
+									<li>
+										<a data-toggle="tab" href="#Details">Details</a>
+									</li>
+									<li>
+										<a data-toggle="tab" href="#Requirements">Requirements</a>
+									</li>
+									<li>
+										<a data-toggle="tab" href="#Delivery">Delivery</a>
+									</li>
+									<?php if($order['status'] == 'completed'):?>
+										<li>
+											<a data-toggle="tab" href="#Rating">Review & Rating</a>
+										</li>
+									<?php endif;?>
+								</ul>
+							</div>
+						</div>
 					</div>
-				</div>
-
-				<div class="tab-content">
-					<div id="Timeline" class="tab-pane fade active in">
-						<div class="tradesmen-box mt-4">
-							<!--<div class="tradesmen-top" style="border-bottom:0">
-								<div class="img-name">
-									<a href="<?php echo base_url('service/'.$service['slug']); ?>">
-										<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
-										<?php if (file_exists($image_path) && $service['image']): ?>
-											<img src="<?php echo  base_url().'img/services/'.$service['image']; ?>" style="border-radius: 0!important;">
-										<?php else: ?>
-											<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
-										<?php endif; ?>
-									</a>
-									<div class="names" style="width:100%">
-										<span class="services-description">
-											<a href="<?php echo base_url().'service/'.$service['slug']?>">
-												<p>
-													<?php
-													$totalChr = strlen($service['description']);
-													if($totalChr > 50 ){
-														echo substr($service['description'], 0, 50).'...';		
-													}else{
-														echo $service['description'];
-													}
-													?>
-													<?php echo '£'.number_format($order['total_price'],2); ?>
-												</p>
+					<div class="col-md-8">
+						<div class="tab-content">
+							<div id="Timeline" class="tab-pane fade active in">
+								<div class="tradesmen-box mt-4">
+									<!--<div class="tradesmen-top" style="border-bottom:0">
+										<div class="img-name">
+											<a href="<?php echo base_url('service/'.$service['slug']); ?>">
+												<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+												<?php if (file_exists($image_path) && $service['image']): ?>
+													<img src="<?php echo  base_url().'img/services/'.$service['image']; ?>" style="border-radius: 0!important;">
+												<?php else: ?>
+													<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
+												<?php endif; ?>
 											</a>
-											<div class="ellipsis-btn">
-												<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
-													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-												</button>
-												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-													<?php if($order['status'] == 'disputed'):?>
-														<a class="dropdown-item" href="javascript:void(0)">View Dispute</a>
-														<a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a>
+											<div class="names" style="width:100%">
+												<span class="services-description">
+													<a href="<?php echo base_url().'service/'.$service['slug']?>">
+														<p>
+															<?php
+															$totalChr = strlen($service['description']);
+															if($totalChr > 50 ){
+																echo substr($service['description'], 0, 50).'...';		
+															}else{
+																echo $service['description'];
+															}
+															?>
+															<?php echo '£'.number_format($order['total_price'],2); ?>
+														</p>
+													</a>
+													<div class="ellipsis-btn">
+														<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
+															<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+														</button>
+														<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+															<?php if($order['status'] == 'disputed'):?>
+																<a class="dropdown-item" href="javascript:void(0)">View Dispute</a>
+																<a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a>
+															<?php else: ?>
+																<li>
+																	<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+																</li>
+																<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+															<?php endif; ?>
+														</ul>
+													</div>											
+												</span>
+												
+												<span class="badge bg-dark p-2 pl-4 pr-4">
+													<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
+												</span>
+												<span class="pull-right">
+													<span class="mr-3" id="openChat" data-id="<?php echo $service['user_id']?>">Chat</span>
+													<?php if(empty($requirements)):?>
+														<span class="openRequirementModal" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
+													<?php endif; ?>
+												</span>										
+											</div>									
+										</div>
+									</div>-->
+									<div class="tradesmen-top" style="border-bottom:0">
+										<div class="img-name p-0">
+											<div class="names" style="width:100%">
+												<span class="services-description">
+													<?php if(empty($requirements)):?>
+														<span>
+															<h4 style="color: #000;">One last step to get your order started!</h4>
+															<span class="text-muted">
+																We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
+															</span>
+														</span>												
+													<?php else:?>	
+														<span>
+															<h4 style="color: #000;">Your order is now in the works</h4>
+															<span class="text-muted">
+																We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
+																You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+															</span>
+														</span>												
+													<?php endif; ?>
+												</span>
+												<span class="pull-right">										<?php if($this->session->userdata('type')==1):?>
+														<span class="btn btn-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat()">Chat</span>
+													<?php else: ?>
+														<?php if(empty($requirements)):?>
+															<span class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>	
+														<?php else:?>
+															<span class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">Chat</span>
+														<?php endif; ?>
+													<?php endif; ?>
+												</span>										
+											</div>									
+										</div>
+									</div>
+								</div>
+								<div class="timeline-div bg-white p-4">
+									<ol class="timeline">
+										<?php if($order['status'] == 'active'):?>
+											<li class="timeline-item">
+												<span class="timeline-item-icon | faded-icon">
+													<i class="fa fa-clock-o faicon"></i>
+												</span>
+												<div class="timeline-item-description">
+													<h5>Expected delivery <?php echo $delivery_date; ?></h5>						
+													<ul class="delivery-time">
+														<li><b><?php echo $rDays; ?></b><br/>Days</li>
+														<li><b><?php echo $rHours; ?></b><br/>Hours</li>
+														<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
+													</ul>														
+												</div>
+											</li>
+										<?php endif;?>
+
+										<?php if($order['status'] == 'delivered'):?>
+											<li class="timeline-item">
+												<span class="timeline-item-icon | faded-icon">
+													<i class="fa fa-truck faicon"></i>
+												</span>
+												<div class="timeline-item-description">
+													<h5>Here is you delivery</h5>
+													<span class="delivery-conversation text-left">
+														<?php echo $conversation['description']; ?>
+													</span>
+													<form id="approved_order_form" style="width:100%">
+														<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
+														<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
+														<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
+														<input type="hidden" name="status" value="completed">
+														<textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea>
+													</form>
+													<div id="approved-btn-div">
+														<button type="button" id="approved-btn" class="btn btn-warning mr-3" onclick="submitModification('approved_order_form');">
+															Approve
+														</button>
+														<button type="button" id="modification-btn" class="btn btn-default">
+															Request Modification
+														</button>
+													</div>
+													<div id="modification-div" style="display:none;">
+														<p>
+															Lorem ipsum dolor sit amet . The graphic and typographic operators know this well, in reality all the professions dealing with the universe of communication have a stable relationship with these words, but what is it? Lorem ipsum is a dummy text without any sense.
+														</p>
+														<form id="request_modification_form">
+															<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
+															<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
+															<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
+															<input type="hidden" name="status" value="request_modification">
+															<textarea rows="7" class="form-control" id="modification-decription" name="modification_decription"></textarea>
+															<div class="row">
+																<div id="loader2" class="loader_ajax_small"></div>
+																<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer1">
+																	<div class="file-upload-btn addWorkImage1 imgUp">
+																		<div class="btn-text main-label">Attachments</div>
+																		<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
+																		<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
+																		<input type="file" name="modification_attachments" id="modification_attachments">	
+																	</div>
+																</div>
+															</div>
+															<input type="hidden" name="multiModificationImgIds" id="multiModificationImgIds">	
+															<div class="row" id="previousModificationImg">
+															</div>
+															<div class="text-center">
+																<button type="button" onclick="submitModification('request_modification_form')" class="btn btn-warning mr-3">
+																	Submit request
+																</button>
+															</div>
+														</form>												
+													</div>
+												</div>
+											</li>
+											<!--<li class="timeline-item">
+												<span class="timeline-item-icon | faded-icon">
+													<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
+												</span>
+												<div class="timeline-item-description">
+													<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
+												</div>
+											</li>
+											<li class="timeline-item | extra-space">
+												<span class="timeline-item-icon | filled-icon ">
+													<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
+												</span>
+												<div class="timeline-item-wrapper">
+													<div class="timeline-item-description">
+														<h5>Order Started</h5>
+													</div>
+												</div>
+											</li>-->
+										<?php endif;?>
+
+										<?php if(!empty($all_conversation)):?>
+											<?php foreach($all_conversation as $list):?>
+												<li class="timeline-item">
+													<span class="timeline-item-icon | faded-icon">
+														<?php if($user['id'] == $list['sender']):?>
+															<?php if($list['status'] == 'completed'):?>
+																<i class="fa fa-check-square-o faicon"></i>
+															<?php else:?>
+																<i class="fa fa-edit faicon"></i>
+															<?php endif;?>
+														<?php else: ?>
+															<i class="fa fa-truck faicon"></i>
+														<?php endif; ?>	
+													</span>
+													<div class="timeline-item-description">
+														<?php 
+														$conDate = new DateTime($list['created_at']);
+														$conversation_date = $conDate->format('D jS F, Y H:i');
+														?>
+
+														<?php if($user['id'] == $list['sender']):?>
+															<h5>
+																<?php if($list['status'] == 'completed'):?>
+																	You approved order
+																<?php else:?>
+																	You requested a modification 
+																<?php endif;?>		
+																<span class="text-muted" style="font-size: 12px;">
+																	<i><?php echo $conversation_date ?></i>
+																</span>
+															</h5>
+														<?php else: ?>
+															<h5>
+																<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																	<?php echo $tradesman['trading_name']; ?>
+																</a>
+																delivered your order 
+																<span class="text-muted" style="font-size: 12px;">
+																	<i><?php echo $conversation_date ?></i>
+																</span>
+															</h5>
+														<?php endif; ?>
+
+														<span class="delivery-conversation text-left">
+															<?php echo $list['description']; ?>
+														</span>
+
+														<?php 
+														$conAttachments = $this->common_model->get_all_data('order_submit_attachments',['conversation_id'=>$list['id']])
+														?>
+
+														<?php if(!empty($conAttachments)):?>
+															<h4 style="width: 100%;">Attachments</h4>
+															<div class="row" style="width: 100%;" id="con_attachments">
+																<?php foreach ($conAttachments as $con_key => $con_value): ?>
+																	<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
+																	<?php if (file_exists($image_path) && $con_value['attachment']):?>
+																		<div class="col-md-4 col-sm-6 col-xs-12">
+																			<div class="boxImage imgUp">
+																				<div class="imagePreviewPlus">
+																					<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$con_value['attachment']?>" alt="<?php echo $con_value['id']; ?>">
+																				</div>
+																			</div>
+																		</div>
+																	<?php endif; ?>
+																<?php endforeach; ?>
+															</div>
+														<?php endif; ?>
+													</div>
+												</li>
+											<?php endforeach;?>
+										<?php endif;?>	
+
+										<?php if($order['status'] == 'request_modification'):?>
+											<!--<li class="timeline-item">
+												<span class="timeline-item-icon | faded-icon">
+													<i class="fa fa-edit faicon"></i>
+												</span>
+												<div class="timeline-item-description">
+													<h5>Requested Modification</h5>
+													<span class="delivery-conversation text-left">
+														<?php echo $conversation['description']; ?>
+													</span>											
+												</div>
+											</li>-->
+										<?php endif;?>
+
+										<?php if(!empty($delivery_date)):?>
+											<li class="timeline-item">
+												<span class="timeline-item-icon | faded-icon">
+													<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
+												</span>
+												<div class="timeline-item-description">
+													<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
+												</div>
+											</li>
+											<li class="timeline-item | extra-space">
+												<span class="timeline-item-icon | filled-icon ">
+													<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
+												</span>
+												<div class="timeline-item-wrapper">
+													<div class="timeline-item-description">
+														<h5>Order Started</h5>
+													</div>
+												</div>
+											</li>
+										<?php endif; ?>
+										
+
+										<li class="timeline-item order-details">
+											<span class="timeline-item-icon | faded-icon">
+												<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
+											</span>
+											<div class="timeline-item-description" style="width:100%">
+												<h5 id="order-requirement" onclick="toggleOrderReq();"> 
+													Order Requirement Submitted
+													<i class="fa fa-angle-down pull-right"></i>
+												</h5>
+
+												<?php if(!empty($requirements)): ?>
+													<div class="comment" id="requirement-div"  style="display:none; width: 100%;">
+														<h4 style="margin-top:0px">Order Requirements</h4>
+														<p><?php echo $requirements['requirement']; ?></p>
+
+														<?php if(!empty($requirements['location'])):?>
+															<h4 style="margin-top:0px">Order Location</h4>
+															<p><?php echo $requirements['location']; ?></p>
+														<?php endif;?>
+
+														<?php if(!empty($attachements)):?>
+															<h4>Order Attachments</h4>
+															<div class="row" id="attachments">
+																<?php foreach ($attachements as $key => $value): ?>
+																	<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
+																	<?php if (file_exists($image_path) && $value['attachment']):?>
+																		<div class="col-md-4 col-sm-6 col-xs-12">
+																			<div class="boxImage imgUp">
+																				<div class="imagePreviewPlus">
+																					<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
+																				</div>
+																			</div>
+																		</div>
+																	<?php endif; ?>
+																<?php endforeach; ?>
+															</div>
+														<?php endif; ?>
+													</div>
+												<?php endif; ?>
+											</div>
+										</li>
+										<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
+											<span class="timeline-item-icon | filled-icon ">
+												<i class="fa fa-calendar faicon" aria-hidden="true"></i>
+											</span>
+											<div class="timeline-item-description" style="width:100%">
+												<h5 id="order-created" onclick="toggleOrderCreated();">
+													Order Created
+													<i class="fa fa-angle-down pull-right"></i>
+												</h5>
+												<div class="comment" id="order-created-div"  style="display:none; width: 100%;">
+													<p><?php echo $created_date; ?></p>
+												</div>
+											</div>
+										</li>
+									</ol>
+								</div>
+							</div>
+							<div id="Details" class="tab-pane fade">
+								<div class="timeline-div bg-white mt-4 p-5">
+									<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+										<div class="col-md-10 pl-0">
+											<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
+										</div>
+										<div class="col-md-2 text-right pr-0">
+											<span>Total Price</span>
+										</div>
+										<div class="col-md-10 pl-0">
+											<span>
+												Ordered From 
+												<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+													<?php echo $tradesman['trading_name']; ?>
+												</a>
+												<?php if(!empty($delivery_date)): ?>
+													| Delivery Date <?php echo $delivery_date; ?>
+												<?php endif;?>	
+											</span>
+										</div>
+										<div class="col-md-2 text-right pr-0">
+											<span><b><?php echo '£'.number_format($order['total_price'],2); ?></b></span>
+										</div>
+									</div>
+									<div class="row pb-4 pt-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+										<div class="col-md-6 pl-0">
+											Order number: <?php echo $order['order_id']; ?>
+										</div>
+										<div class="col-md-6 text-right pr-0">
+											<span>View billing history</span>
+										</div>
+									</div>
+									<h4 class="mt-3 mb-0"><?php echo $service['service_name']; ?></h4>
+									<div class="row mt-3">
+										<div class="col-md-12">
+											<table class="table table-striped">
+												<thead class="bg-gray">
+													<tr>
+														<td colspan="4">
+															<b>Your Order</b>
+															<span class="ml-2" style="font-size:12px;">
+																<i><?php echo $created_date; ?></i>
+															</span>
+														</td>
+													</tr>
+													<tr>
+														<th>Item</th>                     
+														<th>Qty</th>                     
+														<th class="text-right">Duration</th> 
+														<th class="text-right">Price</th>                                                 
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td>
+															<b><?php echo $service['service_name']; ?></b>
+															<?php if(!empty($attributes)): ?>
+																<ul>
+																	<?php foreach($attributes as $att):?>
+																		<li>
+																			<?php echo $att['attribute_name']; ?>
+																		</li>
+																	<?php endforeach; ?>
+																</ul>
+															<?php endif; ?>
+															<?php if(!empty($order['ex_services'])):?>
+																<b>Extra Services</b>
+																<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
+																	<ul>
+																		<?php foreach($extra_services as $exs):?>
+																			<?php if(in_array($exs['id'], $selectedExs)): ?>
+																				<li>
+																					<?php echo $exs['ex_service_name']; ?>
+																				</li>
+																			<?php endif;?>
+																		<?php endforeach; ?>
+																	</ul>
+																<?php endif; ?>
+															<?php endif;?>	
+														</td>
+														<td class="text-center">
+															<?php echo $order['service_qty'];?>
+														</td>
+														<td class="text-right"><?php echo $duration.' Days'; ?></td>
+														<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
+													</tr>                                        	
+												</tbody>
+												<tfoot>
+													<tr class="bg-gray">
+														<td><b>Sub Total</b></td>
+														<td colspan="3" class="text-right">
+															<b>
+																<?php 
+																$subTotal = $order['total_price'] - $order['service_fee'];
+																echo '£'.number_format($subTotal,2); 
+																?>
+															</b>
+														</td>
+													</tr>
+													<tr class="bg-gray">
+														<td><b>Service Fee</b></td>
+														<td colspan="3" class="text-right">
+															<b>
+																<?php echo '£'.number_format($order['service_fee'],2); ?>
+															</b>
+														</td>
+													</tr>
+													<tr class="bg-gray">
+														<td>
+															<b>Total</b>
+														</td>
+														<td colspan="3" class="text-right">
+															<b>
+																<?php echo '£'.number_format($order['total_price'],2); ?>
+															</b>
+														</td>
+													</tr>
+												</tfoot>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="Requirements" class="tab-pane fade">
+								<div class="timeline-div bg-white mt-4 p-5">
+									<?php if(!empty($requirements)): ?>
+										<div class="comment">
+											<h4 style="margin-top:0px">Order Requirements</h4>
+											<p><?php echo $requirements['requirement']; ?></p>
+
+											<?php if(!empty($requirements['location'])):?>
+												<h4 style="margin-top:0px">Order Location</h4>
+												<p><?php echo $requirements['location']; ?></p>
+											<?php endif;?>
+
+											<?php if(!empty($attachements)):?>
+												<h4>Order Attachments</h4>
+												<div class="row" id="attachments">
+													<?php foreach ($attachements as $key => $value): ?>
+														<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
+														<?php if (file_exists($image_path) && $value['attachment']):?>
+															<div class="col-md-4 col-sm-6 col-xs-12">
+																<div class="boxImage imgUp">
+																	<div class="imagePreviewPlus">
+																		<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
+																	</div>
+																</div>
+															</div>
+														<?php endif; ?>
+													<?php endforeach; ?>
+												</div>
+											<?php endif; ?>
+
+											
+										</div>
+									<?php else:?>
+										<div class="comment">
+											<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
+										</div>
+									<?php endif; ?>
+
+									<?php if(!empty($taskAddress)):?>
+										<div class="comment mt-3">
+											<h4 style="margin-top:0px">Task Address</h4>
+											<p>
+												<?php echo $taskAddress['address']; ?>,
+												<?php echo $taskAddress['city'].'-'.$taskAddress['zip_code']; ?>														
+											</p>
+										</div>
+									<?php endif; ?>
+								</div>
+							</div>
+							<div id="Delivery" class="tab-pane fade">
+								<div class="timeline-div bg-white mt-4 p-5" style="height:400px;">
+									<div class="text-center">
+										<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
+									</div>
+									<?php if(!empty($delivery_date)):?>
+										<div class="text-center">
+											<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+												<?php echo $tradesman['trading_name'];?> 
+											</a>
+											should deliver this order by <?php echo $delivery_date; ?>
+										</div>
+									<?php else:?>
+										<div class="text-center">
+											<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
+												<?php echo $tradesman['trading_name'];?>
+											</a> 
+											should deliver this order as soon as
+										</div>
+									<?php endif; ?>	
+								</div>
+							</div>
+							<div id="Rating" class="tab-pane fade">
+								<div class="timeline-div bg-white mt-4 p-5">
+									<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+										<div class="col-md-12 pl-0 text-center">
+											<div class="member-summary">
+												<div class="summary member-summary-section">
+													<div class="member-image-container">
+														<?php 
+														if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+															$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
+														}else{
+															$uprofileImg = base_url('img/default-img.png');
+														}
+														$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
+														?>
+														<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
+													</div>											
+												</div>
+											</div>
+											<span class="mt-3">
+												Based on your expectations, how would you rate the quality of this delivery?
+											</span>
+											<form class="mt-3" id="order_service_review_form" style="width:100%">
+												<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+												<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+												<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+												<div class="rating">
+													<input type="hidden" name="rating" id="ratingValue">
+													<i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
+													<i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
+													<i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
+													<i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
+													<i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
+												</div>
+												<div class="review-div">
+													<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
+												</div>
+												<div class="btn-group mt-3">
+													<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
+														Submit
+													</button>											
+												</div>
+											</form>
+										</div>								
+									</div>							
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 mt-4">
+						<div class="card-summary">
+							<div class="order-detail-box">
+								<div class="summary-box-heding">
+									<h4>Order Details</h4>
+									<?php if($this->session->userdata('type')==1):?>
+										<div class="ellipsis-btn">
+											<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
+												<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+											</button>
+											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+												<?php if($order['status'] == 'disputed'):?>
+													<a class="dropdown-item" href="<?php echo base_url().'order-dispute/'.$order['id']?>">View Dispute</a>
+													<a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a>
+												<?php else: ?>
+													<?php if($order['status'] == 'cancelled'):?>
+														<li>
+															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_decision_modal">Make Decision</a>
+														</li>
 													<?php else: ?>
 														<li>
 															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
 														</li>
-														<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+														<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>	
 													<?php endif; ?>
-												</ul>
-											</div>											
-										</span>
-										
-										<span class="badge bg-dark p-2 pl-4 pr-4">
-											<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
-										</span>
-										<span class="pull-right">
-											<span class="mr-3" id="openChat" data-id="<?php echo $service['user_id']?>">Chat</span>
-											<?php if(empty($requirements)):?>
-												<span class="openRequirementModal" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
-											<?php endif; ?>
-										</span>										
-									</div>									
-								</div>
-							</div>-->
-							<div class="tradesmen-top" style="border-bottom:0">
-								<div class="img-name p-0">
-									<div class="names" style="width:100%">
-										<span class="services-description">
-											<?php if(empty($requirements)):?>
-												<span>
-													<h4 style="color: #000;">One last step to get your order started!</h4>
-													<span class="text-muted">
-														We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
-													</span>
-												</span>												
-											<?php else:?>	
-												<span>
-													<h4 style="color: #000;">Your order is now in the works</h4>
-													<span class="text-muted">
-														We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
-														You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
-													</span>
-												</span>												
-											<?php endif; ?>
-											
+												<?php endif; ?>
+											</ul>
+										</div>
+									<?php else: ?>
+										<?php if($order['status'] != 'cancelled'):?>
 											<div class="ellipsis-btn">
 												<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
@@ -499,525 +1098,127 @@ $get_commision = $this->common_model->get_commision();
 														<li>
 															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
 														</li>
+														<?php if($order['status'] == 'declined'):?>
+														<li>
+															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#declined_reason_modal">View Reason</a>
+														</li>
+														<?php endif; ?>
 														<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
 													<?php endif; ?>
 												</ul>
-											</div>											
+											</div>
+										<?php endif; ?>
+									<?php endif; ?>
+								</div>
+
+								<div class="summary-feature-article">
+									<a href="<?php echo base_url().'service/'.$service['slug']?>">
+										<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+										<?php if (file_exists($image_path) && $service['image']): ?>
+											<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+										<?php else: ?>	
+											<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
+										<?php endif; ?>										
+										<span>
+											<p>
+												<?php
+													$totalChr = strlen($service['description']);
+													if($totalChr > 15){
+														echo substr($service['description'], 0, 15).'...';
+													}else{
+														echo $service['description'];
+													}
+												?>
+											</p>
+											<span class="badge bg-warning p-2 pl-4 pr-4 mt-4">
+												<?php if($this->session->userdata('type')==1):?>
+													<?php if(empty($requirements)):?>
+														Awaiting Requirement 
+													<?php else: ?>	
+														<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
+													<?php endif; ?>
+												<?php else: ?>
+													<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
+												<?php endif; ?>
+											</span>								
 										</span>
-										<span class="pull-right">											
-											<?php if(empty($requirements)):?>
-												<span class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</span>
-											<?php else:?>
-												<span class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">Chat</span>
-											<?php endif; ?>
-										</span>										
+									</a>
+								</div>
+								<ul style="border-bottom: 1px solid #f1f1f1;">
+									<li>
+										<p>Ordered From</p>
+										<p>
+											<b>
+												<?php $dotColor = !empty($tradesman['is_active']) && $tradesman['is_active'] == 1 ? '#35a311' : '#dbd5d5'; ?>
+												<i class="fa fa-circle" style="font-size: 8px; color: <?php echo $dotColor?>;"></i>
+												<?php echo $tradesman['f_name']; ?>
+											</b>
+											<br>
+											<span class="text-muted"><?php echo $tradesman['trading_name']; ?></span>
+										</p>
+									</li>
+									<li>
+										<p>Delivery Date</p>
+										<p>
+											<b>
+												<?php if(!empty($delivery_date)): ?>
+													<?php echo $delivery_date; ?>
+												<?php else:?>	
+													To be determined
+												<?php endif; ?>
+											</b>
+										</p>
+									</li>
+									<li>
+										<p>Total Price</p>
+										<p><b><?php echo '£'.number_format($order['total_price'],2); ?></b></p>
+									</li>
+									<li class="mb-3">
+										<p>Order Number</p>
+										<p><b><?php echo $order['order_id']; ?></b></p>
+									</li>
+								</ul>
+
+								<div class="timeline-div bg-white pt-2">
+									<h5 id="order-created" onclick="toggleTrackOrder();">
+										<b>Track Order</b>
+										<i class="fa fa-angle-up pull-right"></i>
+									</h5>
+									<div id="track-order-div"  style=" width: 100%;">
+										<ol class="timeline mb-0">
+											<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
+												<span class="timeline-item-icon | filled-icon ">
+													<i class="fa fa-check-circle-o order-faicon" aria-hidden="true"></i>
+												</span>
+												<div class="timeline-item-description">
+													<h5>Order Placed</h5>
+												</div>												
+											</li>
+											<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
+												<?php if(empty($requirements)):?>
+													<span class="timeline-item-icon | filled-icon pb-1">
+														<i class="fa fa-circle-o order-faicon" aria-hidden="true"></i>
+													</span>
+													<div class="timeline-item-description">
+														<h5 class="mb-0">Submit Requirement</h5>
+													</div>
+												<?php else: ?>
+													<span class="timeline-item-icon | filled-icon pb-1">
+														<i class="fa fa-check-circle-o order-faicon" aria-hidden="true"></i>
+													</span>
+													<div class="timeline-item-description">
+														<h5 class="mb-0">Requirement Submitted</h5>
+													</div>
+												<?php endif; ?>
+											</li>
+										</ol>
 									</div>									
 								</div>
 							</div>
 						</div>
-						<div class="timeline-div bg-white p-4">
-							<ol class="timeline">
-								<?php if($order['status'] == 'active'):?>
-									<li class="timeline-item">
-										<span class="timeline-item-icon | faded-icon">
-											<i class="fa fa-clock-o faicon"></i>
-										</span>
-										<div class="timeline-item-description">
-											<h5>Expected delivery <?php echo $delivery_date; ?></h5>						
-											<ul class="delivery-time">
-												<li><b><?php echo $rDays; ?></b><br/>Days</li>
-												<li><b><?php echo $rHours; ?></b><br/>Hours</li>
-												<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
-											</ul>														
-										</div>
-									</li>
-								<?php endif;?>
-
-								<?php if($order['status'] == 'delivered'):?>
-									<li class="timeline-item">
-										<span class="timeline-item-icon | faded-icon">
-											<i class="fa fa-truck faicon"></i>
-										</span>
-										<div class="timeline-item-description">
-											<h5>Here is you delivery</h5>
-											<span class="delivery-conversation text-left">
-												<?php echo $conversation['description']; ?>
-											</span>
-											<form id="approved_order_form" style="width:100%">
-												<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
-												<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
-												<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
-												<input type="hidden" name="status" value="completed">
-												<textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea>
-											</form>
-											<div id="approved-btn-div">
-												<button type="button" id="approved-btn" class="btn btn-warning mr-3" onclick="submitModification('approved_order_form');">
-													Approve
-												</button>
-												<button type="button" id="modification-btn" class="btn btn-default">
-													Request Modification
-												</button>
-											</div>
-											<div id="modification-div" style="display:none;">
-												<p>
-													Lorem ipsum dolor sit amet . The graphic and typographic operators know this well, in reality all the professions dealing with the universe of communication have a stable relationship with these words, but what is it? Lorem ipsum is a dummy text without any sense.
-												</p>
-												<form id="request_modification_form">
-													<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
-													<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
-													<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
-													<input type="hidden" name="status" value="request_modification">
-													<textarea rows="7" class="form-control" id="modification-decription" name="modification_decription"></textarea>
-													<div class="row">
-														<div id="loader2" class="loader_ajax_small"></div>
-														<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer1">
-															<div class="file-upload-btn addWorkImage1 imgUp">
-																<div class="btn-text main-label">Attachments</div>
-																<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
-																<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
-																<input type="file" name="modification_attachments" id="modification_attachments">	
-															</div>
-														</div>
-													</div>
-													<input type="hidden" name="multiModificationImgIds" id="multiModificationImgIds">	
-													<div class="row" id="previousModificationImg">
-													</div>
-													<div class="text-center">
-														<button type="button" onclick="submitModification('request_modification_form')" class="btn btn-warning mr-3">
-															Submit request
-														</button>
-													</div>
-												</form>												
-											</div>
-										</div>
-									</li>
-									<!--<li class="timeline-item">
-										<span class="timeline-item-icon | faded-icon">
-											<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
-										</span>
-										<div class="timeline-item-description">
-											<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
-										</div>
-									</li>
-									<li class="timeline-item | extra-space">
-										<span class="timeline-item-icon | filled-icon ">
-											<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
-										</span>
-										<div class="timeline-item-wrapper">
-											<div class="timeline-item-description">
-												<h5>Order Started</h5>
-											</div>
-										</div>
-									</li>-->
-								<?php endif;?>
-
-								<?php if(!empty($all_conversation)):?>
-									<?php foreach($all_conversation as $list):?>
-										<li class="timeline-item">
-											<span class="timeline-item-icon | faded-icon">
-												<?php if($user['id'] == $list['sender']):?>
-													<?php if($list['status'] == 'completed'):?>
-														<i class="fa fa-check-square-o faicon"></i>
-													<?php else:?>
-														<i class="fa fa-edit faicon"></i>
-													<?php endif;?>
-												<?php else: ?>
-													<i class="fa fa-truck faicon"></i>
-												<?php endif; ?>	
-											</span>
-											<div class="timeline-item-description">
-												<?php 
-												$conDate = new DateTime($list['created_at']);
-												$conversation_date = $conDate->format('D jS F, Y H:i');
-												?>
-
-												<?php if($user['id'] == $list['sender']):?>
-													<h5>
-														<?php if($list['status'] == 'completed'):?>
-															You approved order
-														<?php else:?>
-															You requested a modification 
-														<?php endif;?>		
-														<span class="text-muted" style="font-size: 12px;">
-															<i><?php echo $conversation_date ?></i>
-														</span>
-													</h5>
-												<?php else: ?>
-													<h5>
-														<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-															<?php echo $tradesman['trading_name']; ?>
-														</a>
-														delivered your order 
-														<span class="text-muted" style="font-size: 12px;">
-															<i><?php echo $conversation_date ?></i>
-														</span>
-													</h5>
-												<?php endif; ?>
-
-												<span class="delivery-conversation text-left">
-													<?php echo $list['description']; ?>
-												</span>
-
-												<?php 
-												$conAttachments = $this->common_model->get_all_data('order_submit_attachments',['conversation_id'=>$list['id']])
-												?>
-
-												<?php if(!empty($conAttachments)):?>
-													<h4 style="width: 100%;">Attachments</h4>
-													<div class="row" style="width: 100%;" id="con_attachments">
-														<?php foreach ($conAttachments as $con_key => $con_value): ?>
-															<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
-															<?php if (file_exists($image_path) && $con_value['attachment']):?>
-																<div class="col-md-4 col-sm-6 col-xs-12">
-																	<div class="boxImage imgUp">
-																		<div class="imagePreviewPlus">
-																			<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$con_value['attachment']?>" alt="<?php echo $con_value['id']; ?>">
-																		</div>
-																	</div>
-																</div>
-															<?php endif; ?>
-														<?php endforeach; ?>
-													</div>
-												<?php endif; ?>
-											</div>
-										</li>
-									<?php endforeach;?>
-								<?php endif;?>	
-
-								<?php if($order['status'] == 'request_modification'):?>
-									<!--<li class="timeline-item">
-										<span class="timeline-item-icon | faded-icon">
-											<i class="fa fa-edit faicon"></i>
-										</span>
-										<div class="timeline-item-description">
-											<h5>Requested Modification</h5>
-											<span class="delivery-conversation text-left">
-												<?php echo $conversation['description']; ?>
-											</span>											
-										</div>
-									</li>-->
-								<?php endif;?>
-
-								<?php if(!empty($delivery_date)):?>
-									<li class="timeline-item">
-										<span class="timeline-item-icon | faded-icon">
-											<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
-										</span>
-										<div class="timeline-item-description">
-											<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
-										</div>
-									</li>
-									<li class="timeline-item | extra-space">
-										<span class="timeline-item-icon | filled-icon ">
-											<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
-										</span>
-										<div class="timeline-item-wrapper">
-											<div class="timeline-item-description">
-												<h5>Order Started</h5>
-											</div>
-										</div>
-									</li>
-								<?php endif; ?>
-								
-
-								<li class="timeline-item order-details">
-									<span class="timeline-item-icon | faded-icon">
-										<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
-									</span>
-									<div class="timeline-item-description" style="width:100%">
-										<h5 id="order-requirement" onclick="toggleOrderReq();"> 
-											Order Requirement Submitted
-											<i class="fa fa-angle-down pull-right"></i>
-										</h5>
-
-										<?php if(!empty($requirements)): ?>
-											<div class="comment" id="requirement-div"  style="display:none; width: 100%;">
-												<h4 style="margin-top:0px">Order Requirements</h4>
-												<p><?php echo $requirements['requirement']; ?></p>
-
-												<?php if(!empty($requirements['location'])):?>
-													<h4 style="margin-top:0px">Order Location</h4>
-													<p><?php echo $requirements['location']; ?></p>
-												<?php endif;?>
-
-												<?php if(!empty($attachements)):?>
-													<h4>Order Attachments</h4>
-													<div class="row" id="attachments">
-														<?php foreach ($attachements as $key => $value): ?>
-															<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
-															<?php if (file_exists($image_path) && $value['attachment']):?>
-																<div class="col-md-4 col-sm-6 col-xs-12">
-																	<div class="boxImage imgUp">
-																		<div class="imagePreviewPlus">
-																			<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
-																		</div>
-																	</div>
-																</div>
-															<?php endif; ?>
-														<?php endforeach; ?>
-													</div>
-												<?php endif; ?>
-											</div>
-										<?php endif; ?>
-									</div>
-								</li>
-								<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
-									<span class="timeline-item-icon | filled-icon ">
-										<i class="fa fa-calendar faicon" aria-hidden="true"></i>
-									</span>
-									<div class="timeline-item-description" style="width:100%">
-										<h5 id="order-created" onclick="toggleOrderCreated();">
-											Order Created
-											<i class="fa fa-angle-down pull-right"></i>
-										</h5>
-										<div class="comment" id="order-created-div"  style="display:none; width: 100%;">
-											<p><?php echo $created_date; ?></p>
-										</div>
-									</div>
-								</li>
-							</ol>
-						</div>
-					</div>
-					<div id="Details" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5">
-							<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-								<div class="col-md-10 pl-0">
-									<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
-								</div>
-								<div class="col-md-2 text-right pr-0">
-									<span>Total Price</span>
-								</div>
-								<div class="col-md-10 pl-0">
-									<span>
-										Ordered From 
-										<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-											<?php echo $tradesman['trading_name']; ?>
-										</a>
-										<?php if(!empty($delivery_date)): ?>
-											| Delivery Date <?php echo $delivery_date; ?>
-										<?php endif;?>	
-									</span>
-								</div>
-								<div class="col-md-2 text-right pr-0">
-									<span><b><?php echo '£'.number_format($order['total_price'],2); ?></b></span>
-								</div>
-							</div>
-							<div class="row pb-4 pt-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-								<div class="col-md-6 pl-0">
-									Order number: <?php echo $order['order_id']; ?>
-								</div>
-								<div class="col-md-6 text-right pr-0">
-									<span>View billing history</span>
-								</div>
-							</div>
-							<h4 class="mt-3 mb-0"><?php echo $service['service_name']; ?></h4>
-							<div class="row mt-3">
-								<div class="col-md-12">
-									<table class="table table-striped">
-										<thead class="bg-gray">
-											<tr>
-												<td colspan="4">
-													<b>Your Order</b>
-													<span class="ml-2" style="font-size:12px;">
-														<i><?php echo $created_date; ?></i>
-													</span>
-												</td>
-											</tr>
-											<tr>
-												<th>Item</th>                     
-												<th>Qty</th>                     
-												<th class="text-right">Duration</th> 
-												<th class="text-right">Price</th>                                                 
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>
-													<b><?php echo $service['service_name']; ?></b>
-													<?php if(!empty($attributes)): ?>
-														<ul>
-															<?php foreach($attributes as $att):?>
-																<li>
-																	<?php echo $att['attribute_name']; ?>
-																</li>
-															<?php endforeach; ?>
-														</ul>
-													<?php endif; ?>
-													<?php if(!empty($order['ex_services'])):?>
-														<b>Extra Services</b>
-														<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
-															<ul>
-																<?php foreach($extra_services as $exs):?>
-																	<?php if(in_array($exs['id'], $selectedExs)): ?>
-																		<li>
-																			<?php echo $exs['ex_service_name']; ?>
-																		</li>
-																	<?php endif;?>
-																<?php endforeach; ?>
-															</ul>
-														<?php endif; ?>
-													<?php endif;?>	
-												</td>
-												<td class="text-center">
-													<?php echo $order['service_qty'];?>
-												</td>
-												<td class="text-right"><?php echo $duration.' Days'; ?></td>
-												<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
-											</tr>                                        	
-										</tbody>
-										<tfoot>
-											<tr class="bg-gray">
-												<td><b>Sub Total</b></td>
-												<td colspan="3" class="text-right">
-													<b>
-														<?php 
-														$subTotal = $order['total_price'] - $order['service_fee'];
-														echo '£'.number_format($subTotal,2); 
-														?>
-													</b>
-												</td>
-											</tr>
-											<tr class="bg-gray">
-												<td><b>Service Fee</b></td>
-												<td colspan="3" class="text-right">
-													<b>
-														<?php echo '£'.number_format($order['service_fee'],2); ?>
-													</b>
-												</td>
-											</tr>
-											<tr class="bg-gray">
-												<td>
-													<b>Total</b>
-												</td>
-												<td colspan="3" class="text-right">
-													<b>
-														<?php echo '£'.number_format($order['total_price'],2); ?>
-													</b>
-												</td>
-											</tr>
-										</tfoot>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div id="Requirements" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5">
-							<?php if(!empty($requirements)): ?>
-								<div class="comment">
-									<h4 style="margin-top:0px">Order Requirements</h4>
-									<p><?php echo $requirements['requirement']; ?></p>
-
-									<?php if(!empty($requirements['location'])):?>
-										<h4 style="margin-top:0px">Order Location</h4>
-										<p><?php echo $requirements['location']; ?></p>
-									<?php endif;?>
-
-									<?php if(!empty($attachements)):?>
-										<h4>Order Attachments</h4>
-										<div class="row" id="attachments">
-											<?php foreach ($attachements as $key => $value): ?>
-												<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
-												<?php if (file_exists($image_path) && $value['attachment']):?>
-													<div class="col-md-4 col-sm-6 col-xs-12">
-														<div class="boxImage imgUp">
-															<div class="imagePreviewPlus">
-																<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
-															</div>
-														</div>
-													</div>
-												<?php endif; ?>
-											<?php endforeach; ?>
-										</div>
-									<?php endif; ?>
-
-									
-								</div>
-							<?php else:?>
-								<div class="comment">
-									<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
-								</div>
-							<?php endif; ?>
-
-							<?php if(!empty($taskAddress)):?>
-								<div class="comment mt-3">
-									<h4 style="margin-top:0px">Task Address</h4>
-									<p><?php echo $taskAddress['address']; ?></p>
-								</div>
-							<?php endif; ?>
-						</div>
-					</div>
-					<div id="Delivery" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5" style="height:400px;">
-							<div class="text-center">
-								<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
-							</div>
-							<?php if(!empty($delivery_date)):?>
-								<div class="text-center">
-									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-										<?php echo $tradesman['trading_name'];?> 
-									</a>
-									should deliver this order by <?php echo $delivery_date; ?>
-								</div>
-							<?php else:?>
-								<div class="text-center">
-									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-										<?php echo $tradesman['trading_name'];?>
-									</a> 
-									should deliver this order as soon as
-								</div>
-							<?php endif; ?>	
-						</div>
-					</div>
-					<div id="Rating" class="tab-pane fade">
-						<div class="timeline-div bg-white p-5">
-							<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-								<div class="col-md-12 pl-0 text-center">
-									<div class="member-summary">
-										<div class="summary member-summary-section">
-											<div class="member-image-container">
-												<?php 
-												if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-													$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
-												}else{
-													$uprofileImg = base_url('img/default-img.png');
-												}
-												$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
-												?>
-												<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
-											</div>											
-										</div>
-									</div>
-									<span class="mt-3">
-										Based on your expectations, how would you rate the quality of this delivery?
-									</span>
-									<form class="mt-3" id="order_service_review_form" style="width:100%">
-										<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-										<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
-										<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
-										<div class="rating">
-											<input type="hidden" name="rating" id="ratingValue">
-											<i class="fa fa-star star" style="--i: 0;" onclick="handleStarClick(0)"></i>
-											<i class="fa fa-star star" style="--i: 1;" onclick="handleStarClick(1)"></i>
-											<i class="fa fa-star star" style="--i: 2;" onclick="handleStarClick(2)"></i>
-											<i class="fa fa-star star" style="--i: 3;" onclick="handleStarClick(3)"></i>
-											<i class="fa fa-star star" style="--i: 4;" onclick="handleStarClick(4)"></i>
-										</div>
-										<div class="review-div">
-											<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
-										</div>
-										<div class="btn-group mt-3">
-											<button type="button" id="give-rating" class="btn btn-warning mr-3" onclick="giveRating();">
-												Submit
-											</button>											
-										</div>
-									</form>
-								</div>								
-							</div>							
-						</div>
 					</div>
 				</div>
-			</div>
+			</div>			
 		</div>
 	</div>
 </div>
@@ -1102,17 +1303,122 @@ $get_commision = $this->common_model->get_commision();
 					<div class="modal-header">
 						<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-						<h4 class="modal-title">Cancel Order</h4>
+						<h4 class="modal-title">Order Cancellation Request</h4>						
 					</div>
 					<div class="modal-body form_width100">
+						<p>
+							In order to cancel a order, you nee to send a cancellation request to your tradesmen. Once they accept the request, the order will be cancelled and the funds will be returned to you. If the request is denied, you can initiate a dispute. 
+						</p>
 						<div class="form-group">
 							<label for="reason"> Reason of Cancel</label>
-							<textarea rows="5" placeholder="" name="reason" id="reason" class="form-control"></textarea>
+							<textarea rows="5" placeholder="Reason of Cancel" name="reason" id="reason" class="form-control"></textarea>
 						</div>
+						<!-- <div class="form-group">
+							<label for="attachment"> Upload Image (Optional)</label>
+							<input type="file" name="dct_image" class="form-control" id="attachment">
+						</div> -->
 					</div>
 					<div class="modal-footer">
 						<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
 						<button type="button" class="btn btn-info signup_btn" onclick="cancelOrder()">Submit</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>			
+		</div>
+	</div>
+</div>
+
+<div class="modal fade popup" id="order_decision_modal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" id="close<?php echo $mile['id']; ?>" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Take a Decision</h4>
+			</div>
+			<div class="modal-body">
+				<fieldset>
+					<div id="milessss">
+						<div class="row">
+							<div class="col-md-12">
+								<p><b>Reason of Cancellation:</b></p>
+								<p><?php echo $order['reason']; ?>
+							</div>
+						</div>						
+						<div class="row">
+							<div class="col-md-12">
+								<p style="text-align: center;">If you approve this request of cancellation, then the order amount that you have created will be added to your wallet.</p>
+								<div class="col-sm-3"></div>
+								<div class="col-sm-4">
+									<div class="from-group">
+									<button class="btn btn-warning btn-lg" onclick="accept_decision(<?php echo $order['id']; ?>)">
+										Approve
+									</button>
+									</div>
+								</div>
+								<div class="col-sm-4">
+									<a class="btn btn-danger btn-lg" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
+								</div>
+							</div>
+						</div>
+					</div> 
+
+					<div class="input-append1">
+						<div id="fields">
+							<input type="hidden" name="order_id" id="order_id" value="<?php echo $order['id']; ?>">
+							<input type="hidden" name="order_id" id="order_id" value="<?php echo $order['user_id']; ?>">
+							<input type="hidden" name="amounts" id="amounts" value="<?php echo $order['total_price']; ?>">
+						</div>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade in" id="decline_request_modal">
+	<div class="modal-body" id="msg">
+		<div class="modal-dialog modal-lg">	 
+			<div class="modal-content">         	
+				<form method="post" id="order_cancel_decline_form" enctype="multipart/form-data">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+						<h4 class="modal-title">Order Decline Cancellation</h4>						
+					</div>
+					<div class="modal-body form_width100">
+						<div class="form-group">
+							<label for="reason"> Why do you want to decline this request?</label>
+							<textarea rows="5" placeholder="Reason of decline" name="decline_reason" id="reason" class="form-control"></textarea>
+						</div>						
+					</div>
+					<div class="modal-footer">
+						<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
+						<button type="button" class="btn btn-info signup_btn" onclick="declineOrder()">Submit</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>			
+		</div>
+	</div>
+</div>
+
+<div class="modal fade in" id="declined_reason_modal">
+	<div class="modal-body" id="msg">
+		<div class="modal-dialog modal-lg">	 
+			<div class="modal-content">         	
+				<form method="post" id="order_dispute_form" enctype="multipart/form-data">
+					<div class="modal-header">
+						<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+						<h4 class="modal-title">Order Cancellation Declined Reason</h4>
+					</div>
+					<div class="modal-body form_width100">
+						<div class="form-group">
+							<label for="reason"> Reason of Declined</label>
+							<p><?php echo $order['cancel_decline_reason']; ?></p>
+						</div>
+					</div>
+					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</form>
@@ -1522,6 +1828,11 @@ $get_commision = $this->common_model->get_commision();
 	    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 	}
 
+	function toggleTrackOrder(){
+		$("#track-order-div").slideToggle(); // Toggle the visibility with sliding effect
+	    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+	}
+
 	function openChat(){
 		get_chat_onclick(<?php echo $service['user_id'];?>, <?php echo $service['id'];?>);
 		showdiv();
@@ -1551,5 +1862,110 @@ $get_commision = $this->common_model->get_commision();
 
 	    const activeStars = document.getElementsByClassName('star active').length;
 	    $('#ratingValue').val(activeStars);        
+	}
+
+	function accept_decision(id) {
+		// if (confirm("Are you sure you want to approve this request cancellation?")) {
+		// 	$.ajax({
+		// 		type:'POST',
+		// 		url:site_url+'users/approve_decision/'+id,
+		// 		dataType: 'JSON',
+		// 		success:function(resp){
+		// 			if(resp.status==1) {
+		// 				location.reload();
+		// 			}
+		// 		} 
+		// 	});
+		// } 
+
+		$('#loader').removeClass('hide');
+		formData = $("#order_cancel_decline_form").serialize();
+
+		$.ajax({
+			url:site_url+'users/approve_decision/'+id,
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				$('#loader').addClass('hide');
+				if(result.status == 0){
+					swal({
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
+                // Handle error
+			}
+		});
+		
+	}
+
+	function decliensss() {
+	  	$('#order_decision_modal').modal('hide');
+	  	$('#decline_request_modal').modal('show');
+	}
+
+	function declineOrder(){
+		$('#loader').removeClass('hide');
+		formData = $("#order_cancel_decline_form").serialize();
+
+		$.ajax({
+			url: '<?= site_url().'users/declineCancel'; ?>',
+			type: 'POST',
+			data: formData,
+			dataType: 'json',		                
+			success: function(result) {
+				$('#loader').addClass('hide');
+				if(result.status == 0){
+					swal({
+						title: "Error",
+						text: result.message,
+						type: "error"
+					}, function() {
+						window.location.reload();
+					});	
+				}else if(result.status == 2){
+					swal({
+						title: "Login Required!",
+						text: "If you want to order the please login first!",
+						type: "warning"
+					}, function() {
+						window.location.href = '<?php echo base_url().'login'; ?>';
+					});	
+				}else{
+					swal({
+						title: "Success",
+						text: result.message,
+						type: "success"
+					}, function() {
+						window.location.reload();
+					});
+				}		                    
+			},
+			error: function(xhr, status, error) {
+                // Handle error
+			}
+		});
 	}
 </script>

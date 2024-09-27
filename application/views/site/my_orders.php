@@ -81,6 +81,9 @@
                                                         <?php if($this->session->userdata('type') == 2):?>
                                                             <th>View Order</th>
                                                         <?php endif; ?>
+                                                        <?php if($this->session->userdata('type') == 1):?>
+                                                            <th>View Order</th>
+                                                        <?php endif; ?>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -220,13 +223,17 @@ $(function () {
             <?php if($this->session->userdata('type') == 1):?>
                 { "data": "requirements", "render": function(data, type, row) {
                     return row.requirements;
-                }}
-            <?php endif; ?>
-            <?php if($this->session->userdata('type') == 2):?>
+                }},
+            <?php elseif($this->session->userdata('type') == 2):?>
                 { "data": "viewOrder", "render": function(data, type, row) {
                     return row.viewOrder;
-                }}
-            <?php endif; ?>    
+                }},
+            <?php endif; ?>
+            <?php if($this->session->userdata('type') == 1):?>
+                { "data": "viewOrder", "render": function(data, type, row) {
+                    return row.viewOrder;
+                }},
+            <?php endif; ?>
         ]
     });
 });

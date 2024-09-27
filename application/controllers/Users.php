@@ -2388,12 +2388,7 @@ class Users extends CI_Controller
 		        	$selected5 = $order['status'] == 'request_modification' ? 'selected' : '';
 		        	$selected6 = $order['status'] == 'disputed' ? 'selected' : '';
 
-		        	if($order['status'] == 'disputed'){
-		        		$status = '<a href="'.base_url('order-dispute/'.$order['id']).'" class="btn btn-success btn-sm">View Dispute</button>';
-		        		$status .= '<a href="'.base_url('order-dispute/'.$order['id']).'" class="mt-2 btn btn-danger btn-sm">Cancel Dispute</button>';
-
-		        	}else{
-		        		$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
+		        	$status = '<select class="form-control orderStatus" data-id="'.$order['id'].'">
 	                            <option value="pending" '.$selected1.'>Pending</option>
 	                            <option value="active" '.$selected2.'>Started</option>
 	                            <option value="completed" '.$selected3.'>Completed</option>
@@ -2401,7 +2396,6 @@ class Users extends CI_Controller
 	                            <option value="request_modification" '.$selected5.'>Request Modification</option>
 	                            <option value="disputed" '.$selected6.'>Disputed</option>
 	                        </select>';	
-		        	}
 	        	}else{
 	        		if($order['status'] == 'completed'){
 	        			$status = '<button class="btn btn-success orderAgain" type="button" data-id="'.$order['id'].'">Order Again</button>';
@@ -4335,7 +4329,7 @@ class Users extends CI_Controller
 		}
 
 		$user_id = $this->session->userdata('user_id');
-		$order = $this->common_model->GetSingleData('service_order',['user_id'=>$user_id, 'id'=>$id]);
+		$order = $this->common_model->GetSingleData('service_order',['id'=>$id]);
 		$data['user'] = $this->common_model->GetSingleData('users',['id'=>$user_id]);
 		
 		if(!empty($order)){
@@ -4837,6 +4831,20 @@ class Users extends CI_Controller
 		$input['status'] = 'cancelled';
 		$input['reason'] = $reason;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
+
+		// if ($_FILES['dct_image']['name'] != '') {    
+	    //     $config['upload_path']   = 'img/request_cancel/';
+	    //     $config['allowed_types'] = 'gif|jpg|png|jpeg';  
+	    //     $config['remove_spaces'] = TRUE;    
+	    //     $config['encrypt_name'] = TRUE;     
+	    //     $this->load->library('upload', $config);
+
+	    //     if ($this->upload->do_upload('dct_image')) {
+	    //         $data = $this->upload->data();      
+	    //         $input['order_cancel_file'] = $data['file_name']; // Set the filename here
+	    //     }
+	    // }
+
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 		if($run){
 			$hId = $this->session->userdata('user_id');
@@ -4867,5 +4875,112 @@ class Users extends CI_Controller
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
 		}
+	}
+
+	public function approve_decision($id){
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['user_id']]);
+
+		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
+		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['userid']));
+
+		$update2['u_wallet']=$get_users['u_wallet']+$serviceOrder['price'];
+	
+		$runss1 = $this->common_model->update('users',array('id'=>$serviceOrder['user_id']),$update2);
+
+		$insertn['nt_userId'] = $serviceOrder['user_id'];
+		$insertn['nt_message'] = $get_users1['trading_name'] .' accepted your <a href="'.site_url().'order-tracking/'.$id.'">order cancellation request!</a>';
+		$insertn['nt_satus'] = 0;
+		$insertn['nt_create'] = date('Y-m-d H:i:s');
+		$insertn['nt_update'] = date('Y-m-d H:i:s');
+		$insertn['job_id'] = $id;
+		$insertn['posted_by'] = $serviceOrder['user_id'];
+		$run2 = $this->common_model->insert('notification',$insertn);
+
+	    $transactionid = md5(rand(1000,999).time());
+	    $tr_message='£'.$serviceOrder['price'].' has been credited to your wallet for order number'.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+	   	$data1 = array(
+			'tr_userid'=>$serviceOrder['user_id'], 
+		  	'tr_amount'=>$serviceOrder['price'],
+			  'tr_type'=>1,
+		  	'tr_transactionId'=>$transactionid,
+		  	'tr_message'=>$tr_message,
+		  	'tr_status'=>1,
+		  	'tr_created'=>date('Y-m-d H:i:s'),
+		  	'tr_update' =>date('Y-m-d H:i:s')
+		);
+		$run1 = $this->common_model->insert('transactions',$data1);		
+
+		$subject1 = "Your order cancellation request has been approved!"; 
+		$content1= 'Hi '.$get_users['f_name'].', <br><br>';
+		$content1.='Your request to cancel your order payment has been approved by '.$get_users1['trading_name'].'<br><br>';
+		$content1.='Order number: '.$serviceOrder['order_id'].'<br>';
+		$content1.='Order amount: £'.$serviceOrder['price'].'<br>';
+		$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/?post_id='.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
+
+		$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
+		$this->common_model->send_mail($get_users['email'],$subject1,$content1);
+	
+		$subject = "Order Payment cancellation request for order “".$serviceOrder['order_id']."” accepted"; 
+		$content= 'Hi '.$get_users1['f_name'].', <br><br>';
+		$content.= 'Your order payment cancellation request was successfully.<br><br>';
+		$content.= 'Order number:'.$serviceOrder['order_id'].'.<br>';
+		$content.= 'Order amount: £'.$serviceOrder['price'].'.<br><br>';
+
+		//$content.='<div style="text-align:center"><a href="'.site_url().'order-tracking/='.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Request new milestone</a></div><br>';
+
+		$content.='View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.<br><br>';
+
+		$run = $this->common_model->send_mail($get_users1['email'],$subject,$content);
+
+		if($run){
+			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of order has been approved successfully.']);
+		}
+		else{
+			echo json_encode(['status' => 0, 'message' => 'Something is wrong.']);
+		}
+	}
+
+	public function declineCancel(){
+		$id = $this->input->post('order_id');
+
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['user_id']]);
+
+		$updatem['status'] = 'declined';
+		$updatem['cancel_decline_reason']=$this->input->post('decline_reason');
+		$runs = $this->common_model->update('service_order',array('id'=>$id),$updatem);
+
+		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
+		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['userid']));
+
+    	$insertn['nt_userId'] = $serviceOrder['user_id'];
+    	$insertn['nt_message'] = $get_users1['trading_name'] .' rejected your order cancellation request. <a href="' .site_url('order-tracking?'.$id) .'" >View reason</a>';
+	    $insertn['nt_satus'] = 0;
+	    $insertn['nt_create'] = date('Y-m-d H:i:s');
+	    $insertn['nt_update'] = date('Y-m-d H:i:s');
+	    $insertn['job_id'] = $id;
+	    $insertn['posted_by'] = $serviceOrder['user_id'];
+	    $run2 = $this->common_model->insert('notification',$insertn);
+
+		$u_name=$get_users['f_name'].' '.$get_users['l_name'];
+	
+		$subject = "Your order cancellation request has been declined"; 
+		$content.='Your request to cancel your order has been declined by '.$get_users1['trading_name'].'<br><br>';
+		$content.='Order number: '.$serviceOrder['order_id'].'<br>';
+		$content.='Order amount: £'.$serviceOrder['price'].'<br>';
+
+		$content.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View reason</a></div><br>';
+		
+		$content.='We encourage you to discuss with '.$get_users1['trading_name'].' and resolve the issue amicably. If however you  believe you can´t come to a resolution, you can open a order dispute.<br><br>';
+
+		$content.='View our <a href="'.site_url().'homeowner-help-centre#Dispute-Resolution-1">Order Dispute</a> section on the homeowner help page or contact our customer services if you have any specific questions using our service.';
+		$run = $this->common_model->send_mail($get_users['email'],$subject,$content);
+		if($run){
+			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of milestone has been declined successfully.']);
+		}
+		else{
+			echo json_encode(['status' => 0, 'message' => 'Something is wrong.']);
+		}		
 	}
 }

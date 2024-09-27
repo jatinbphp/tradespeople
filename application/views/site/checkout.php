@@ -335,67 +335,66 @@
 									<b><?php echo $serviceQty; ?></b>
 								</li>
 								<?php if(!empty($ex_services) && count($ex_services) > 0): ?>
-								<li>
-									<b>Extra Services</b> 
-								</li>
-								<?php foreach($ex_services as $exs):?>
 									<li>
-										<p><?php echo $exs['ex_service_name']; ?></p> 
-										<b><?php echo '£'.number_format($exs['price'],2); ?></b>
+										<b>Extra Services</b> 
 									</li>
-								<?php endforeach; ?>
-							<?php endif; ?>
-							<li>
-								<p>Service fee <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
-								<b>
-									<span id="serviceFee"><?php echo '£'.number_format($service_fee,2)?></span>
-								</b>
-							</li>
-							<li><p>Discount</p><b id="discountVal">-</b></li>
-							<li><b>Promo codes</b></li>
-							<li id="promoCodeLi">
-								<input class="form-control input-lg" name="promo_code" id="promo_code" type="text" placeholder="Enter code">
-								<button type="button" id="codeApply" class="btn">APPLY</button>
-								<button type="button" id="codeRemove" class="btn hide">Remove</button>
-							</li>
+									<?php foreach($ex_services as $exs):?>
+										<li>
+											<p><?php echo $exs['ex_service_name']; ?></p> 
+											<b><?php echo '£'.number_format($exs['price'],2); ?></b>
+										</li>
+									<?php endforeach; ?>
+								<?php endif; ?>
+								<li>
+									<p>Service fee <i class="fa fa-question-circle" aria-hidden="true"></i></p> 
+									<b>
+										<span id="serviceFee"><?php echo '£'.number_format($service_fee,2)?></span>
+									</b>
+								</li>
+								<li><p>Discount</p><b id="discountVal">-</b></li>
+								<li><b>Promo codes</b></li>
+								<li id="promoCodeLi">
+									<input class="form-control input-lg" name="promo_code" id="promo_code" type="text" placeholder="Enter code">
+									<button type="button" id="codeApply" class="btn">APPLY</button>
+									<button type="button" id="codeRemove" class="btn hide">Remove</button>
+								</li>
 
-							<li>
-								<p>Total</p>
-								<?php 
-								$mainTotalPrice = $totalPrice + $service_fee;
-								?>
-								<b id="totalPrice">
-									<?php echo '£'.number_format($mainTotalPrice,2); ?>
-								</b>	
-							</li>
-							<?php if(!empty($delivery_date)): ?>
-								<li style="font-size:14px;">
-									<p>Delivered By</p>
-									<b style="color:#4B8024">
-										<?php echo $delivery_date; ?>
+								<li>
+									<p>Total</p>
+									<?php 
+									$mainTotalPrice = $totalPrice + $service_fee;
+									?>
+									<b id="totalPrice">
+										<?php echo '£'.number_format($mainTotalPrice,2); ?>
 									</b>	
 								</li>
-							<?php endif; ?>
-						</ul>
+								<?php if(!empty($delivery_date)): ?>
+									<li style="font-size:14px;">
+										<p>Delivered By</p>
+										<b style="color:#4B8024">
+											<?php echo $delivery_date; ?>
+										</b>	
+									</li>
+								<?php endif; ?>
+							</ul>
 
-						<input type="hidden" name="pay_intent" id="pay_intent">
+							<input type="hidden" name="pay_intent" id="pay_intent">
 
-						<div class="form-group" style="margin-top:15px;">
-							<div class="row">
-								<div class="col-sm-12 text-center">										
-									<button class="btn btn-warning btn-lg" type="button" id="checkoutBtn">
-										Checkout											
-									</button>
+							<div class="form-group" style="margin-top:15px;">
+								<div class="row">
+									<div class="col-sm-12 text-center">										
+										<button class="btn btn-warning btn-lg" type="button" id="checkoutBtn">
+											Checkout											
+										</button>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</form>
+			</form>
+		</div>
 	</div>
-</div>
-
 </div>
 </div>
 
