@@ -500,7 +500,7 @@ $closed_date = $get_commision[0]['closed_date'];
 									?>
 									<tr class="tr_class" data-href="<?php echo base_url('order-tracking/'.$list['id']); ?>">
 
-										<td><?php echo $list['id']; ?></td>
+										<td><?php echo $list['order_id']; ?></td>
 										<td>
 											<?php if ($is_image): ?>
 												<img class="mr-4" src="<?php echo base_url('img/services/') . $list['image']; ?>" alt="Service Image" width="100">               
@@ -513,7 +513,7 @@ $closed_date = $get_commision[0]['closed_date'];
 										<td><?php echo $list['service_name']; ?></td>
 										<td><?php echo $date->format('F j, Y'); ?></td>
 										<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
-										<td><?php echo ucfirst($list['status']); ?></td>
+										<td><?php echo ucfirst(str_replace('_', ' ', $list['status'])); ?></td>
 										<td>
 											<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
 										</td>
@@ -924,7 +924,8 @@ function get_unread_msg_count(post_id, rid) {
 			lengthChange: false,
 			searching: false,
 			//     "lengthMenu": [[5, 50, 100, -1], [5, 50, 100, "All"]],
-			"pageLength": 5
+			"pageLength": 5,
+			order:[]
 		});
 		$(".DataTable").DataTable({
 			stateSave: true,

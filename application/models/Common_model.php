@@ -3394,19 +3394,19 @@ class Common_model extends CI_Model
 
 	public function getActiveOrder($table, $user_id, $limit=0){
 		if($limit != 0){
-			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name
+			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
                            FROM $table so
                            LEFT JOIN users u ON so.user_id = u.id
                            LEFT JOIN my_services ms ON ms.id = so.service_id
-                           WHERE so.status = 'active' AND ms.user_id = $user_id
+                           WHERE so.status NOT IN ('disputed','cancelled','completed') AND ms.user_id = $user_id
                            ORDER BY so.id DESC
                            LIMIT 500");		
 		}else{
-			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name
+			$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
                            FROM $table so
                            LEFT JOIN users u ON so.user_id = u.id
                            LEFT JOIN my_services ms ON ms.id = so.service_id
-                           WHERE so.status = 'active' AND ms.user_id = $user_id
+                           WHERE so.status NOT IN ('disputed','cancelled','completed') AND ms.user_id = $user_id
                            ORDER BY so.id DESC
                            LIMIT $limit");	
 		}

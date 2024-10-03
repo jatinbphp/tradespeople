@@ -66,6 +66,7 @@ $route['checkout']		       = 'home/checkout';
 $route['serviceCheckout']		= 'checkout/serviceCheckout';
 $route['submitRequirements']		= 'checkout/submitRequirements';
 $route['thakyou']		= 'checkout/thankyou';
+$route['orderCompleted/(:any)']		= 'users/orderCompleted/$1';
 
 $route['affiliate']           = 'home/view_affiliate';
 $route['affiliate-signup']    = 'home/affiliate_signup';

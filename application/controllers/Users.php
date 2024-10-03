@@ -2411,6 +2411,7 @@ class Users extends CI_Controller
 	        	$link = base_url('order-tracking/'.$order['id']);
 
 	          	$data[] = [
+		          	'order_id' => $order['order_id'],
 		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name'], 'link'=>$link),
 		            'created_at' => $date->format('F j, Y'),
 		            'total_price' => '£'.number_format($order['total_price'],2),
@@ -3725,7 +3726,7 @@ class Users extends CI_Controller
 			$insert['description'] = $this->input->post('description');
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 			if($run){
-				$mImgs = !empty($this->input->post('multiImgIds')) ? explode(',', $this->input->post('multiImgIds')) : [];
+				$mImgs = !empty($this->input->post('multiImgIds1')) ? explode(',', $this->input->post('multiImgIds1')) : [];
 
 				$input1['conversation_id'] = $run;
 				if(count($mImgs) > 0){
@@ -3734,9 +3735,9 @@ class Users extends CI_Controller
 					}
 				}		        
 			}
-			echo json_encode(['status' => 'success', 'message' => 'Order Submited']);
+			echo json_encode(['status' => 1, 'message' => 'Order Submited']);
 		}else{
-			echo json_encode(['status' => 'error', 'message' => 'Order Not Submitted']);
+			echo json_encode(['status' => 0, 'message' => 'Order Not Submitted']);
 		}
 	}
 
@@ -4339,6 +4340,7 @@ class Users extends CI_Controller
 
 			$package_data = json_decode($data['service']['package_data'],true);	
 			$data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$data['service']['user_id']]);
+			$data['homeowner'] = $this->common_model->GetSingleData('users',['id'=>$order['user_id']]);
 
 			$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$order['id'],'status'=>'active']);
 
@@ -4599,13 +4601,13 @@ class Users extends CI_Controller
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
 			/*Manage Order History*/
-            $insert1 = [
-	            'user_id' => $tuser_id,
-	            'service_id' => $serviceOrder['service_id'],
-	            'order_id' => $oId,
-	            'status' => $status
-	        ];
-	        $this->common_model->insert('service_order_status_history', $insert1);
+      $insert1 = [
+        'user_id' => $tuser_id,
+        'service_id' => $serviceOrder['service_id'],
+        'order_id' => $oId,
+        'status' => $status
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
 
 			$insert['sender'] = $homeowner_id;
 			$insert['receiver'] = $tuser_id;			
@@ -4624,17 +4626,17 @@ class Users extends CI_Controller
 				}
 
 				/*Tradesman Email Code*/
-                $homeOwner = $this->common_model->GetSingleData('users',['id'=>$homeowner_id]);
-                $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
-                $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-                $newStatus = ucwords(str_replace('_',' ',$status));                
+        $homeOwner = $this->common_model->GetSingleData('users',['id'=>$homeowner_id]);
+        $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
+        $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+        $newStatus = ucwords(str_replace('_',' ',$status));                
 
-                if($tradesman){                   
-                    $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';     
-                    $html .= '<p style="margin:0;padding:10px 0px"><b>Description:</b></p>';
-                    $html .= '<p style="margin:0;padding:10px 0px">'. $this->input->post('modification_decription').'</p>';                    
-                    $this->common_model->send_mail($tradesman['email'],$subject,$html);
-                }		        
+        if($tradesman){                   
+          $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';     
+          $html .= '<p style="margin:0;padding:10px 0px"><b>Description:</b></p>';
+          $html .= '<p style="margin:0;padding:10px 0px">'. $this->input->post('modification_decription').'</p>';                    
+          $this->common_model->send_mail($tradesman['email'],$subject,$html);
+        }		        
 			}
 			echo json_encode(['status' => 'success', 'message' => $flashMsg]);
 		}else{
@@ -4643,23 +4645,50 @@ class Users extends CI_Controller
 	}
 
 	public function submitReviewRating(){
+		$hId = $this->session->userdata('user_id');
+		$tId = $this->input->post('rate_to');
+		$oId = $this->input->post('order_id');
+		$rate = $this->input->post('rating');
+		$tRate = $this->input->post('tradesman_rating');
+		$review = $this->input->post('reviews');
+
 		$insert1 = [
-            'rate_by' => $this->session->userdata('user_id'),
-            'rate_to' => $this->input->post('rate_to'),
-            'order_id' => $this->input->post('order_id'),
-            'service_id' => $this->input->post('service_id'),
-            'rating' => $this->input->post('rating'),
-            'review' => $this->input->post('reviews')
-        ];
-        $run = $this->common_model->insert('service_rating', $insert1);
-        if($run){
-        	$input['is_review'] = 1;
-        	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input);
+      'rate_by' => $hId,
+      'rate_to' => $tId,
+      'order_id' => $oId,
+      'service_id' => $this->input->post('service_id'),
+      'rating' => $rate,
+      'review' => $review
+    ];
+    $run = $this->common_model->insert('service_rating', $insert1);
+    if($run){
+    	$input['is_review'] = 1;
+    	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input);
+
+    	$data = array(
+	  		'rt_rateBy'=>$hId, 
+  			'rt_rateTo'=>$tId,
+  			'rate_type'=>'order',
+				'rt_jobid'=>$oId,
+				'rt_rate'=> $tRate,
+				'rt_comment'=> $review,
+				'rt_create' =>date('Y-m-d H:i:s')
+			);
+ 			$this->common_model->insert('rating_table',$data);
+
+    	$get_avg_rating=$this->common_model->get_avg_rating($tId);
+			$avg= $get_avg_rating[0]['avg'];
+			$get_user=$this->common_model->get_single_data('users',array('id'=>$tId));
+			$review=$get_user['total_reviews'];
+			$update2['average_rate']=$avg;
+			$update2['total_reviews']=$review+1;
+
+			$this->common_model->update('users',array('id'=>$tId),$update2);
 
 			echo json_encode(['status' => 'success', 'message' => 'Review & Rating submitted successfully']);
-        }else{
+    }else{
 			echo json_encode(['status' => 'error', 'message' => 'Review & Rating not submitted']);
-        }
+    }
 	}
 
 	public function orderDispute(){
@@ -4678,13 +4707,30 @@ class Users extends CI_Controller
             $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
 
 			/*Manage Order History*/
+            if($userid == $homeOwner['id']){
+            	$senderId = $userid;
+            	$receiverId = $tradesman['id'];
+            }
+            if($userid == $tradesman['id']){
+            	$senderId = $userid;
+            	$receiverId = $homeOwner['id'];
+            }
+
+			/*Manage Order History*/
             $insert1 = [
-	            'user_id' => $userid,
+	            'user_id' => $senderId,
 	            'service_id' => $serviceOrder['service_id'],
 	            'order_id' => $oId,
 	            'status' => 'disputed'
 	        ];
 	        $this->common_model->insert('service_order_status_history', $insert1);
+
+	        $insert['sender'] = $senderId;
+			$insert['receiver'] = $receiverId;
+			$insert['order_id'] = $oId;
+			$insert['status'] = 'disputed';
+			$insert['description'] = $reason;
+			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
 	        /*Entry in Dispute Table*/
 
@@ -4799,7 +4845,7 @@ class Users extends CI_Controller
 					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' .date("d-M-Y H:i:s", strtotime($newTime)) .' will result in closing this case and deciding in '.$tradesman['trading_name'].' favour.  Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
 					
 					$contant .= '<br><p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-					$this->common_model->send_mail($tradesman['email'],$subject,$contant);						
+					$this->common_model->send_mail($tradesman['email'],$subject,$contant);
 					
 					
 					$subject = "Your order payment dispute has been opened: “" .$serviceOrder['order_id']."”.";
@@ -4850,16 +4896,32 @@ class Users extends CI_Controller
 			$hId = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
             $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
-            $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
+            $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+            if($hId == $homeOwner['id']){
+            	$senderId = $hId;
+            	$receiverId = $tradesman['id'];
+            }
+            if($hId == $tradesman['id']){
+            	$senderId = $hId;
+            	$receiverId = $homeOwner['id'];
+            }
 
 			/*Manage Order History*/
             $insert1 = [
-	            'user_id' => $hId,
+	            'user_id' => $senderId,
 	            'service_id' => $serviceOrder['service_id'],
 	            'order_id' => $oId,
 	            'status' => 'cancelled'
 	        ];
 	        $this->common_model->insert('service_order_status_history', $insert1);
+
+	        $insert['sender'] = $senderId;
+			$insert['receiver'] = $receiverId;
+			$insert['order_id'] = $oId;
+			$insert['status'] = 'cancelled';
+			$insert['description'] = $reason;
+			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
 			/*Tradesman Email Code*/
             if($tradesman){
@@ -4982,5 +5044,33 @@ class Users extends CI_Controller
 		else{
 			echo json_encode(['status' => 0, 'message' => 'Something is wrong.']);
 		}		
+	}
+
+	public function orderCompleted($id=null){
+		$oId = $id;
+		
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+    
+    $data['homeOwner'] = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
+    
+    $data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+    
+    $data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$serviceOrder['task_address_id']]);
+    
+    $data['review'] = $this->common_model->GetSingleData('service_rating',['service_id'=>$service['id'], 'rate_by'=>$serviceOrder['user_id'], 'rate_to'=>$service['user_id']]);
+
+    $data['tRate'] = $this->common_model->GetSingleData('rating_table',['rate_type'=>'order', 'rt_rateBy'=>$serviceOrder['user_id'], 'rt_rateTo'=>$service['user_id']]);
+
+    $data['service'] = $service;
+
+    $data['order'] = $serviceOrder;
+
+    $ocDate = new DateTime($serviceOrder['created_at']);
+
+		$data['created_date'] = $ocDate->format('D jS F, Y H:i');
+
+    $this->load->view('site/completedOrder',$data);
 	}
 }

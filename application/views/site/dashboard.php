@@ -639,71 +639,67 @@
 
 				<div class="row" id="OrderList">
 					<div class="col-sm-12">
-						<?php if(!empty($all_active_order) && count($all_active_order)): ?>
-							<div class="row mb-5">
-								<?php foreach($all_active_order as $order):?>
-									<div class="col-sm-6" id="activeOrder<?php echo $order['id']; ?>">
-										<div class="member-summary mjq-sh">
-											<div class="summary member-summary-section">
-												<div class="member-image-container">
-													 <?php $image_path = FCPATH . 'img/profile/' . ($order['profile'] ?? ''); ?>
-            										<?php if (file_exists($image_path) && $order['profile']): ?>
-														<img src="<?php echo base_url('img/profile/') . $order['profile']; ?>" class="img-border-round member-image">
-													<?php else: ?>
-														<img src="<?php echo base_url('img/default-img.png'); ?>" class="img-border-round member-image">
-													<?php endif; ?>
-												</div>
-												<div class="member-information-container">
-													<div class="member-name-container crop">
-														<h4 class="m-0 pb-1">
-															<?php echo $order['f_name'].' '.$order['l_name']; ?>
-														</h5>
-														<div class="member-job-title crop text-muted">
-															<?php echo $order['service_name']; ?>
-														</div>
-														<h3 class="mt0">
-															<?php echo '£'.number_format($order['total_price'] - $order['service_fee'],2); ?>
-														</h3>
-													</div>
-												</div>							
-											</div>
-											<div class="summary member-summary-section">
-												<div class="member-information-container date-submit-order">
-													<div>
-													<div class="member-job-title crop">
-														<i class="fa fa-calendar"></i>
-														<?php 
-															$date = new DateTime($order['created_at']);
-															echo $date->format('F j, Y');
-														?>
-													</div>
-													<div class="member-job-title crop text-muted">
-														<!-- <?php 
-															$CI = &get_instance();
-															$CI->load->model('Common_model');
-															echo $CI->Common_model->changeDateFormat($order['created_at']);
-														?> -->
-														3 days to submit
-														
-													</div>
-													</div>
-													<button type="button" class="btn btn-warning submitProject" data-pid="<?php echo $order['id']; ?>">
-														<i class="fa fa-upload"></i>
-														Submit Order
-													</button>
-												</div>
-											</div>						
-										</div>
-									</div>
-								<?php endforeach; ?>	
-							</div>
-						<?php else: ?>
-							<div class="verify-page mb-5">
-								<div  style="background-color:#fff;padding: 10px;" class="">
-									<p>No active order found.</p>
+						<?php if ($all_active_order) {  ?>
+							<table class="table table_nw" id="activeOrderTable">
+								<thead>
+									<tr class="th_class">
+										<th style="display:none">#</th>
+										<th>Order Id</th>
+										<th>Image/Video</th>                     
+		                                <th>Service Name</th>                     
+		                                <th>Order Date</th>                     
+		                                <th>Total</th> 
+		                                <th>Status</th>
+		                                <th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php if(!empty($all_active_order)):?>
+										<?php foreach ($all_active_order as $okey => $list): ?>
+											<?php 
+												$date = new DateTime($order['created_at']);
+
+												$image_path = FCPATH . 'img/services/' . ($list['image'] ?? '');
+												$mime_type = get_mime_by_extension($image_path);
+								                $is_image = strpos($mime_type, 'image') !== false;
+								                $is_video = strpos($mime_type, 'video') !== false;
+											?>
+											<tr class="tr_class" data-href="<?php echo base_url('order-tracking/'.$list['id']); ?>">
+
+												<td style="display:none"></td>
+												<td><?php echo $list['order_id']; ?></td>
+												<td>
+													<a href="<?php echo base_url('order-tracking/'.$list['id']); ?>">
+														<?php if ($is_image): ?>
+															<img class="mr-4" src="<?php echo base_url('img/services/') . $list['image']; ?>" alt="Service Image" width="100">               
+										                <?php elseif ($is_video): ?>
+										                	<video class="mr-4" width="100" controls autoplay><source src="<?php echo base_url('img/services/') . $list['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+										                <?php else:?>
+										                	<img class="mr-4" src="<?php echo base_url('img/default-image.jpg'); ?>" alt="Service Image" width="100">
+										                <?php endif; ?>	
+										            </a>
+												</td>
+												<td>
+													<a href="<?php echo base_url('order-tracking/'.$list['id']); ?>"><?php echo $list['service_name']; ?></a>
+												</td>
+												<td><?php echo $date->format('F j, Y'); ?></td>
+												<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
+												<td><?php echo ucfirst(str_replace('_', ' ', $list['status'])); ?></td>
+												<td>
+													<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
+												</td>
+											</tr>
+										<?php endforeach; ?>
+									<?php endif;?>
+								</tbody>
+							</table>
+						<?php } else { ?>
+							<div class="verify-page">
+								<div style="background-color:#fff;padding: 20px;" class="">
+									<p>No active orders found.</p>
 								</div>
-							</div>
-						<?php endif; ?>	
+							</div> <br><br>
+						<?php }  ?>	
 					</div>
 				</div>
 
@@ -1368,6 +1364,14 @@ th, td {
         "lengthMenu": [[5, 50, 100, -1], [5, 50, 100, "All"]],
         "pageLength": 5
     });
+    $("#activeOrderTable").DataTable({
+		stateSave: true,
+		lengthChange: false,
+		searching: false,
+		//     "lengthMenu": [[5, 50, 100, -1], [5, 50, 100, "All"]],
+		"pageLength": 5,
+		order:[]
+	});
     $(".DataTable").DataTable({
       stateSave: true,
      lengthChange: false,
