@@ -3089,6 +3089,7 @@ class Common_model extends CI_Model
 		if ($ob) {
 			$this->db->order_by($ob, $obc);
 		}
+
 		$query = $this->db->get($table);
 		if ($query->num_rows()) {
 			return $query->row_array();
@@ -3096,6 +3097,23 @@ class Common_model extends CI_Model
 			return false;
 		}
 	}
+
+	public function getBeforeDisputedStatus($order_id)
+	{
+		$this->db->where('order_id', $order_id);  // Assuming you are filtering by order_id
+		$this->db->where('status !=', 'disputed'); // Exclude the disputed status
+		$this->db->where('created_at <', '(SELECT created_at FROM service_order_status_history WHERE order_id = '.$order_id.' AND status = "disputed")', FALSE); // Records before disputed status
+		$this->db->order_by('created_at', 'DESC'); // Sort by created_at in descending order
+		$this->db->limit(1); // Get only one record (the one just before disputed)
+
+		$query = $this->db->get('service_order_status_history');
+		if ($query->num_rows()) {
+		    return $query->row_array(); // Return the record before disputed
+		} else {
+		    return false; // Return false if no such record exists
+		}
+	}
+
 	public function GetAllData($table, $where = null, $ob = null, $obc = 'DESC', $limit = null, $offset = null, $select = null)
 	{
 
@@ -3439,11 +3457,21 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getAllOrderForAdmin($table){
+	public function getAllOrderForAdmin($table, $status = ''){
+		$statusWhere = '';
+		if(!empty($status) && $status != 'all'){
+			if($status == 'pending'){
+				$statusWhere = 'WHERE so.status IN ("placed", "active")';	
+			}else{
+				$statusWhere = 'WHERE so.status = "'.$status.'"';	
+			}			
+		}
+
 		$query = $this->db->query("SELECT so.*, u.f_name, u.l_name, u.profile, ms.service_name, ms.image, ms.video
                	FROM $table so
                	LEFT JOIN users u ON so.user_id = u.id
                	LEFT JOIN my_services ms ON ms.id = so.service_id
+               	$statusWhere
                	ORDER BY so.id DESC
                	LIMIT 500");
 		return $query->result_array();

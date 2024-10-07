@@ -651,12 +651,56 @@
             </li>
           <?php }?>
 
-          <?php if (in_array(23, $my_access)) {?>
-            <li class="DashboardManage">
+          <?php if (in_array(23, $my_access)) {
+            $totalPending = $this->db->select(['id','status'])->from('service_order')->where_in('status',['placed','active'])->where('is_view',0)->count_all_results();
+
+            $totalCompleted = $this->db->select(['id','status'])->from('service_order')->where('status','completed')->where('is_view',0)->count_all_results();
+
+            $totalCancelled = $this->db->select(['id','status'])->from('service_order')->where('status','cancelled')->where('is_view',0)->count_all_results();
+
+            $totalDisputed = $this->db->select(['id','status'])->from('service_order')->where('status','disputed')->where('is_view',0)->count_all_results();
+
+            $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed;
+
+          ?>
+            <!-- <li class="DashboardManage">
               <a href="<?php echo base_url(); ?>service-orders">
                 <i class="fa fa-shopping-cart"></i> <span>Service Orders</span>
               </a>
+            </li> -->
+
+            <li class="us_er3">
+              <a href="#">
+                <i class="fa fa-tasks"></i> 
+                <span>Service Order <?php echo ($totalOrder > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalOrder . '</span>' : ''; ?></span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu">
+                <li>
+                  <a href="<?php echo base_url(); ?>completed-orders">
+                    <i class="fa fa-circle-o"></i>Completed Order
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>pending-orders">
+                    <i class="fa fa-circle-o"></i>Pending Order
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>cancel-orders">
+                    <i class="fa fa-circle-o"></i>Cancel Order
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>disputed-orders">
+                    <i class="fa fa-circle-o"></i>Disputed Order
+                  </a>
+                </li>
+              </ul>
             </li>
+
           <?php }?>
 
          <!--  <li class="us_er3">

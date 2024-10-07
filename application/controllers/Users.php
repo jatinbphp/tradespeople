@@ -4691,6 +4691,58 @@ class Users extends CI_Controller
     }
 	}
 
+	function add_dispute_files()
+	{
+		$files = [];
+		if ($this->session->userdata('user_id')) {
+			if (isset($_FILES['files']['name']) && !empty($_FILES['files']['name'])) {
+				foreach ($_FILES['files']['name'] as $key => $file) {
+					$newName = explode('.', $_FILES['files']['name'][$key]);
+					$size = $_FILES['files']['size'][$key];
+					$ext = end($newName);
+					$fileName = 'img/dispute/' . rand() . time() . '.' . $ext;
+					if (move_uploaded_file($_FILES['files']['tmp_name'][$key], $fileName)) {
+						$insertDoc = [];
+						$insertDoc['name'] = $fileName;
+
+						$insertDoc['original_name'] = $file;
+
+						$kb = round(($size / 1024), 2);
+						$mb = round(($size / (1024 * 1024)), 2);
+						$gb = round(($size / (1024 * 1024 * 1024)), 2);
+						if ($gb >= 1) {
+							$size = $gb . ' KB';
+						} else if ($mb >= 1) {
+							$size = $mb . ' MB';
+						} else {
+							$size = $kb . ' KB';
+						}
+						$insertDoc['size'] = $size;
+						array_push($files, $insertDoc);
+					}
+				}
+
+				echo json_encode([
+					'status' => 1,
+					'files' => $files,
+				]);
+				exit();
+			} else {
+				echo json_encode([
+					'status' => 0,
+					'message' => 'Something went wrong, try again later.',
+				]);
+				exit();
+			}
+		} else {
+			echo json_encode([
+				'status' => 0,
+				'message' => 'Something went wrong, try again later.',
+			]);
+			exit();
+		}
+	}
+
 	public function orderDispute(){
 		$oId = $this->input->post('order_id');
 		$reason = $this->input->post('reason');
@@ -4725,12 +4777,12 @@ class Users extends CI_Controller
 	        ];
 	        $this->common_model->insert('service_order_status_history', $insert1);
 
-	        $insert['sender'] = $senderId;
-			$insert['receiver'] = $receiverId;
-			$insert['order_id'] = $oId;
-			$insert['status'] = 'disputed';
-			$insert['description'] = $reason;
-			$run = $this->common_model->insert('order_submit_conversation', $insert);
+	        $insert2['sender'] = $senderId;
+					$insert2['receiver'] = $receiverId;
+					$insert2['order_id'] = $oId;
+					$insert2['status'] = 'disputed';
+					$insert2['description'] = $reason;
+					$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 	        /*Entry in Dispute Table*/
 
@@ -4739,15 +4791,20 @@ class Users extends CI_Controller
 		    $insert['ds_in_id'] = $userid;
 		    $insert['dispute_type'] = 2;
 		    $insert['ds_job_id'] = $serviceOrder['id'];
-			$insert['ds_buser_id'] = $service['user_id'];
-			$insert['ds_puser_id'] = $serviceOrder['user_id'];		
-			$insert['caseid'] = time();
-			$insert['ds_status'] = 0;
-			$insert['total_amount'] = $serviceOrder['total_price'];
-			$insert['disputed_by'] = $userid;
-			$insert['dispute_to'] = $dispute_to;
-			$insert['ds_comment'] = $reason;
-			$insert['ds_create_date'] = date('Y-m-d H:i:s');
+				$insert['ds_buser_id'] = $service['user_id'];
+				$insert['ds_puser_id'] = $serviceOrder['user_id'];		
+				$insert['caseid'] = time();
+				$insert['ds_status'] = 0;
+				$insert['total_amount'] = $serviceOrder['price'];
+				$insert['disputed_by'] = $userid;
+				$insert['dispute_to'] = $dispute_to;
+				$insert['ds_comment'] = $reason;
+				$insert['ds_create_date'] = date('Y-m-d H:i:s');
+				if ($this->session->userdata('type') == 1) {
+					$insert['tradesmen_offer'] = $this->input->post('offer_amount');
+				} else {
+					$insert['homeowner_offer'] = $this->input->post('offer_amount');
+				}
 
 			if($userid == $service['user_id']) {				
 				$run = $this->common_model->insert('tbl_dispute',$insert);
@@ -4780,6 +4837,23 @@ class Users extends CI_Controller
 			}
 
 			if($run){
+				if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
+					foreach ($_POST['file_name'] as $key => $file) {
+						$file_name = $_POST['file_name'][$key];
+						$file_original_name = $_POST['file_original_name'][$key];
+						
+						$insertDoc = [];
+						$insertDoc['uploaded_by'] = $userid;
+						$insertDoc['dispute_id'] = $run;
+						$insertDoc['file'] = $file_name;
+						$insertDoc['original_name'] = $file_original_name;
+						$insertDoc['created_at'] = date('Y-m-d H:i:s');
+						$insertDoc['updated_at'] = date('Y-m-d H:i:s');
+						$this->common_model->insert('dispute_file', $insertDoc);
+						
+					}
+				}
+
 				$login_users=$this->common_model->get_single_data('users',array('id'=>$userid));					
 				$bid_users=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
 				$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time'));					
@@ -4878,18 +4952,18 @@ class Users extends CI_Controller
 		$input['reason'] = $reason;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 
-		// if ($_FILES['dct_image']['name'] != '') {    
-	    //     $config['upload_path']   = 'img/request_cancel/';
-	    //     $config['allowed_types'] = 'gif|jpg|png|jpeg';  
-	    //     $config['remove_spaces'] = TRUE;    
-	    //     $config['encrypt_name'] = TRUE;     
-	    //     $this->load->library('upload', $config);
+		if ($_FILES['dct_image']['name'] != '') {    
+      $config['upload_path']   = 'img/request_cancel/';
+      $config['allowed_types'] = 'gif|jpg|png|jpeg';  
+      $config['remove_spaces'] = TRUE;    
+      $config['encrypt_name'] = TRUE;     
+      $this->load->library('upload', $config);
 
-	    //     if ($this->upload->do_upload('dct_image')) {
-	    //         $data = $this->upload->data();      
-	    //         $input['order_cancel_file'] = $data['file_name']; // Set the filename here
-	    //     }
-	    // }
+      if ($this->upload->do_upload('dct_image')) {
+          $data = $this->upload->data();      
+          $input['order_cancel_file'] = $data['file_name']; // Set the filename here
+      }
+    }
 
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 		if($run){
@@ -4944,7 +5018,7 @@ class Users extends CI_Controller
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['user_id']]);
 
 		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
-		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['userid']));
+		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
 
 		$update2['u_wallet']=$get_users['u_wallet']+$serviceOrder['price'];
 	
@@ -4959,9 +5033,9 @@ class Users extends CI_Controller
 		$insertn['posted_by'] = $serviceOrder['user_id'];
 		$run2 = $this->common_model->insert('notification',$insertn);
 
-	    $transactionid = md5(rand(1000,999).time());
-	    $tr_message='£'.$serviceOrder['price'].' has been credited to your wallet for order number'.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
-	   	$data1 = array(
+	  $transactionid = md5(rand(1000,999).time());
+	  $tr_message='£'.$serviceOrder['price'].' has been credited to your wallet for order number'.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+	  $data1 = array(
 			'tr_userid'=>$serviceOrder['user_id'], 
 		  	'tr_amount'=>$serviceOrder['price'],
 			  'tr_type'=>1,
@@ -4971,7 +5045,42 @@ class Users extends CI_Controller
 		  	'tr_created'=>date('Y-m-d H:i:s'),
 		  	'tr_update' =>date('Y-m-d H:i:s')
 		);
-		$run1 = $this->common_model->insert('transactions',$data1);		
+		$run1 = $this->common_model->insert('transactions',$data1);	
+
+		$user_id = $this->session->userdata('user_id');
+
+		if($user_id == $get_users['id']){
+    	$senderId = $user_id;
+    	$receiverId = $get_users1['id'];
+    }
+    if($user_id == $get_users1['id']){
+    	$senderId = $user_id;
+    	$receiverId = $get_users['id'];
+    }
+
+		$od['is_cancel'] = 1;
+		$od['status'] = 'cancelled';
+		$od['reason'] = '';
+		$od['status_update_time'] = date('Y-m-d H:i:s');
+		$run = $this->common_model->update('service_order',array('id'=>$id),$od);
+
+		/*Manage Order History*/
+	  $insert1 = [
+      'user_id' => $user_id,
+      'is_cancel' => 1,
+      'service_id' => $service['id'],
+      'order_id' => $id,
+      'status' => 'cancelled'
+    ];
+    $this->common_model->insert('service_order_status_history', $insert1);
+
+    $insert2['sender'] = $senderId;
+		$insert2['receiver'] = $receiverId;
+		$insert2['order_id'] = $id;
+		$insert2['status'] = 'cancelled';
+		$insert2['is_cancel'] = 1;
+		$insert2['description'] = $get_users1['trading_name'].' has been approved your order cancellation request';
+		$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 		$subject1 = "Your order cancellation request has been approved!"; 
 		$content1= 'Hi '.$get_users['f_name'].', <br><br>';
@@ -4993,9 +5102,9 @@ class Users extends CI_Controller
 
 		$content.='View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.<br><br>';
 
-		$run = $this->common_model->send_mail($get_users1['email'],$subject,$content);
+		$runMail = $this->common_model->send_mail($get_users1['email'],$subject,$content);
 
-		if($run){
+		if($runMail){
 			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of order has been approved successfully.']);
 		}
 		else{
@@ -5010,8 +5119,37 @@ class Users extends CI_Controller
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['user_id']]);
 
 		$updatem['status'] = 'declined';
-		$updatem['cancel_decline_reason']=$this->input->post('decline_reason');
+		$updatem['cancel_decline_reason'] = $this->input->post('decline_reason');
 		$runs = $this->common_model->update('service_order',array('id'=>$id),$updatem);
+
+		$user_id = $this->session->userdata('user_id');
+		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
+		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+
+		if($user_id == $get_users['id']){
+    	$senderId = $user_id;
+    	$receiverId = $get_users1['id'];
+    }
+    if($user_id == $get_users1['id']){
+    	$senderId = $user_id;
+    	$receiverId = $get_users['id'];
+    }
+
+		/*Manage Order History*/
+	  $insert1 = [
+      'user_id' => $user_id,
+      'service_id' => $service['id'],
+      'order_id' => $id,
+      'status' => 'declined'
+    ];
+    $this->common_model->insert('service_order_status_history', $insert1);
+
+    $insert2['sender'] = $senderId;
+		$insert2['receiver'] = $receiverId;
+		$insert2['order_id'] = $id;
+		$insert2['status'] = 'declined';
+		$insert2['description'] = $this->input->post('decline_reason');
+		$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
 		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['userid']));
@@ -5039,7 +5177,7 @@ class Users extends CI_Controller
 		$content.='View our <a href="'.site_url().'homeowner-help-centre#Dispute-Resolution-1">Order Dispute</a> section on the homeowner help page or contact our customer services if you have any specific questions using our service.';
 		$run = $this->common_model->send_mail($get_users['email'],$subject,$content);
 		if($run){
-			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of milestone has been declined successfully.']);
+			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of order has been declined successfully.']);
 		}
 		else{
 			echo json_encode(['status' => 0, 'message' => 'Something is wrong.']);

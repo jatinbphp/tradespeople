@@ -34,7 +34,7 @@ class Order_dispute extends CI_Controller
 			$run = $this->common_model->update_data('tbl_dispute',array('ds_id' => $id, 'dispute_type' => 2), ['ds_status'=>1,'caseCloseStatus'=>2]);
 
 			if ($run) {
-				$job = $this->common_model->GetColumnName('service_order', array('id' => $post_id), array('order_id'));
+				$job = $this->common_model->GetSingleData('service_order',['id'=>$post_id]);
 
 				if ($user_id == $data['ds_buser_id']) {
 					$disput_user = $this->common_model->GetColumnName('users', array('id' => $data['ds_buser_id']), array('email', 'f_name', 'l_name', 'type', 'id', 'trading_name'));
@@ -46,6 +46,43 @@ class Order_dispute extends CI_Controller
 
 					$other_user = $this->common_model->GetColumnName('users', array('id' => $data['ds_buser_id']), array('email', 'f_name', 'l_name', 'type', 'id', 'trading_name','u_wallet','withdrawable_balance'));
 				}
+
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$job['service_id']]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$job['user_id']]);
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+      $lastSecondStatus = $this->common_model->getBeforeDisputedStatus($post_id);
+
+			/*Manage Order History*/
+      if($user_id == $homeOwner['id']){
+      	$senderId = $user_id;
+      	$receiverId = $tradesman['id'];
+      }
+      if($user_id == $tradesman['id']){
+      	$senderId = $user_id;
+      	$receiverId = $homeOwner['id'];
+      }
+
+      $od['status'] = $lastSecondStatus['status'];
+			$od['reason'] = '';
+			$od['status_update_time'] = date('Y-m-d H:i:s');
+			$run = $this->common_model->update('service_order',array('id'=>$post_id),$od);
+
+			/*Manage Order History*/
+		  $insert1 = [
+        'user_id' => $user_id,
+        'service_id' => $job['service_id'],
+        'order_id' => $post_id,
+        'status' => 'disputed_cancelled'
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
+
+      $insert2['sender'] = $senderId;
+			$insert2['receiver'] = $receiverId;
+			$insert2['order_id'] = $post_id;
+			$insert2['status'] = 'disputed_cancelled';
+			$insert2['description'] = $disput_user['f_name'].' '.$disput_user['l_name'].' has cancelled the order payment dispute.';
+			$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 				$checkStepIn = $this->common_model->GetColumnName('ask_admin_to_step', array('user_id' => $disput_user['id'],'dispute_id'=>$id), array('amount'));
 				if($checkStepIn){
@@ -90,7 +127,7 @@ class Order_dispute extends CI_Controller
 				}
 
 				$insertn1['nt_userId'] = $other_user['id'];
-				$insertn1['nt_message'] = $disput_user['f_name'] . ' ' . $disput_user['l_name'] . ' has cancelled the milestone payment dispute. <a href="'.site_url().'dispute/'.$data['ds_id'].'">View Now</a>';
+				$insertn1['nt_message'] = $disput_user['f_name'] . ' ' . $disput_user['l_name'] . ' has cancelled the order payment dispute. <a href="'.site_url().'order-dispute/'.$job['id'].'">View Now</a>';
 				$insertn1['nt_satus'] = 0;
 				$insertn1['nt_apstatus'] = 0;
 				$insertn1['nt_create'] = date('Y-m-d H:i:s');
@@ -101,7 +138,7 @@ class Order_dispute extends CI_Controller
 
 				$insertn1 = [];
 				$insertn1['nt_userId'] = $disput_user['id'];
-				$insertn1['nt_message'] = 'You have cancelled and close the milestone payment dispute successfully.  <a href="'.site_url().'dispute/'.$data['ds_id'].'">View Now</a>';
+				$insertn1['nt_message'] = 'You have cancelled and close the milestone payment dispute successfully.  <a href="'.site_url().'order-dispute/'.$job['id'].'">View Now</a>';
 				$insertn1['nt_satus'] = 0;
 				$insertn1['nt_apstatus'] = 0;
 				$insertn1['nt_create'] = date('Y-m-d H:i:s');
@@ -165,7 +202,7 @@ class Order_dispute extends CI_Controller
 			$this->session->set_flashdata('message', '<div class="alert alert-danger">Something went wrong, try again later.</div>');
 		}
 
-		redirect('order-dispute/' . $post_id);
+		redirect('order-tracking/' . $post_id);
 	}
 
 	public function accept_and_close($id = null, $post_id = null)
@@ -178,12 +215,12 @@ class Order_dispute extends CI_Controller
 
 		if (!$row) {
 			$this->session->set_flashdata('error1', 'Something went wrong.');
-			return redirect('payments?post_id=' . $post_id);
+			return redirect('order-tracking/' . $post_id);
 		}
 
 		if ($row['ds_buser_id'] != $user_id && $row['ds_puser_id'] != $user_id) {
 			$this->session->set_flashdata('error1', 'You are not authorized to add offer for this dispute.');
-			return redirect('payments?post_id=' . $post_id);
+			return redirect('order-tracking/' . $post_id);
 		}
 		
 		$dipute_by = $row['disputed_by'];
@@ -313,6 +350,38 @@ class Order_dispute extends CI_Controller
 					$runss123 = $this->common_model->update_data('tbl_jobpost_bids', array('id' => $get_post_job['id']), array('status' => 4));
 				}*/
 
+				$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+        $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
+        $tradesMan = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+        $lastSecondStatus = $this->common_model->getBeforeDisputedStatus($job['id']);
+
+				/*Manage Order History*/
+        if($user_id == $homeOwner['id']){
+        	$senderId = $user_id;
+        	$receiverId = $tradesMan['id'];
+        }
+        if($user_id == $tradesMan['id']){
+        	$senderId = $user_id;
+        	$receiverId = $homeOwner['id'];
+        }
+
+				/*Manage Order History*/
+        $insert1 = [
+          'user_id' => $senderId,
+          'service_id' => $serviceOrder['service_id'],
+          'order_id' => $post_id,
+          'status' => $lastSecondStatus['status']
+      	];
+      	$this->common_model->insert('service_order_status_history', $insert1);
+
+	      $insert2['sender'] = $senderId;
+				$insert2['receiver'] = $receiverId;
+				$insert2['order_id'] = $post_id;
+				$insert2['status'] = 'disputed_accepted';
+				$insert2['description'] = 'Congratulation this project has been completed successfully.<a href="'.site_url().'profile/'.$home['id'].'">'.$home['f_name'].' '.$home['l_name'].'</a> has released all the order amount of <a href="'.site_url().'order-tracking/'.$serviceOrder['id'].'">'.$post_title.'</a> project and this project has been completed.';
+				$run = $this->common_model->insert('order_submit_conversation', $insert2);
+
 				if ($final_amount >= $serviceOrder['total_price']) {
 					$post_title = $serviceOrder['order_id'];
 					$insertn['nt_userId'] = $serviceOrder['user_id'];
@@ -437,9 +506,9 @@ class Order_dispute extends CI_Controller
 				$insertn['nt_userId'] = $home['id'];
 				
 				if ($amount > 0) {
-					$insertn['nt_message'] = $trades['trading_name'].' has accepted your new offer to settle the order dispute. <a href="'.site_url().'order-dispute/'.$row['ds_id'].'">View Now</a>';
+					$insertn['nt_message'] = $trades['trading_name'].' has accepted your new offer to settle the order dispute. <a href="'.site_url().'order-dispute/'.$serviceOrder['id'].'">View Now</a>';
 				} else {
-					$insertn['nt_message'] = $trades['trading_name'].' has accepted your offer to settle the order dispute. <a href="'.site_url().'order-dispute/'.$row['ds_id'].'">View Now</a>';	
+					$insertn['nt_message'] = $trades['trading_name'].' has accepted your offer to settle the order dispute. <a href="'.site_url().'order-dispute/'.$serviceOrder['id'].'">View Now</a>';	
 				}
 
 				$insertn['nt_satus'] = 0;
@@ -480,7 +549,7 @@ class Order_dispute extends CI_Controller
 				$insertn = [];
 				$insertn['nt_userId'] = $trades['id'];
 				
-				$insertn['nt_message'] = $home['f_name'].' '.$home['l_name'].' has accepted your offer to settle the order dispute. <a href="'.site_url().'order-dispute/'.$row['ds_id'].'">View Now</a>';
+				$insertn['nt_message'] = $home['f_name'].' '.$home['l_name'].' has accepted your offer to settle the order dispute. <a href="'.site_url().'order-dispute/'.$serviceOrder['id'].'">View Now</a>';
 
 				$insertn['nt_satus'] = 0;
 				$insertn['nt_apstatus'] = 2;
@@ -518,7 +587,7 @@ class Order_dispute extends CI_Controller
 	function dispute_job()
 	{
 		if(!isset($_REQUEST['post_id']) && empty($_REQUEST['post_id'])){
-			//return redirect('payments?post_id=' . $get_users['post_id']);
+			//return redirect('order-tracking/' . $get_users['post_id']);
 			return redirect('/');			
 		}
 
@@ -532,7 +601,7 @@ class Order_dispute extends CI_Controller
 
 		if(!$order){
 			$this->session->set_flashdata('error1', 'Something went wrong, try again later.');
-			return redirect('payments?post_id=' . $post_id);
+			return redirect('order-tracking/' . $post_id);
 		}
 
 		$dispute_to = ($userid == $order['user_id']) ? $order['awarded_to'] : $order['userid'];
@@ -560,7 +629,7 @@ class Order_dispute extends CI_Controller
 
 		if(!$run){
 			$this->session->set_flashdata('error1', 'Something went wrong, try again later.');
-			return redirect('payments?post_id=' . $post_id);
+			return redirect('order-tracking/' . $post_id);
 		}
 
 		$setting = $this->common_model->get_coloum_value('admin', array('id' => 1), array('waiting_time'));
@@ -711,7 +780,7 @@ class Order_dispute extends CI_Controller
 			$this->common_model->update('tbl_dispute', ['ds_id'=>$run], ['total_amount'=>$total_amount]);
 		}
 		$this->session->set_flashdata('success1', 'Success! Milestone Disputed successfully.');
-		redirect('payments?post_id=' . $post_id);
+		redirect('order-tracking/' . $post_id);
 	}
 
 	function submit_offer()
@@ -846,7 +915,7 @@ class Order_dispute extends CI_Controller
 
 		if (!$dispute) {
 			$this->session->set_flashdata('error1', 'Something went wrong.');
-			return redirect('payments?post_id=' . $job_id);
+			return redirect('order-tracking/' . $job_id);
 		}
 
 		$user_id = $this->session->userdata('user_id');
@@ -1091,9 +1160,9 @@ class Order_dispute extends CI_Controller
 				
 
 				if($checkOtherPay){
-					$insertn['nt_message'] = 'We have received '.$user['trading_name'].' arbitration fee payment. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+					$insertn['nt_message'] = 'We have received '.$user['trading_name'].' arbitration fee payment. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
 				} else {
-					$insertn['nt_message'] = 'We have received '.$user['trading_name'].' arbitration fee and awaits yours. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View & Respond</a>';
+					$insertn['nt_message'] = 'We have received '.$user['trading_name'].' arbitration fee and awaits yours. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View & Respond</a>';
 				}
 
 				$insertn['nt_satus'] = 0;
@@ -1109,9 +1178,9 @@ class Order_dispute extends CI_Controller
 				$insertn1['nt_userId'] = $dispute['ds_buser_id'];
 				
 				if($checkOtherPay){
-					$insertn1['nt_message'] = 'You and '.$other_name.' have paid the arbitration fee and our team will now step in. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+					$insertn1['nt_message'] = 'You and '.$other_name.' have paid the arbitration fee and our team will now step in. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
 				} else {
-					$insertn1['nt_message'] = 'We have received your arbitration payment and awaits for '.$other_name.' payment. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+					$insertn1['nt_message'] = 'We have received your arbitration payment and awaits for '.$other_name.' payment. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
 				}
 
 				$insertn1['nt_satus'] = 0;
@@ -1170,12 +1239,12 @@ class Order_dispute extends CI_Controller
 				$insertn = [];
 				$insertn['nt_userId'] = $dispute['ds_buser_id'];
 				
-				//$insertn['nt_message'] = 'We have received '.$user['f_name'].' '.$user['l_name'].' arbitration fee payment. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+				//$insertn['nt_message'] = 'We have received '.$user['f_name'].' '.$user['l_name'].' arbitration fee payment. <a href="'.site_url().'order-dispute/'.$dispute['ds_id'].'">View Now</a>';
 
 				if($checkOtherPay){
-					$insertn['nt_message'] = 'We have received '.$user['f_name'].' '.$user['l_name'].' arbitration fee payment. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+					$insertn['nt_message'] = 'We have received '.$user['f_name'].' '.$user['l_name'].' arbitration fee payment. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
 				} else {
-					$insertn['nt_message'] = 'We have received '.$user['f_name'].' '.$user['l_name'].' arbitration fee and awaits yours. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View & Respond</a>';
+					$insertn['nt_message'] = 'We have received '.$user['f_name'].' '.$user['l_name'].' arbitration fee and awaits yours. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View & Respond</a>';
 				}
 
 				$insertn['nt_satus'] = 0;
@@ -1194,9 +1263,9 @@ class Order_dispute extends CI_Controller
 				
 
 				if($checkOtherPay){
-					$insertn1['nt_message'] = 'You and '.$other_name.' have paid the arbitration fee and our team will now step in. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+					$insertn1['nt_message'] = 'You and '.$other_name.' have paid the arbitration fee and our team will now step in. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
 				} else {
-					$insertn1['nt_message'] = 'We have received your arbitration payment and awaits for '.$other_name.' payment. <a href="'.site_url().'dispute/'.$dispute['ds_id'].'">View Now</a>';
+					$insertn1['nt_message'] = 'We have received your arbitration payment and awaits for '.$other_name.' payment. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
 				}
 
 				$insertn1['nt_satus'] = 0;

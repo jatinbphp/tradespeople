@@ -279,6 +279,10 @@ $route['approved_service']        = 'Admin/Admin/approved_service';
 $route['all_services']        = 'Admin/Admin/service_list';
 $route['location']        = 'Admin/Admin/location';
 $route['service-orders']        = 'Admin/Admin/service_orders';
+$route['completed-orders']        = 'Admin/Admin/completed_orders';
+$route['pending-orders']        = 'Admin/Admin/pending_orders';
+$route['cancel-orders']        = 'Admin/Admin/cancel_orders';
+$route['disputed-orders']        = 'Admin/Admin/disputed_ordes';
 
 $route['homeowners_users']      = 'Admin/Admin/homeowners_users';
 $route['homeowners_users/(:any)']='Admin/Admin/homeowners_users/$1';

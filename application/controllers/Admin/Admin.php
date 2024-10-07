@@ -3089,7 +3089,50 @@ class Admin extends CI_Controller
     }
 
     public function service_orders(){
-        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order');
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','all');
+        $this->load->view('Admin/service_order_list', $result);
+    }
+
+    public function completed_orders(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','completed');
+
+        $where_array = ['status' => 'completed'];
+        $update_array = [
+            'is_view' => 1,
+        ];
+        $this->My_model->update_entry('service_order', $update_array, $where_array);
+
+        $this->load->view('Admin/service_order_list', $result);
+    }
+
+    public function pending_orders(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','pending');
+        $where_array = ['status' => 'placed'];
+        $where_array = ['status' => 'active'];
+        $update_array = [
+            'is_view' => 1,
+        ];
+        $this->My_model->update_entry('service_order', $update_array, $where_array);
+        $this->load->view('Admin/service_order_list', $result);
+    }
+
+    public function cancel_orders(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','cancelled');
+        $where_array = ['status' => 'cancelled'];        
+        $update_array = [
+            'is_view' => 1,
+        ];
+        $this->My_model->update_entry('service_order', $update_array, $where_array);
+        $this->load->view('Admin/service_order_list', $result);
+    }
+
+    public function disputed_ordes(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','disputed');
+        $where_array = ['status' => 'disputed'];        
+        $update_array = [
+            'is_view' => 1,
+        ];
+        $this->My_model->update_entry('service_order', $update_array, $where_array);
         $this->load->view('Admin/service_order_list', $result);
     }
 

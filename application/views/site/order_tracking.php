@@ -3,16 +3,20 @@
 	$get_commision = $this->common_model->get_commision();
 	?>
 	<style type="text/css">
-		.dashboard-prot.edit-pro89.slidergg .img_container.owl-carousel .owl-item video {
+		.other-post-view img{
 			height: 110px;
-	    width: 124px;
-	    object-fit: cover;
-	    border: 1px solid #eee;
-	    padding: 2px;
+			width: 100%;
+			object-fit: cover;
+			border: 1px solid #dfdfdf;
+			padding: 5px;
 		}
 
-		.owl-carousel .owl-item .owl-lazy{
-			opacity: 1!important;
+		.other-post-view video{
+			height: 110px;
+			width: 100%;
+			object-fit: cover;
+			border: 1px solid #dfdfdf;
+			padding: 5px;			
 		}
 
 		.member-summary .member-image{
@@ -483,14 +487,25 @@
 																<span class="text-muted">
 																	We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
 																</span>
-															</span>												
+															</span>	
+														<?php elseif($order['status'] == 'disputed'):?>
+															<span>
+																<h4 style="color: #000;">Your Order is disputed</h4>
+															</span>
 														<?php else:?>	
-															<?php if($order['status'] != 'completed'):?>
+															<?php if(!in_array($order['status'],['completed','cancelled'])):?>
 																<span>
 																	<h4 style="color: #000;">Your order is now in the works</h4>
 																	<span class="text-muted">
 																		We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
 																		You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+																	</span>
+																</span>
+															<?php elseif($order['status'] == 'cancelled'):?>	
+																<span>
+																	<h4 style="color: #000;">Your order has been cancelled</h4>
+																	<span class="text-muted">
+																		Your payment has been creadited to your Tradespeople Wallet and can be used or refunded at any time.
 																	</span>
 																</span>
 															<?php else: ?>
@@ -510,6 +525,12 @@
 																<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
 															<?php endif; ?>
 
+															<?php if($order['status'] == 'disputed'):?>
+																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
+																	<button type="button" class="btn btn-warning ">View Dispute</button>
+																</a>
+															<?php endif; ?>
+
 															<?php if($order['status'] == 'completed'):?>
 																<a href="<?php echo base_url('orderCompleted/'.$order['id']); ?>">
 																	<button type="button" class="btn btn-warning">
@@ -526,6 +547,12 @@
 																		View Review
 																	</button>
 																</a>	
+															<?php endif; ?>
+
+															<?php if($order['status'] == 'disputed'):?>
+																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
+																	<button type="button" class="btn btn-warning ">View Dispute</button>
+																</a>
 															<?php endif; ?>
 
 															<button class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">Chat</button>
@@ -569,16 +596,26 @@
 													<li class="timeline-item">
 														<span class="timeline-item-icon | faded-icon">
 															<?php if($list['sender'] == $tradesman['id']): ?>
-																<i class="fa fa-truck faicon"></i>
-															<?php endif;?>
-
-															<?php if($list['sender'] == $homeowner['id']): ?>
-																<?php if($list['status'] == 'completed'):?>
-																	<i class="fa fa-check-square-o faicon"></i>
-																<?php else:?>
-																	<i class="fa fa-edit faicon"></i>
+																	<?php if($list['status'] == 'cancelled' && $order['is_cancel'] == 1):?>
+																		<i class="fa fa-times-circle faicon"></i>
+																	<?php elseif($list['status'] == 'declined'):?>
+																		<i class="fa fa-times-circle faicon"></i>	
+																	<?php else:?>	
+																		<i class="fa fa-truck faicon"></i>
+																	<?php endif; ?>
 																<?php endif;?>
-															<?php endif;?>
+
+																<?php if($list['sender'] == $homeowner['id']): ?>
+																	<?php if($list['status'] == 'completed'):?>
+																		<i class="fa fa-check-square-o faicon"></i>
+																	<?php elseif($list['status'] == 'cancelled' && $order['is_cancel'] == 1):?>
+																		<i class="fa fa-times-circle faicon"></i>
+																	<?php elseif($list['status'] == 'declined'):?>
+																		<i class="fa fa-times-circle faicon"></i>
+																	<?php else:?>
+																		<i class="fa fa-edit faicon"></i>
+																	<?php endif;?>
+																<?php endif;?>
 														</span>
 														<div class="timeline-item-description">
 															<?php 
@@ -587,18 +624,69 @@
 															?>
 
 															<?php if($list['sender'] == $tradesman['id']): ?>
-																<?php if($list['status'] == 'delivered'):?>
-												            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
-												        <?php endif;?>
-																<h5>
-																	<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-																		<?php echo $tradesman['trading_name']; ?>
-																	</a>
-																	delivered your order 
-																	<span class="text-muted" style="font-size: 12px;">
-																		<i><?php echo $conversation_date ?></i>
-																	</span>
-																</h5>
+																<?php if($this->session->userdata('type')==1):?>
+																	<?php if($list['status'] == 'delivered'):?>
+													            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
+													            <h5>
+																				You delivered your order 
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+													        <?php endif;?>
+
+													        <?php if($list['status'] == 'disputed'):?>
+																		<h5>
+																			You order disputed
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+
+																	<?php if($list['status'] == 'declined'):?>
+																		<h5>
+																			You declined order request
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+
+																<?php else:?>
+																	<?php if($list['status'] == 'delivered'):?>
+													            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
+													            <h5>
+																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a>
+																				delivered your order 
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+													        <?php endif;?>
+													        <?php if($list['status'] == 'disputed'):?>
+																		<h5>
+																			<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a> order disputed
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+																	<?php if($list['status'] == 'declined'):?>
+																		<h5>
+																			<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a> declined order cancellation request
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+																<?php endif;?>	
 															<?php endif; ?>	
 
 															<?php if($list['sender'] == $homeowner['id']): ?>
@@ -606,8 +694,16 @@
 																	<h5>
 																		<?php if($list['status'] == 'completed'):?>
 																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> approved order
+																		<?php elseif($list['status'] == 'disputed'):?>
+																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed
+																		<?php elseif($list['status'] == 'disputed_cancelled'):?>
+																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed cancelled
+																		<?php elseif($list['status'] == 'cancelled'):?>
+																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> ask to cancel this order
+																		<?php elseif($list['status'] == 'declined'):?>
+																			<?php echo $tradesman['trading_name']; ?> declined order cancellation request	
 																		<?php else:?>
-																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> requested a modification 
+																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> requested a modification
 																		<?php endif;?>		
 																		<span class="text-muted" style="font-size: 12px;">
 																			<i><?php echo $conversation_date ?></i>
@@ -617,6 +713,14 @@
 																	<h5>
 																		<?php if($list['status'] == 'completed'):?>
 																			You approved order
+																		<?php elseif($list['status'] == 'disputed'):?>
+																			You dispute order
+																		<?php elseif($list['status'] == 'disputed_cancelled'):?>
+																				You order disputed cancelled	
+																		<?php elseif($list['status'] == 'cancelled'):?>
+																				You ask to cancel this order
+																		<?php elseif($list['status'] == 'declined'):?>
+																			<?php echo $tradesman['trading_name']; ?> declined order cancellation request	
 																		<?php else:?>
 																			You requested a modification 
 																		<?php endif;?>		
@@ -645,34 +749,34 @@
 																<?php if(!empty($conAttachments)):?>
 																	<h5 style="width: 100%; font-size: 15px;">Attachments</h5>
 
-																	<div class="dashboard-prot edit-pro89 slidergg setskil-padding pt-0">
-																		<div class="img_container owl-carousel owl-theme other-post-view" id="con_attachments">
-																			<?php foreach ($conAttachments as $con_key => $con_value): ?>
-																				<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
-																				<?php if (file_exists($image_path) && $con_value['attachment']): ?>
-																					<?php
-																					$mime_type = get_mime_by_extension($image_path);
-																					$is_image = strpos($mime_type, 'image') !== false;
-																					$is_video = strpos($mime_type, 'video') !== false;
-																					?>
+																	<div class="row other-post-view" id="con_attachments">
+																		<?php foreach ($conAttachments as $con_key => $con_value): ?>
+																			<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
+																			<?php if (file_exists($image_path) && $con_value['attachment']): ?>
+																				<?php
+																				$mime_type = get_mime_by_extension($image_path);
+																				$is_image = strpos($mime_type, 'image') !== false;
+																				$is_video = strpos($mime_type, 'video') !== false;
+																				?>
+																				<div class="col-md-4 pr-3 pl-3">
 																					<?php if ($is_image): ?>
-																						<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-caption="" data-fancybox="images">
-																						<img class="owl-lazy" data-src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" alt="">
+																						<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																						<img src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" alt="">
 																						</a>
 																					<?php elseif ($is_video): ?>	
-																						<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-caption="" data-fancybox="video">
-																							<video class="owl-lazy" data-src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" controls src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
+																						<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																							<video controls src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
 																							</video>
 																						</a>
 																					<?php endif; ?>
-																				<?php endif; ?>	
-																			<?php endforeach; ?>
-																	 	</div>
-																	</div>
+																				</div>
+																			<?php endif; ?>	
+																		<?php endforeach; ?>
+																	</div>																	
 																<?php endif; ?>
 															</span>
 
-															<?php if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['request_modification','completed'])):?>
+															<?php if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined'])):?>
 																<form id="approved_order_form" style="width:100%">
 																	<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
 																	<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
@@ -766,30 +870,30 @@
 															<?php if(!empty($attachements)):?>
 																<h4>Order Attachments</h4>
 
-																<div class="dashboard-prot edit-pro89 slidergg setskil-padding pt-0" id="attachments">
-																	<div class="img_container owl-carousel owl-theme other-post-view" id="con_attachments">
-																		<?php foreach ($attachements as $key => $value): ?>
-																			<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
-																			<?php if (file_exists($image_path) && $value['attachment']): ?>
-																				<?php
-																				$mime_type = get_mime_by_extension($image_path);
-																				$is_image = strpos($mime_type, 'image') !== false;
-																				$is_video = strpos($mime_type, 'video') !== false;
-																				?>
+																<div class="row other-post-view" id="con_attachments">
+																	<?php foreach ($attachements as $key => $value): ?>
+																		<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
+																		<?php if (file_exists($image_path) && $value['attachment']): ?>
+																			<?php
+																			$mime_type = get_mime_by_extension($image_path);
+																			$is_image = strpos($mime_type, 'image') !== false;
+																			$is_video = strpos($mime_type, 'video') !== false;
+																			?>
+																			<div class="col-md-3 pr-3 pl-3">
 																				<?php if ($is_image): ?>
-																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-caption="" data-fancybox="images">
-																					<img class="owl-lazy" data-src="<?php echo base_url('img/services/') . $value['attachment']; ?>" alt="">
+																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																					<img src="<?php echo base_url('img/services/') . $value['attachment']; ?>" alt="">
 																					</a>
 																				<?php elseif ($is_video): ?>	
-																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-caption="" data-fancybox="video">
-																						<video class="owl-lazy" data-src="<?php echo base_url('img/services/') . $value['attachment']; ?>" controls src="<?php echo base_url('img/services/') . $value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
+																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																						<video controls src="<?php echo base_url('img/services/') . $value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
 																						</video>
 																					</a>
 																				<?php endif; ?>
-																			<?php endif; ?>	
-																		<?php endforeach; ?>
-																 	</div>
-																</div>
+																			</div>
+																		<?php endif; ?>	
+																	<?php endforeach; ?>
+															 	</div>
 															<?php endif; ?>
 														</div>
 													<?php endif; ?>
@@ -1014,7 +1118,7 @@
 											</div>
 										<?php endif; ?>
 
-										<div class="timeline-div bg-white p-4">
+										<div class="timeline-div bg-white mt-4 p-4">
 											<ol class="timeline">
 												<?php if(!empty($all_conversation)):?>
 													<?php 
@@ -1029,12 +1133,20 @@
 														<li class="timeline-item">
 															<span class="timeline-item-icon | faded-icon">
 																<?php if($list['sender'] == $tradesman['id']): ?>
+																	<?php if($list['status'] == 'cancelled' && $order['is_cancel'] == 1):?>
+																		<i class="fa fa-times-circle faicon"></i>
+																	<?php elseif($list['status'] == 'declined'):?>
+																		<i class="fa fa-times-circle faicon"></i>
+																	<?php else:?>	
 																	<i class="fa fa-truck faicon"></i>
+																<?php endif; ?>
 																<?php endif;?>
 
 																<?php if($list['sender'] == $homeowner['id']): ?>
 																	<?php if($list['status'] == 'completed'):?>
 																		<i class="fa fa-check-square-o faicon"></i>
+																	<?php elseif($list['status'] == 'cancelled' && $order['is_cancel'] == 1):?>
+																		<i class="fa fa-times-circle faicon"></i>
 																	<?php else:?>
 																		<i class="fa fa-edit faicon"></i>
 																	<?php endif;?>
@@ -1048,17 +1160,28 @@
 
 																<?php if($list['sender'] == $tradesman['id']): ?>
 																	<?php if($list['status'] == 'delivered'):?>
-															            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries--; ?></b></h4>
-															        <?php endif;?>
-																	<h5>
-																		<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-																			<?php echo $tradesman['trading_name']; ?>
-																		</a>
-																		delivered your order 
-																		<span class="text-muted" style="font-size: 12px;">
-																			<i><?php echo $conversation_date ?></i>
-																		</span>
-																	</h5>
+													            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries--; ?></b></h4>
+													            <h5>
+																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a>
+																				delivered your order
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+																	<?php elseif($list['status'] == 'declined'):?>
+																			<h5>
+																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a>
+																				declined order request
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+													        <?php endif;?>
+																	
 																<?php endif; ?>	
 
 																<?php if($list['sender'] == $homeowner['id']): ?>
@@ -1066,7 +1189,13 @@
 																		<h5>
 																			<?php if($list['status'] == 'completed'):?>
 																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> approved order
-																			<?php else:?>
+																			<?php elseif($list['status'] == 'disputed'):?>
+																					<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed	
+																			<?php elseif($list['status'] == 'disputed_cancelled'):?>
+																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed cancelled
+																			<?php elseif($list['status'] == 'cancelled'):?>
+																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> ask to cancel this order
+																			<?php else:?>																				
 																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> requested a modification 
 																			<?php endif;?>		
 																			<span class="text-muted" style="font-size: 12px;">
@@ -1077,8 +1206,14 @@
 																		<h5>
 																			<?php if($list['status'] == 'completed'):?>
 																				You approved order
+																			<?php elseif($list['status'] == 'disputed'):?>
+																				You dispute order
+																			<?php elseif($list['status'] == 'disputed_cancelled'):?>
+																				You order disputed cancelled
+																			<?php elseif($list['status'] == 'cancelled'):?>
+																				You ask to cancel this order
 																			<?php else:?>
-																				You requested a modification 
+																				You requested a modification
 																			<?php endif;?>		
 																			<span class="text-muted" style="font-size: 12px;">
 																				<i><?php echo $conversation_date ?></i>
@@ -1098,6 +1233,24 @@
 																<span class="delivery-conversation text-left" style="<?php echo $style; ?>">
 																	
 																	<p><?php echo $list['description']; ?></p>
+																	
+																	<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0 && $order['status'] != 'declined'):?>
+																		<p class="alert alert-danger"><i class="fa fa-info-circle"></i> You have to respond to this request or the order will be cancelled. Cancelled orders will be created to your Tradespeople Wallet. Need another tradesman? We can help?</p>
+
+																		<?php if($this->session->userdata('type')==1 && $order['is_cancel'] == 0):?>
+
+																			<div class="text-right">
+																				<a class="btn btn-default" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
+
+																				<button class="btn btn-warning" onclick="accept_decision(<?php echo $order['id']; ?>)">
+																					Approve
+																				</button>																				
+																			</div>
+																		<?php endif;?>
+
+
+																	<?php endif;?>
+
 																	<?php 
 																	$conAttachments = $this->common_model->get_all_data('order_submit_attachments',['conversation_id'=>$list['id']])
 																	?>
@@ -1105,30 +1258,30 @@
 																	<?php if(!empty($conAttachments)):?>
 																		<h5 style="width: 100%; font-size: 15px;">Attachments</h5>
 
-																		<div class="dashboard-prot edit-pro89 slidergg setskil-padding pt-0">
-																			<div class="img_container owl-carousel owl-theme other-post-view" id="con_attachments">
-																				<?php foreach ($conAttachments as $con_key => $con_value): ?>
-																					<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
-																					<?php if (file_exists($image_path) && $con_value['attachment']): ?>
-																						<?php
-																						$mime_type = get_mime_by_extension($image_path);
-																						$is_image = strpos($mime_type, 'image') !== false;
-																						$is_video = strpos($mime_type, 'video') !== false;
-																						?>
+																		<div class="row other-post-view" id="con_attachments">
+																			<?php foreach ($conAttachments as $con_key => $con_value): ?>
+																				<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
+																				<?php if (file_exists($image_path) && $con_value['attachment']): ?>
+																					<?php
+																					$mime_type = get_mime_by_extension($image_path);
+																					$is_image = strpos($mime_type, 'image') !== false;
+																					$is_video = strpos($mime_type, 'video') !== false;
+																					?>
+																					<div class="col-md-3 pr-3 pl-3">
 																						<?php if ($is_image): ?>
-																							<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-caption="" data-fancybox="images">
-																							<img class="owl-lazy" data-src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" alt="">
+																							<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																							<img src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" alt="">
 																							</a>
 																						<?php elseif ($is_video): ?>	
-																							<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-caption="" data-fancybox="video">
-																								<video class="owl-lazy" data-src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" controls src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
+																							<a href="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																								<video controls src="<?php echo base_url('img/services/') . $con_value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
 																								</video>
 																							</a>
 																						<?php endif; ?>
-																					<?php endif; ?>	
-																				<?php endforeach; ?>
-																		 	</div>
-																		</div>
+																					</div>
+																				<?php endif; ?>	
+																			<?php endforeach; ?>
+																	 	</div>
 																	<?php endif; ?>
 																</span>
 															</div>
@@ -1141,12 +1294,13 @@
 								</div>
 							</div>
 						</div>
+
 						<div class="col-md-4 mt-4">
 							<div class="card-summary">
 								<div class="order-detail-box">
 									<div class="summary-box-heding">
 										<h4>Order Details</h4>
-										<?php if($this->session->userdata('type')==1):?>
+										<?php if($this->session->userdata('type')==1 && $order['status'] != 'cancelled'):?>
 											<div class="ellipsis-btn">
 												<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
@@ -1178,7 +1332,6 @@
 													<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
 														<?php if($order['status'] == 'disputed'):?>
 															<a class="dropdown-item" href="<?php echo base_url().'order-dispute/'.$order['id']?>">View Dispute</a>
-															<a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a>
 														<?php else: ?>
 															<li>
 																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
@@ -1374,12 +1527,54 @@
 							<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 							<h4 class="modal-title">Dispute Order</h4>
+							<div class="alert alert-warning">
+                  <ul>
+                     <li> Most disputes are the result of a simple misunderstanding.</li>
+                     <li> Our dispute resolution system is designed to allow both parties to resolve the issue amongst themselves.</li>
+                     <li> Most disputes are resolved without arbitration.</li>
+                     <li> If an agreement cannot be reached, either party may elect to pay an arbitration fee for our dispute team to resolve the matter.</li>
+                  </ul>
+               </div>
 						</div>
 						<div class="modal-body form_width100">
 							<div class="form-group">
-								<label for="reason"> Reason of Dispute</label>
+								<label for="reason"> Please describe in detail what the requirements were for the milestone(s) you wish to dispute.</label>
 								<textarea rows="5" placeholder="" name="reason" id="reason" class="form-control"></textarea>
 							</div>
+
+							<div class="form-group">
+								<label for="reason"> Please describe in detail which of these requirements were not completed.</label>
+								<textarea rows="5" placeholder="" name="reason2" id="reason2" class="form-control"></textarea>
+							</div>
+
+							<label class="control-label" for="textinput"><b>Please include evidence of how the milestone requirements we communicated, as well as any other evidence that supports your case.</b></label>
+							<input type="file" onchange="uploadImageForDispute(<?php echo $order['id']; ?>)" id="dispute-file-upload-input-<?php echo $order['id']; ?>" name="files[]" accept="image/*,pdf" multiple="" class="form-control">
+
+							<table class="table">
+                 <thead>
+                    <tr>
+                    </tr>
+                 </thead>
+                 <tbody class="disputeUploadFilesHtml<?php echo $order['id']; ?>">
+                 </tbody>
+              </table>
+
+							<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']; ?></span></b></label>
+
+							<label class="control-label" for="textinput"><b>Offer the amount you are prepared to pay:</b></label>
+
+							<div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-gbp"></i></span>
+                <input type="number" id="offer_amount<?php echo $order['id']; ?>" required="" min="0" name="offer_amount" max="<?php echo $order['price']; ?>" class="form-control" placeholder="Amount">
+             	</div>
+
+             	<p>Please enter an amount between <i class="fa fa-gbp"></i>0 to <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']; ?></span>.</p>
+
+             	<div class="caution-txt">
+                <b class="text-danger">Caution!</b> You are entering the amount of the order that you are happy for the other
+                party to receive.
+                You may increase your offer in the future but you may not lower it.
+             	</div>
 						</div>
 						<div class="modal-footer">
 							<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
@@ -1406,14 +1601,28 @@
 							<p>
 								In order to cancel a order, you nee to send a cancellation request to your tradesmen. Once they accept the request, the order will be cancelled and the funds will be returned to you. If the request is denied, you can initiate a dispute. 
 							</p>
-							<div class="form-group">
-								<label for="reason"> Reason of Cancel</label>
+
+							<hr>
+
+							<div class="Milestone2">
+                <div class="row">
+                   <div class="col-sm-8">
+                      <p><b>Order Id</b><span style="float: right;"><?php echo $order['order_id']; ?></span></p>
+                      <p><b>Tradesmen Name</b><span style="float: right;"><?php echo $tradesman['trading_name']; ?></span></p>
+                      <p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo $order['price']; ?></span></p>
+                      <p><b>Date Created</b><span style="float: right;"><?php echo $created_date; ?></span></p>
+                   </div>
+                </div>
+             </div>
+
+							<div class="form-group mt-4">
+								<label for="reason"> <b>Why do you want to cancel this order?</b></label>
 								<textarea rows="5" placeholder="Reason of Cancel" name="reason" id="reason" class="form-control"></textarea>
 							</div>
-							<!-- <div class="form-group">
+							<div class="form-group">
 								<label for="attachment"> Upload Image (Optional)</label>
 								<input type="file" name="dct_image" class="form-control" id="attachment">
-							</div> -->
+							</div>
 						</div>
 						<div class="modal-footer">
 							<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
@@ -1556,7 +1765,7 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="submit" class="btn btn-info">Submit</button>
+							<button type="submit" id="reqFormSubmitBtn" class="btn btn-info">Submit</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
@@ -2055,6 +2264,7 @@
 							window.location.href = '<?php echo base_url().'login'; ?>';
 						});	
 					}else{
+						$('#order_dispute_modal').modal('hide');
 						swal({
 							title: "Success",
 							text: result.message,
@@ -2311,47 +2521,43 @@
 				}
 			});
 		}
-	</script>
 
-	<script>
-   	$('.owl-carousel').owlCarousel({
-   		loop:false,
-     	pagination: false,
-     	slideSpeed: 700,
-     	paginationSpeed: 700,
-     	rewindSpeed: 700,
-     	lazyLoad: true,
-   		margin:5,		
-   		responsive:{
-   			0:{
-   				items:1
-   			},
-   			600:{
-   				items:3
-   			},
-   			1000:{
-   				items:3
-   			}
-   		}
-   	});
-   
-   	$().fancybox({
-     	selector : '.owl-item:not(.cloned) a',
-     	hash   : false,
-     	thumbs : {
-      	autoStart : true
-     	},
-   		beforeShow : function(){
-      	this.title =  this.title + " - " + $(this.element).data("caption");
-     	},
-     	buttons : [
-      	'zoom',
-       	'download',
-       	'close'
-     	]
-   	});
+		function uploadImageForDispute(id) {
+      var formData = new FormData($('#order_dispute_form')[0]);
+
+      $.ajax({
+         url: '<?= base_url() ?>Order_dispute/add_dispute_files',
+         type: 'POST',
+         cache: false,
+         contentType: false,
+         processData: false,
+         data: formData,
+         dataType: 'json',
+         success: function(res) {            
+            if (res.status == 1){               
+               $(`#dispute-file-upload-input-`+id).val('');
+               for(let i =0 ; i < res.files.length; i++){
+                  let fileData = res.files[i];
+                  let html = `<tr>
+                                 <td>${fileData.original_name}</td>
+                                 <td>${fileData.size}</td>
+                                 <td><button onclick="$(this).parent('td').parent('tr').remove()" type="button" class="btn btn-default" style=" padding: 1px 11px;">Delete</button></td>
+                                 <input type="hidden" name="file_name[]" value="${fileData.name}">
+                                 <input type="hidden" name="file_original_name[]" value="${fileData.original_name}">
+                              </tr>`;
+                     $('.disputeUploadFilesHtml'+id).append(html)
+               }
+            } else {
+               swal({
+                  html: true,
+                  title: res.message,
+                  type: "warning"
+               });
+            }
+         }
+      });
+      return false;
+   }
 	</script>
-	<!-- <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.4/jquery.fancybox.min.js">
-	</script>
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.4/jquery.fancybox.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
+	

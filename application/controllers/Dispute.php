@@ -364,7 +364,14 @@ class Dispute extends CI_Controller
 				$insert['disputed_by']=$userid;
 				$insert['dispute_to']=$dispute_to;
 				$insert['ds_comment']=$this->input->post('dispute_reason');
-				$insert['ds_create_date']=date('Y-m-d H:i:s');
+				if ($this->session->userdata('type') == 1) {
+					$insert['tradesmen_offer'] = $this->input->post('offer_amount');
+				} else {
+					$insert['homeowner_offer'] = $this->input->post('offer_amount');
+				}
+
+				$insert['last_offer_by'] = $userid;
+				$insert['ds_create_date'] = date('Y-m-d H:i:s');
 
 				if($userid==$get_users['posted_user']) {
 					

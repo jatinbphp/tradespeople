@@ -426,9 +426,23 @@
                 <span class="info-box-icon bg-red"><i class="fa fa-shopping-cart"></i></span>
                 <div class="info-box-content">
                   <?php
-                      $serviceOrders = $this->db->select('*')->from('service_order')->count_all_results();
-                      ?>
-                  <span class="info-box-text">Orders</span></span>
+                    $serviceOrders = $this->db->select('*')->from('service_order')->count_all_results();
+
+                    $totalPending = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where_in('status',['placed','active'])->count_all_results();
+
+                    $totalCompleted = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where('status','completed')->count_all_results();
+
+                    $totalCancelled = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where('status','cancelled')->count_all_results();
+
+                    $totalDisputed = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where('status','disputed')->count_all_results();
+
+                    $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed;
+
+                    ?>
+                  <span class="info-box-text">
+                    Orders
+                    <?php echo ($totalOrder > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalOrder . '</span>' : ''; ?>
+                  </span>
                   <span class="info-box-number"><?=$serviceOrders;?></span>
                 </div>
                 <!-- /.info-box-content -->
