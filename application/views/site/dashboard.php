@@ -657,7 +657,7 @@
 									<?php if(!empty($all_active_order)):?>
 										<?php foreach ($all_active_order as $okey => $list): ?>
 											<?php 
-												$date = new DateTime($order['created_at']);
+												$date = new DateTime($list['created_at']);
 
 												$image_path = FCPATH . 'img/services/' . ($list['image'] ?? '');
 												$mime_type = get_mime_by_extension($image_path);

@@ -3,6 +3,9 @@
 	$get_commision = $this->common_model->get_commision();
 	?>
 	<style type="text/css">
+		.width-100{
+			width: 100%;
+		}
 		.other-post-view img{
 			height: 110px;
 			width: 100%;
@@ -501,11 +504,35 @@
 																		You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
 																	</span>
 																</span>
-															<?php elseif($order['status'] == 'cancelled'):?>	
+															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 1):?>	
 																<span>
 																	<h4 style="color: #000;">Your order has been cancelled</h4>
 																	<span class="text-muted">
 																		Your payment has been creadited to your Tradespeople Wallet and can be used or refunded at any time.
+																	</span>
+																</span>
+															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 0):?>	
+																<span>
+																	<h4 style="color: #000;">Order cancellation requested</h4>
+																	<span class="text-muted">
+																		<?php
+																			if($this->session->userdata('type')==1){
+																				if($all_conversation[0]['sender'] == $user['id']){
+																					$cUserName = 'You';
+																				}else{
+																					$cUserName = $homeowner['f_name'].' '.$homeowner['l_name'];
+																				}	
+																			}else{
+																				if($all_conversation[0]['sender'] == $user['id']){
+																					$cUserName = 'You';
+																				}else{
+																					$cUserName = $tradesman['trading_name'];
+																				}	
+																			}																			
+																		?>
+																		<?php echo $cUserName; ?> has requested the cancellation of your order.
+																		<br>
+																		Please respond to the request before the <?php echo $orderCancelDateLimit; ?>.
 																	</span>
 																</span>
 															<?php else: ?>
@@ -653,6 +680,23 @@
 																		</h5>
 																	<?php endif;?>
 
+																	<?php if($list['status'] == 'disputed_cancelled'):?>
+																		<h5>
+																			You order disputed cancelled
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+
+																	<?php if($list['status'] == 'disputed_accepted'):?>
+																		<h5>
+																			You order disputed accepted
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		<h5>
+																	<?php endif;?>
 																<?php else:?>
 																	<?php if($list['status'] == 'delivered'):?>
 													            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
@@ -666,6 +710,7 @@
 																				</span>
 																			</h5>
 													        <?php endif;?>
+
 													        <?php if($list['status'] == 'disputed'):?>
 																		<h5>
 																			<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
@@ -676,6 +721,29 @@
 																			</span>
 																		</h5>
 																	<?php endif;?>
+
+																	<?php if($list['status'] == 'disputed_accepted'):?>
+																		<h5>
+																			<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a> order disputed accepted
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+
+																	<?php if($list['status'] == 'disputed_cancelled'):?>
+																		<h5>
+																			<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																					<?php echo $tradesman['trading_name']; ?>
+																				</a> order disputed rejected
+																			<span class="text-muted" style="font-size: 12px;">
+																				<i><?php echo $conversation_date ?></i>
+																			</span>
+																		</h5>
+																	<?php endif;?>
+
 																	<?php if($list['status'] == 'declined'):?>
 																		<h5>
 																			<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
@@ -698,6 +766,8 @@
 																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed
 																		<?php elseif($list['status'] == 'disputed_cancelled'):?>
 																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed cancelled
+																		<?php elseif($list['status'] == 'disputed_accepted'):?>
+																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed accepted
 																		<?php elseif($list['status'] == 'cancelled'):?>
 																			<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> ask to cancel this order
 																		<?php elseif($list['status'] == 'declined'):?>
@@ -716,9 +786,11 @@
 																		<?php elseif($list['status'] == 'disputed'):?>
 																			You dispute order
 																		<?php elseif($list['status'] == 'disputed_cancelled'):?>
-																				You order disputed cancelled	
+																			You order disputed cancelled
+																		<?php elseif($list['status'] == 'disputed_accepted'):?>
+																			You order disputed accepted
 																		<?php elseif($list['status'] == 'cancelled'):?>
-																				You ask to cancel this order
+																			You ask to cancel this order
 																		<?php elseif($list['status'] == 'declined'):?>
 																			<?php echo $tradesman['trading_name']; ?> declined order cancellation request	
 																		<?php else:?>
@@ -775,6 +847,18 @@
 																	</div>																	
 																<?php endif; ?>
 															</span>
+															<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0 && $order['status'] != 'declined'):?>
+																<p class="alert alert-danger mb-0"><i class="fa fa-info-circle"></i> You have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be created to your Tradespeople Wallet. Need another tradesman? We can help?</p>
+
+																<?php if($user['id'] != $list['sender'] && $order['is_cancel'] == 0):?>
+																	<div class="text-right width-100">
+																		<a class="btn btn-default" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
+																		<button class="btn btn-warning" onclick="accept_decision(<?php echo $order['id']; ?>)">
+																			Accept Request
+																		</button>
+																	</div>
+																<?php endif;?>
+															<?php endif;?>
 
 															<?php if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined'])):?>
 																<form id="approved_order_form" style="width:100%">
@@ -1159,29 +1243,111 @@
 																?>
 
 																<?php if($list['sender'] == $tradesman['id']): ?>
-																	<?php if($list['status'] == 'delivered'):?>
-													            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries--; ?></b></h4>
-													            <h5>
-																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-																					<?php echo $tradesman['trading_name']; ?>
-																				</a>
-																				delivered your order
+																	<?php if($this->session->userdata('type')==1):?>
+																		<?php if($list['status'] == 'delivered'):?>
+														            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
+														            <h5>
+																					You delivered your order 
+																					<span class="text-muted" style="font-size: 12px;">
+																						<i><?php echo $conversation_date ?></i>
+																					</span>
+																				</h5>
+														        <?php endif;?>
+
+														        <?php if($list['status'] == 'disputed'):?>
+																			<h5>
+																				You order disputed
 																				<span class="text-muted" style="font-size: 12px;">
 																					<i><?php echo $conversation_date ?></i>
 																				</span>
 																			</h5>
-																	<?php elseif($list['status'] == 'declined'):?>
+																		<?php endif;?>
+
+																		<?php if($list['status'] == 'declined'):?>
+																			<h5>
+																				You declined order request
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+																		<?php endif;?>
+
+																		<?php if($list['status'] == 'disputed_cancelled'):?>
+																			<h5>
+																				You order disputed cancelled
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+																		<?php endif;?>
+
+																		<?php if($list['status'] == 'disputed_accepted'):?>
+																			<h5>
+																				You order disputed accepted
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			<h5>
+																		<?php endif;?>
+																	<?php else:?>
+																		<?php if($list['status'] == 'delivered'):?>
+														            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
+														            <h5>
+																					<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																						<?php echo $tradesman['trading_name']; ?>
+																					</a>
+																					delivered your order 
+																					<span class="text-muted" style="font-size: 12px;">
+																						<i><?php echo $conversation_date ?></i>
+																					</span>
+																				</h5>
+														        <?php endif;?>
+
+														        <?php if($list['status'] == 'disputed'):?>
 																			<h5>
 																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-																					<?php echo $tradesman['trading_name']; ?>
-																				</a>
-																				declined order request
+																						<?php echo $tradesman['trading_name']; ?>
+																					</a> order disputed
 																				<span class="text-muted" style="font-size: 12px;">
 																					<i><?php echo $conversation_date ?></i>
 																				</span>
 																			</h5>
-													        <?php endif;?>
-																	
+																		<?php endif;?>
+
+																		<?php if($list['status'] == 'disputed_accepted'):?>
+																			<h5>
+																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																						<?php echo $tradesman['trading_name']; ?>
+																					</a> order disputed accepted
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+																		<?php endif;?>
+
+																		<?php if($list['status'] == 'disputed_cancelled'):?>
+																			<h5>
+																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																						<?php echo $tradesman['trading_name']; ?>
+																					</a> order disputed rejected
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+																		<?php endif;?>
+
+																		<?php if($list['status'] == 'declined'):?>
+																			<h5>
+																				<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+																						<?php echo $tradesman['trading_name']; ?>
+																					</a> declined order cancellation request
+																				<span class="text-muted" style="font-size: 12px;">
+																					<i><?php echo $conversation_date ?></i>
+																				</span>
+																			</h5>
+																		<?php endif;?>
+
+																	<?php endif;?>
 																<?php endif; ?>	
 
 																<?php if($list['sender'] == $homeowner['id']): ?>
@@ -1193,6 +1359,8 @@
 																					<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed	
 																			<?php elseif($list['status'] == 'disputed_cancelled'):?>
 																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed cancelled
+																			<?php elseif($list['status'] == 'disputed_accepted'):?>
+																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed accepted
 																			<?php elseif($list['status'] == 'cancelled'):?>
 																				<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> ask to cancel this order
 																			<?php else:?>																				
@@ -1210,6 +1378,8 @@
 																				You dispute order
 																			<?php elseif($list['status'] == 'disputed_cancelled'):?>
 																				You order disputed cancelled
+																			<?php elseif($list['status'] == 'disputed_accepted'):?>
+																				You order disputed accepted	
 																			<?php elseif($list['status'] == 'cancelled'):?>
 																				You ask to cancel this order
 																			<?php else:?>
@@ -1231,25 +1401,9 @@
 																?>
 
 																<span class="delivery-conversation text-left" style="<?php echo $style; ?>">
-																	
 																	<p><?php echo $list['description']; ?></p>
+
 																	
-																	<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0 && $order['status'] != 'declined'):?>
-																		<p class="alert alert-danger"><i class="fa fa-info-circle"></i> You have to respond to this request or the order will be cancelled. Cancelled orders will be created to your Tradespeople Wallet. Need another tradesman? We can help?</p>
-
-																		<?php if($this->session->userdata('type')==1 && $order['is_cancel'] == 0):?>
-
-																			<div class="text-right">
-																				<a class="btn btn-default" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
-
-																				<button class="btn btn-warning" onclick="accept_decision(<?php echo $order['id']; ?>)">
-																					Approve
-																				</button>																				
-																			</div>
-																		<?php endif;?>
-
-
-																	<?php endif;?>
 
 																	<?php 
 																	$conAttachments = $this->common_model->get_all_data('order_submit_attachments',['conversation_id'=>$list['id']])
@@ -1284,6 +1438,18 @@
 																	 	</div>
 																	<?php endif; ?>
 																</span>
+																<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0 && $order['status'] != 'declined'):?>
+																		<p class="alert alert-danger mb-0"><i class="fa fa-info-circle"></i> You have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be created to your Tradespeople Wallet. Need another tradesman? We can help?</p>
+
+																		<?php if($user['id'] != $list['sender'] && $order['is_cancel'] == 0):?>
+																			<div class="text-right width-100">
+																				<a class="btn btn-default" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
+																				<button class="btn btn-warning" onclick="accept_decision(<?php echo $order['id']; ?>)">
+																					Accept Request
+																				</button>
+																			</div>
+																		<?php endif;?>
+																	<?php endif;?>
 															</div>
 														</li>
 													<?php endforeach;?>
@@ -1377,6 +1543,10 @@
 																In Progress
 															<?php elseif($order['status'] == 'request_modification'):?>
 																Revision
+															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '0'):?>
+																Cancellation pending
+															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
+																Cancelled
 															<?php else: ?>	
 																<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 															<?php endif; ?>
@@ -1386,6 +1556,10 @@
 															In Progress
 														<?php elseif($order['status'] == 'request_modification'):?>
 															Revision
+														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '0'):?>
+															Cancellation pending
+														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
+															Cancelled
 														<?php else: ?>	
 															<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 														<?php endif; ?>

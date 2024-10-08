@@ -491,7 +491,7 @@ $closed_date = $get_commision[0]['closed_date'];
 							<?php if(!empty($active_orders)):?>
 								<?php foreach ($active_orders as $okey => $list): ?>
 									<?php 
-										$date = new DateTime($order['created_at']);
+										$date = new DateTime($list['created_at']);
 
 										$image_path = FCPATH . 'img/services/' . ($list['image'] ?? '');
 										$mime_type = get_mime_by_extension($image_path);

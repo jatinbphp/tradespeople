@@ -63,7 +63,7 @@ class Order_dispute extends CI_Controller
       	$receiverId = $homeOwner['id'];
       }
 
-      $od['status'] = $lastSecondStatus['status'];
+      $od['status'] = 'disputed_cancelled';
 			$od['reason'] = '';
 			$od['status_update_time'] = date('Y-m-d H:i:s');
 			$run = $this->common_model->update('service_order',array('id'=>$post_id),$od);
@@ -250,6 +250,7 @@ class Order_dispute extends CI_Controller
 
 		$massage = 'Dispute resolved as  ' . $accname . ' accept and close.';
 		$insert['dct_disputid'] = $dispute_ids;
+		$insert['dispute_type'] = 2;
 		$insert['dct_userid'] = 0;
 		$insert['dct_msg'] = $massage;
 		$insert['dct_isfinal'] = 1;
@@ -268,8 +269,6 @@ class Order_dispute extends CI_Controller
 
 			$disput_update['ds_status'] = 1;
 			$disput_update['ds_favour'] = $dispute_finel_user;
-
-			$get_job_post = $this->common_model->get_single_data('tbl_jobs', array('job_id' => $job_id));
 
 			if ($user_id == $trades['id']) {
 				$amount = $row['homeowner_offer']*1;
@@ -354,7 +353,7 @@ class Order_dispute extends CI_Controller
         $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
         $tradesMan = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
-        $lastSecondStatus = $this->common_model->getBeforeDisputedStatus($job['id']);
+        $lastSecondStatus = $this->common_model->getBeforeDisputedStatus($job_id);
 
 				/*Manage Order History*/
         if($user_id == $homeOwner['id']){
@@ -366,12 +365,17 @@ class Order_dispute extends CI_Controller
         	$receiverId = $homeOwner['id'];
         }
 
+        $od['status'] = 'disputed_accepted';
+		$od['reason'] = '';
+		$od['status_update_time'] = date('Y-m-d H:i:s');
+		$run = $this->common_model->update('service_order',array('id'=>$job_id),$od);
+
 				/*Manage Order History*/
         $insert1 = [
           'user_id' => $senderId,
           'service_id' => $serviceOrder['service_id'],
           'order_id' => $post_id,
-          'status' => $lastSecondStatus['status']
+          'status' => 'disputed_accepted'
       	];
       	$this->common_model->insert('service_order_status_history', $insert1);
 
@@ -520,9 +524,9 @@ class Order_dispute extends CI_Controller
 				$this->common_model->insert('notification', $insertn);
 
 				if ($amount > 0) {
-					$subject = $trades['trading_name']." accepted your new offer on the order dispute for the ".$get_job_post['title'];
+					$subject = $trades['trading_name']." accepted your new offer on the order dispute for the ".$serviceOrder['order_id'];
 				} else {
-					$subject = $trades['trading_name']." accepted your offer on the order dispute for the ".$get_job_post['title'];
+					$subject = $trades['trading_name']." accepted your offer on the order dispute for the ".$serviceOrder['order_id'];
 				}
 
 				$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $home['f_name'] . '</p>';
@@ -559,7 +563,7 @@ class Order_dispute extends CI_Controller
 				$insertn['posted_by'] = $row['ds_puser_id'];
 				$this->common_model->insert('notification', $insertn);
 				
-				$subject = $home['f_name'].' '.$home['l_name']." accepted your offer on the order dispute for the ".$get_job_post['title'];
+				$subject = $home['f_name'].' '.$home['l_name']." accepted your offer on the order dispute for the ".$serviceOrder['order_id'];
 
 				$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $trades['f_name'] . '</p>';
 				$contant .= '<br><p style="margin:0;padding:10px 0px">'.$home['f_name'].' '.$home['l_name'].' has accepted your new offer to settle the order dispute.</p>';
@@ -1361,9 +1365,9 @@ class Order_dispute extends CI_Controller
 			$page['home_stepin'] = $home_stepin;
 			$page['trades_stepin'] = $trades_stepin;
 			
-			$page['disput_comment'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dct_userid >='=>'0'), 'dct_id', 'ASC');
-			$page['disput_comment_arbitration'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dct_userid <'=>'0'), 'dct_id', 'ASC');
-			$page['checkOtherUserReply'] = $this->common_model->GetColumnName('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'], 'dct_userid' => $dispute['dispute_to']), ['dct_created'], false, 'dct_id', 'asc');
+			$page['disput_comment'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dispute_type'=>2,'dct_userid >='=>'0'), 'dct_id', 'ASC');
+			$page['disput_comment_arbitration'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dispute_type'=>2,'dct_userid <'=>'0'), 'dct_id', 'ASC');
+			$page['checkOtherUserReply'] = $this->common_model->GetColumnName('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'], 'dispute_type'=>2, 'dct_userid' => $dispute['dispute_to']), ['dct_created'], false, 'dct_id', 'asc');
 			
 			$page['files'] = $this->common_model->get_all_data('dispute_file',"dispute_id = '".$dispute['ds_id']."' and conversation_id is null", 'id', 'DESC');
 			$page['post_id'] = $dispute['ds_job_id'];
@@ -1459,6 +1463,7 @@ class Order_dispute extends CI_Controller
 
 		$insert['dct_disputid'] =  $ds;
 		$insert['dct_userid'] = $userid;
+		$insert['dispute_type'] = 2;
 		$insert['dct_msg'] = $dct_msg;
 		$insert['dct_isfinal'] = 0;
 		$insert['message_to'] = $message_to;

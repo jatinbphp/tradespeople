@@ -4400,9 +4400,14 @@ class Users extends CI_Controller
 
 			$data['all_conversation']=$this->common_model->get_all_data('order_submit_conversation',['order_id'=>$order['id']],'id');
 
-			// echo '<pre>';
-			// print_r($data);
-			// exit;
+			$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
+
+			$newTime = '';
+
+			if($order['status'] == 'cancelled' && $order['is_cancel'] == 0){
+				$newTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
+			}
+			$data['orderCancelDateLimit'] = $newTime;
 
 			$this->load->view('site/order_tracking',$data);
 		}else{

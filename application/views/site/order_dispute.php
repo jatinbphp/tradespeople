@@ -897,7 +897,7 @@ if ($checkOtherUserReply) {
 										<?php
 										if ($dispute['ds_status'] == '0') {
 											if ($dispute['homeowner_offer'] && $dispute['offer_rejected_by_tradesmen'] == 0) {
-												echo '<div class="btn-mytab-1"><a class="btn btn-warning btn-xs" onclick="return confirm(\'Are are sure, you want to accept and close this dispute?\');" href="' . site_url() . 'dispute_accept_and_close/' . $dispute['ds_id'] . '/' . $dispute['ds_job_id'] . '">Accept and close</a>';
+												echo '<div class="btn-mytab-1"><a class="btn btn-warning btn-xs" onclick="return confirm(\'Are are sure, you want to accept and close this dispute?\');" href="' . site_url() . 'order_dispute_accept_and_close/' . $dispute['ds_id'] . '/' . $dispute['ds_job_id'] . '">Accept and close</a>';
 												if($checkOtherUserReply){
 												echo ' &nbsp;<a class="btn btn-danger btn-xs" onclick="return confirm(\'Are are sure, you want to reject this?\');" href="' . site_url() . 'order_reject_dispute_offer?dispute_id=' . $dispute['ds_id'] . '&user_id=' . $user_id . '&job_id=' . $dispute['ds_job_id'] . '">Reject</a>';
 
