@@ -4974,28 +4974,28 @@ class Users extends CI_Controller
 		if($run){
 			$hId = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-            $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
-            $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
-            if($hId == $homeOwner['id']){
-            	$senderId = $hId;
-            	$receiverId = $tradesman['id'];
-            }
-            if($hId == $tradesman['id']){
-            	$senderId = $hId;
-            	$receiverId = $homeOwner['id'];
-            }
+      if($hId == $homeOwner['id']){
+      	$senderId = $hId;
+      	$receiverId = $tradesman['id'];
+      }
+      if($hId == $tradesman['id']){
+      	$senderId = $hId;
+      	$receiverId = $homeOwner['id'];
+      }
 
 			/*Manage Order History*/
-            $insert1 = [
-	            'user_id' => $senderId,
-	            'service_id' => $serviceOrder['service_id'],
-	            'order_id' => $oId,
-	            'status' => 'cancelled'
-	        ];
-	        $this->common_model->insert('service_order_status_history', $insert1);
+      $insert1 = [
+        'user_id' => $senderId,
+        'service_id' => $serviceOrder['service_id'],
+        'order_id' => $oId,
+        'status' => 'cancelled'
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
 
-	        $insert['sender'] = $senderId;
+      $insert['sender'] = $senderId;
 			$insert['receiver'] = $receiverId;
 			$insert['order_id'] = $oId;
 			$insert['status'] = 'cancelled';
@@ -5003,16 +5003,16 @@ class Users extends CI_Controller
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
 			/*Tradesman Email Code*/
-            if($tradesman){
-            	$subject = "Order cancelled for order number: “".$serviceOrder['order_id']."”"; 
+      if($tradesman){
+      	$subject = "Order cancelled for order number: “".$serviceOrder['order_id']."”"; 
 
-                $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
-                $html = '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is cancelled</p>';                
-                $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Cancel:</b></p>';
-                $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
-                $this->common_model->send_mail($tradesman['email'],$subject,$html);
-            }
-            echo json_encode(['status' => 'error', 'message' => 'Order cancelled successfully.']);
+        $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
+        $html .= '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is cancelled</p>';                
+        $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Cancel:</b></p>';
+        $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
+        $this->common_model->send_mail($tradesman['email'],$subject,$html);
+      }
+      echo json_encode(['status' => 'error', 'message' => 'Order cancelled successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
 		}
@@ -5024,6 +5024,17 @@ class Users extends CI_Controller
 
 		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
 		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+
+		$user_id = $this->session->userdata('user_id');
+
+		if($user_id == $get_users['id']){
+    	$senderId = $user_id;
+    	$receiverId = $get_users1['id'];
+    }
+    if($user_id == $get_users1['id']){
+    	$senderId = $user_id;
+    	$receiverId = $get_users['id'];
+    }		
 
 		$update2['u_wallet']=$get_users['u_wallet']+$serviceOrder['price'];
 	
@@ -5052,16 +5063,7 @@ class Users extends CI_Controller
 		);
 		$run1 = $this->common_model->insert('transactions',$data1);	
 
-		$user_id = $this->session->userdata('user_id');
-
-		if($user_id == $get_users['id']){
-    	$senderId = $user_id;
-    	$receiverId = $get_users1['id'];
-    }
-    if($user_id == $get_users1['id']){
-    	$senderId = $user_id;
-    	$receiverId = $get_users['id'];
-    }
+		
 
 		$od['is_cancel'] = 1;
 		$od['status'] = 'cancelled';
@@ -5117,11 +5119,71 @@ class Users extends CI_Controller
 		}
 	}
 
+	public function withdraw_request($oId){
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+
+		$input['status'] = 'withdraw_cancelled';
+		$input['reason'] = '';
+		$input['status_update_time'] = date('Y-m-d H:i:s');
+
+		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
+		if($run){
+			$hId = $this->session->userdata('user_id');
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+      if($hId == $homeOwner['id']){
+      	$senderId = $hId;
+      	$receiverId = $tradesman['id'];
+      	$reason = $homeOwner['f_name'].' '.$homeOwner['l_name']. 'has been withdraw order cancellation request';
+      	$uname = $tradesman['trading_name'];
+      	$wuname = $homeOwner['f_name'].' '.$homeOwner['l_name'];
+
+      }
+      if($hId == $tradesman['id']){
+      	$senderId = $hId;
+      	$receiverId = $homeOwner['id'];
+      	$reason = $tradesman['trading_name'].' has been withdraw order cancellation request';
+      	$uname = $homeOwner['f_name'].' '.$homeOwner['l_name'];
+      	$wuname = $tradesman['trading_name'];
+      }
+
+			/*Manage Order History*/
+      $insert1 = [
+        'user_id' => $senderId,
+        'service_id' => $serviceOrder['service_id'],
+        'order_id' => $oId,
+        'status' => 'withdraw_cancelled'
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
+
+      $insert['sender'] = $senderId;
+			$insert['receiver'] = $receiverId;
+			$insert['order_id'] = $oId;
+			$insert['status'] = 'withdraw_cancelled';
+			$insert['description'] = $reason;
+			$run = $this->common_model->insert('order_submit_conversation', $insert);
+
+			/*Tradesman Email Code*/
+      if($tradesman){
+      	$subject = "Withdraw order cancellation request for order number: “".$serviceOrder['order_id']."”"; 
+
+        $html = '<p style="margin:0;padding:10px 0px">Hi ' . $uname .',</p>';
+        $html .= '<p style="margin:0;padding:10px 0px">'.$wuname.' has been withdraw order cancellation request for order number: ' . $serviceOrder['order_id'] .'</p>';
+        $this->common_model->send_mail($tradesman['email'],$subject,$html);
+      }
+      echo json_encode(['status' => 'error', 'message' => 'Withdraw order cancellation request successfully.']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order cancellation request is not withdraw.']);
+		}
+	}
+
 	public function declineCancel(){
 		$id = $this->input->post('order_id');
 
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
-		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['user_id']]);
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
 
 		$updatem['status'] = 'declined';
 		$updatem['cancel_decline_reason'] = $this->input->post('decline_reason');
@@ -5147,6 +5209,7 @@ class Users extends CI_Controller
       'order_id' => $id,
       'status' => 'declined'
     ];
+
     $this->common_model->insert('service_order_status_history', $insert1);
 
     $insert2['sender'] = $senderId;

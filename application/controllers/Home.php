@@ -2374,14 +2374,19 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 
 	public function serviceDetail($slug=""){
 		$data['service_details'] = $this->common_model->get_service_details('my_services',$slug);
+		$sId = $data['service_details']['id'];
+		$uId = $data['service_details']['user_id'];
+		$user_id = $this->session->userdata('user_id');
+		$data['lastOrder'] = [];
+		if($this->session->userdata('type') == 2){
+			$lastOrder = $this->common_model->GetSingleData('service_order',['service_id'=>$sId, 'user_id'=>$user_id], 'id');
+			$data['lastOrder'] = $lastOrder;
+		}
 
 		$data['is_detail'] = 1;
 		if($data['service_details']['status'] != 'active'){
 			redirect('/');
-		}
-
-		$sId = $data['service_details']['id'];
-		$uId = $data['service_details']['user_id'];
+		}		
 
 		$category = $data['service_details']['category'];
 

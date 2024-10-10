@@ -29,6 +29,9 @@
 .tt-suggestion:hover {
     background-color: #f0f0f0;
 }	
+.live-chat h4, .live-chat1 h4{
+  display: flex!important;
+}
 </style>
 <div class="modal fade viewaccount"  role="dialog">
     <div class="modal-dialog">
@@ -894,6 +897,9 @@ $get_commision = $this->common_model->get_commision();
   </div>
 </div>
 
+<input type="hidden" id="contactServiceName">
+<input type="hidden" id="contactServiceOrder">
+
 <?php
 if($pageName != 'proposals' && $pageName != 'payments' && $pageName != 'wallet' && $pageName != 'signup-step8' && $pageName != 'details' && $pageName != 'make-addon-payment'){;
 ?>
@@ -1671,11 +1677,13 @@ var loading = function(isLoading) {
     //if(id && post_id){
       $('#rid-footer').val(id);
       $('#post_id-footer').val(post_id);
+      var serviceName = $('#contactServiceName').val();
+      var lastOrder = $('#contactServiceOrder').val();
       
       $.ajax({
         type:'POST',
         url:site_url+'chat/get_chats',
-        data:{id:id,post:post_id},
+        data:{id:id,post:post_id,serviceName:serviceName,lastOrder:lastOrder},
         dataType:'JSON',
         success:function(resp) {
           if(resp.status==1) {

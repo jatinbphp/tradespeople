@@ -205,7 +205,9 @@
 											</li>
 										<?php endforeach; ?>						
 									</ul>
-									<button type="button" class="btn btn-warning mt-3" id="loadReview">Load More Review</button>
+									<?php if(count($service_rating) > 5): ?>
+										<button type="button" class="btn btn-warning mt-3" id="loadReview">Load More Review</button>
+									<?php endif;?>	
 								</div>
 							<?php endif;?>
 
@@ -702,7 +704,7 @@
 											<div class="about-container js-about-container" style="background: #F1F1F1;">
 												<div id="howItWorkText">
 													<p style="margin-top: 10px;">
-														Our platform operates much like purchasing a product on Amazon or eBay. Services or gigs are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.
+														Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.
 													</p>
 												</div>	
 												<p class="text-primary" style="margin-top: 6px; cursor: pointer;" id="readMoreHowItWork">
@@ -1265,6 +1267,8 @@
 	});
 
 	$('#contactBtn').on('click', function(){
+		$('#contactServiceName').val('<?php echo $service_details['service_name']?>');
+		$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
 		get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
 		showdiv();
 	});
@@ -1349,14 +1353,14 @@
 	}
 	
 	$('#readMoreHowItWork').on('click', function(){
-		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services or gigs are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p><p style="margin-top: 10px;">The process is straightforward: simply click the buy button, select the desired date and time for the service, make your payment, and submit any necessary details. Your payment is securely held in escrow until the job is completed.</p><p style="margin-top: 10px;">Once the task is finished and you are completely satisfied with the results, you can release the payment to the professional by accepting the delivery.</p>';					   
+		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p><p style="margin-top: 10px;">The process is straightforward: simply click the buy button, select the desired date and time for the service, make your payment, and submit any necessary details. Your payment is securely held in escrow until the job is completed.</p><p style="margin-top: 10px;">Once the task is finished and you are completely satisfied with the results, you can release the payment to the professional by accepting the delivery.</p>';					   
 		$('#howItWorkText').empty().html(howToWork);
 		$(this).hide();
 		$('#readLessHowItWork').show();
 	});
 	
 	$('#readLessHowItWork').on('click', function(){
-		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services or gigs are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p>';					   
+		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p>';					   
 		$('#howItWorkText').empty().html(howToWork);
 		$(this).hide();
 		$('#readMoreHowItWork').show();

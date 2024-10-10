@@ -124,6 +124,7 @@ class Chat extends CI_Controller
 	}
 	public function get_chats1() {
 		$json['data']='';
+		$serviceName = !empty($_REQUEST['serviceName']) ? '<span>Service: '.$_REQUEST['serviceName'].'</span>' : '';
 		if($this->session->userdata('type')==1) {
 		
 			$user_id=$this->session->userdata('user_id');
@@ -152,7 +153,7 @@ class Chat extends CI_Controller
 
 				$json['userdetail'] = 	'';
 
-				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image11"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername11" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
+				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image11"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername11" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
 				
 				$json['data']='';
 				
@@ -205,7 +206,7 @@ class Chat extends CI_Controller
 					$json['userdetail'] =   '';
 			
 					$json['userdetail'] .=  '<h4 class="mine_headr">
-					<span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
+					<span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
 					$json['status']=0;
 					$json['data'] .= '<div class="alert alert-warning">To start chat please buy a plan.</div><div class="row"><div class="col-sm-4"></div><div class="col-sm-4"><a href="#" data-target="#chat_payment_model" data-toggle="modal" class="btn btn-primary">Buy Now</a></div><div class="col-sm-4"></div></div>';
 			}
@@ -268,6 +269,9 @@ class Chat extends CI_Controller
 	}
 	public function get_chats() {
 		$json['data']='';
+		$serviceName = !empty($_REQUEST['serviceName']) ? '<span style="display:block">Service: '.$_REQUEST['serviceName'].'</span>' : '';
+		$order_id = !empty($_REQUEST['lastOrder']) ? '<span style="display:block">Order: '.$_REQUEST['lastOrder'].'</span>' : '';
+
 		if($this->session->userdata('type')==1) {
 		
 			$user_id=$this->session->userdata('user_id');
@@ -298,7 +302,7 @@ class Chat extends CI_Controller
 
 					$json['userdetail'] = 	'';
 
-					$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
+					$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'/span></h4>';
 					$json['data']='';
 				
 					if($get_chats) {
@@ -346,7 +350,7 @@ class Chat extends CI_Controller
 
 					$json['userdetail'] =   '';
 				
-					$json['userdetail'] .=  '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
+					$json['userdetail'] .=  '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'</span></h4>';
 					$json['status']=0;
 					$json['data'] .= '<div class="alert alert-warning">To start chat please buy a plan.</div><div class="row"><div class="col-sm-4"></div><div class="col-sm-4"><a href="javascript:void(0);" data-target="#chat_payment_model" data-toggle="modal" class="btn btn-primary">Buy Now</a></div><div class="col-sm-4"></div></div>';
 				}
@@ -365,7 +369,7 @@ class Chat extends CI_Controller
 
 				$json['userdetail'] = 	'';
 
-				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
+				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'</span></h4>';
 				$json['data']='';
 			
 				if($get_chats) {
@@ -416,7 +420,7 @@ class Chat extends CI_Controller
 
 			$json['userdetail'] = 	'';
 
-			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a></h4>';
+			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'</span></h4>';
 			$json['data']='';
 	
 			if($get_chats){
