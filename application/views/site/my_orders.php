@@ -22,6 +22,9 @@
     .orderReason{
         cursor: pointer;
     }
+    #boottable td:nth-child(1), #boottable th:nth-child(1) {
+        display: none;
+    }
 </style>
 <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url(); ?>asset/admin/plugins/datatables/dataTables.bootstrap.min.js"></script>
@@ -70,6 +73,7 @@
                                             <table id="boottable" class="table table-bordered table-striped">
                                                 <thead>
                                                     <tr>
+                                                        <th>Id</th>                     
                                                         <th>Order Id</th>                     
                                                         <th>Image/Video</th>                     
                                                         <th>Service Name</th>                     
@@ -181,7 +185,8 @@ $(function () {
             "dataSrc": "data"
         },
         "columns": [
-             { "data": "order_id"},
+            { "data": "id"},
+            { "data": "order_id"},
             { "data": "service_name", "render": function(data, type, row) {
                if (row.service_name.file) {
                     if (row.service_name.file.endsWith('.mp4')) {
@@ -218,7 +223,8 @@ $(function () {
                     return row.viewOrder;
                 }},
             <?php endif; ?>
-        ]
+        ],
+        "order": [[0, "desc"]]
     });
 });
 

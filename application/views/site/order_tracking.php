@@ -595,7 +595,7 @@
 									</div>
 									<div class="timeline-div bg-white p-4">
 										<ol class="timeline">
-											<?php if($order['status'] == 'active'):?>
+											<?php if($order['status'] == 'active' && $all_conversation[0]['status'] != 'withdraw_cancelled'):?>
 												<li class="timeline-item">
 													<span class="timeline-item-icon | faded-icon">
 														<i class="fa fa-clock-o faicon"></i>
@@ -666,7 +666,7 @@
 																			$is_image = strpos($mime_type, 'image') !== false;
 																			$is_video = strpos($mime_type, 'video') !== false;
 																			?>
-																			<div class="col-md-3 pr-3 pl-3">
+																			<div class="col-md-4 pr-3 pl-3">
 																				<?php if ($is_image): ?>
 																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
 																					<img src="<?php echo base_url('img/services/') . $value['attachment']; ?>" alt="">
@@ -926,21 +926,14 @@
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 												</button>
 												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-													<?php if($order['status'] == 'disputed'):?>
-														<li><a class="dropdown-item" href="<?php echo base_url().'order-dispute/'.$order['id']?>">View Dispute</a></li>
-														<li><a class="dropdown-item" href="javascript:void(0)">Cancel Dispute</a></li>
-													<?php else: ?>
-														<?php if($order['status'] == 'cancelled'):?>
-															<li>
-																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_decision_modal">Make Decision</a>
-															</li>
-														<?php else: ?>
+													<?php if($order['status'] != 'disputed'):?>
 															<li>
 																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
-															</li>															
-														<?php endif; ?>
+															</li>
 													<?php endif; ?>
-													<li><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>	
+													<?php if($order['status'] != 'delivered'):?>
+														<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>	
+													<?php endif; ?>
 												</ul>
 											</div>
 										<?php else: ?>
@@ -950,19 +943,14 @@
 														<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 													</button>
 													<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-														<?php if($order['status'] == 'disputed'):?>
-															<li><a class="dropdown-item" href="<?php echo base_url().'order-dispute/'.$order['id']?>">View Dispute</a></li>
-														<?php else: ?>
+														<?php if($order['status'] != 'disputed'):?>
 															<li>
 																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
 															</li>
-															<?php if($order['status'] == 'declined'):?>
-																<li>
-																	<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#declined_reason_modal">View Reason</a>
-																</li>
-															<?php endif; ?>															
 														<?php endif; ?>
-														<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+														<?php if($order['status'] != 'delivered'):?>
+															<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
+														<?php endif; ?>
 													</ul>
 												</div>
 											<?php endif; ?>
@@ -2058,44 +2046,53 @@
 		}
 		
 		function withdraw_request(id) {
-			$('#loader').removeClass('hide');
+			swal({
+				title: "Withdraw Request",
+				text: "Are you sure you want to withdraw cancellation request for this order?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Withdraw',
+				cancelButtonText: 'Cancel'
+			}, function() {
+				$('#loader').removeClass('hide');
 			
-			$.ajax({
-				url:site_url+'users/withdraw_request/'+id,
-				type: 'POST',
-				dataType: 'json',		                
-				success: function(result) {
-					$('#loader').addClass('hide');
-					if(result.status == 0){
-						swal({
-							title: "Error",
-							text: result.message,
-							type: "error"
-						}, function() {
-							window.location.reload();
-						});	
-					}else if(result.status == 2){
-						swal({
-							title: "Login Required!",
-							text: "If you want to order the please login first!",
-							type: "warning"
-						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
-						swal({
-							title: "Success",
-							text: result.message,
-							type: "success"
-						}, function() {
-							window.location.reload();
-						});
-					}		                    
-				},
-				error: function(xhr, status, error) {
-	                // Handle error
-				}
-			});		
+				$.ajax({
+					url:site_url+'users/withdraw_request/'+id,
+					type: 'POST',
+					dataType: 'json',		                
+					success: function(result) {
+						$('#loader').addClass('hide');
+						if(result.status == 0){
+							swal({
+								title: "Error",
+								text: result.message,
+								type: "error"
+							}, function() {
+								window.location.reload();
+							});	
+						}else if(result.status == 2){
+							swal({
+								title: "Login Required!",
+								text: "If you want to order the please login first!",
+								type: "warning"
+							}, function() {
+								window.location.href = '<?php echo base_url().'login'; ?>';
+							});	
+						}else{
+							swal({
+								title: "Success",
+								text: result.message,
+								type: "success"
+							}, function() {
+								window.location.reload();
+							});
+						}		                    
+					},
+					error: function(xhr, status, error) {
+		                // Handle error
+					}
+				});	
+			});
 		}
 
 		function decliensss() {

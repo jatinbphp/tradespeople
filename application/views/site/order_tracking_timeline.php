@@ -161,7 +161,7 @@
 							</h5>
 						<?php endif;?>
 
-						<?php if($list['status'] == 'cancelled'):?>
+						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0):?>
 							<h5>
 								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
 										<?php echo $tradesman['trading_name']; ?>
@@ -294,15 +294,26 @@
 					<?php endif; ?>
 				</span>
 				<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0 && $order['status'] != 'declined'):?>
-					<p class="alert alert-danger mb-0"><i class="fa fa-info-circle"></i> You have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be created to your Tradespeople Wallet. Need another tradesman? We can help?</p>
+					<p class="alert alert-danger mb-0">
+						<?php 
+							if($list['sender'] == $tradesman['id']){
+								$ocruName = $this->session->userdata('type')==1 ? 'You' : $tradesman['trading_name'];								
+							}
+							if($list['sender'] == $homeowner['id']){
+								$ocruName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'You';
+							}
+						?>
+						<i class="fa fa-info-circle"></i> 
+						<?php echo $ocruName; ?> have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+					</p>
 						<div class="text-right width-100">
-							<?php if($user['id'] != $list['sender'] && $order['is_cancel'] == 0 && $order['status'] != 'withdraw_cancelled'):?>
+							<?php if($user['id'] != $list['sender'] && $all_conversation[0]['status'] == 'cancelled' && $order['is_cancel'] == 0 && $order['status'] != 'withdraw_cancelled'):?>
 								<a class="btn btn-default" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
 								<button class="btn btn-warning" onclick="accept_decision(<?php echo $order['id']; ?>)">
 									Accept Request
 								</button>
 							<?php else: ?>
-								<?php if($order['status'] != 'withdraw_cancelled'):?>
+								<?php if($all_conversation[0]['status'] == 'cancelled' && $order['is_cancel'] == 0):?>
 									<button class="btn btn-warning" onclick="withdraw_request(<?php echo $order['id']; ?>)">
 										Withdraw Request
 									</button>
@@ -311,7 +322,7 @@
 						</div>																
 				<?php endif;?>
 
-				<?php if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined'])):?>
+				<?php if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined','withdraw_cancelled'])):?>
 					<form id="approved_order_form" style="width:100%">
 						<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
 						<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">

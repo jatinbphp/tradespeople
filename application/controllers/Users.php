@@ -2376,7 +2376,6 @@ class Users extends CI_Controller
 	        $data = [];
 
 	        $statusArr = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'disputed', 'all'];
-
 	        foreach($orders as $order) {
 	        	$date = new DateTime($order['created_at']);
 
@@ -2411,6 +2410,7 @@ class Users extends CI_Controller
 	        	$link = base_url('order-tracking/'.$order['id']);
 
 	          	$data[] = [
+		          	'id' => $order['id'],
 		          	'order_id' => $order['order_id'],
 		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name'], 'link'=>$link),
 		            'created_at' => $date->format('F j, Y'),
@@ -5122,7 +5122,7 @@ class Users extends CI_Controller
 	public function withdraw_request($oId){
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 
-		$input['status'] = 'withdraw_cancelled';
+		$input['status'] = 'active';
 		$input['reason'] = '';
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 
