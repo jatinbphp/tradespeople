@@ -57,16 +57,7 @@
 									<i><?php echo $conversation_date ?></i>
 								</span>
 							</h5>
-						<?php endif;?>
-
-						<?php if($list['status'] == 'declined'):?>
-							<h5>
-								You declined order request
-								<span class="text-muted" style="font-size: 12px;">
-									<i><?php echo $conversation_date ?></i>
-								</span>
-							</h5>
-						<?php endif;?>
+						<?php endif;?>					
 
 						<?php if($list['status'] == 'disputed_cancelled'):?>
 							<h5>
@@ -86,7 +77,7 @@
 							<h5>
 						<?php endif;?>
 
-						<?php if($list['status'] == 'cancelled'):?>
+						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 2):?>
 							<h5>
 								You ask to cancel this order
 								<span class="text-muted" style="font-size: 12px;">
@@ -95,13 +86,31 @@
 							</h5>
 						<?php endif;?>
 
-						<?php if($list['status'] == 'withdraw_cancelled'):?>
+						<?php if($list['status'] == 'withdraw_cancelled' && $list['is_cancel'] == 4):?>
 							<h5>
 								You havebeen withdraw order cancellation request
 								<span class="text-muted" style="font-size: 12px;">
 									<i><?php echo $conversation_date ?></i>
 								</span>
 							</h5>																			
+						<?php endif;?>
+
+						<?php if($list['status'] == 'declined' && $list['is_cancel'] == 3):?>
+							<h5>
+								You declined order request
+								<span class="text-muted" style="font-size: 12px;">
+									<i><?php echo $conversation_date ?></i>
+								</span>
+							</h5>
+						<?php endif;?>
+
+						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 1):?>
+							<h5>
+								You accepted order cancellation request
+								<span class="text-muted" style="font-size: 12px;">
+									<i><?php echo $conversation_date ?></i>
+								</span>
+							</h5>
 						<?php endif;?>
 					<?php else:?>
 						<?php if($list['status'] == 'delivered'):?>
@@ -150,18 +159,7 @@
 							</h5>
 						<?php endif;?>
 
-						<?php if($list['status'] == 'declined'):?>
-							<h5>
-								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-										<?php echo $tradesman['trading_name']; ?>
-									</a> declined order cancellation request
-								<span class="text-muted" style="font-size: 12px;">
-									<i><?php echo $conversation_date ?></i>
-								</span>
-							</h5>
-						<?php endif;?>
-
-						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0):?>
+						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 2):?>
 							<h5>
 								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
 										<?php echo $tradesman['trading_name']; ?>
@@ -172,18 +170,7 @@
 							</h5>
 						<?php endif;?>	
 
-						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 1):?>
-							<h5>
-								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
-										<?php echo $tradesman['trading_name']; ?>
-									</a> order is cancelled
-								<span class="text-muted" style="font-size: 12px;">
-									<i><?php echo $conversation_date ?></i>
-								</span>
-							</h5>
-						<?php endif;?>
-								
-						<?php if($list['status'] == 'withdraw_cancelled'):?>
+						<?php if($list['status'] == 'withdraw_cancelled' && $list['is_cancel'] == 4):?>
 							<h5>
 								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
 									<?php echo $tradesman['trading_name']; ?>
@@ -192,7 +179,29 @@
 									<i><?php echo $conversation_date ?></i>
 								</span>
 							</h5>	
-						<?php endif;?>	
+						<?php endif;?>
+
+						<?php if($list['status'] == 'declined' && $list['is_cancel'] == 3):?>
+							<h5>
+								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+										<?php echo $tradesman['trading_name']; ?>
+									</a> declined order cancellation request
+								<span class="text-muted" style="font-size: 12px;">
+									<i><?php echo $conversation_date ?></i>
+								</span>
+							</h5>
+						<?php endif;?>						
+
+						<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 1):?>
+							<h5>
+								<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+										<?php echo $tradesman['trading_name']; ?>
+									</a> is accepted order cancellation request
+								<span class="text-muted" style="font-size: 12px;">
+									<i><?php echo $conversation_date ?></i>
+								</span>
+							</h5>
+						<?php endif;?>
 					<?php endif; ?>
 				<?php endif; ?>
 				<?php if($list['sender'] == $homeowner['id']): ?>
@@ -206,13 +215,13 @@
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed cancelled
 							<?php elseif($list['status'] == 'disputed_accepted'):?>
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order disputed accepted
-							<?php elseif($list['status'] == 'cancelled'):?>
+							<?php elseif($list['status'] == 'cancelled' && $list['is_cancel'] == 2):?>
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> ask to cancel this order
 							<?php elseif($list['status'] == 'cancelled' && $list['is_cancel'] == 1):?>
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> order is cancelled
-							<?php elseif($list['status'] == 'withdraw_cancelled'):?>
+							<?php elseif($list['status'] == 'withdraw_cancelled' && $list['is_cancel'] == 4):?>
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> has been withdraw order cancellation request
-							<?php elseif($list['status'] == 'declined'):?>
+							<?php elseif($list['status'] == 'declined' && $list['is_cancel'] == 3):?>
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> declined order cancellation request
 							<?php else:?>
 								<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> requested a modification
@@ -231,13 +240,13 @@
 								You order disputed cancelled
 							<?php elseif($list['status'] == 'disputed_accepted'):?>
 								You order disputed accepted
-							<?php elseif($list['status'] == 'cancelled' && $list['is_cancel'] == 0):?>
+							<?php elseif($list['status'] == 'cancelled' && $list['is_cancel'] == 2):?>
 								You ask to cancel this order
 							<?php elseif($list['status'] == 'cancelled' && $list['is_cancel'] == 1):?>
 								You order is cancelled
-							<?php elseif($list['status'] == 'withdraw_cancelled'):?>
+							<?php elseif($list['status'] == 'withdraw_cancelled' && $list['is_cancel'] == 4):?>
 								You have been withdraw order cancellation request
-							<?php elseif($list['status'] == 'declined'):?>
+							<?php elseif($list['status'] == 'declined' && $list['is_cancel'] == 3):?>
 								You declined order cancellation request
 							<?php else:?>
 								You requested a modification 
@@ -293,27 +302,31 @@
 						</div>																	
 					<?php endif; ?>
 				</span>
-				<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 0 && $order['status'] != 'declined'):?>
+				<?php //if($list['status'] == 'cancelled' && !in_array($order['is_cancel'], [1,3,4]) && $order['status'] != 'declined'):?>
+				<?php if($ckey == 0 && !in_array($order['is_cancel'], [1,3,4])):?>
 					<p class="alert alert-danger mb-0">
 						<?php 
 							if($list['sender'] == $tradesman['id']){
-								$ocruName = $this->session->userdata('type')==1 ? 'You' : $tradesman['trading_name'];								
-							}
-							if($list['sender'] == $homeowner['id']){
 								$ocruName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'You';
 							}
+
+							if($list['sender'] == $homeowner['id']){
+								$ocruName = $this->session->userdata('type')==1 ? 'You' : $tradesman['trading_name'];
+							}
+
+							//
 						?>
 						<i class="fa fa-info-circle"></i> 
 						<?php echo $ocruName; ?> have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
 					</p>
 						<div class="text-right width-100">
-							<?php if($user['id'] != $list['sender'] && $all_conversation[0]['status'] == 'cancelled' && $order['is_cancel'] == 0 && $order['status'] != 'withdraw_cancelled'):?>
+							<?php if($user['id'] != $list['sender'] && $list['is_cancel'] == 2 && $order['is_cancel'] == 2):?>
 								<a class="btn btn-default" href="#" data-target="#decline_request_modal" onclick="return decliensss()" data-toggle="modal">Decline</a>
 								<button class="btn btn-warning" onclick="accept_decision(<?php echo $order['id']; ?>)">
 									Accept Request
 								</button>
 							<?php else: ?>
-								<?php if($all_conversation[0]['status'] == 'cancelled' && $order['is_cancel'] == 0):?>
+								<?php if($list['is_cancel'] == 2 && $order['is_cancel'] == 2):?>
 									<button class="btn btn-warning" onclick="withdraw_request(<?php echo $order['id']; ?>)">
 										Withdraw Request
 									</button>

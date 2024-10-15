@@ -1269,6 +1269,11 @@
 	$('#contactBtn').on('click', function(){
 		$('#contactServiceName').val('<?php echo $service_details['service_name']?>');
 		$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
+		$('#post_id-footer').val(<?php echo $service_details['id']?>)
+		$('#rid-footer').val(<?php echo $service_user['id']?>)
+		$('#chat_type').val('service');
+		$('#ch_msg').val('Hello');
+		send_msg();
 		get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
 		showdiv();
 	});

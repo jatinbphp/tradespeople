@@ -356,6 +356,7 @@ class Checkout extends CI_Controller
 			$insert['payment_status'] = 'paid';
 			$insert['transaction_id'] = $transactionid ?? '';
 			$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';
+			$insert['previous_status'] = 'placed';
 			$insert['status'] = 'placed';
 			$insert['date'] = date('Y-m-d', strtotime($cartData['date']));
 			$insert['time'] = $cartData['time'];

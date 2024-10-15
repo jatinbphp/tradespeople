@@ -94,6 +94,7 @@
         <input name="rid" id="rid-footer" type="hidden" value="0">
         <input name="post_id" id="post_id-footer" type="hidden" value="0">
         <input name="type" id="type" type="hidden" value="<?=$this->session->userdata('type'); ?>">         
+        <input name="chat_type" id="chat_type" type="hidden" value="">
         <input type="text" placeholder="Type your message…" name="ch_msg" id="ch_msg" autofocus required="">
         <input type="hidden"  name="check" id="check" autofocus>
         <button type="submit" id="btnbtn" class="btn btn_theme"><i class="fa fa-paper-plane"></i></button>

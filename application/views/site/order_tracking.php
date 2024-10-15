@@ -511,7 +511,7 @@
 																		Your payment has been creadited to your Tradespeople Wallet and can be used or refunded at any time.
 																	</span>
 																</span>
-															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 0):?>	
+															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 2):?>	
 																<span>
 																	<h4 style="color: #000;">Order cancellation requested</h4>
 																	<span class="text-muted">
@@ -959,12 +959,21 @@
 
 									<div class="summary-feature-article">
 										<a href="<?php echo base_url().'service/'.$service['slug']?>">
-											<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+											<?php 
+												$image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); 
+												$mime_type = get_mime_by_extension($image_path);
+				                $is_image = strpos($mime_type, 'image') !== false;
+				                $is_video = strpos($mime_type, 'video') !== false;
+											?>
 											<?php if (file_exists($image_path) && $service['image']): ?>
-												<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+												<?php if ($is_image): ?>
+													<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+												<?php else: ?>
+													<video width="80" controls autoplay><source src="<?php echo base_url('img/services/') . $service['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+												<?php endif; ?>
 											<?php else: ?>	
 												<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
-											<?php endif; ?>										
+											<?php endif; ?>
 											<span>
 												<p>
 													<?php
@@ -978,14 +987,14 @@
 												</p>
 												<span class="badge bg-warning p-2 pl-4 pr-4 mt-4">
 													<?php if($this->session->userdata('type')==1):?>
-														<?php if(empty($requirements)):?>
+														<?php if(empty($requirements) && count($all_conversation) == 0):?>
 															Awaiting Requirement 
-														<?php else: ?>	
+														<?php else: ?>
 															<?php if($order['status'] == 'active'):?>
 																In Progress
 															<?php elseif($order['status'] == 'request_modification'):?>
 																Revision
-															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '0'):?>
+															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '2'):?>
 																Cancellation pending
 															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
 																Cancelled
@@ -998,7 +1007,7 @@
 															In Progress
 														<?php elseif($order['status'] == 'request_modification'):?>
 															Revision
-														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '0'):?>
+														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '2'):?>
 															Cancellation pending
 														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
 															Cancelled
@@ -1990,59 +1999,55 @@
 		}
 
 		function accept_decision(id) {
-			// if (confirm("Are you sure you want to approve this request cancellation?")) {
-			// 	$.ajax({
-			// 		type:'POST',
-			// 		url:site_url+'users/approve_decision/'+id,
-			// 		dataType: 'JSON',
-			// 		success:function(resp){
-			// 			if(resp.status==1) {
-			// 				location.reload();
-			// 			}
-			// 		} 
-			// 	});
-			// } 
+			swal({
+				title: "Accept Request",
+				text: "Are you sure you want to accept cancellation request for this order?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Accept',
+				cancelButtonText: 'Cancel'
+			}, function() {
+				$('#loader').removeClass('hide');
+				formData = $("#order_cancel_decline_form").serialize();
 
-			$('#loader').removeClass('hide');
-			formData = $("#order_cancel_decline_form").serialize();
-
-			$.ajax({
-				url:site_url+'users/approve_decision/'+id,
-				type: 'POST',
-				data: formData,
-				dataType: 'json',		                
-				success: function(result) {
-					$('#loader').addClass('hide');
-					if(result.status == 0){
-						swal({
-							title: "Error",
-							text: result.message,
-							type: "error"
-						}, function() {
-							window.location.reload();
-						});	
-					}else if(result.status == 2){
-						swal({
-							title: "Login Required!",
-							text: "If you want to order the please login first!",
-							type: "warning"
-						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
-						swal({
-							title: "Success",
-							text: result.message,
-							type: "success"
-						}, function() {
-							window.location.reload();
-						});
-					}		                    
-				},
-				error: function(xhr, status, error) {
-	                // Handle error
-				}
-			});		
+				$.ajax({
+					url:site_url+'users/approve_decision/'+id,
+					type: 'POST',
+					data: formData,
+					dataType: 'json',		                
+					success: function(result) {
+						$('#loader').addClass('hide');
+						if(result.status == 0){
+							swal({
+								title: "Error",
+								text: result.message,
+								type: "error"
+							}, function() {
+								window.location.reload();
+							});	
+						}else if(result.status == 2){
+							swal({
+								title: "Login Required!",
+								text: "If you want to order the please login first!",
+								type: "warning"
+							}, function() {
+								window.location.href = '<?php echo base_url().'login'; ?>';
+							});	
+						}else{
+							swal({
+								title: "Success",
+								text: result.message,
+								type: "success"
+							}, function() {
+								window.location.reload();
+							});
+						}		                    
+					},
+					error: function(xhr, status, error) {
+		                // Handle error
+					}
+				});
+			});	
 		}
 		
 		function withdraw_request(id) {

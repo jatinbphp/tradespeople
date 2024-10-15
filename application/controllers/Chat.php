@@ -269,8 +269,18 @@ class Chat extends CI_Controller
 	}
 	public function get_chats() {
 		$json['data']='';
-		$serviceName = !empty($_REQUEST['serviceName']) ? '<span style="display:block">Service: '.$_REQUEST['serviceName'].'</span>' : '';
-		$order_id = !empty($_REQUEST['lastOrder']) ? '<span style="display:block">Order: '.$_REQUEST['lastOrder'].'</span>' : '';
+
+		$totalChr = strlen($list['description']);
+		if($totalChr > 22 ){
+			$sname = substr($_REQUEST['serviceName'], 0, 21).'...';		
+		}else{
+			$sname = $_REQUEST['serviceName'];
+		}
+
+		$serviceName = !empty($_REQUEST['serviceName']) ? '<span style="display:block; font-size:12px;">'.$sname.'</span>' : '';
+		// $order_id = !empty($_REQUEST['lastOrder']) ? '<span style="display:block">Order: '.$_REQUEST['lastOrder'].'</span>' : '';
+
+		$order_id = '';
 
 		if($this->session->userdata('type')==1) {
 		
@@ -302,7 +312,7 @@ class Chat extends CI_Controller
 
 					$json['userdetail'] = 	'';
 
-					$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'/span></h4>';
+					$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
 					$json['data']='';
 				
 					if($get_chats) {
@@ -350,7 +360,7 @@ class Chat extends CI_Controller
 
 					$json['userdetail'] =   '';
 				
-					$json['userdetail'] .=  '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'</span></h4>';
+					$json['userdetail'] .=  '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
 					$json['status']=0;
 					$json['data'] .= '<div class="alert alert-warning">To start chat please buy a plan.</div><div class="row"><div class="col-sm-4"></div><div class="col-sm-4"><a href="javascript:void(0);" data-target="#chat_payment_model" data-toggle="modal" class="btn btn-primary">Buy Now</a></div><div class="col-sm-4"></div></div>';
 				}
@@ -369,7 +379,7 @@ class Chat extends CI_Controller
 
 				$json['userdetail'] = 	'';
 
-				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'</span></h4>';
+				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
 				$json['data']='';
 			
 				if($get_chats) {
@@ -420,7 +430,7 @@ class Chat extends CI_Controller
 
 			$json['userdetail'] = 	'';
 
-			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span>'.$serviceName.'<a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$order_id.'</span></h4>';
+			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
 			$json['data']='';
 	
 			if($get_chats){
@@ -469,6 +479,7 @@ class Chat extends CI_Controller
 		
 		$userid=$this->session->userdata('user_id');
 		$user_type=$this->session->userdata('type');
+		$chat_type=$this->input->post('chat_type');
 		$receiver=$this->input->post('rid');
 
 		$words=$this->words;
@@ -588,21 +599,21 @@ class Chat extends CI_Controller
 				try{
 					$sent = $this->common_model->send_mail($has_email_noti['email'],$subject,$html,null,$user_namess.' via Tradespeoplehub');
 
-					$file = 'logFile.txt';
-					$handle = fopen($file, 'a');
-					$data = date('Y-m-d h:i:s').'-----'.$has_email_noti['email']."\n";
-					if (fwrite($handle, $data) === false) {
-					    die('Could not write to file');
-					}
-					fclose($handle);
+					// $file = 'logFile.txt';
+					// $handle = fopen($file, 'a');
+					// $data = date('Y-m-d h:i:s').'-----'.$has_email_noti['email']."\n";
+					// if (fwrite($handle, $data) === false) {
+					//     die('Could not write to file');
+					// }
+					// fclose($handle);
 				}catch(Exception $e){
-					$file = 'errorLogFile.txt';
-					$handle = fopen($file, 'a');
-					$data = date('Y-m-d h:i:s').'-----'."Error In send chat msg===>".$e->getMessage();
-					if (fwrite($handle, $data) === false) {
-					    die('Could not write to file');
-					}
-					fclose($handle);
+					// $file = 'errorLogFile.txt';
+					// $handle = fopen($file, 'a');
+					// $data = date('Y-m-d h:i:s').'-----'."Error In send chat msg===>".$e->getMessage();
+					// if (fwrite($handle, $data) === false) {
+					//     die('Could not write to file');
+					// }
+					// fclose($handle);
 				}
 			}
 		}
@@ -612,6 +623,7 @@ class Chat extends CI_Controller
 		$insert['receiver_id']=$receiver;
 		$insert['mgs']=$msg;
 		$insert['is_read']=0;
+		$insert['type']= !empty($chat_type) ? $chat_type : 'post';
 		$insert['create_time']=date('Y-m-d H:i:s');
 		$run = $this->common_model->insert('chat',$insert);
 		

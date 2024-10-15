@@ -190,7 +190,7 @@ class Users extends CI_Controller
 		echo json_encode($json);
 	}
 
-  	public function get_home_email_by_job_id() {
+  public function get_home_email_by_job_id() {
 		$id = $this->input->post('id');
 		$data = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$id),array('title','job_id','userid','(select f_name from users where users.id = tbl_jobs.userid) as f_name','(select l_name from users where users.id = tbl_jobs.userid) as l_name','(select email from users where users.id = tbl_jobs.userid) as email'));
 		
@@ -206,7 +206,7 @@ class Users extends CI_Controller
 		echo json_encode($json);
 	}
  
-  	public function review_invitation() {
+  public function review_invitation() {
 		
 		if($this->session->userdata('user_id')){
 			$invite_by = $_GET['invite_by'];
@@ -272,8 +272,7 @@ class Users extends CI_Controller
 					exit();
 				}
 				
-			}
-			
+			}		
 			
 			$reciever = $this->common_model->GetColumnName('users',array('email'=>$review_email),array('f_name','id'));
 				
@@ -319,7 +318,7 @@ class Users extends CI_Controller
 		
 	}
 
-  	public function dashboard(){
+  public function dashboard(){
     	if(isset($_GET['reject_reason'])){
       		$this->session->set_flashdata('reject_reason', $_GET['reject_reason']);
       		redirect('dashboard');
@@ -396,50 +395,48 @@ class Users extends CI_Controller
 	
 	public function affiliate_dashboard(){
     
-	    if(!$this->session->userdata('user_id')){
-	      redirect('login');
-	    } else {
+    if(!$this->session->userdata('user_id')){
+      redirect('login');
+    } else {
+		
+		if($this->session->userdata('type')!=3){
+			redirect('dashboard');
+			exit();
+		}
+		
+      	$user_id = $this->session->userdata('user_id');
+      	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
+      	$data['user_profile']=$user_profile;
+  
+		
+      	$data['marketers_account_info']=$this->common_model->marketers_account_info($user_id);
 			
-			if($this->session->userdata('type')!=3){
-				redirect('dashboard');
-				exit();
-			}
+	    $data['min_cashout']=$this->common_model->get_min_cashout($user_id);
+	    $data['balance_amount']=$this->common_model->get_balance_amount($user_id);
+	    $data['marketers_referrals_list']=$this->common_model->marketers_referrals_list();
+   
+      
+      	$data['county']=$this->common_model->get_countries();
 			
-	      	$user_id = $this->session->userdata('user_id');
-	      	$user_profile=$this->common_model->get_single_data('users',array('id'=>$user_id));
-	      	$data['user_profile']=$user_profile;
-    
-			
-	      	$data['marketers_account_info']=$this->common_model->marketers_account_info($user_id);
-				
-		    $data['min_cashout']=$this->common_model->get_min_cashout($user_id);
-		    $data['balance_amount']=$this->common_model->get_balance_amount($user_id);
-		    $data['marketers_referrals_list']=$this->common_model->marketers_referrals_list();
-	   
-	      
-	      	$data['county']=$this->common_model->get_countries();
- 			
-       		$data['settings'] = $this->common_model->get_single_data("admin_settings", array("id"=>1)); 
+     		$data['settings'] = $this->common_model->get_single_data("admin_settings", array("id"=>1)); 
 
-			$data['payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id], 'id', 'desc');
-			$data['affilateMeata'] = $this->common_model->get_single_data('other_content',array('id'=>5));
-			$data['contact_list']=$this->db->query("SELECT * from contact_request where user_id=$user_id OR user_id=0 AND reply_id=$user_id OR reply_id=0 order by id desc")->result_array();
-			// echo $this->db->last_query();
-      		//  echo "<pre>"; print_r($data['contact_list']); exit;
+		$data['payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id], 'id', 'desc');
+		$data['affilateMeata'] = $this->common_model->get_single_data('other_content',array('id'=>5));
+		$data['contact_list']=$this->db->query("SELECT * from contact_request where user_id=$user_id OR user_id=0 AND reply_id=$user_id OR reply_id=0 order by id desc")->result_array();
+		// echo $this->db->last_query();
+    		//  echo "<pre>"; print_r($data['contact_list']); exit;
 
-			$data['paymentSettings']=$this->common_model->get_all_data('admin');	
-      		$this->load->view('site/affiliate-dashboard',$data);
-    	}
+		$data['paymentSettings']=$this->common_model->get_all_data('admin');	
+    		$this->load->view('site/affiliate-dashboard',$data);
   	}
+	}
 
-	public function support_msg_unread()
-	{
+	public function support_msg_unread(){
 	  	$unreadMessages = $this->common_model->check_admin_unread('admin_chat_details', array('is_read' => 0, 'receiver_id' => $this->session->userdata('user_id')), 'is_read');
 	  	echo json_encode(['status'=>1, 'unreadMessages'=>$unreadMessages]);
 	}
 
-  	public function mark_read()
-	{
+  public function mark_read(){
 		$result=$this->db->where('id', $this->input->post('row_id'))->update('contact_request', ['status'=>1]); 
 		echo json_encode(1);
 	}
@@ -642,8 +639,8 @@ class Users extends CI_Controller
     $pagedata['referalRating']=$this->common_model->get_referral_code_rating($id);
 
     $serviceRating = min($pagedata['serviceAvgRating'][0]['average_rating'], 5);
-	$referralRating = min($pagedata['referalRating'], 5);
-	$pagedata['overallRating'] = ($serviceRating + $referralRating) / 2;
+		$referralRating = min($pagedata['referalRating'], 5);
+		$pagedata['overallRating'] = ($serviceRating + $referralRating) / 2;
 
     $sIds = [];
     foreach($pagedata['my_services'] as $ser){
@@ -658,34 +655,34 @@ class Users extends CI_Controller
     $pagedata['category']=$this->common_model->GetAllData('category');
     $pagedata['check']=$check;
 		
-	$this->load->library('Ajax_pagination');
-	$this->load->model('search_model');
-	$perPage = 5;
-	
-	$conditions['search']['userid'] = $id;
-	
-	$totalRec = count($this->search_model->get_rating($conditions));
-	
-	$pagedata['totalRec'] = $totalRec;
-	
-	$base_url = site_url().'users/find_rating_ajax';
-	
-	$config['target']      = '#search_data';
-	$config['base_url']    = $base_url;
-	$config['total_rows']  = $totalRec;
-	$config['per_page']    = $perPage;
-	$config['link_func']   = 'searchFilter';
-	$this->ajax_pagination->initialize($config);
-	
-	$conditions['start'] = 0;
-	$conditions['limit'] = $perPage;
-	
-	$pagedata['get_reviews'] = $this->search_model->get_rating($conditions);
-	if($pagedata['user_profile']['type']==1){
-		$this->load->view('site/profile2',$pagedata);
-	} else {
-		$this->load->view('site/profile',$pagedata);
-	}
+		$this->load->library('Ajax_pagination');
+		$this->load->model('search_model');
+		$perPage = 5;
+		
+		$conditions['search']['userid'] = $id;
+		
+		$totalRec = count($this->search_model->get_rating($conditions));
+		
+		$pagedata['totalRec'] = $totalRec;
+		
+		$base_url = site_url().'users/find_rating_ajax';
+		
+		$config['target']      = '#search_data';
+		$config['base_url']    = $base_url;
+		$config['total_rows']  = $totalRec;
+		$config['per_page']    = $perPage;
+		$config['link_func']   = 'searchFilter';
+		$this->ajax_pagination->initialize($config);
+		
+		$conditions['start'] = 0;
+		$conditions['limit'] = $perPage;
+		
+		$pagedata['get_reviews'] = $this->search_model->get_rating($conditions);
+		if($pagedata['user_profile']['type']==1){
+			$this->load->view('site/profile2',$pagedata);
+		} else {
+			$this->load->view('site/profile',$pagedata);
+		}
   }
 	
 	public function show_tradesment_profile($id=null) {
@@ -1000,7 +997,8 @@ class Users extends CI_Controller
      }	
      //print_r($page);
      $this->load->view('site/success_payment',$page);
-    }
+  }
+
 	public function get_progress_data() {
 		$user_profile=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 	
@@ -3707,6 +3705,7 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		if(!empty($serviceOrder)){
 			$input['status'] = 'delivered';
+			$input['previous_status'] = 'delivered';
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
@@ -4255,19 +4254,20 @@ class Users extends CI_Controller
 			}
 
 			$update_array = [
-                'status' => 'active'
-            ];
-            $where_array = ['id' => $oId];
-            $result = $this->common_model->update('service_order',array('id'=>$oId),$update_array);
+          'status' => 'active',
+          'previous_status' => 'active'
+      ];
+      $where_array = ['id' => $oId];
+      $result = $this->common_model->update('service_order',array('id'=>$oId),$update_array);
 
-            /*Manage Order History*/
-            $insert1 = [
-	            'user_id' => $uId,
-	            'service_id' => $order['service_id'],
-	            'order_id' => $oId,
-	            'status' => 'active',
-	        ];
-	        $this->common_model->insert('service_order_status_history', $insert1);
+      /*Manage Order History*/
+      $insert1 = [
+        'user_id' => $uId,
+        'service_id' => $order['service_id'],
+        'order_id' => $oId,
+        'status' => 'active',
+    	];
+	    $this->common_model->insert('service_order_status_history', $insert1);
 
 			$data['status'] = 1;
 			$data['message'] = 'Order requirement submitted succesfully';
@@ -4328,6 +4328,10 @@ class Users extends CI_Controller
 			redirect(base_url());
 			return;
 		}
+
+		if(!$this->session->userdata('user_id')){
+      		redirect('login');
+    	}
 
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['id'=>$id]);
@@ -4404,9 +4408,10 @@ class Users extends CI_Controller
 
 			$newTime = '';
 
-			if($order['status'] == 'cancelled' && $order['is_cancel'] == 0){
+			if($order['status'] == 'cancelled' && $order['is_cancel'] == 2){
 				$newTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
 			}
+
 			$data['orderCancelDateLimit'] = $newTime;
 
 			$this->load->view('site/order_tracking',$data);
@@ -4602,6 +4607,7 @@ class Users extends CI_Controller
 			}
 
 			$input['status'] = $status;
+			$input['previous_status'] = $status;
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
@@ -4696,8 +4702,7 @@ class Users extends CI_Controller
     }
 	}
 
-	function add_dispute_files()
-	{
+	public function add_dispute_files(){
 		$files = [];
 		if ($this->session->userdata('user_id')) {
 			if (isset($_FILES['files']['name']) && !empty($_FILES['files']['name'])) {
@@ -4954,6 +4959,7 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 
 		$input['status'] = 'cancelled';
+		$input['is_cancel'] = 2;
 		$input['reason'] = $reason;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 
@@ -4995,9 +5001,13 @@ class Users extends CI_Controller
       ];
       $this->common_model->insert('service_order_status_history', $insert1);
 
+      // $updateData['is_cancel'] = 3;
+      // $this->common_model->update('order_submit_conversation',array('order_id'=>$oId),$updateData);
+
       $insert['sender'] = $senderId;
 			$insert['receiver'] = $receiverId;
 			$insert['order_id'] = $oId;
+			$insert['is_cancel'] = 2;
 			$insert['status'] = 'cancelled';
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
@@ -5020,7 +5030,7 @@ class Users extends CI_Controller
 
 	public function approve_decision($id){
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
-		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['user_id']]);
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
 
 		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
 		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
@@ -5061,12 +5071,10 @@ class Users extends CI_Controller
 		  	'tr_created'=>date('Y-m-d H:i:s'),
 		  	'tr_update' =>date('Y-m-d H:i:s')
 		);
-		$run1 = $this->common_model->insert('transactions',$data1);	
-
-		
+		$run1 = $this->common_model->insert('transactions',$data1);			
 
 		$od['is_cancel'] = 1;
-		$od['status'] = 'cancelled';
+		$od['status'] = 'cancelled';		
 		$od['reason'] = '';
 		$od['status_update_time'] = date('Y-m-d H:i:s');
 		$run = $this->common_model->update('service_order',array('id'=>$id),$od);
@@ -5080,6 +5088,9 @@ class Users extends CI_Controller
       'status' => 'cancelled'
     ];
     $this->common_model->insert('service_order_status_history', $insert1);
+
+    // $updateData['is_cancel'] = 3;
+    // $this->common_model->update('order_submit_conversation',array('order_id'=>$id),$updateData);
 
     $insert2['sender'] = $senderId;
 		$insert2['receiver'] = $receiverId;
@@ -5122,8 +5133,9 @@ class Users extends CI_Controller
 	public function withdraw_request($oId){
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 
-		$input['status'] = 'active';
+		$input['status'] = $serviceOrder['previous_status'];
 		$input['reason'] = '';
+		$input['is_cancel'] = 4;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
@@ -5158,9 +5170,13 @@ class Users extends CI_Controller
       ];
       $this->common_model->insert('service_order_status_history', $insert1);
 
+      // $updateData['is_cancel'] = 3;
+    	// $this->common_model->update('order_submit_conversation',array('order_id'=>$oId),$updateData);
+
       $insert['sender'] = $senderId;
 			$insert['receiver'] = $receiverId;
 			$insert['order_id'] = $oId;
+			$insert['is_cancel'] = 4;
 			$insert['status'] = 'withdraw_cancelled';
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
@@ -5185,7 +5201,8 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
 
-		$updatem['status'] = 'declined';
+		$updatem['status'] = $serviceOrder['previous_status'];
+		$updatem['is_cancel'] = 3;
 		$updatem['cancel_decline_reason'] = $this->input->post('decline_reason');
 		$runs = $this->common_model->update('service_order',array('id'=>$id),$updatem);
 
@@ -5212,9 +5229,13 @@ class Users extends CI_Controller
 
     $this->common_model->insert('service_order_status_history', $insert1);
 
+    // $updateData['is_cancel'] = 3;
+    // $this->common_model->update('order_submit_conversation',array('order_id'=>$id),$updateData);
+
     $insert2['sender'] = $senderId;
 		$insert2['receiver'] = $receiverId;
 		$insert2['order_id'] = $id;
+		$insert2['is_cancel'] = 3;
 		$insert2['status'] = 'declined';
 		$insert2['description'] = $this->input->post('decline_reason');
 		$run = $this->common_model->insert('order_submit_conversation', $insert2);

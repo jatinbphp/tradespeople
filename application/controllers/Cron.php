@@ -18,8 +18,6 @@ class Cron extends CI_Controller
 		//die;
 	}
 	
-
-	
 	public function cron(){
 		//$this->auto_upgrade_plan();
 		
@@ -234,8 +232,7 @@ class Cron extends CI_Controller
 			$user_id = $row['id'];
 			
 		}
-	}
-	
+	}	
 	
 	public function provide_feedback_reminder_homeowner(){
 		
@@ -544,8 +541,7 @@ class Cron extends CI_Controller
 						</td>
 					</tr>';
 		return $html;
-	}
-	
+	}	
 	
 	public function job_post_reminder_if_visited(){
 		$today = date('Y-m-d');
@@ -623,15 +619,12 @@ class Cron extends CI_Controller
 					}
 					}
 				}
-				}
-				
+				}				
 			}
-		}
-		
+		}		
 	}
 	
-	public function send_signup_remider2(){
-		
+	public function send_signup_remider2(){		
 		$current = date('Y-m-d H:i:s');
 	
 		$newTime = date('Y-m-d H:i:s',strtotime($current.' -3 hour'));
@@ -669,13 +662,9 @@ class Cron extends CI_Controller
 					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					
 					$sent = $this->common_model->send_mail($value['email'],$subject,$html);
-					
-					
 				}
 			}
-			
 		}
-		
 	}
 	
 	public function check_disput_reply12(){
@@ -1368,10 +1357,8 @@ class Cron extends CI_Controller
 			<p style="margin:0;padding:10px 0px">Hello '.$name.', this is mail to inform you that your payment method documents are still unverified.</p>
 			<p style="margin:0;padding:10px 0px">For the better experience with Tradespeople Hub	 verify your payment method as soon as possible and enjoy your free trial.</p>';
 			
-			$this->common_model->send_mail($email,$subject,$html);
-						
-		}
-		
+			$this->common_model->send_mail($email,$subject,$html);						
+		}		
 	}
 
   public function send_document_verification_remiders(){
@@ -1514,15 +1501,9 @@ class Cron extends CI_Controller
 						echo 'Job Title: ' . $list['title'] . '<br>';
 						echo 'Login Id: ' . $homeOwner['email'] . '<br><hr>';*/
 					}
-					
-					
-					
 				}
 			}
-		} 
-		
-		
-		
+		}
 	}
 	
 	public function disput_remider(){
@@ -2587,8 +2568,6 @@ class Cron extends CI_Controller
       }
     }
   }
-
-
   	
 
   public function test_function(){
