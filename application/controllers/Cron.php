@@ -2574,4 +2574,103 @@ class Cron extends CI_Controller
     
   }
 
+  public function autoWithdrawOrderCancellation(){
+  	$allServiceOrder = $this->common_model->get_all_data('service_order',['status'=>'cancelled','is_cancel'=>2]);
+  	$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
+  	$today = date('Y-m-d');
+  	
+  	if(!empty($allServiceOrder)){
+  		foreach($allServiceOrder as $list){
+				$newTime = '';
+				if($list['status'] == 'cancelled' && $list['is_cancel'] == 2){
+					$newTime = date('Y-m-d',strtotime($list['status_update_time'].' +'.$setting['waiting_time'].' days'));
+
+					if($today >= $newTime){
+						$readableTime = date('jS F Y', strtotime($list['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
+
+						$service = $this->common_model->GetSingleData('my_services',['id'=>$list['service_id']]);
+
+						$get_users=$this->common_model->get_single_data('users',array('id'=>$list['user_id']));
+						$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+
+						$update2['u_wallet']=$get_users['u_wallet']+$list['price'];	
+						$runss1 = $this->common_model->update('users',array('id'=>$list['user_id']),$update2);
+
+						$insertn['nt_userId'] = $list['user_id'];
+						$insertn['nt_message'] = 'Your order has been cancelled itself <a href="'.site_url().'order-tracking/'.$id.'">View Order!</a>';
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $id;
+						$insertn['posted_by'] = $list['user_id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+
+						$insertn1['nt_userId'] = $get_users1['id'];
+						$insertn1['nt_message'] = 'Your order has been cancelled itself <a href="'.site_url().'order-tracking/'.$id.'">View Order!</a>';
+						$insertn1['nt_satus'] = 0;
+						$insertn1['nt_create'] = date('Y-m-d H:i:s');
+						$insertn1['nt_update'] = date('Y-m-d H:i:s');
+						$insertn1['job_id'] = $id;
+						$insertn1['posted_by'] = $list['user_id'];
+						$run2 = $this->common_model->insert('notification',$insertn1);
+
+						$transactionid = md5(rand(1000,999).time());
+					  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+					  $data1 = array(
+							'tr_userid'=>$list['user_id'], 
+					  	'tr_amount'=>$list['price'],
+						  'tr_type'=>1,
+					  	'tr_transactionId'=>$transactionid,
+					  	'tr_message'=>$tr_message,
+					  	'tr_status'=>1,
+					  	'tr_created'=>date('Y-m-d H:i:s'),
+					  	'tr_update' =>date('Y-m-d H:i:s')
+						);
+						$run1 = $this->common_model->insert('transactions',$data1);	
+
+						$od['is_cancel'] = 1;
+						$od['status'] = 'cancelled';		
+						$od['reason'] = '';
+						$od['status_update_time'] = date('Y-m-d H:i:s');
+						$run = $this->common_model->update('service_order',array('id'=>$list['id']),$od);
+
+						/*Manage Order History*/
+					  $insert1 = [
+				      'user_id' => $list['user_id'],
+				      'is_cancel' => 1,
+				      'service_id' => $list['service_id'],
+				      'order_id' => $list['id'],
+				      'status' => 'cancelled'
+				    ];
+				    $this->common_model->insert('service_order_status_history', $insert1);
+
+				    $insert2['sender'] = 0;
+						$insert2['receiver'] = 0;
+						$insert2['order_id'] = $list['id'];
+						$insert2['status'] = 'cancelled';
+						$insert2['is_cancel'] = 1;
+						$insert2['description'] = 'Your order has been cancelled itself';
+						$run = $this->common_model->insert('order_submit_conversation', $insert2);
+
+						/*---------Mail Code---------*/
+
+						for($i=1; $i<=2;$i++){
+							$uesrName = $i ==1 ? $get_users['f_name'].' '.$get_users['l_name'] : $get_users1['trading_name'];
+							$uesrEmail = $i ==1 ? $get_users['email'] : $get_users1['email'];
+
+							$subject1 = "Your order has been cancelled itself!"; 
+							$content1= 'Hi '.$uesrName.', <br><br>';
+							$content1.='Your order has been cancelled itself due to not responsed before '.$readableTime.'<br><br>';
+							$content1.='Order number: '.$list['order_id'].'<br>';
+							$content1.='Order amount: £'.$list['price'].'<br>';
+							$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
+
+							$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
+							$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
+						}
+					}
+				}
+  		}
+  	}
+  }
 }

@@ -530,6 +530,21 @@ $total_unread = $this->common_model->GetColumnName('chat',array('receiver_id'=>$
                     $rid = ($row['sender_id']==$user_id)?$row['receiver_id']:$row['sender_id'];
                     $get_job_details=$this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$row['post_id']),array('job_id','title','project_id','direct_hired','awarded_to'));
                     $sender = $this->common_model->get_single_data('users',array('id'=>$rid));
+
+                    $serviceName = '';
+                    if($row['type'] == 'service'){
+                      $service = $this->common_model->GetSingleData('my_services',['id'=>$row['post_id']]); 
+                      if(!empty($service)){
+                        $totalChr = strlen($service['service_name']);
+                        if($totalChr > 22 ){
+                          $sname = substr($service['service_name'], 0, 21).'...';   
+                        }else{
+                          $sname = $service['service_name'];
+                        }
+                        $serviceUrl = base_url().'service/'.$service['slug'];
+                        $serviceName = '<span class="time" style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="display:block; font-size:12px;">'.$sname.'</a></span>';  
+                      }             
+                    }
             
                     if($type == 1){
                       $showName = $sender['f_name'].' '.$sender['l_name'];
@@ -556,7 +571,8 @@ $total_unread = $this->common_model->GetColumnName('chat',array('receiver_id'=>$
             
                     if(strlen($jobName) > 30){
                       $jobName = substr($jobName,0,30).'...';
-                    }                     
+                    } 
+                    $itemName = $row['type'] == 'service' ? $serviceName : '<span class="time" style="display:block; font-size:12px;">'.$jobName.'<span>';
                     $unread = $this->common_model->get_unread_by_sid_rid($user_id,$rid,$row['post_id']);
             ?> 
                     <li class="other-message">
@@ -569,7 +585,7 @@ $total_unread = $this->common_model->GetColumnName('chat',array('receiver_id'=>$
                           <?php } ?>
                           <div class="message me-message">
                             <span class="message-data-name"><?php echo $showName; ?> <?php ($unread[0]['total']>0) ? '('.$unread[0]['total'].')' : ''?></span>
-                            <span class="time"><?php echo $jobName; ?></span>
+                            <?php echo $itemName; ?>
                           </div>
                         </div>
                       </a>

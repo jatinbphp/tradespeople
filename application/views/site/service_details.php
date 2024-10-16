@@ -1267,7 +1267,7 @@
 	});
 
 	$('#contactBtn').on('click', function(){
-		$('#contactServiceName').val('<?php echo $service_details['service_name']?>');
+		$('#contactServiceName').val('<?php echo $service_details['slug']?>');
 		$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
 		$('#post_id-footer').val(<?php echo $service_details['id']?>)
 		$('#rid-footer').val(<?php echo $service_user['id']?>)

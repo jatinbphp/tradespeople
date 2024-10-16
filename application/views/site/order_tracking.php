@@ -595,7 +595,7 @@
 									</div>
 									<div class="timeline-div bg-white p-4">
 										<ol class="timeline">
-											<?php if($order['status'] == 'active' && $all_conversation[0]['status'] != 'withdraw_cancelled'):?>
+											<?php if($order['status'] == 'active'):?>
 												<li class="timeline-item">
 													<span class="timeline-item-icon | faded-icon">
 														<i class="fa fa-clock-o faicon"></i>

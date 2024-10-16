@@ -5063,13 +5063,13 @@ class Users extends CI_Controller
 	  $tr_message='£'.$serviceOrder['price'].' has been credited to your wallet for order number'.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
 	  $data1 = array(
 			'tr_userid'=>$serviceOrder['user_id'], 
-		  	'tr_amount'=>$serviceOrder['price'],
-			  'tr_type'=>1,
-		  	'tr_transactionId'=>$transactionid,
-		  	'tr_message'=>$tr_message,
-		  	'tr_status'=>1,
-		  	'tr_created'=>date('Y-m-d H:i:s'),
-		  	'tr_update' =>date('Y-m-d H:i:s')
+	  	'tr_amount'=>$serviceOrder['price'],
+		  'tr_type'=>1,
+	  	'tr_transactionId'=>$transactionid,
+	  	'tr_message'=>$tr_message,
+	  	'tr_status'=>1,
+	  	'tr_created'=>date('Y-m-d H:i:s'),
+	  	'tr_update' =>date('Y-m-d H:i:s')
 		);
 		$run1 = $this->common_model->insert('transactions',$data1);			
 
@@ -5105,7 +5105,7 @@ class Users extends CI_Controller
 		$content1.='Your request to cancel your order payment has been approved by '.$get_users1['trading_name'].'<br><br>';
 		$content1.='Order number: '.$serviceOrder['order_id'].'<br>';
 		$content1.='Order amount: £'.$serviceOrder['price'].'<br>';
-		$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/?post_id='.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
+		$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
 
 		$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
 		$this->common_model->send_mail($get_users['email'],$subject1,$content1);

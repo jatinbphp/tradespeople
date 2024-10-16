@@ -51,7 +51,7 @@
 <div class="checkout-page">
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-12">
+			<div class="col-sm-12 pl-0">
 				<div class="thank-purchase-msg alert alert-success">
 					<span class="icon">
 						<i class="fa fa-check" aria-hidden="true"></i>
