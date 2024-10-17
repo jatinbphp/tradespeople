@@ -12,6 +12,8 @@
 			<span class="timeline-item-icon | faded-icon">
 				<?php if($list['sender'] == 0 && $list['receiver'] == 0 && $list['is_cancel'] == 1):?>
 					<i class="fa fa-times-circle faicon"></i>
+				<?php elseif($list['sender'] == 0 && $list['receiver'] == 0 && $list['status'] == 'completed'):?>
+					<i class="fa fa-check-square-o faicon"></i>
 				<?php else:?>
 					<?php if($list['sender'] == $tradesman['id']): ?>
 						<?php if($list['status'] == 'cancelled' && $order['is_cancel'] == 1):?>
@@ -49,6 +51,13 @@
 							<i><?php echo $conversation_date ?></i>
 						</span>
 					</h5>
+				<?php elseif($list['sender'] == 0 && $list['receiver'] == 0 && $list['status'] == 'completed'):?>
+					<h5>
+						Your order has been completed itself
+						<span class="text-muted" style="font-size: 12px;">
+							<i><?php echo $conversation_date ?></i>
+						</span>
+					</h5>	
 				<?php else: ?>
 					<?php if($list['sender'] == $tradesman['id']): ?>
 						<?php if($this->session->userdata('type')==1):?>
@@ -326,8 +335,6 @@
 							if($list['sender'] == $homeowner['id']){
 								$ocruName = $this->session->userdata('type')==1 ? 'You' : $tradesman['trading_name'];
 							}
-
-							//
 						?>
 						<i class="fa fa-info-circle"></i> 
 						<?php echo $ocruName; ?> have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
@@ -356,6 +363,12 @@
 						<input type="hidden" name="status" value="completed">
 						<!-- <textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea> -->
 					</form>
+
+					<p class="alert alert-info mb-0">
+						<i class="fa fa-info-circle"></i> 
+						Keep in mind that you have untill <?php echo $orderAcceptTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
+					</p>
+
 					<div id="approved-btn-div">
 						<button type="button" id="approved-order-btn" class="btn btn-warning mr-3">
 							Approve

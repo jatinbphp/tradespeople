@@ -3677,7 +3677,7 @@ a:focus
 	left: 13px;
 	object-fit: cover;
 	position: absolute;
-	top: 5px;
+/*	top: 5px;*/
 	width: 40px;
 }
 .my-message .message-data img {
@@ -3710,6 +3710,7 @@ a:focus
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 7px;
 	padding-bottom: 5px;
+    min-height: 50px;
 }
 .chhhat_list li:nth-last-child(1){
 	border-bottom: none;

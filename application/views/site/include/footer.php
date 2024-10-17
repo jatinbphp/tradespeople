@@ -542,7 +542,7 @@ $total_unread = $this->common_model->GetColumnName('chat',array('receiver_id'=>$
                           $sname = $service['service_name'];
                         }
                         $serviceUrl = base_url().'service/'.$service['slug'];
-                        $serviceName = '<span class="time" style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="display:block; font-size:12px;">'.$sname.'</a></span>';  
+                        $serviceName = '<span class="time" style="display:block; font-size:12px;">'.$sname.'</span>';  
                       }             
                     }
             

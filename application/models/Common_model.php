@@ -2998,9 +2998,33 @@ class Common_model extends CI_Model
 	{
 		// $query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id group by post_id order by MAX(id) desc");
 
-		$query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id order by MAX(id) desc");
+		// $query = $this->db->query("SELECT *, MAX(id) FROM `chat` WHERE sender_id = $id or receiver_id = $id GROUP BY sender_id, receiver_id  order by MAX(id) desc");
+		// return $query->result_array();
+
+		$query = $this->db->query("
+		    SELECT *
+		    FROM chat c
+		    WHERE c.id IN (
+		        SELECT MAX(id)
+		        FROM chat
+		        WHERE sender_id = $id OR receiver_id = $id
+		        GROUP BY 
+		            CASE 
+		                WHEN sender_id = $id THEN receiver_id 
+		                ELSE sender_id 
+		            END
+		    )
+		    ORDER BY id DESC
+		");
+
 		return $query->result_array();
 	}
+
+	function get_single_chat($id, $receiver){
+		$query = $this->db->query("SELECT * FROM `chat` WHERE sender_id = $id or receiver_id = $id order by id desc LIMIT 1");
+		return $query->row();
+	}
+
 	function get_unread_by_sid_rid($sender, $receiver, $post_id)
 	{
 		$query = $this->db->query("select COUNT(id) as total from chat where is_read = 0 and receiver_id = $sender and sender_id = $receiver and post_id=$post_id");

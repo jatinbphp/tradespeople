@@ -24,6 +24,7 @@ class Chat extends CI_Controller
 			}
 		}
 	}
+
 	public function user_list_refresher(){
 		
 		$user_id = $this->session->userdata('user_id');
@@ -35,6 +36,10 @@ class Chat extends CI_Controller
 			$type = $this->session->userdata('type');
 			$chat_list = $this->common_model->get_chat_list($user_id);
 			$total_unread = $this->common_model->GetColumnName('chat',array('receiver_id'=>$user_id,'is_read'=>0),array('count(id) as total'));
+
+			// echo '<pre>';
+			// print_r($chat_list);
+			// exit;
 			
 			$json['count'] = $total_unread['total'];
 			
@@ -56,7 +61,7 @@ class Chat extends CI_Controller
 									$sname = $service['service_name'];
 								}
 								$serviceUrl = base_url().'service/'.$service['slug'];
-								$serviceName = '<span class="time" style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="font-size:12px;">'.$sname.'</a></span>';	
+								$serviceName = '<span class="time" style="display:block; font-size:12px;">'.$sname.'</span>';	
 							}
 						}
 					
@@ -125,6 +130,7 @@ class Chat extends CI_Controller
 		}
 		echo json_encode($json);
 	}
+
 	public function get_chats1() {
 		$json['data']='';
 		$serviceName = !empty($_REQUEST['serviceName']) ? '<span>Service: '.$_REQUEST['serviceName'].'</span>' : '';
@@ -270,29 +276,30 @@ class Chat extends CI_Controller
 
 		echo json_encode($json);
 	}
+
 	public function get_chats() {
 		$json['data']='';
 		$serviceUrl = '#';
 
-		if(!empty($_REQUEST['serviceName'])){
-			$service_details = $this->common_model->get_service_details('my_services',$_REQUEST['serviceName']);
-			$totalChr = strlen($service_details['service_name']);
-			if($totalChr > 22 ){
-				$sname = substr($service_details['service_name'], 0, 21).'...';		
-			}else{
-				$sname = $service_details['service_name'];
-			}
-			$serviceUrl = base_url().'service/'.$service_details['slug'];
-		}		
+		// if(!empty($_REQUEST['serviceName'])){
+		// 	$service_details = $this->common_model->get_service_details('my_services',$_REQUEST['serviceName']);
+		// 	$totalChr = strlen($service_details['service_name']);
+		// 	if($totalChr > 22 ){
+		// 		$sname = substr($service_details['service_name'], 0, 21).'...';		
+		// 	}else{
+		// 		$sname = $service_details['service_name'];
+		// 	}
+		// 	$serviceUrl = base_url().'service/'.$service_details['slug'];
+		// }		
 
-		$serviceName = !empty($_REQUEST['serviceName']) ? '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>' : '';
+		// $serviceName = !empty($_REQUEST['serviceName']) ? '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>' : 'test';
 
 		// $order_id = !empty($_REQUEST['lastOrder']) ? '<span style="display:block">Order: '.$_REQUEST['lastOrder'].'</span>' : '';
 
 		$order_id = '';
 
 		if($this->session->userdata('type')==1) {
-		
+			
 			$user_id=$this->session->userdata('user_id');
 			
 			$job_data = $this->common_model->get_single_data('tbl_jobs',array('job_id'=>$_REQUEST['post']));
@@ -309,7 +316,7 @@ class Chat extends CI_Controller
 					$get_users=$this->common_model->get_single_data('users',array('id'=>$_REQUEST['id']));
 					$userid=$this->session->userdata('user_id');
 					$get_chats=$this->common_model->get_all_chats($_REQUEST['id'],$userid,$_REQUEST['post']);
-			
+
 					if($get_users['profile']) {
 						$us_profile=$get_users['profile'];
 					} else {
@@ -320,21 +327,20 @@ class Chat extends CI_Controller
 
 					$json['userdetail'] = 	'';
 
-					if(empty($_REQUEST['serviceName'])){
-						$serviceName = '';
-						if($get_chats[0]['type'] == 'service'){
-							$service = $this->common_model->GetSingleData('my_services',['id'=>$get_chats[0]['post_id']]);	
-							if(!empty($service)){
-								$totalChr = strlen($service['service_name']);
-								if($totalChr > 22 ){
-									$sname = substr($service['service_name'], 0, 21).'...';		
-								}else{
-									$sname = $service['service_name'];
-								}
-								$serviceUrl = base_url().'service/'.$service['slug'];
-								$serviceName = '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>';	
-							}							
-						}	
+					$serviceName = '';
+					$lastChat = end($get_chats);
+					if($lastChat['type'] == 'service'){
+						$service = $this->common_model->GetSingleData('my_services',['id'=>$lastChat['post_id']]);	
+						if(!empty($service)){
+							$totalChr = strlen($service['service_name']);
+							if($totalChr > 22 ){
+								$sname = substr($service['service_name'], 0, 21).'...';		
+							}else{
+								$sname = $service['service_name'];
+							}
+							$serviceUrl = base_url().'service/'.$service['slug'];
+							$serviceName = '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>';	
+						}							
 					}					
 
 					$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
@@ -401,21 +407,20 @@ class Chat extends CI_Controller
 
 				$json['userdetail'] = 	'';
 
-				if(empty($_REQUEST['serviceName'])){
-					$serviceName = '';
-					if($get_chats[0]['type'] == 'service'){
-						$service = $this->common_model->GetSingleData('my_services',['id'=>$get_chats[0]['post_id']]);	
-						if(!empty($service)){
-							$totalChr = strlen($service['service_name']);
-							if($totalChr > 22 ){
-								$sname = substr($service['service_name'], 0, 21).'...';		
-							}else{
-								$sname = $service['service_name'];
-							}
-							$serviceUrl = base_url().'service/'.$service['slug'];
-							$serviceName = '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>';	
-						}							
-					}	
+				$serviceName = '';
+				$lastChat = end($get_chats);
+				if($lastChat['type'] == 'service'){
+					$service = $this->common_model->GetSingleData('my_services',['id'=>$lastChat['post_id']]);	
+					if(!empty($service)){
+						$totalChr = strlen($service['service_name']);
+						if($totalChr > 22 ){
+							$sname = substr($service['service_name'], 0, 21).'...';		
+						}else{
+							$sname = $service['service_name'];
+						}
+						$serviceUrl = base_url().'service/'.$service['slug'];
+						$serviceName = '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>';	
+					}							
 				}
 
 				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
@@ -464,21 +469,20 @@ class Chat extends CI_Controller
 
 			$json['userdetail'] = 	'';
 
-			if(empty($_REQUEST['serviceName'])){
-				$serviceName = '';
-				if($get_chats[0]['type'] == 'service'){
-					$service = $this->common_model->GetSingleData('my_services',['id'=>$get_chats[0]['post_id']]);	
-					if(!empty($service)){
-						$totalChr = strlen($service['service_name']);
-						if($totalChr > 22 ){
-							$sname = substr($service['service_name'], 0, 21).'...';		
-						}else{
-							$sname = $service['service_name'];
-						}
-						$serviceUrl = base_url().'service/'.$service['slug'];
-						$serviceName = '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>';	
+			$serviceName = '';
+			$lastChat = end($get_chats);
+			if($lastChat['type'] == 'service'){
+				$service = $this->common_model->GetSingleData('my_services',['id'=>$lastChat['post_id']]);	
+				if(!empty($service)){
+					$totalChr = strlen($service['service_name']);
+					if($totalChr > 22 ){
+						$sname = substr($service['service_name'], 0, 21).'...';		
+					}else{
+						$sname = $service['service_name'];
 					}
-				}	
+					$serviceUrl = base_url().'service/'.$service['slug'];
+					$serviceName = '<span style="display:block; font-size:12px;"><a href="'.$serviceUrl.'" style="color:#fff; font-size:12px;">'.$sname.'</a></span>';	
+				}
 			}
 
 			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
@@ -532,8 +536,13 @@ class Chat extends CI_Controller
 		$msg=$this->input->post('ch_msg');
 		$msg1=strtolower($this->input->post('ch_msg'));
 
+		$singleChat = $this->common_model->get_single_chat($userid, $receiver);
+
+		$cType = !empty($singleChat) ? $singleChat->type : 'post';
+
 		foreach ($words as $url) {
 			if (strpos($msg1, $url) !== FALSE) { 
+				$insert['type']=$cType;
 				$insert['post_id']=$post_id;
 				$insert['sender_id']=$userid;
 				$insert['receiver_id']=$receiver;
@@ -665,6 +674,7 @@ class Chat extends CI_Controller
 		}
 		
 		$insert['post_id']=$post_id;
+		$insert['type']=$cType;
 		$insert['sender_id']=$userid;
 		$insert['receiver_id']=$receiver;
 		$insert['mgs']=$msg;
@@ -729,8 +739,7 @@ class Chat extends CI_Controller
     return false;
 	}	
 	
-	function get_unread_msg_count()
-	{
+	function get_unread_msg_count(){
 		$userid=$this->session->userdata('user_id');
 		$post_id=$this->input->post('post');
 		$rid=$this->input->post('rid');
@@ -746,11 +755,9 @@ class Chat extends CI_Controller
 		}
 		$json['q2'] = $this->db->last_query();
 		echo json_encode($json);
-
 	}
 
-	public function get_inbox_unread_msg_count()
-	{
+	public function get_inbox_unread_msg_count(){
 		$userid=$this->input->post('bid_by');
 		$post_id=$this->input->post('post');
 		$rid=$this->input->post('rid');
@@ -778,8 +785,7 @@ class Chat extends CI_Controller
 		}
 	}
 
-	public function get_chat_users_list()
-	{
+	public function get_chat_users_list(){
 		$chat_list=$this->common_model->get_chat_list($this->session->userdata('user_id'));
 		if($chat_list) {
 			$json['data'] = '';
@@ -897,9 +903,7 @@ class Chat extends CI_Controller
     echo json_encode($json);
   }
 
-	public function send_msg_inbox()
-	{
-
+	public function send_msg_inbox(){
 		$post_id=$this->input->post('post_id');
 		$userid=$this->session->userdata('user_id');
 		$receiver=$this->input->post('rid');

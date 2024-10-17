@@ -4407,12 +4407,18 @@ class Users extends CI_Controller
 			$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
 
 			$newTime = '';
+			$orderAcceptTime = '';
 
 			if($order['status'] == 'cancelled' && $order['is_cancel'] == 2){
 				$newTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
 			}
 
+			if($order['status'] == 'delivered'){
+				$orderAcceptTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
+			}
+
 			$data['orderCancelDateLimit'] = $newTime;
+			$data['orderAcceptTime'] = $orderAcceptTime;
 
 			$this->load->view('site/order_tracking',$data);
 		}else{
