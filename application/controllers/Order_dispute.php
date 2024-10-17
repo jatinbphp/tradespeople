@@ -62,7 +62,7 @@ class Order_dispute extends CI_Controller
       }
 
       $od['status'] = $job['previous_status'];
-      $input['is_cancel'] = 0;
+      $input['is_cancel'] = 6;
 			$od['reason'] = '';
 			$od['status_update_time'] = date('Y-m-d H:i:s');
 			$run = $this->common_model->update('service_order',array('id'=>$post_id),$od);
@@ -362,6 +362,7 @@ class Order_dispute extends CI_Controller
         }
 
         $od['status'] = $serviceOrder['previous_status'];
+        $od['is_cancel'] = 7;
 				$od['reason'] = '';
 				$od['status_update_time'] = date('Y-m-d H:i:s');
 				$run = $this->common_model->update('service_order',array('id'=>$job_id),$od);

@@ -325,7 +325,7 @@
 					<?php endif; ?>
 				</span>
 				<?php //if($list['status'] == 'cancelled' && !in_array($order['is_cancel'], [1,3,4]) && $order['status'] != 'declined'):?>
-				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4])):?>
+				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4,6,7])):?>
 					<p class="alert alert-danger mb-0">
 						<?php 
 							if($list['sender'] == $tradesman['id']){

@@ -2412,7 +2412,7 @@ class Users extends CI_Controller
 		          	'order_id' => $order['order_id'],
 		          	'service_name' => array('file' => !empty($order['image']) ? $order['image'] : $order['video'], 'service_name'=>$order['service_name'], 'link'=>$link),
 		            'created_at' => $date->format('F j, Y'),
-		            'total_price' => '£'.number_format($order['total_price'],2),
+		            'total_price' => '£'.number_format($order['price'],2),
 		            'status' => $status,
 		            'requirements' => $requirements,
 		            'viewOrder' => $viewOrder

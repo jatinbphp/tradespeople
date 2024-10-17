@@ -683,7 +683,7 @@
 													<a href="<?php echo base_url('order-tracking/'.$list['id']); ?>"><?php echo $list['service_name']; ?></a>
 												</td>
 												<td><?php echo $date->format('F j, Y'); ?></td>
-												<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
+												<td><?php echo '£'.number_format($list['price'],2); ?></td>
 												<td><?php echo ucfirst(str_replace('_', ' ', $list['status'])); ?></td>
 												<td>
 													<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>

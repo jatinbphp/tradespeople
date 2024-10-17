@@ -512,7 +512,7 @@ $closed_date = $get_commision[0]['closed_date'];
 										</td>
 										<td><?php echo $list['service_name']; ?></td>
 										<td><?php echo $date->format('F j, Y'); ?></td>
-										<td><?php echo '£'.number_format($list['total_price'],2); ?></td>
+										<td><?php echo '£'.number_format($list['price'],2); ?></td>
 										<td><?php echo ucfirst(str_replace('_', ' ', $list['status'])); ?></td>
 										<td>
 											<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
