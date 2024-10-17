@@ -325,7 +325,7 @@
 					<?php endif; ?>
 				</span>
 				<?php //if($list['status'] == 'cancelled' && !in_array($order['is_cancel'], [1,3,4]) && $order['status'] != 'declined'):?>
-				<?php if($ckey == 0 && !in_array($order['is_cancel'], [1,3,4])):?>
+				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4])):?>
 					<p class="alert alert-danger mb-0">
 						<?php 
 							if($list['sender'] == $tradesman['id']){
@@ -337,7 +337,7 @@
 							}
 						?>
 						<i class="fa fa-info-circle"></i> 
-						<?php echo $ocruName; ?> have until <?php echo $orderCancelDateLimit; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+						<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
 					</p>
 						<div class="text-right width-100">
 							<?php if($user['id'] != $list['sender'] && $list['is_cancel'] == 2 && $order['is_cancel'] == 2):?>
@@ -355,7 +355,8 @@
 						</div>																
 				<?php endif;?>
 
-				<?php if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined','withdraw_cancelled'])):?>
+				<?php //if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined','withdraw_cancelled'])):?>
+				<?php if($this->session->userdata('type')==2 && $ckey == 0 && $order['status'] == 'delivered'):?>
 					<form id="approved_order_form" style="width:100%">
 						<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
 						<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
@@ -366,7 +367,7 @@
 
 					<p class="alert alert-info mb-0">
 						<i class="fa fa-info-circle"></i> 
-						Keep in mind that you have untill <?php echo $orderAcceptTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
+						Keep in mind that you have untill <?php echo $newTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
 					</p>
 
 					<div id="approved-btn-div">

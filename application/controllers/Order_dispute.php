@@ -3,8 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Order_dispute extends CI_Controller
 {
 	public $common_model;
-	public function __construct()
-	{
+	public function __construct(){
 		Parent::__construct();
 		date_default_timezone_set('Europe/London');
 		$this->load->model('common_model');
@@ -30,8 +29,9 @@ class Order_dispute extends CI_Controller
 		if ($id && $post_id && $data) {
 
 			$user_id = $this->session->userdata('user_id');
+			$run = $this->common_model->delete(array('ds_id'=>$id),'tbl_dispute');
 
-			$run = $this->common_model->update_data('tbl_dispute',array('ds_id' => $id, 'dispute_type' => 2), ['ds_status'=>1,'caseCloseStatus'=>2]);
+			//$run = $this->common_model->update_data('tbl_dispute',array('ds_id' => $id, 'dispute_type' => 2), ['ds_status'=>1,'caseCloseStatus'=>2]);
 
 			if ($run) {
 				$job = $this->common_model->GetSingleData('service_order',['id'=>$post_id]);
@@ -51,8 +51,6 @@ class Order_dispute extends CI_Controller
       $homeOwner = $this->common_model->GetSingleData('users',['id'=>$job['user_id']]);
       $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
-      $lastSecondStatus = $this->common_model->getBeforeDisputedStatus($post_id);
-
 			/*Manage Order History*/
       if($user_id == $homeOwner['id']){
       	$senderId = $user_id;
@@ -63,7 +61,8 @@ class Order_dispute extends CI_Controller
       	$receiverId = $homeOwner['id'];
       }
 
-      $od['status'] = 'disputed_cancelled';
+      $od['status'] = $job['previous_status'];
+      $input['is_cancel'] = 0;
 			$od['reason'] = '';
 			$od['status_update_time'] = date('Y-m-d H:i:s');
 			$run = $this->common_model->update('service_order',array('id'=>$post_id),$od);
@@ -205,8 +204,7 @@ class Order_dispute extends CI_Controller
 		redirect('order-tracking/' . $post_id);
 	}
 
-	public function accept_and_close($id = null, $post_id = null)
-	{
+	public function accept_and_close($id = null, $post_id = null){
 		//echo '<pre>';
 		$user_id = $this->session->userdata('user_id');
 		$user_type = $this->session->userdata('type');
@@ -290,7 +288,7 @@ class Order_dispute extends CI_Controller
 
 				//$get_post_job = $this->common_model->get_single_data('tbl_jobpost_bids', array('id' => $milestones[0]['bid_id']));
 
-				$pamnt = $serviceOrder['total_price'];
+				$pamnt = $serviceOrder['price'];
 				$final_amount = $pamnt + $amount;
 
 				/*$sql3 = "update tbl_jobpost_bids set paid_total_miles = '" . $final_amount . "' where id = '" . $milestones[0]['bid_id'] . "'";
@@ -353,8 +351,6 @@ class Order_dispute extends CI_Controller
         $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
         $tradesMan = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
-        $lastSecondStatus = $this->common_model->getBeforeDisputedStatus($job_id);
-
 				/*Manage Order History*/
         if($user_id == $homeOwner['id']){
         	$senderId = $user_id;
@@ -365,10 +361,10 @@ class Order_dispute extends CI_Controller
         	$receiverId = $homeOwner['id'];
         }
 
-        $od['status'] = 'disputed_accepted';
-		$od['reason'] = '';
-		$od['status_update_time'] = date('Y-m-d H:i:s');
-		$run = $this->common_model->update('service_order',array('id'=>$job_id),$od);
+        $od['status'] = $serviceOrder['previous_status'];
+				$od['reason'] = '';
+				$od['status_update_time'] = date('Y-m-d H:i:s');
+				$run = $this->common_model->update('service_order',array('id'=>$job_id),$od);
 
 				/*Manage Order History*/
         $insert1 = [
@@ -386,7 +382,7 @@ class Order_dispute extends CI_Controller
 				$insert2['description'] = 'Congratulation this project has been completed successfully.<a href="'.site_url().'profile/'.$home['id'].'">'.$home['f_name'].' '.$home['l_name'].'</a> has released all the order amount of <a href="'.site_url().'order-tracking/'.$serviceOrder['id'].'">'.$post_title.'</a> project and this project has been completed.';
 				$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-				if ($final_amount >= $serviceOrder['total_price']) {
+				if ($final_amount >= $serviceOrder['price']) {
 					$post_title = $serviceOrder['order_id'];
 					$insertn['nt_userId'] = $serviceOrder['user_id'];
 
@@ -588,8 +584,7 @@ class Order_dispute extends CI_Controller
 		}
 	}
 
-	function dispute_job()
-	{
+	function dispute_job(){
 		if(!isset($_REQUEST['post_id']) && empty($_REQUEST['post_id'])){
 			//return redirect('order-tracking/' . $get_users['post_id']);
 			return redirect('/');			
@@ -787,8 +782,7 @@ class Order_dispute extends CI_Controller
 		redirect('order-tracking/' . $post_id);
 	}
 
-	function submit_offer()
-	{
+	function submit_offer(){
 		$dispute_id = $_REQUEST['dispute_id'];
 		$user_id = $_REQUEST['user_id'];
 		$job_id = $_REQUEST['job_id'];
@@ -909,8 +903,7 @@ class Order_dispute extends CI_Controller
 		return redirect('order-dispute/'.$job_id);
 	}
 
-	function reject_offer()
-	{
+	function reject_offer(){
 		$dispute_id = $_REQUEST['dispute_id'];
 		$user_id = $_REQUEST['user_id'];
 		$job_id = $_REQUEST['job_id'];
@@ -1160,8 +1153,6 @@ class Order_dispute extends CI_Controller
 			if($user_type == 1){
 				$insertn = [];
 				$insertn['nt_userId'] = $dispute['ds_puser_id'];
-				
-				
 
 				if($checkOtherPay){
 					$insertn['nt_message'] = 'We have received '.$user['trading_name'].' arbitration fee payment. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
@@ -1176,7 +1167,6 @@ class Order_dispute extends CI_Controller
 				$insertn['job_id'] = $dispute['ds_job_id'];
 				$insertn['posted_by'] = $dispute['ds_puser_id'];
 				$this->common_model->insert('notification', $insertn);
-
 
 				$insertn1 = [];
 				$insertn1['nt_userId'] = $dispute['ds_buser_id'];
@@ -1195,19 +1185,15 @@ class Order_dispute extends CI_Controller
 				$insertn1['posted_by'] = $dispute['ds_puser_id'];
 				$this->common_model->insert('notification', $insertn1);
 
-
 				$job_data = $this->common_model->GetColumnName('tbl_jobs', ['job_id' => $dispute['ds_job_id']],['title']);
-
 				
-				if($checkOtherPay){
-					
+				if($checkOtherPay){					
 					$subject = "Arbitration payment for dispute team to step in completed";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received your arbitration fee payment. Our dispute team will now step in and decides on the case.</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($user['email'], $subject, $contant); //send to trademen
-
 
 					$subject = "Arbitration fees payment for dispute team to step in completed";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
@@ -1226,7 +1212,6 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($user['email'], $subject, $contant); //send to trademen
 
-
 					$subject = "Reminder:Arbitration payment for dispute team to step-in not received";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received '.$user['trading_name'].' arbitration fee payment and awaits yours. Once you have made a payment, our arbitration team will step in and decides on the case.</p>';
@@ -1235,9 +1220,7 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($other_user['email'], $subject, $contant);  // send to homeowner
 				}
-
 			} else {
-
 				//send to trademen
 
 				$insertn = [];
@@ -1259,12 +1242,8 @@ class Order_dispute extends CI_Controller
 				$insertn['posted_by'] = $dispute['ds_puser_id'];
 				$this->common_model->insert('notification', $insertn);
 
-
-
 				$insertn1 = [];
 				$insertn1['nt_userId'] = $dispute['ds_puser_id'];
-				
-				
 
 				if($checkOtherPay){
 					$insertn1['nt_message'] = 'You and '.$other_name.' have paid the arbitration fee and our team will now step in. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">View Now</a>';
@@ -1280,9 +1259,7 @@ class Order_dispute extends CI_Controller
 				$insertn1['posted_by'] = $dispute['ds_puser_id'];
 				$this->common_model->insert('notification', $insertn1);
 
-
 				if($checkOtherPay){
-
 					$subject = "Arbitration payment for dispute team to step in completed";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received your arbitration fee payment. Our dispute team will now step in and decides on the case.</p>';
@@ -1296,8 +1273,6 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($other_user['email'], $subject, $contant);  //send to trademen
-
-
 				} else {
 					$subject = "Reminder:Arbitration fee payment for dispute team to step-in not received!";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
@@ -1307,7 +1282,6 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($other_user['email'], $subject, $contant); //send to trademen
 
-
 					$subject = "Arbitration payment for dispute team to step in received";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
 					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received your arbitration payment and awaits for ' . $other_user['f_name'] . ' payment. Once they´ve made a payment, our arbitration team will step in and decides on the case.</p>';
@@ -1315,16 +1289,11 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($user['email'], $subject, $contant); // send to home
 				}
-
-				
-
 			}
 			
 			echo json_encode([
 				'status' => 1,
 			]);
-			
-
 		} else {
 			echo json_encode([
 				'status' => 0,
@@ -1334,8 +1303,7 @@ class Order_dispute extends CI_Controller
 		}
 	}
 
-	function dispute($dispute_id)
-	{
+	function dispute($dispute_id){
 		if ($this->session->userdata('user_id')) {
 			$dispute = $this->common_model->get_single_data('tbl_dispute', array('dispute_type'=>2,'ds_job_id' => $dispute_id));
 			if (!$dispute) {
@@ -1378,8 +1346,7 @@ class Order_dispute extends CI_Controller
 		}
 	}
 
-	function add_dispute_files()
-	{
+	function add_dispute_files(){
 		$files = [];
 		//print_r($_FILES);
 		if ($this->session->userdata('user_id')) {
@@ -1431,8 +1398,7 @@ class Order_dispute extends CI_Controller
 		}
 	}
 
-	function send_massege()
-	{
+	function send_massege(){
 		$userid = $this->session->userdata('user_id');
 		$login_user = $this->common_model->get_userDataByid($userid);
 		$from = $login_user['f_name'] . ' ' . $login_user['l_name'];

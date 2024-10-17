@@ -248,6 +248,7 @@ $route['order_submitAsktoAdmin']                       = 'Order_dispute/submitAs
 $route['order_dispute_accept_and_close/(:any)/(:any)'] = 'Order_dispute/accept_and_close/$1/$2';
 $route['order_cancel_dispute/(:any)/(:any)']           = 'Order_dispute/cancel_dispute/$1/$2';
 $route['order_sen_comment']                            = 'Order_dispute/send_massege';
+$route['ordersubmitAsktoAdmin']                       = 'Order_dispute/submitAsktoAdmin';
 
 $route['my-faviourits']              			 = 'Users/my_faviourits';
 $route['add-service']              	 	         = 'Users/addServices';

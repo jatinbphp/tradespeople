@@ -4406,20 +4406,10 @@ class Users extends CI_Controller
 
 			$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
 
-			$newTime = '';
-			$orderAcceptTime = '';
-
-			if($order['status'] == 'cancelled' && $order['is_cancel'] == 2){
-				$newTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
-			}
-
-			if($order['status'] == 'delivered'){
-				$orderAcceptTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
-			}
-
-			$data['orderCancelDateLimit'] = $newTime;
-			$data['orderAcceptTime'] = $orderAcceptTime;
-
+			$newTime = '';			
+			$newTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
+			$data['newTime'] = $newTime;
+			
 			$this->load->view('site/order_tracking',$data);
 		}else{
 			redirect(base_url());
@@ -4765,62 +4755,71 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 
 		$input['status'] = 'disputed';
+		$input['is_cancel'] = 5;
 		$input['reason'] = $reason;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 		if($run){
 			$userid = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-            $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
-            $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
 
 			/*Manage Order History*/
-            if($userid == $homeOwner['id']){
-            	$senderId = $userid;
-            	$receiverId = $tradesman['id'];
-            }
-            if($userid == $tradesman['id']){
-            	$senderId = $userid;
-            	$receiverId = $homeOwner['id'];
-            }
+      if($userid == $homeOwner['id']){
+      	$senderId = $userid;
+      	$receiverId = $tradesman['id'];
+      }
+      if($userid == $tradesman['id']){
+      	$senderId = $userid;
+      	$receiverId = $homeOwner['id'];
+      }
 
 			/*Manage Order History*/
-            $insert1 = [
-	            'user_id' => $senderId,
-	            'service_id' => $serviceOrder['service_id'],
-	            'order_id' => $oId,
-	            'status' => 'disputed'
-	        ];
-	        $this->common_model->insert('service_order_status_history', $insert1);
+    	$insert1 = [
+        'user_id' => $senderId,
+        'service_id' => $serviceOrder['service_id'],
+        'order_id' => $oId,
+        'status' => 'disputed'
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
 
-	        $insert2['sender'] = $senderId;
-					$insert2['receiver'] = $receiverId;
-					$insert2['order_id'] = $oId;
-					$insert2['status'] = 'disputed';
-					$insert2['description'] = $reason;
-					$run = $this->common_model->insert('order_submit_conversation', $insert2);
+      $insert2['sender'] = $senderId;
+			$insert2['receiver'] = $receiverId;
+			$insert2['order_id'] = $oId;
+			$insert2['status'] = 'disputed';
+			$insert2['description'] = $reason;
+			$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-	        /*Entry in Dispute Table*/
+      /*Entry in Dispute Table*/
 
-	        $dispute_to = ($userid == $serviceOrder['user_id']) ? $tradesman['id'] : $userid;
+      if($userid == $homeOwner['id']){
+      	$dispute_to	= $tradesman['id'];
+      }
 
-		    $insert['ds_in_id'] = $userid;
-		    $insert['dispute_type'] = 2;
-		    $insert['ds_job_id'] = $serviceOrder['id'];
-				$insert['ds_buser_id'] = $service['user_id'];
-				$insert['ds_puser_id'] = $serviceOrder['user_id'];		
-				$insert['caseid'] = time();
-				$insert['ds_status'] = 0;
-				$insert['total_amount'] = $serviceOrder['price'];
-				$insert['disputed_by'] = $userid;
-				$insert['dispute_to'] = $dispute_to;
-				$insert['ds_comment'] = $reason;
-				$insert['ds_create_date'] = date('Y-m-d H:i:s');
-				if ($this->session->userdata('type') == 1) {
-					$insert['tradesmen_offer'] = $this->input->post('offer_amount');
-				} else {
-					$insert['homeowner_offer'] = $this->input->post('offer_amount');
-				}
+      if($userid == $tradesman['id']){
+      	$dispute_to	= $homeOwner['id'];
+      }
+
+      // $dispute_to = ($userid == $serviceOrder['user_id']) ? $tradesman['id'] : $userid;
+
+	    $insert['ds_in_id'] = $userid;
+	    $insert['dispute_type'] = 2;
+	    $insert['ds_job_id'] = $serviceOrder['id'];
+			$insert['ds_buser_id'] = $service['user_id'];
+			$insert['ds_puser_id'] = $serviceOrder['user_id'];		
+			$insert['caseid'] = time();
+			$insert['ds_status'] = 0;
+			$insert['total_amount'] = $serviceOrder['price'];
+			$insert['disputed_by'] = $userid;
+			$insert['dispute_to'] = $dispute_to;
+			$insert['ds_comment'] = $reason;
+			$insert['ds_create_date'] = date('Y-m-d H:i:s');
+			if ($this->session->userdata('type') == 1) {
+				$insert['tradesmen_offer'] = $this->input->post('offer_amount');
+			} else {
+				$insert['homeowner_offer'] = $this->input->post('offer_amount');
+			}
 
 			if($userid == $service['user_id']) {				
 				$run = $this->common_model->insert('tbl_dispute',$insert);

@@ -1336,7 +1336,7 @@ if ($checkOtherUserReply) {
 
 		$.ajax({
 			type: 'POST',
-			url: site_url + 'submitAsktoAdmin',
+			url: site_url + 'ordersubmitAsktoAdmin',
 			data: {
 				id: <?php echo $dispute['ds_id'] ?>
 			},
