@@ -57,7 +57,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 </style>
 <div class="content-wrapper">
 	<section class="content-header">
-		<h1>Service Orders</h1>
+		<h1><?php echo $menu; ?></h1>
 		<ol class="breadcrumb">
 			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
 			<li class="active">Service Orders List</li>
@@ -65,6 +65,37 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 	</section>
 	<section class="content">
 		<div class="row">
+			
+			<div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-yellow"><i class="fa fa-shopping-cart"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Completed Order Amount</span>
+            <span class="info-box-number"><?php echo $counter['totalCompletedOrderAmount'];?></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-red"><i class="fa fa-shopping-cart"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Completed No Of Orders</span>
+            <span class="info-box-number"><?php echo $counter['totalCompletedOrder'];?></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-green"><i class="fa fa-shopping-cart"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Service Fees</span>
+            <span class="info-box-number"><?php echo $counter['totalServiceFees'];?></span>
+          </div>
+        </div>
+      </div>
+
 			<div class="col-xs-12">
 				<div class="box">
 					<div class="div-action pull pull-right" style="padding-bottom:20px;"> </div>
@@ -79,7 +110,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<th>Price</th>
 										<th>Payment Method</th>
 										<th>Status</th>										
-										<th>Created At</th>										
+										<th>Created At</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -88,10 +119,10 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<td><?php echo $key + 1; ?></td>
 										<td><?php echo $lists['service_name']; ?></td>
 										<td><?php echo $lists['f_name'].' '.$lists['l_name']; ?></td>
-										<td><?php echo '£'.number_format($lists['total_price'],2); ?></td>
+										<td><?php echo '£'.number_format($lists['price'],2); ?></td>
 										<td><?php echo ucfirst($lists['payment_method']); ?></td>												
 										<td><?php echo ucfirst($lists['status']); ?></td>												
-										<td><?php echo $lists['created_at']; ?></td>												
+										<td><?php echo $lists['created_at']; ?></td>
 									</tr>
 								<?php }?>
 								</tbody>

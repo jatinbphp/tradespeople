@@ -3885,4 +3885,29 @@ class Common_model extends CI_Model
 		$query = $this->db->get('task_addresses');
 		return $query->result_array();
 	}
+
+	public function adminOrderCounter(){
+		$query = $this->db->query("
+	    SELECT
+	        COUNT(id) AS total_completed_orders,
+	        SUM(price) AS total_completed_order_amount
+	    FROM
+	        service_order
+	    WHERE
+	        status = 'completed'
+		");
+
+		return $query->row_array();
+	}
+
+	public function allServiceFee(){
+		$query = $this->db->query("
+	    SELECT
+	        SUM(service_fee) AS total_service_fees
+	    FROM
+	        service_order
+		");
+
+		return $query->row_array();
+	}
 }
