@@ -1,5 +1,9 @@
 <?php include ("include/header.php") ?>
 <style>
+	#card-element{
+		border-radius: 6px;
+		border:1px solid #dfdfdf;
+	}
 	.payment_method{
 		margin-right: 10px!important;
 	}
@@ -132,39 +136,26 @@
 												</div>
 											</div>
 										</div>
-
-									</div>
-									
-								</div>
-								
+									</div>									
+								</div>								
 								<div id='addressErrors' class='text-danger'></div>
-
 							</div>
-
 						</div>
-
 						<div class="addressDiv checkout-form mb-4 p-4">
-
-
 							<h2 class="title">Select your payment method</h2>
-
 							<?php if(isset($userCardData) && count($userCardData)): ?>
 							<h4>Your Saved Card</h4>
 							<?php $i=1; ?>
 							<div class="user-card-box">
 								<?php foreach($userCardData as $key => $data): ?>
-
 									<div>
 										<input id="card_<?php echo $key; ?>" class='user-card' type="radio" name="payment_method" value="<?php echo $key; ?>">
 										<label class="article-lable" for="card_<?php echo $key; ?>"><h5><?php echo ($data['brand'] ?? '').' - '. ($data['last4'] ?? ''); ?></h5></label>
 									</div>
-
 									<?php $i++; ?>
 								<?php endforeach; ?>                                   
 							</div>
 						<?php endif; ?>
-
-
 						<div class="form__radio">
 							<input id="stripe" name="payment_method" class="payment_method" type="radio" value="card">
 							<label for="stripe"><svg class="icon">
@@ -175,9 +166,7 @@
 									<path d="M2 10L22 10" stroke="#fe8a0f" stroke-width="1.5" stroke-linecap="round"/>
 								</svg>
 							</svg>New Card</label>
-
 						</div>
-
 						<div class="form__radio">
 							<input id="wallet" name="payment_method" class="payment_method" type="radio" value="wallet">
 							<label for="wallet"><svg class="icon">
@@ -190,56 +179,10 @@
 							</svg>Wallet</label>								
 						</div>
 						<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
-						
-
 						<div id="card-detail" style="display:none; margin-bottom: 15px;">
-							<div class="form-group">
-								<div class="row">
-									<div class="col-sm-12">
-										<div class="form-group">
-											<span id='StripePaymentErrors' class='text-danger'></span>
-										</div>
-									</div>
 
-									<div class="col-sm-12">
-										<label class="control-label">Card number</label>
-										<!-- <input type="text" class="form-control input-lg" minlength="16" maxlength="16" id="card-number-element" name="card" placeholder="0000 0000 0000 0000"> -->
-										<div class='form-control input-lg ' id="card-number-element"></div>
-										<span class='incomplete_number text-danger error-card'></span>
-									</div>
-								</div>
-							</div>
-							<!-- <div class="form-group">
-								<div class="row">
-									<div class="col-sm-12">
-										<label class="control-label">Name on card</label>
-										<input type="text" name="name" class="form-control input-lg" placeholder="Name on card">
-									</div>
-								</div>
-							</div> -->
-							<div class="form-group">
-								<div class="row">
-									<div class="col-sm-4">
-										<label class="control-label">Expiry date</label>
-										<!-- <input class="form-control input-lg" name="expiry" id="expiry" type="text" placeholder="MM/YY"> -->
-										<div class='form-control input-lg' id="card-expiry-element"></div>
-										<span class='incomplete_expiry invalid_expiry_year_past text-danger error-card'></span>
-									</div>
-									<div class="col-sm-4">
-										<label class="control-label">CVV <i class="fa fa-info-circle" aria-hidden="true"></i></label>
-										<!-- <input type="text" class="form-control input-lg" minlength="3" maxlength="4" id="cvc" name="cvc" placeholder="123"> -->
-										<div class='form-control input-lg' id="card-cvc-element"></div>
-										<span class='incomplete_cvc text-danger error-card'></span>
-									</div>
-									<div class="col-sm-4">
-										<div class="form-group">
-											<label class="control-label">Postal Code</label>
-											<div class='form-control input-lg' id="postal-code-element"></div>
-											<span class='incomplete_zip text-danger error-card'></span>
-										</div>
-									</div>
-								</div>
-							</div>
+							<div class="p-4 mb-4" id="card-element"></div>
+
 							<?php if($this->session->userdata('user_id')):?>
 								<div class="form-group">
 									<div class="row">
@@ -631,8 +574,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 					title: "Error",
 					text: "Please select Terms & Conditions!!",
 					type: "error"
-				});	
-
+				});
 				return false
 			}
 
@@ -654,7 +596,6 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 			}
 
 			if(selectedAddress=='yes'){
-
 				var address = $('input[name="address"]').val();
 				var city = $('input[name="city"]').val();
 				var zip_code = $('input[name="zip_code"]').val();
@@ -671,17 +612,6 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 
 				$('#formErrors').text('').parent('div').removeClass('alert alert-danger');
 				$('#formErrors').fadeOut();
-
-	        	/*swal({
-		            title: "Confirm Order",
-		            text: "Are you sure you want to place this order?",
-		            type: "warning",
-		            showCancelButton: true,
-			        confirmButtonText: 'Place Order',
-			        cancelButtonText: 'Cancel'
-		        }, function() {
-		    			
-		        });*/ 
 
 				if (pMethod == 'wallet') {
 					var promo_code = $('#promo_code').val();
@@ -743,6 +673,10 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 		var stripePublishableKey = '<?php echo $this->config->item('stripe_key');?>';
 		var stripe = Stripe(stripePublishableKey);
 		var elements = stripe.elements();
+
+		const card = elements.create('card');
+		card.mount('#card-element');
+
 		var style = {
 			base: {
 				color: "#000000",
@@ -757,7 +691,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 			},
 		};
 
-		var cardNumber = elements.create('cardNumber', {
+		/*var cardNumber = elements.create('cardNumber', {
 			style: style,
 			showIcon: true,
 			iconStyle : 'solid',
@@ -778,10 +712,10 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 		var postalCode = elements.create('postalCode', {
 			style: style
 		});
-		postalCode.mount('#postal-code-element');
+		postalCode.mount('#postal-code-element');*/
 
 	    // Handle real-time validation errors from the card Elements.
-		[cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
+		/*[cardNumber, cardExpiry, cardCvc, postalCode].forEach(function(element) {
 			element.on('change', function(event) {
 				if (event.error) {
 					$('#StripePaymentErrors').text(event.error.message).parent('div').addClass('alert alert-danger');
@@ -791,14 +725,11 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 					$('#StripePaymentErrors').fadeOut();
 				}
 			});
-		});
+		});*/
 
 		async function payWithStripe() {
 			$('#loader').removeClass('hide');
-
-	        // console.log(cardNumber);
-
-			var {token, error} = await stripe.createToken(cardNumber);
+			var {token, error} = await stripe.createToken(card);
 
 			if (error) {
 				$('#loader').addClass('hide');
@@ -815,7 +746,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 
 			stripe.createPaymentMethod({
 				type: 'card',
-				card: cardNumber,
+				card: card,
 			}).then(stripePaymentMethodHandler);
 		}
 
@@ -1031,78 +962,79 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 		/*Strope Code End*/
 	});
 
-function submitRequirement(){
-	swal({
-		title: "Submit Attachment",
-		text: "Are you sure you want to submit requirements for this order?",
-		type: "warning",
-		showCancelButton: true,
-		confirmButtonText: 'Yes, Submit',
-		cancelButtonText: 'Cancel'
-	}, function() {
-		$('#loader').removeClass('hide');
-		formData = $("#order_requirement_form").serialize();
+	function submitRequirement(){
+		swal({
+			title: "Submit Attachment",
+			text: "Are you sure you want to submit requirements for this order?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes, Submit',
+			cancelButtonText: 'Cancel'
+		}, function() {
+			$('#loader').removeClass('hide');
+			formData = $("#order_requirement_form").serialize();
 
-		$.ajax({
-			url: '<?= site_url().'users/submitRequirement'; ?>',
-			type: 'POST',
-			data: formData,
-			dataType: 'json',		                
-			success: function(result) {
-				$('#loader').addClass('hide');
-				if(result.status == 0){
-					swal({
-						title: "Error",
-						text: result.message,
-						type: "error"
-					});	
-				}else if(result.status == 2){
-					swal({
-						title: "Login Required!",
-						text: "If you want to order the please login first!",
-						type: "warning"
-					}, function() {
-						window.location.href = '<?php echo base_url().'login'; ?>';
-					});	
-				}else{
-					swal({
-						title: "Success",
-						text: result.message,
-						type: "success"
-					}, function() {
-						window.location.href = '<?php echo base_url(""); ?>';
-					});
-				}		                    
-			},
-			error: function(xhr, status, error) {
-	                // Handle error
-			}
-		}); 	
+			$.ajax({
+				url: '<?= site_url().'users/submitRequirement'; ?>',
+				type: 'POST',
+				data: formData,
+				dataType: 'json',		                
+				success: function(result) {
+					$('#loader').addClass('hide');
+					if(result.status == 0){
+						swal({
+							title: "Error",
+							text: result.message,
+							type: "error"
+						});	
+					}else if(result.status == 2){
+						swal({
+							title: "Login Required!",
+							text: "If you want to order the please login first!",
+							type: "warning"
+						}, function() {
+							window.location.href = '<?php echo base_url().'login'; ?>';
+						});	
+					}else{
+						swal({
+							title: "Success",
+							text: result.message,
+							type: "success"
+						}, function() {
+							window.location.href = '<?php echo base_url(""); ?>';
+						});
+					}		                    
+				},
+				error: function(xhr, status, error) {
+		                // Handle error
+				}
+			}); 	
+		});
+	}
+
+	function stopRequirement(){
+		swal({
+			title: "Stop Submit Requirements",
+			text: "Are you sure you don't want to submit requirements for this order?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Yes, Don't Submit",
+			cancelButtonText: 'Cancel'
+		}, function() {
+			window.location.href = '<?php echo base_url(""); ?>';
+		});
+	}
+
+	$(document).ready(function() {
+	    $('input[name="select_address"]').change(function() {
+	        if ($(this).val() === 'yes') {
+	            $('.address-form').show(); // Show the div
+	        } else {
+	            $('.address-form').hide(); // Hide the div
+	        }
+	    });
 	});
-}
 
-function stopRequirement(){
-	swal({
-		title: "Stop Submit Requirements",
-		text: "Are you sure you don't want to submit requirements for this order?",
-		type: "warning",
-		showCancelButton: true,
-		confirmButtonText: "Yes, Don't Submit",
-		cancelButtonText: 'Cancel'
-	}, function() {
-		window.location.href = '<?php echo base_url(""); ?>';
-	});
-}
-
-$(document).ready(function() {
-    $('input[name="select_address"]').change(function() {
-        if ($(this).val() === 'yes') {
-            $('.address-form').show(); // Show the div
-        } else {
-            $('.address-form').hide(); // Hide the div
-        }
-    });
-});
 	// $(document).ready(function() {
 	//     // On page load, check the selected radio button and toggle the visibility accordingly
 	//     toggleAddressSection();
