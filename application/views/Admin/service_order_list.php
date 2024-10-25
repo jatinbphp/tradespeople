@@ -70,8 +70,8 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
         <div class="info-box">
           <span class="info-box-icon bg-yellow"><i class="fa fa-shopping-cart"></i></span>
           <div class="info-box-content">
-            <span class="info-box-text">Total Completed Order Amount</span>
-            <span class="info-box-number"><?php echo $counter['totalCompletedOrderAmount'];?></span>
+            <span class="info-box-text">Total <?php echo $menu; ?> Amount</span>
+            <span class="info-box-number"><?php echo '£'.number_format($counter['totalCompletedOrderAmount'],2);?></span>
           </div>
         </div>
       </div>
@@ -80,21 +80,23 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
         <div class="info-box">
           <span class="info-box-icon bg-red"><i class="fa fa-shopping-cart"></i></span>
           <div class="info-box-content">
-            <span class="info-box-text">Total Completed No Of Orders</span>
+            <span class="info-box-text">Total <?php echo $menu; ?></span>
             <span class="info-box-number"><?php echo $counter['totalCompletedOrder'];?></span>
           </div>
         </div>
       </div>
-
-      <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="info-box">
-          <span class="info-box-icon bg-green"><i class="fa fa-shopping-cart"></i></span>
-          <div class="info-box-content">
-            <span class="info-box-text">Total Service Fees</span>
-            <span class="info-box-number"><?php echo $counter['totalServiceFees'];?></span>
-          </div>
-        </div>
-      </div>
+			
+			<?php if($service_fee == 'show'):?>      
+	      <div class="col-md-4 col-sm-6 col-xs-12">
+	        <div class="info-box">
+	          <span class="info-box-icon bg-green"><i class="fa fa-shopping-cart"></i></span>
+	          <div class="info-box-content">
+	            <span class="info-box-text">Total Service Fees</span>
+	            <span class="info-box-number"><?php echo '£'.number_format($counter['totalServiceFees'],2);?></span>
+	          </div>
+	        </div>
+	      </div>
+	    <?php endif; ?>  
 
 			<div class="col-xs-12">
 				<div class="box">

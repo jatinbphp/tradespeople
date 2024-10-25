@@ -329,15 +329,27 @@
 					<p class="alert alert-danger mb-0">
 						<?php 
 							if($list['sender'] == $tradesman['id']){
-								$ocruName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'You';
+								$ocruName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'].' has' : 'You have';
+								$oppoName = $this->session->userdata('type')==1 ? 'your' : $tradesman['trading_name'];
 							}
 
 							if($list['sender'] == $homeowner['id']){
-								$ocruName = $this->session->userdata('type')==1 ? 'You' : $tradesman['trading_name'];
+								$ocruName = $this->session->userdata('type')==1 ? 'You have' : $tradesman['trading_name'].' has';
+								$oppoName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'your';
 							}
 						?>
-						<i class="fa fa-info-circle"></i> 
-						<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+						<?php if($order['is_cancel'] == 5):?>
+							<?php if($list['sender'] == $homeowner['id']): ?>
+								<i class="fa fa-info-circle"></i> 
+								<?php echo $ocruName; ?> until <?php echo $newTime; ?> to respond. Not responding within the time frame will result in closing the case and deciding in <?php echo $oppoName; ?> favour.
+							<?php else: ?>
+								<i class="fa fa-info-circle"></i> 
+								Not responding before <?php echo $newTime; ?> will result in closing this case and deciding in the <?php echo $oppoName; ?> favour. Any decision reached is final and irrevocable. Once a case has been closed, it can't be reopened.
+							<?php endif; ?>	
+						<?php else:?>
+							<i class="fa fa-info-circle"></i> 
+							<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+						<?php endif;?>	
 					</p>
 						<div class="text-right width-100">
 							<?php if($user['id'] != $list['sender'] && $list['is_cancel'] == 2 && $order['is_cancel'] == 2):?>

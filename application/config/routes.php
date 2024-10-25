@@ -284,6 +284,7 @@ $route['completed-orders']        = 'Admin/Admin/completed_orders';
 $route['pending-orders']        = 'Admin/Admin/pending_orders';
 $route['cancel-orders']        = 'Admin/Admin/cancel_orders';
 $route['disputed-orders']        = 'Admin/Admin/disputed_ordes';
+$route['active-orders']        = 'Admin/Admin/active_ordes';
 $route['orderCounter']        = 'Admin/Admin/orderCounter';
 
 $route['homeowners_users']      = 'Admin/Admin/homeowners_users';

@@ -19,7 +19,7 @@
 			width: 100%;
 			object-fit: cover;
 			border: 1px solid #dfdfdf;
-			padding: 5px;			
+			padding: 5px;
 		}
 
 		.member-summary .member-image{

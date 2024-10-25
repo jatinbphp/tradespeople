@@ -2575,7 +2575,7 @@ class Cron extends CI_Controller
   }
 
   public function autoWithdrawOrderCancellation(){
-  	$allServiceOrder = $this->common_model->get_all_data('service_order',['status'=>'cancelled','is_cancel'=>2]);
+  	$allServiceOrder = $this->common_model->get_all_data('service_order');
   	$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
   	$today = date('Y-m-d');
   	
@@ -2670,7 +2670,7 @@ class Cron extends CI_Controller
 				}
 
 				/*------------Order Cancel Itself If Order Is Not Delivered Before Delivery Date------------*/
-				if($list['status'] == 'active'){
+				/*if($list['status'] == 'active'){
 					$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$list['id'],'status'=>'active']);
 
 					$delivery_date = '';
@@ -2726,7 +2726,7 @@ class Cron extends CI_Controller
 						$od['status_update_time'] = date('Y-m-d H:i:s');
 						$run = $this->common_model->update('service_order',array('id'=>$list['id']),$od);
 
-						/*Manage Order History*/
+						//Manage Order History
 					  $insert1 = [
 				      'user_id' => $list['user_id'],
 				      'is_cancel' => 1,
@@ -2744,8 +2744,7 @@ class Cron extends CI_Controller
 						$insert2['description'] = 'Your order has been cancelled itself due to not delivered before '.$delivery_date1;
 						$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-						/*---------Mail Code---------*/
-
+						//---------Mail Code---------
 						for($i=1; $i<=2;$i++){
 							$uesrName = $i ==1 ? $get_users['f_name'].' '.$get_users['l_name'] : $get_users1['trading_name'];
 							$uesrEmail = $i ==1 ? $get_users['email'] : $get_users1['email'];
@@ -2761,7 +2760,7 @@ class Cron extends CI_Controller
 							$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
 						}
 					}
-				}
+				}*/
 
 				/*------------Order Complete Itself------------*/
 				$completeTime = '';
@@ -2821,6 +2820,119 @@ class Cron extends CI_Controller
 
 							$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
 							$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
+						}
+					}
+				}
+
+				/*------------Dispute Cancel Itself------------*/
+				if($list['status'] == 'disputed' && $list['is_cancel'] == 5){
+					if($today >= $newTime){
+						$disputeData = $this->common_model->GetSingleData('tbl_dispute',['dispute_type'=>2,'ds_job_id'=>$list['id']]);
+
+						if(!empty($disputeData)){
+							$favId = $disputeData['disputed_by'] == $get_users['id'] ? $get_users['id'] : $get_users1['id'];
+							
+							$disput_update['ds_status'] = 1;
+							$disput_update['ds_favour'] = $favId;
+
+							$run1 = $this->common_model->update('tbl_dispute',array('ds_id'=>$disputeData['ds_id']),$disput_update);
+
+							if($run1){
+								$home=$this->common_model->get_userDataByid($get_users['id']);
+								$trades=$this->common_model->get_userDataByid($get_users1['id']);
+								$favo=$this->common_model->get_userDataByid($favId);
+
+								$amount = $list['price'];
+								$get_commision=$this->common_model->get_single_data('admin',array('id'=>1));		
+								$commision=$get_commision['commision'];
+
+								if($trades['id']==$favId){
+									$total = ($amount*$commision)/100;				
+									$amounts = $amount-$total;									
+									$u_wallet=$trades['u_wallet'];
+
+									$withdrawable_balance=$trades['withdrawable_balance'];
+									$update1['withdrawable_balance']=$withdrawable_balance+$amounts;
+									$runss1 = $this->common_model->update('users',array('id'=>$get_users1['id']),$update1);
+								}else{
+									$u_wallet=$home['u_wallet'];
+									$update1['u_wallet']=$u_wallet+$amount;
+									$runss1 = $this->common_model->update('users',array('id'=>$get_users['id']),$update1);
+								}
+
+								$insertn['nt_userId'] = $list['user_id'];
+								$insertn['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
+								$insertn['nt_satus'] = 0;
+								$insertn['nt_create'] = date('Y-m-d H:i:s');
+								$insertn['nt_update'] = date('Y-m-d H:i:s');
+								$insertn['job_id'] = $id;
+								$insertn['posted_by'] = $list['user_id'];
+								$run2 = $this->common_model->insert('notification',$insertn);
+
+								$insertn1['nt_userId'] = $get_users1['id'];
+								$insertn1['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
+								$insertn1['nt_satus'] = 0;
+								$insertn1['nt_create'] = date('Y-m-d H:i:s');
+								$insertn1['nt_update'] = date('Y-m-d H:i:s');
+								$insertn1['job_id'] = $id;
+								$insertn1['posted_by'] = $list['user_id'];
+								$run2 = $this->common_model->insert('notification',$insertn1);
+
+								$transactionid = md5(rand(1000,999).time());
+							  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+							  $data1 = array(
+									'tr_userid'=>$list['user_id'], 
+							  	'tr_amount'=>$list['price'],
+								  'tr_type'=>1,
+							  	'tr_transactionId'=>$transactionid,
+							  	'tr_message'=>$tr_message,
+							  	'tr_status'=>1,
+							  	'tr_created'=>date('Y-m-d H:i:s'),
+							  	'tr_update' =>date('Y-m-d H:i:s')
+								);
+								$run1 = $this->common_model->insert('transactions',$data1);	
+
+								$od['is_cancel'] = 1;
+								$od['status'] = $list['previous_status'];
+								$od['reason'] = '';
+								$od['status_update_time'] = date('Y-m-d H:i:s');
+								$run = $this->common_model->update('service_order',array('id'=>$list['id']),$od);
+
+								/*Manage Order History*/
+							  $insert1 = [
+						      'user_id' => $list['user_id'],
+						      'is_cancel' => 1,
+						      'service_id' => $list['service_id'],
+						      'order_id' => $list['id'],
+						      'status' => 'disputed_cancelled'
+						    ];
+						    $this->common_model->insert('service_order_status_history', $insert1);
+
+						    $insert2['sender'] = 0;
+								$insert2['receiver'] = 0;
+								$insert2['order_id'] = $list['id'];
+								$insert2['status'] = 'disputed_cancelled';
+								$insert2['is_cancel'] = 1;
+								$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
+								$run = $this->common_model->insert('order_submit_conversation', $insert2);
+
+								/*---------Mail Code---------*/
+
+								for($i=1; $i<=2;$i++){
+									$uesrName = $i ==1 ? $get_users['f_name'].' '.$get_users['l_name'] : $get_users1['trading_name'];
+									$uesrEmail = $i ==1 ? $get_users['email'] : $get_users1['email'];
+
+									$subject1 = "Your order has been cancelled itself!"; 
+									$content1= 'Hi '.$uesrName.', <br><br>';
+									$content1.='Your order dipsute has been cancelled itself due to not delivered before '.$newTime.'<br><br>';
+									$content1.='Order number: '.$list['order_id'].'<br>';
+									$content1.='Order amount: £'.$list['price'].'<br>';
+									$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$list['id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
+
+									$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
+									$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
+								}
+							}
 						}
 					}
 				}

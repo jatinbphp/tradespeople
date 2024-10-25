@@ -3485,7 +3485,7 @@ class Common_model extends CI_Model
 		$statusWhere = '';
 		if(!empty($status) && $status != 'all'){
 			if($status == 'pending'){
-				$statusWhere = 'WHERE so.status IN ("placed", "active")';	
+				$statusWhere = 'WHERE so.status IN ("placed")';	
 			}else{
 				$statusWhere = 'WHERE so.status = "'.$status.'"';	
 			}			
@@ -3886,28 +3886,28 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function adminOrderCounter(){
-		$query = $this->db->query("
-	    SELECT
-	        COUNT(id) AS total_completed_orders,
-	        SUM(price) AS total_completed_order_amount
-	    FROM
-	        service_order
-	    WHERE
-	        status = 'completed'
-		");
+	public function adminOrderCounter($status){
+		$this->db->select("COUNT(id) AS total_orders, SUM(price) AS total_order_amount");
+    $this->db->from("service_order");
 
-		return $query->row_array();
+    if ($status) {
+        $this->db->where("status", $status);
+    }
+
+    $query = $this->db->get();
+    return $query->row_array();
 	}
 
-	public function allServiceFee(){
-		$query = $this->db->query("
-	    SELECT
-	        SUM(service_fee) AS total_service_fees
-	    FROM
-	        service_order
-		");
+	public function allServiceFee($status = null){
+    $this->db->select("SUM(service_fee) AS total_service_fees");
+    $this->db->from("service_order");
 
-		return $query->row_array();
+    // Add condition based on status if provided
+    if ($status) {
+        $this->db->where("status", $status);
+    }
+
+    $query = $this->db->get();
+    return $query->row_array();
 	}
 }

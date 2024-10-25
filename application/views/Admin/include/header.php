@@ -698,6 +698,11 @@
                     <i class="fa fa-circle-o"></i>Disputed Order
                   </a>
                 </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>active-orders">
+                    <i class="fa fa-circle-o"></i>Active Order
+                  </a>
+                </li>
               </ul>
             </li>
 

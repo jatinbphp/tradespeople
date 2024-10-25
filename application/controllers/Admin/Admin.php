@@ -3097,8 +3097,9 @@ class Admin extends CI_Controller
 
     public function completed_orders(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','completed');
-        $result['counter'] = $this->orderCounter();
+        $result['counter'] = $this->orderCounter('completed');
         $result['menu'] = 'Completed Orders';
+        $result['service_fee'] = 'show';
         $where_array = ['status' => 'completed'];
         $update_array = [
             'is_view' => 1,
@@ -3109,8 +3110,9 @@ class Admin extends CI_Controller
 
     public function pending_orders(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','pending');
-        $result['counter'] = $this->orderCounter();
+        $result['counter'] = $this->orderCounter('placed');
         $result['menu'] = 'Pending Orders';
+        $result['service_fee'] = 'hide';
         $where_array = ['status' => 'placed'];
         $where_array = ['status' => 'active'];
         $update_array = [
@@ -3122,8 +3124,9 @@ class Admin extends CI_Controller
 
     public function cancel_orders(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','cancelled');
-        $result['counter'] = $this->orderCounter();
+        $result['counter'] = $this->orderCounter('cancelled');
         $result['menu'] = 'Cancelled Orders';
+        $result['service_fee'] = 'hide';
         $where_array = ['status' => 'cancelled'];        
         $update_array = [
             'is_view' => 1,
@@ -3134,8 +3137,9 @@ class Admin extends CI_Controller
 
     public function disputed_ordes(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','disputed');
-        $result['counter'] = $this->orderCounter();
+        $result['counter'] = $this->orderCounter('disputed');
         $result['menu'] = 'Disputed Orders';
+        $result['service_fee'] = 'hide';
         $where_array = ['status' => 'disputed'];        
         $update_array = [
             'is_view' => 1,
@@ -3143,6 +3147,20 @@ class Admin extends CI_Controller
         $this->My_model->update_entry('service_order', $update_array, $where_array);
         $this->load->view('Admin/service_order_list', $result);
     }
+
+    public function active_ordes(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','active');
+        $result['counter'] = $this->orderCounter('active');
+        $result['menu'] = 'Active Orders';
+        $result['service_fee'] = 'show';
+        $where_array = ['status' => 'active'];        
+        $update_array = [
+            'is_view' => 1,
+        ];
+
+        $this->My_model->update_entry('service_order', $update_array, $where_array);
+        $this->load->view('Admin/service_order_list', $result);
+    }    
 
     public function service_category(){
         $result['listing'] = $this->Common_model->get_all_category('service_category');
@@ -3942,12 +3960,12 @@ class Admin extends CI_Controller
         echo json_encode($json);
     }
 
-    public function orderCounter(){
-      $totalCompletedOrderAmount = $this->Common_model->adminOrderCounter();
-      $totalServiceFees = $this->Common_model->allServiceFee();
+    public function orderCounter($status){
+      $totalCompletedOrderAmount = $this->Common_model->adminOrderCounter($status);
+      $totalServiceFees = $this->Common_model->allServiceFee($status);
 
-      $data['totalCompletedOrderAmount'] = $totalCompletedOrderAmount['total_completed_order_amount'];
-      $data['totalCompletedOrder'] = $totalCompletedOrderAmount['total_completed_orders'];
+      $data['totalCompletedOrderAmount'] = $totalCompletedOrderAmount['total_order_amount'];
+      $data['totalCompletedOrder'] = $totalCompletedOrderAmount['total_orders'];
       $data['totalServiceFees'] = $totalServiceFees['total_service_fees'];
 
       return $data;
