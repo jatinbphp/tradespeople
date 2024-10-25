@@ -2892,7 +2892,7 @@ class Cron extends CI_Controller
 								);
 								$run1 = $this->common_model->insert('transactions',$data1);	
 
-								$od['is_cancel'] = 1;
+								$od['is_cancel'] = 6;
 								$od['status'] = $list['previous_status'];
 								$od['reason'] = '';
 								$od['status_update_time'] = date('Y-m-d H:i:s');
@@ -2901,7 +2901,7 @@ class Cron extends CI_Controller
 								/*Manage Order History*/
 							  $insert1 = [
 						      'user_id' => $list['user_id'],
-						      'is_cancel' => 1,
+						      'is_cancel' => 6,
 						      'service_id' => $list['service_id'],
 						      'order_id' => $list['id'],
 						      'status' => 'disputed_cancelled'
@@ -2912,7 +2912,7 @@ class Cron extends CI_Controller
 								$insert2['receiver'] = 0;
 								$insert2['order_id'] = $list['id'];
 								$insert2['status'] = 'disputed_cancelled';
-								$insert2['is_cancel'] = 1;
+								$insert2['is_cancel'] = 6;
 								$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
 								$run = $this->common_model->insert('order_submit_conversation', $insert2);
 

@@ -1307,6 +1307,7 @@ class Order_dispute extends CI_Controller
 	function dispute($dispute_id){
 		if ($this->session->userdata('user_id')) {
 			$dispute = $this->common_model->get_single_data('tbl_dispute', array('dispute_type'=>2,'ds_job_id' => $dispute_id));
+			
 			if (!$dispute) {
 				return redirect('/' );
 			}
@@ -1334,13 +1335,16 @@ class Order_dispute extends CI_Controller
 			$page['home_stepin'] = $home_stepin;
 			$page['trades_stepin'] = $trades_stepin;
 			
-			$page['disput_comment'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dispute_type'=>2,'dct_userid >='=>'0'), 'dct_id', 'ASC');
-			$page['disput_comment_arbitration'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dispute_type'=>2,'dct_userid <'=>'0'), 'dct_id', 'ASC');
-			$page['checkOtherUserReply'] = $this->common_model->GetColumnName('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'], 'dispute_type'=>2, 'dct_userid' => $dispute['dispute_to']), ['dct_created'], false, 'dct_id', 'asc');
+			$page['disput_comment'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dct_userid >='=>'0'), 'dct_id', 'ASC');
+
+			$page['disput_comment_arbitration'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dct_userid <'=>'0'), 'dct_id', 'ASC');
+
+			$page['checkOtherUserReply'] = $this->common_model->GetColumnName('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'], 'dct_userid' => $dispute['dispute_to']), ['dct_created'], false, 'dct_id', 'asc');
 			
 			$page['files'] = $this->common_model->get_all_data('dispute_file',"dispute_id = '".$dispute['ds_id']."' and conversation_id is null", 'id', 'DESC');
 			$page['post_id'] = $dispute['ds_job_id'];
 			$page['bid_amont'] = $this->common_model->get_single_data('tbl_jobpost_bids', array('job_id' => $dispute['ds_job_id'], 'bid_by' => $dispute['ds_buser_id']));
+
 			$this->load->view('site/order_dispute', $page);
 		} else {
 			redirect('login');

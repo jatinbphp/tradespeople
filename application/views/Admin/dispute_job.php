@@ -35,8 +35,8 @@ if(!in_array(10,$my_access)) { redirect('Admin_dashboard'); }
               <thead>
                 <tr>
                   <th>S.NO</th>
-                  <th>Job Title</th>
-                  <th>Milestone Name</th>
+                  <th>Job Title / Order No</th>
+                  <th>Milestone / Service  Name</th>
                   <th>Homeowner</th>
                   <th>Tradesmen</th>
     			  <th>Status</th>
@@ -49,16 +49,26 @@ if(!in_array(10,$my_access)) { redirect('Admin_dashboard'); }
 							if($dispute_user) {
 							$x = 1;
 							foreach($dispute_user as $row) {
-							 $job=$this->Common_model->get_single_data('tbl_jobs',array('job_id'=>$row['ds_job_id']));
-							 $milestone=$this->Common_model->get_single_data('tbl_milestones',array('id'=>$row['mile_id']));
+								if($row['dispute_type'] == 1){
+									$job=$this->Common_model->get_single_data('tbl_jobs',array('job_id'=>$row['ds_job_id']));
+							 		$milestone=$this->Common_model->get_single_data('tbl_milestones',array('id'=>$row['mile_id']));
                              $post_user=$this->Common_model->get_userDataByid($row['ds_puser_id']);
                              $bid_user=$this->Common_model->get_userDataByid($row['ds_buser_id']);
-                    
+                  $title = $job['title'];           
+                  $name = $milestone['milestone_name'];           
+								}else{
+									$job=$this->Common_model->get_single_data('service_order',array('id'=>$row['ds_job_id']));
+							 		$milestone=$this->Common_model->get_single_data('my_services',array('id'=>$job['service_id']));
+									$post_user=$this->Common_model->get_userDataByid($row['ds_puser_id']);
+                  $bid_user=$this->Common_model->get_userDataByid($row['ds_buser_id']);
+                  $title = $job['order_id'];
+                  $name = $milestone['service_name'];
+								}   
               ?>  
 							<tr role="row" class="odd">
 								<td><?php echo $x++; ?></td>
-								<td><?php echo $job['title']; ?></td>
-								<td><?php echo $milestone['milestone_name']; ?></td>
+								<td><?php echo $title; ?></td>
+								<td><?php echo $name; ?></td>
 								
 								<td><?php echo $post_user['f_name'].' '.$post_user['l_name']; ?></td>
 								<td><?php echo $bid_user['f_name'].' '.$bid_user['l_name']; ?></td>
