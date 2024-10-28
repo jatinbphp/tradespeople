@@ -106,7 +106,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 							<table id="boottable" class="table table-bordered table-striped">
 								<thead>
 									<tr>
-										<th>S.NO</th>
+										<th>Order Id</th>
 										<th>Service Name</th>
 										<th>Homeowner</th>
 										<th>Price</th>
@@ -118,7 +118,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 								<tbody>
 								<?php foreach ($order_list as $key => $lists) {?>
 									<tr role="row" class="odd" id="request_<?php echo $lists['id']; ?>">
-										<td><?php echo $key + 1; ?></td>
+										<td><?php echo $lists['order_id']; ?></td>
 										<td><?php echo $lists['service_name']; ?></td>
 										<td><?php echo $lists['f_name'].' '.$lists['l_name']; ?></td>
 										<td><?php echo '£'.number_format($lists['price'],2); ?></td>
