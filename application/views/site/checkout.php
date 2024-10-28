@@ -255,9 +255,18 @@
 
 							<div class="summary-feature-article">
 								<a href="<?php echo base_url().'service/'.$service_details['slug']?>">
-									<?php $image_path = FCPATH . 'img/services/' . ($service_details['image'] ?? ''); ?>
+									<?php 
+										$image_path = FCPATH . 'img/services/' . ($service_details['image'] ?? ''); 
+										$mime_type = get_mime_by_extension($image_path);
+		                $is_image = strpos($mime_type, 'image') !== false;
+		                $is_video = strpos($mime_type, 'video') !== false;
+									?>
 									<?php if (file_exists($image_path) && $service_details['image']): ?>
-										<img src="<?php echo base_url('img/services/') . $service_details['image']; ?>" class="img-responsive">
+										<?php if ($is_image): ?>
+											<img src="<?php echo base_url('img/services/') . $service_details['image']; ?>" class="img-responsive">
+										<?php else: ?>
+											<video width="80" controls autoplay><source src="<?php echo base_url('img/services/') . $service_details['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+										<?php endif; ?>
 									<?php else: ?>	
 										<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
 									<?php endif; ?>

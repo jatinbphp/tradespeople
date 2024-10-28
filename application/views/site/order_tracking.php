@@ -552,7 +552,7 @@
 																<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'disputed'):?>
+															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
 																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
 																	<button type="button" class="btn btn-warning ">View Dispute</button>
 																</a>
@@ -561,13 +561,19 @@
 															<?php if($order['status'] == 'completed'):?>
 																<a href="<?php echo base_url('orderCompleted/'.$order['id']); ?>">
 																	<button type="button" class="btn btn-warning">
-																		View Review
+																		View Review 
 																	</button>
 																</a>
 															<?php endif; ?>
 
 															<button type="button" class="btn btn-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat()">Chat</button>
 														<?php else: ?>
+															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
+																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
+																	<button type="button" class="btn btn-warning ">View Dispute</button>
+																</a>
+															<?php endif; ?>
+
 															<?php if($order['status'] == 'completed'):?>
 																<a href="<?php echo base_url('orderCompleted/'.$order['id']); ?>">
 																	<button type="button" class="btn btn-warning">
@@ -576,13 +582,9 @@
 																</a>	
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'disputed'):?>
-																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
-																	<button type="button" class="btn btn-warning ">View Dispute</button>
-																</a>
-															<?php endif; ?>
-
-															<button class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">Chat</button>
+															<button class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">
+																Chat
+															</button>
 
 															<?php if(empty($requirements)):?>
 																<button class="btn btn-warning" class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</button>

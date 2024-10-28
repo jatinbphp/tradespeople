@@ -34,6 +34,7 @@
 	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
 	.boxImage img { height: 100%;object-fit: contain;}
+	.boxImage video { height: 100%;object-fit: contain;}
 	#imgpreview {
 		padding-top: 15px;
 	}
@@ -118,13 +119,22 @@
 
 			<div class="col-sm-4">
 				<div class="box-border p-4 submit-requirements-sidebar">
-
-					<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+					<?php 
+						$image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); 
+						$mime_type = get_mime_by_extension($image_path);
+            $is_image = strpos($mime_type, 'image') !== false;
+            $is_video = strpos($mime_type, 'video') !== false;
+					?>
 					<?php if (file_exists($image_path) && $service['image']): ?>
-						<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+						<?php if ($is_image): ?>
+							<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+						<?php else: ?>
+							<video width="330" controls autoplay><source src="<?php echo base_url('img/services/') . $service['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+						<?php endif; ?>
 					<?php else: ?>	
 						<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
 					<?php endif; ?>
+
 
 					<h3 style="margin-top: 10px; font-weight: bold;"><?php echo $service['service_name'];?></h3>
 					<?php if(!empty($ex_services)): ?>

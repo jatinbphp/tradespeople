@@ -27,10 +27,8 @@ class Cron extends CI_Controller
 	}
 
 	public function update_ticket_status()
-  {
-  	
-    $tecketsList = $this->common_model->get_all_data('admin_chats', ['ticket_status'=>0]);
-    
+  {  	
+    $tecketsList = $this->common_model->get_all_data('admin_chats', ['ticket_status'=>0]);    
 
   	foreach ($tecketsList as $key => $ticket) {
 	    $chats = $this->common_model->GetSingleData('admin_chat_details', array('admin_chat_id' => $ticket['id']), 'id', 'desc');
@@ -58,22 +56,11 @@ class Cron extends CI_Controller
 					}
 
 					$this->common_model->send_mail($user['email'], $subject, $content);
-
-
 	    		}
-
-
 	    	}
-
-  		
-
-
-	    }
-  		
+	    }  		
   	}
-
-// exit('test');
-
+		// exit('test');
   }
 	
 	public function test(){
@@ -2570,8 +2557,7 @@ class Cron extends CI_Controller
   }
   	
 
-  public function test_function(){
-    
+  public function test_function(){    
   }
 
   public function autoWithdrawOrderCancellation(){
@@ -2826,8 +2812,11 @@ class Cron extends CI_Controller
 
 				/*------------Dispute Cancel Itself------------*/
 				if($list['status'] == 'disputed' && $list['is_cancel'] == 5){
-					if($today >= $newTime){
-						$disputeData = $this->common_model->GetSingleData('tbl_dispute',['dispute_type'=>2,'ds_job_id'=>$list['id']]);
+					$disputeData = $this->common_model->GetSingleData('tbl_dispute',['dispute_type'=>2,'ds_job_id'=>$list['id']]);
+
+					$checkOtherUserReply = $this->common_model->GetColumnName('disput_conversation_tbl', array('dct_disputid' => $disputeData['ds_id'], 'dct_userid' => $disputeData['dispute_to']), ['dct_created'], false, 'dct_id', 'asc');
+
+					if($today >= $newTime && empty($checkOtherUserReply)){						
 
 						if(!empty($disputeData)){
 							$favId = $disputeData['disputed_by'] == $get_users['id'] ? $get_users['id'] : $get_users1['id'];
@@ -2892,8 +2881,8 @@ class Cron extends CI_Controller
 								);
 								$run1 = $this->common_model->insert('transactions',$data1);	
 
-								$od['is_cancel'] = 6;
-								$od['status'] = $list['previous_status'];
+								$od['is_cancel'] = 8;
+								$od['status'] = 'completed';
 								$od['reason'] = '';
 								$od['status_update_time'] = date('Y-m-d H:i:s');
 								$run = $this->common_model->update('service_order',array('id'=>$list['id']),$od);
@@ -2901,7 +2890,7 @@ class Cron extends CI_Controller
 								/*Manage Order History*/
 							  $insert1 = [
 						      'user_id' => $list['user_id'],
-						      'is_cancel' => 6,
+						      'is_cancel' => 8,
 						      'service_id' => $list['service_id'],
 						      'order_id' => $list['id'],
 						      'status' => 'disputed_cancelled'
@@ -2912,7 +2901,7 @@ class Cron extends CI_Controller
 								$insert2['receiver'] = 0;
 								$insert2['order_id'] = $list['id'];
 								$insert2['status'] = 'disputed_cancelled';
-								$insert2['is_cancel'] = 6;
+								$insert2['is_cancel'] = 8;
 								$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
 								$run = $this->common_model->insert('order_submit_conversation', $insert2);
 

@@ -14,6 +14,8 @@
 					<i class="fa fa-times-circle faicon"></i>
 				<?php elseif($list['sender'] == 0 && $list['receiver'] == 0 && $list['status'] == 'completed'):?>
 					<i class="fa fa-check-square-o faicon"></i>
+				<?php elseif($list['sender'] == 0 && $list['receiver'] == 0 && $order['is_cancel'] == 8):?>
+					<i class="fa fa-check-square-o faicon"></i>	
 				<?php else:?>
 					<?php if($list['sender'] == $tradesman['id']): ?>
 						<?php if($list['status'] == 'cancelled' && $order['is_cancel'] == 1):?>
@@ -58,6 +60,13 @@
 							<i><?php echo $conversation_date ?></i>
 						</span>
 					</h5>	
+				<?php elseif($list['sender'] == 0 && $list['receiver'] == 0 && $order['is_cancel'] == 8):?>
+					<h5>
+						Your order has been completed itself due to dispute cancel itself
+						<span class="text-muted" style="font-size: 12px;">
+							<i><?php echo $conversation_date ?></i>
+						</span>
+					</h5>		
 				<?php else: ?>
 					<?php if($list['sender'] == $tradesman['id']): ?>
 						<?php if($this->session->userdata('type')==1):?>
@@ -325,7 +334,7 @@
 					<?php endif; ?>
 				</span>
 				<?php //if($list['status'] == 'cancelled' && !in_array($order['is_cancel'], [1,3,4]) && $order['status'] != 'declined'):?>
-				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4,6,7])):?>
+				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4,6,7,8])):?>
 					<p class="alert alert-danger mb-0">
 						<?php 
 							if($list['sender'] == $tradesman['id']){

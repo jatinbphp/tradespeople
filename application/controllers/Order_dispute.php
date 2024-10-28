@@ -62,7 +62,7 @@ class Order_dispute extends CI_Controller
       }
 
       $od['status'] = $job['previous_status'];
-      $input['is_cancel'] = 6;
+      $od['is_cancel'] = 6;
 			$od['reason'] = '';
 			$od['status_update_time'] = date('Y-m-d H:i:s');
 			$run = $this->common_model->update('service_order',array('id'=>$post_id),$od);
@@ -361,8 +361,8 @@ class Order_dispute extends CI_Controller
         	$receiverId = $homeOwner['id'];
         }
 
-        $od['status'] = $serviceOrder['previous_status'];
-        $od['is_cancel'] = 7;
+        $od['status'] = 'completed';
+        $od['is_cancel'] = 8;
 				$od['reason'] = '';
 				$od['status_update_time'] = date('Y-m-d H:i:s');
 				$run = $this->common_model->update('service_order',array('id'=>$job_id),$od);
@@ -1413,7 +1413,7 @@ class Order_dispute extends CI_Controller
 		$dct_msg = $this->input->post('dct_msg');
 		$job_id = $this->input->post('job_id');
 		
-		$jobDetails = $this->common_model->get_single_data('tbl_jobs', array('job_id' => $job_id));
+		$jobDetails = $this->common_model->get_single_data('service_order', array('id' => $job_id));
 
 		if ($buser != $userid) {
 			$user = $this->common_model->get_userDataByid($buser);
@@ -1471,7 +1471,7 @@ class Order_dispute extends CI_Controller
 			if ($login_user['trading_name']) {
 				$insertn['nt_message'] = $login_user['trading_name'] . ' responded to the milestone payment dispute. <a href="' . site_url('dispute/' . $ds) . '">View & reply!</a>';
 			} else {
-				$insertn['nt_message'] = '' . $login_user['f_name'] . ' ' . $login_user['l_name'] . ' responded to the milestone payment dispute. <a href="' . site_url('order-dispute/' . $job_id) . '">View & reply!</a>';
+				$insertn['nt_message'] = '' . $login_user['f_name'] . ' ' . $login_user['l_name'] . ' responded to the order payment dispute. <a href="' . site_url('order-dispute/' . $job_id) . '">View & reply!</a>';
 			}
 			$insertn['nt_satus'] = 0;
 			$insertn['nt_apstatus'] = 0;
@@ -1482,10 +1482,10 @@ class Order_dispute extends CI_Controller
 			$run2 = $this->common_model->insert('notification', $insertn);
 
 			if ($type == 1) {
-				$subject = $login_user['f_name'] . " has replied to the milestone payment dispute “" . $jobDetails['title'] . "”";
+				$subject = $login_user['f_name'] . " has replied to the order payment dispute “" . $jobDetails['order_id'] . "”";
 
 				$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
-				$contant .= '<br><p style="margin:0;padding:10px 0px">You´ve received a new reply from ' . $login_user['f_name'] . ' on the milestone payment dispute for job “' . $jobDetails['title'] . '”. We encourage you to respond as soon as possible to resolve your issue.</p>';
+				$contant .= '<br><p style="margin:0;padding:10px 0px">You´ve received a new reply from ' . $login_user['f_name'] . ' on the order payment dispute for prder “' . $jobDetails['order_id'] . '”. We encourage you to respond as soon as possible to resolve your issue.</p>';
 
 				$contant .= '<br><div style="text-align:center"><a href="' . site_url('order-dispute/' . $job_id) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Reply Now</a></div><br>';
 
@@ -1496,10 +1496,10 @@ class Order_dispute extends CI_Controller
 				$this->common_model->send_mail($to_mail, $subject, $contant);
 			} else {
 
-				$subject = $login_user['trading_name'] . " has replied to the milestone payment dispute: “" . $jobDetails['title'] . "”";
+				$subject = $login_user['trading_name'] . " has replied to the order payment dispute: “" . $jobDetails['order_id'] . "”";
 
 				$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
-				$contant .= '<br><p style="margin:0;padding:10px 0px">You\'ve received a new reply from ' . $login_user['trading_name'] . ' on the milestone payment dispute for job “' . $jobDetails['title'] . '”. We encourage you to respond as soon as possible to resolve the issue.</p>';
+				$contant .= '<br><p style="margin:0;padding:10px 0px">You\'ve received a new reply from ' . $login_user['trading_name'] . ' on the order payment dispute for order “' . $jobDetails['order_id'] . '”. We encourage you to respond as soon as possible to resolve the issue.</p>';
 
 				$contant .= '<br><div style="text-align:center"><a href="' . site_url('order-dispute/' . $job_id) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View and reply now</a></div><br>';
 

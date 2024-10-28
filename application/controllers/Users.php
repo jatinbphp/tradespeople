@@ -4841,7 +4841,7 @@ class Users extends CI_Controller
 				$login_user = $this->common_model->get_userDataByid($tradesman['id']);
 
 				$insertn['nt_userId'] = $service['user_id'];
-				$insertn['nt_message'] = ''.$login_user['trading_name'] .' opened a milestone dispute. <a href="'.site_url('order-dispute/'.$serviceOrder['id']).'">View & respond!</a>';
+				$insertn['nt_message'] = ''.$login_user['trading_name'] .' opened a order dispute. <a href="'.site_url('order-dispute/'.$serviceOrder['id']).'">View & respond!</a>';
 				$insertn['nt_satus'] = 0;
 				$insertn['nt_apstatus'] = 0;
 				$insertn['nt_create'] = date('Y-m-d H:i:s');
@@ -4952,7 +4952,7 @@ class Users extends CI_Controller
 					$this->common_model->send_mail($homeOwner['email'],$subject,$contant);
 				}				
 			}
-            echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
+      echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not disputed.']);
 		}
