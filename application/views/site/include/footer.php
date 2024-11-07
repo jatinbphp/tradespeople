@@ -1798,8 +1798,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  setInterval(function(){ user_list_refresher(); }, 5000);
+  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  //setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>

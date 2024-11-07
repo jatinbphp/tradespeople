@@ -380,7 +380,7 @@ class Order_dispute extends CI_Controller
 				$insert2['receiver'] = $receiverId;
 				$insert2['order_id'] = $post_id;
 				$insert2['status'] = 'disputed_accepted';
-				$insert2['description'] = 'Congratulation this project has been completed successfully.<a href="'.site_url().'profile/'.$home['id'].'">'.$home['f_name'].' '.$home['l_name'].'</a> has released all the order amount of <a href="'.site_url().'order-tracking/'.$serviceOrder['id'].'">'.$post_title.'</a> project and this project has been completed.';
+				$insert2['description'] = 'Congratulation this project has been completed successfully.';
 				$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 				if ($final_amount >= $serviceOrder['price']) {
@@ -1119,6 +1119,7 @@ class Order_dispute extends CI_Controller
 			
 			$insert2 = [];
 			$insert2['dct_disputid'] =  $dispute_id;
+			$insert2['dispute_type'] = 2;
 			$insert2['dct_userid'] = -1;
 			$insert2['dct_msg'] = $dct_msg;
 			$insert2['dct_isfinal'] = 0;	

@@ -11063,7 +11063,7 @@ input:checked + .switch-slider:before {
 .thank-purchase-msg {
     display: flex;
     align-items: center;
-    gap: 10px 20px;
+    gap: 0 15px;
     position: relative;
 }
 .thank-purchase-msg .icon {
@@ -11071,16 +11071,23 @@ input:checked + .switch-slider:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     border-radius: 100%;
-    font-size: 26px;
+    font-size: 20px;
 }
-.thank-purchase-msg h2,
-.thank-purchase-msg p {
+.thank-purchase-msg h2 {
     font-weight: 600;
     color: #464c5b;
     margin: 0;
+}
+.thank-purchase-msg p {
+    color: #464c5b;
+    margin: 0;
+    font-size: 12px;
+}
+.thank-purchase-msg h2 {
+    font-size: 18px;
 }
 .thank-purchase-msg .btn-close {
     position: absolute;

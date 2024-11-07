@@ -288,7 +288,7 @@ $datesss     = date('Y-m-d H:i:s', strtotime($project_details['c_date'] . ' + ' 
 
         </form> -->
 
-				<?php } else if ($project_details['status'] != 7 && $project_details['status'] != 4 && $project_details['status'] != 5 && strtotime($datesss) > strtotime(date())) {
+				<?php } else if ($project_details['status'] != 7 && $project_details['status'] != 4 && $project_details['status'] != 5 && strtotime($datesss) > strtotime(date('Y-m-d H:i:s'))) {
 
                             if (count($get_post_bid) == 0 || ($get_post_bid[0]['status'] == 8 && $get_post_bid[0]['hiring_type'] == 0)) {
                             ?>
