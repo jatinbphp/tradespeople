@@ -380,22 +380,22 @@ class Checkout extends CI_Controller
 				if($payment_method == 'wallet'){
 					$update12['u_wallet']=$users['u_wallet']-$mainPrice;
 					$update12['spend_amount']=$users['spend_amount']+$mainPrice;	
-					$this->common_model->update('users',array('id'=>$uId),$update12);	
-				}				
-									
-				$tr_message='£'.$mainPrice.'  has been debited to your wallet for ordering a service <a href="'.site_url().'service/'.$service_id.'">'.$service_details['service_name'].'.</a>';
+					$this->common_model->update('users',array('id'=>$uId),$update12);
+
+					$tr_message='£'.$mainPrice.'  has been debited to your wallet for ordering a service <a href="'.site_url().'service/'.$service_id.'">'.$service_details['service_name'].'.</a>';
 					
-				$data1 = array(
-					'tr_userid'=>$users['id'], 
-					'tr_amount'=>$mainPrice,
-					'tr_type'=>2,
-					'tr_transactionId'=>$transactionid,
-					'tr_message'=>$tr_message,
-					'tr_status'=>1,
-					'tr_created'=>date('Y-m-d H:i:s'),
-					'tr_update' =>date('Y-m-d H:i:s')
-				);				 
-				$this->common_model->insert('transactions',$data1);
+					$data1 = array(
+						'tr_userid'=>$users['id'], 
+						'tr_amount'=>$mainPrice,
+						'tr_type'=>2,
+						'tr_transactionId'=>$transactionid,
+						'tr_message'=>$tr_message,
+						'tr_status'=>1,
+						'tr_created'=>date('Y-m-d H:i:s'),
+						'tr_update' =>date('Y-m-d H:i:s')
+					);				 
+					$this->common_model->insert('transactions',$data1);
+				}
 
 				/*Homeowner Email Code*/
 				$homeOwner = $this->common_model->check_email_notification($users['id']);

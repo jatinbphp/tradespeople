@@ -26,8 +26,7 @@ class Cron extends CI_Controller
 		//$this->common_model->send_mail('anil.webwiders@gmail.com','test','test');
 	}
 
-	public function update_ticket_status()
-  {  	
+	public function update_ticket_status(){  	
     $tecketsList = $this->common_model->get_all_data('admin_chats', ['ticket_status'=>0]);    
 
   	foreach ($tecketsList as $key => $ticket) {
@@ -2744,7 +2743,7 @@ class Cron extends CI_Controller
 				}*/
 
 				/*------------Order Complete Itself------------*/
-				/*$completeTime = '';
+				$completeTime = '';
 				if($list['status'] == 'delivered'){
 					if($today >= $newTime){
 						$insertn['nt_userId'] = $list['user_id'];
@@ -2786,6 +2785,26 @@ class Cron extends CI_Controller
 						$insert2['description'] = 'Your order has been completed itself due to not responsed before '.$readableTime;
 						$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
+						$u_wallet = $get_users1['u_wallet'];
+						$withdrawable_balance = $get_users1['withdrawable_balance'];
+
+						$update1['withdrawable_balance'] = $withdrawable_balance + $list['price'];
+						$runss1 = $this->common_model->update('users',array('id'=>$get_users1['id']),$update1);
+
+						$transactionid = md5(rand(1000,999).time());
+					  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+					  $data1 = array(
+							'tr_userid'=>$get_users1['id'],
+					  	'tr_amount'=>$list['price'],
+						  'tr_type'=>1,
+					  	'tr_transactionId'=>$transactionid,
+					  	'tr_message'=>$tr_message,
+					  	'tr_status'=>1,
+					  	'tr_created'=>date('Y-m-d H:i:s'),
+					  	'tr_update' =>date('Y-m-d H:i:s')
+						);
+						$run1 = $this->common_model->insert('transactions',$data1);
+
 						//---------Mail Code---------
 
 						for($i=1; $i<=2;$i++){
@@ -2803,7 +2822,7 @@ class Cron extends CI_Controller
 							$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
 						}
 					}
-				}*/
+				}
 
 				/*------------Dispute Cancel Itself------------*/
 				if($list['status'] == 'disputed' && $list['is_cancel'] == 5){
@@ -2827,9 +2846,19 @@ class Cron extends CI_Controller
 								$run1 = $this->common_model->update('tbl_dispute',array('ds_id'=>$disputeData['ds_id']),$disput_update);
 
 								if($run1){
-									$home=$this->common_model->get_userDataByid($get_users['id']);
-									$trades=$this->common_model->get_userDataByid($get_users1['id']);
-									$favo=$this->common_model->get_userDataByid($favId);
+									$home = $this->common_model->get_userDataByid($get_users['id']);
+									$trades = $this->common_model->get_userDataByid($get_users1['id']);
+									$favo = $this->common_model->get_userDataByid($favId);
+
+									$favUserName = $favo['type'] == 1 ? $favo['trading_name'] : $favo['f_name'].' '.$favo['l_name'];
+									$oppositUserName = $favId == $home['id'] ? $trades['trading_name'] : $home['f_name'].' '.$home['l_name'];
+									$arbitrationMessage = $oppositUserName.' has failed to pay the arbitration fee within the given time frame. As a result, the dispute has been decided in favor of '.$favUserName.'.';
+
+									$insert['dct_disputid'] = $disputeData['ds_id'];
+									$insert['dct_userid'] = 0;
+									$insert['dct_msg'] = $arbitrationMessage;
+									$insert['dct_isfinal'] = 1;
+									$disputerun = $this->common_model->insert('disput_conversation_tbl', $insert);
 
 									$amount = $list['price'];
 									$get_commision=$this->common_model->get_single_data('admin',array('id'=>1));		
@@ -2850,7 +2879,7 @@ class Cron extends CI_Controller
 									}
 
 									$insertn['nt_userId'] = $list['user_id'];
-									$insertn['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
+									$insertn['nt_message'] = $arbitrationMessage.' <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
 									$insertn['nt_satus'] = 0;
 									$insertn['nt_create'] = date('Y-m-d H:i:s');
 									$insertn['nt_update'] = date('Y-m-d H:i:s');
@@ -2859,7 +2888,7 @@ class Cron extends CI_Controller
 									$run2 = $this->common_model->insert('notification',$insertn);
 
 									$insertn1['nt_userId'] = $get_users1['id'];
-									$insertn1['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
+									$insertn1['nt_message'] = $arbitrationMessage.' <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
 									$insertn1['nt_satus'] = 0;
 									$insertn1['nt_create'] = date('Y-m-d H:i:s');
 									$insertn1['nt_update'] = date('Y-m-d H:i:s');
@@ -2870,7 +2899,7 @@ class Cron extends CI_Controller
 									$transactionid = md5(rand(1000,999).time());
 								  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
 								  $data1 = array(
-										'tr_userid'=>$list['user_id'], 
+										'tr_userid'=>$favId, 
 								  	'tr_amount'=>$list['price'],
 									  'tr_type'=>1,
 								  	'tr_transactionId'=>$transactionid,
@@ -2902,7 +2931,7 @@ class Cron extends CI_Controller
 									$insert2['order_id'] = $list['id'];
 									$insert2['status'] = 'disputed_cancelled';
 									$insert2['is_cancel'] = 8;
-									$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
+									$insert2['description'] = $arbitrationMessage;
 									$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 									//---------Mail Code---------
@@ -2913,7 +2942,7 @@ class Cron extends CI_Controller
 
 										$subject1 = "Your order has been cancelled itself!"; 
 										$content1= 'Hi '.$uesrName.', <br><br>';
-										$content1.='Your order dipsute has been cancelled itself due to not delivered before '.$newTime.'<br><br>';
+										$content1.= $arbitrationMessage.'<br><br>';
 										$content1.='Order number: '.$list['order_id'].'<br>';
 										$content1.='Order amount: £'.$list['price'].'<br>';
 										$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$list['id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
@@ -2939,6 +2968,14 @@ class Cron extends CI_Controller
 									$trades=$this->common_model->get_userDataByid($get_users1['id']);
 									$favo=$this->common_model->get_userDataByid($favId);
 
+									$arbitrationMessage = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;;
+
+									$insert['dct_disputid'] = $disputeData['ds_id'];
+									$insert['dct_userid'] = 0;
+									$insert['dct_msg'] = $arbitrationMessage;
+									$insert['dct_isfinal'] = 1;
+									$disputerun = $this->common_model->insert('disput_conversation_tbl', $insert);
+
 									$amount = $list['price'];
 									$get_commision=$this->common_model->get_single_data('admin',array('id'=>1));		
 									$commision=$get_commision['commision'];
@@ -2957,7 +2994,7 @@ class Cron extends CI_Controller
 										$runss1 = $this->common_model->update('users',array('id'=>$get_users['id']),$update1);
 									}
 
-									$insertn['nt_userId'] = $list['user_id'];
+									$insertn['nt_userId'] = $favId;
 									$insertn['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
 									$insertn['nt_satus'] = 0;
 									$insertn['nt_create'] = date('Y-m-d H:i:s');

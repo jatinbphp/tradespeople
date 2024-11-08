@@ -352,21 +352,21 @@ class Dispute extends CI_Controller
 
 					if($diputeType == 1){
 						$runss12 = $this->Common_model->update_data('tbl_jobs', array('job_id' => $job_id), array('status' => 5));
-
 						$runss123 = $this->Common_model->update_data('tbl_jobpost_bids', array('id' => $get_post_job['id']), array('status' => 4));
 
 						$post_title = $get_job_post['title'];
 						$subject = "Congratulations on Completing the Job: “" . $post_title . "”";
 						$post_id = $get_post_job['posted_by'];
-
-						$ntMsg = 'Congratulations! Your job has been completed. <a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '">Rate ' . $trades['trading_name'] . '!</a>';
-
+						$pageType = 'job';
+						$pageUrl = 'reviews/?post_id=' . $get_post_job['job_id'];
+						$ntMsg = 'Congratulations! Your job has been completed. <a href="'.site_url().$pageUrl.'">Rate '.$trades['trading_name'].'!</a>';
 					}else{
 						$post_title = $get_job_post['order_id'];
 						$subject = "Congratulations on Completing the order: “" . $post_title . "”";
 						$post_id = $get_post_job['user_id'];
-
-						$ntMsg = 'Congratulations! Your order has been completed. <a href="' . site_url() . 'order_tracking/' . $get_post_job['id'] . '">Rate ' . $trades['trading_name'] . '!</a>';
+						$pageUrl = 'order_tracking/' . $get_post_job['job_id'];
+						$pageType = 'order';
+						$ntMsg = 'Congratulations! Your order has been completed. <a href="'.site_url().$pageUrl.'">Rate '.$trades['trading_name'].'!</a>';
 					}
 
 					/*$insertn['nt_userId']=$get_post_job['bid_by'];
@@ -381,39 +381,39 @@ class Dispute extends CI_Controller
 						$insertn['posted_by']=$get_post_job['posted_by'];
 						$run2 = $this->Common_model->insert('notification',$insertn);*/					
 
-					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Congratulations! Job completed and Milestone payment released.</p>';
+					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Congratulations! '.ucfirst($pageType).' completed and Milestone payment released.</p>';
 
 					$html .= '<p style="margin:0;padding:10px 0px">Hi ' . $trades['f_name'] . ',</p>';
 
-					$html .= '<p style="margin:0;padding:10px 0px">Congratulations for completing the job “' . $post_title . '”! Your milestone payments has now been released and can be withdrawn. </p>';
+					$html .= '<p style="margin:0;padding:10px 0px">Congratulations for completing the '.$pageType.' “' . $post_title . '”! Your milestone payments has now been released and can be withdrawn. </p>';
 					$html .= '<p style="margin:0;padding:10px 0px">Please leave feedback for ' . $home['f_name'] . ' to help other Tradespeoplehub members know what it was like to work with them.</p>';
 
-					$html .= '<div style="text-align:center"><a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none"> Leave feedback</a></div>';
+					$html .= '<div style="text-align:center"><a href="'.site_url().$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none"> Leave feedback</a></div>';
 
 					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 
 					$runs1 = $this->Common_model->send_mail($trades['email'], $subject, $html, null, null, 'support');
 
 
-					$subject = "Congratulations on Job Completion: “" . $post_title . "”";
+					$subject = "Congratulations on ".ucfirst($pageType)." Completion: “" . $post_title . "”";
 
-					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Congratulations! Your Job completed and Milestone payments released.</p>';
+					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Congratulations! Your '.$pageType.' completed and Milestone payments released.</p>';
 
 					$html .= '<p style="margin:0;padding:10px 0px">Hi ' . $home['f_name'] . ',</p>';
 
-					$html .= '<p style="margin:0;padding:10px 0px">Congratulations! Your Job “' . $post_title . '”! completed successfully and milestone payments released to ' . $trades['trading_name'] . '.</p>';
+					$html .= '<p style="margin:0;padding:10px 0px">Congratulations! Your '.ucfirst($pageType).' “' . $post_title . '”! completed successfully and milestone payments released to ' . $trades['trading_name'] . '.</p>';
 					$html .= '<p style="margin:0;padding:10px 0px">Please leave feedback to ' . $trades['trading_name'] . ' to help other Tradespeoplehub members know what it was like to work with them.</p>';
 
-					$html .= '<div style="text-align:center"><a href="' . site_url() . 'reviews/?post_id=' . $get_post_job['job_id'] . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Leave feedback</a></div>';
+					$html .= '<div style="text-align:center"><a href="'.site_url().$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Leave feedback</a></div>';
 
 					$html .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
 
 					$runs1 = $this->Common_model->send_mail($home['email'], $subject, $html, null, null, 'support');
 
 
-					$insertn1['nt_userId'] = $post_id;
+					$insertn1['nt_userId'] = $trades['id'];
 					// $insertn1['nt_message']='Congratulation this project has been completed successfully.You have released all the milestone amount of <a href="'.site_url().'payments/?post_id='.$get_post_job['job_id'].'"> '.$post_title.'</a> project and this project has been completed. Now you can go for rating by <a href="'.site_url().'reviews/?post_id='.$get_post_job['job_id'].'">clicking here</a>.';
-					$insertn1['nt_message'] = 
+					$insertn1['nt_message'] = $ntMsg;
 
 					$insertn1['nt_satus'] = 0;
 					$insertn1['nt_apstatus'] = 2;
@@ -423,7 +423,7 @@ class Dispute extends CI_Controller
 					$insertn1['posted_by'] = 0;
 					$this->Common_model->insert('notification', $insertn1);
 
-					$insertn2['nt_userId'] = $get_post_job['bid_by'];
+					$insertn2['nt_userId'] = $home['id'];
 					$insertn2['nt_message'] = $ntMsg;
 
 					$insertn2['nt_satus'] = 0;
@@ -435,16 +435,30 @@ class Dispute extends CI_Controller
 					$this->Common_model->insert('notification', $insertn2);
 				}
 			} else {
-
 				$amounts = $amount;
 				$u_wallet = $home['u_wallet'];
-				$update1['u_wallet'] = $u_wallet + $amounts;
-				
-			}			
+				$update1['u_wallet'] = $u_wallet + $amounts;				
+			}
+
+			if($diputeType == 1){
+				$post_title = $get_job_post['title'];
+				$subject = "Congratulations on Completing the Job: “" . $post_title . "”";
+				$post_id = $get_post_job['posted_by'];
+				$pageType = 'job';
+				$pageUrl = 'reviews/?post_id=' . $get_post_job['job_id'];
+				$disputeUrl = 'dispute/'.$dispute_ids;
+			}else{
+				$post_title = $get_job_post['order_id'];
+				$subject = "Congratulations on Completing the order: “" . $post_title . "”";
+				$post_id = $get_post_job['user_id'];
+				$pageUrl = 'order_tracking/' . $get_post_job['job_id'];
+				$pageType = 'order';
+				$disputeUrl = 'order-dispute/'.$dispute_ids;
+			}
 
 
 			$transactionid = md5(rand(1000, 999) . time());
-			$tr_message = '£' . $amounts . ' credited to your wallet as <a href="' . site_url('dispute/' . $dispute_ids) . '">Case ID: ' . $dispute['caseid'] . '</a> dispute was decided in your favour.';
+			$tr_message = '£' . $amounts . ' credited to your wallet as <a href="'.site_url($disputeUrl).'">Case ID: ' . $dispute['caseid'] . '</a> dispute was decided in your favour.';
 			$data1 = array(
 				'tr_userid' => $dispute_finel_user,
 				'tr_amount' => $amounts,
@@ -473,8 +487,7 @@ class Dispute extends CI_Controller
 				$update1['u_wallet']=$update1['u_wallet']+$checkStepIn['amount'];
 				if(isset($update1['withdrawable_balance'])){
 					$update1['withdrawable_balance']=$update1['withdrawable_balance']+$checkStepIn['amount'];
-				}
-				
+				}				
 			}
 
 			$this->Common_model->update_data('users', array('id' => $dispute_finel_user), $update1);
@@ -482,7 +495,7 @@ class Dispute extends CI_Controller
 			$job = $this->Common_model->GetColumnName('tbl_jobs', array('job_id' => $job_id), array('title'));
 
 			$insertn4['nt_userId'] = $home['id'];
-			$insertn4['nt_message'] = 'Milestone payment dispute decided. <a href="' . site_url('dispute/' . $dispute_ids) . '">View outcome!</a>';
+			$insertn4['nt_message'] = 'Milestone payment dispute decided. <a href="' . site_url($disputeUrl) . '">View outcome!</a>';
 
 			$insertn4['nt_satus'] = 0;
 			$insertn4['nt_apstatus'] = 0;
@@ -493,7 +506,7 @@ class Dispute extends CI_Controller
 			$this->Common_model->insert('notification', $insertn4);
 
 			$insertn5['nt_userId'] = $trades['id'];
-			$insertn5['nt_message'] = 'Milestone payment dispute decided. <a href="' . site_url('dispute/' . $dispute_ids) . '">View outcome!</a>';
+			$insertn5['nt_message'] = 'Milestone payment dispute decided. <a href="' . site_url($disputeUrl) . '">View outcome!</a>';
 
 			$insertn5['nt_satus'] = 0;
 			$insertn5['nt_apstatus'] = 0;
@@ -513,7 +526,7 @@ class Dispute extends CI_Controller
 			$html .= '<p style="margin:0;padding:10px 0px">Returned amount: £' . $amount . '</p>';
 			$html .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and closed case can\'t be reopened.</p>';
 
-			$html .= '<br><div style="text-align:center"><a href="' . site_url('dispute/' . $dispute_ids) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View reason</a></div><br>';
+			$html .= '<br><div style="text-align:center"><a href="' . site_url($disputeUrl) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View reason</a></div><br>';
 
 			$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 
@@ -525,7 +538,7 @@ class Dispute extends CI_Controller
 			$html .= '<p style="margin:0;padding:10px 0px">Returned  amount: £' . $amount . '</p>';
 			$html .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and closed case can\'t be reopened.</p>';
 
-			$html .= '<br><div style="text-align:center"><a href="' . site_url('dispute/' . $dispute_ids) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Request milestone release</a></div><br>';
+			$html .= '<br><div style="text-align:center"><a href="' . site_url($disputeUrl) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Request milestone release</a></div><br>';
 
 			$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 
@@ -536,7 +549,7 @@ class Dispute extends CI_Controller
 
 			if($diputeType == 2){
 				$od['is_cancel'] = 6;
-				$od['status'] = $order['previous_status'];
+				$od['status'] = 'completed';
 				$od['reason'] = '';
 				$od['status_update_time'] = date('Y-m-d H:i:s');
 				$run = $this->Common_model->update('service_order',array('id'=>$order['id']),$od);
@@ -547,14 +560,14 @@ class Dispute extends CI_Controller
 		      'is_cancel' => 6,
 		      'service_id' => $order['service_id'],
 		      'order_id' => $order['id'],
-		      'status' => 'disputed_cancelled'
+		      'status' => 'completed'
 		    ];
 		    $this->Common_model->insert('service_order_status_history', $insert1);
 
 		    $insert2['sender'] = 0;
 				$insert2['receiver'] = 0;
 				$insert2['order_id'] = $order['id'];
-				$insert2['status'] = 'disputed_cancelled';
+				$insert2['status'] = 'completed';
 				$insert2['is_cancel'] = 6;
 				$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
 				$run = $this->Common_model->insert('order_submit_conversation', $insert2);				

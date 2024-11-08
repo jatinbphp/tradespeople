@@ -463,7 +463,34 @@ if ($checkOtherUserReply) {
     margin: 2px;
 }
 	}
+
+	/*----------LOADER CSS START----------*/
+	.loader_ajax_small {
+		display: none;
+		border: 2px solid #f3f3f3 !important;
+		border-radius: 50%;
+		border-top: 2px solid #2D2D2D !important;
+		width: 29px;
+		height: 29px;
+		margin: 0 auto;
+		-webkit-animation: spin_loader_ajax_small 2s linear infinite;
+		animation: spin_loader_ajax_small 2s linear infinite;
+	}
+
+	@-webkit-keyframes spin_loader_ajax_small {
+		0% { -webkit-transform: rotate(0deg); }
+		100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin_loader_ajax_small {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+	/*----------LOADER CSS END----------*/s
 </style>
+<div class="loader-bg hide" id='loader'>
+	<span class="loader"></span>
+</div>
 <div class="acount-page membership-page project-list">
 	<div class="container">
 		<div class="row row_for_mobile">
@@ -999,8 +1026,7 @@ if ($checkOtherUserReply) {
 																confirmButtonText: 'Pay Now',
 																html: '<h3>You want to pay an arbitration of £<?= $setting['step_in_amount'] ?></h3>'
 															}).then((result) => {
-																console.log(result)
-																/* Read more about isConfirmed, isDenied below */
+																console.log(result);
 																if (result.value === true) {
 																	submitAsktoAdmin();
 																}
@@ -1333,7 +1359,6 @@ if ($checkOtherUserReply) {
 
 	function submitAsktoAdmin() {
 		$('#pay_when_accept_direct_hire_model').modal('hide');
-
 		$.ajax({
 			type: 'POST',
 			url: site_url + 'ordersubmitAsktoAdmin',

@@ -314,8 +314,7 @@ class Users extends CI_Controller
 			$json['msg'] = '<div class="alert alert-danger">Something went wrong, try gain later.</div>';
 		}*/
 		
-		echo json_encode($json);
-		
+		echo json_encode($json);		
 	}
 
   public function dashboard(){
@@ -447,8 +446,7 @@ class Users extends CI_Controller
 		echo json_encode(1);
 	}
 
-	function send_mail()
-	{
+	function send_mail(){
 		$user_data = $this->common_model->get_single_data('users', array('id' => $this->session->userdata('user_id')));
 		$admin = $this->common_model->get_single_data('admin', array('id' =>1));
 		
@@ -4587,6 +4585,9 @@ class Users extends CI_Controller
 		$homeowner_id = $this->input->post('homeowner_id');
 		$status = $this->input->post('status');
 
+		$homeOwner = $this->common_model->GetSingleData('users',['id'=>$homeowner_id]);
+    $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
+    $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		
 		if(!empty($serviceOrder)){
@@ -4606,6 +4607,26 @@ class Users extends CI_Controller
 			$input['previous_status'] = $status;
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
+
+			if($status != 'request_modification'){
+				$withdrawable_balance = $tradesman['withdrawable_balance'];
+				$update1['withdrawable_balance'] = $withdrawable_balance + $serviceOrder['price'];
+				$runss1 = $this->common_model->update('users',array('id'=>$tradesman['id']),$update1);
+
+				$transactionid = md5(rand(1000,999).time());
+			  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+			  $data1 = array(
+					'tr_userid'=>$tradesman['id'],
+			  	'tr_amount'=>$serviceOrder['price'],
+				  'tr_type'=>1,
+			  	'tr_transactionId'=>$transactionid,
+			  	'tr_message'=>$tr_message,
+			  	'tr_status'=>1,
+			  	'tr_created'=>date('Y-m-d H:i:s'),
+			  	'tr_update' =>date('Y-m-d H:i:s')
+				);
+				$run1 = $this->common_model->insert('transactions',$data1);
+			}
 
 			/*Manage Order History*/
       $insert1 = [
@@ -4633,9 +4654,7 @@ class Users extends CI_Controller
 				}
 
 				/*Tradesman Email Code*/
-        $homeOwner = $this->common_model->GetSingleData('users',['id'=>$homeowner_id]);
-        $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
-        $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+        
         $newStatus = ucwords(str_replace('_',' ',$status));                
 
         if($tradesman){                   

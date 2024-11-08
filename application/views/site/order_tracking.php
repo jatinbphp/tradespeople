@@ -554,7 +554,7 @@
 
 															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
 																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
-																	<button type="button" class="btn btn-warning ">View Dispute</button>
+																	<button type="button" class="btn btn-outline-warning ">View Dispute</button>
 																</a>
 															<?php endif; ?>
 
@@ -566,11 +566,11 @@
 																</a>
 															<?php endif; ?>
 
-															<button type="button" class="btn btn-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat()">Chat</button>
+															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat()">Chat</button>
 														<?php else: ?>
 															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
 																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
-																	<button type="button" class="btn btn-warning ">View Dispute</button>
+																	<button type="button" class="btn btn-outline-warning">View Dispute</button>
 																</a>
 															<?php endif; ?>
 
@@ -582,7 +582,7 @@
 																</a>	
 															<?php endif; ?>
 
-															<button class="btn btn-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">
+															<button class="btn btn-outline-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">
 																Chat
 															</button>
 
