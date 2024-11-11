@@ -4675,7 +4675,8 @@ class Users extends CI_Controller
 		$tId = $this->input->post('rate_to');
 		$oId = $this->input->post('order_id');
 		$rate = $this->input->post('rating');
-		$tRate = $this->input->post('tradesman_rating');
+		$tRate = $this->input->post('seller_communication_rating');
+		$recommandedRate = $this->input->post('recommanded_service_rating');
 		$review = $this->input->post('reviews');
 
 		$insert1 = [
@@ -4684,6 +4685,8 @@ class Users extends CI_Controller
       'order_id' => $oId,
       'service_id' => $this->input->post('service_id'),
       'rating' => $rate,
+      'seller_communication_rating' => $tRate,
+      'recommanded_service_rating' => $recommandedRate,
       'review' => $review
     ];
     $run = $this->common_model->insert('service_rating', $insert1);
@@ -5322,6 +5325,29 @@ class Users extends CI_Controller
 
 		$data['created_date'] = $ocDate->format('D jS F, Y H:i');
 
+		$data['user_type'] = $this->session->userdata('type');
+
     $this->load->view('site/completedOrder',$data);
+	}
+
+	public function submitRespond(){
+		$tId = $this->input->post('rate_to');
+		$oId = $this->input->post('order_id');
+		$seller_response = $this->input->post('seller_response');
+
+		$getRating=$this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
+		if(!empty($getRating)){
+			$input['seller_response'] = $seller_response;
+			$input['is_responded'] = 1;
+    	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
+
+    	if($run){
+    		echo json_encode(['status' => 'success', 'message' => 'Your respond submitted successfully']);	
+    	}else{
+    		echo json_encode(['status' => 'error', 'message' => 'Your respond not submitted']);	
+    	}			
+    }else{
+			echo json_encode(['status' => 'error', 'message' => 'Something is wrong']);
+    }	
 	}
 }

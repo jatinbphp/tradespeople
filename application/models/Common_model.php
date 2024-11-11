@@ -3764,7 +3764,31 @@ class Common_model extends CI_Model
 	}
 
 	public function get_service_avg_rating($id){
-		$query = $this->db->query("SELECT avg(rating)as average_rating FROM `service_rating` where rate_to=$id");
+		// $query = $this->db->query("SELECT avg(rating)as average_rating FROM `service_rating` where rate_to=$id");
+		// return $query->result_array();
+
+		$query = $this->db->query("
+		    SELECT 
+		        AVG(rating) AS avg_rating,
+		        AVG(seller_communication_rating) AS avg_seller_communication_rating,
+		        AVG(recommanded_service_rating) AS avg_recommended_service_rating,
+		        (AVG(rating) + AVG(seller_communication_rating) + AVG(recommanded_service_rating)) / 3 AS overall_average_rating
+		    FROM `service_rating`
+		    WHERE rate_to = $id
+		");
+		return $query->result_array();
+	}
+
+	public function get_service_avg_rating_details($id, $sId){
+		$query = $this->db->query("
+		    SELECT 
+		        AVG(rating) AS avg_rating,
+		        AVG(seller_communication_rating) AS avg_seller_communication_rating,
+		        AVG(recommanded_service_rating) AS avg_recommended_service_rating,
+		        (AVG(rating) + AVG(seller_communication_rating) + AVG(recommanded_service_rating)) / 3 AS overall_average_rating
+		    FROM `service_rating`
+		    WHERE rate_to = $id AND service_id = $sId
+		");
 		return $query->result_array();
 	}
 

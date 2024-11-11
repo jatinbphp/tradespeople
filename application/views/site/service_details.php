@@ -18,7 +18,7 @@
 					$current_item = 0;
 					foreach ($breadcrumb as $category): 
 						$current_item++;
-						$url .= '/' . $category['slug'];				        
+						$url .= '/' . $category['slug'];
 						?> 				    		
 						<li><a href="<?php echo $url; ?>"><?php echo $category['cat_name']; ?></a></li>
 					<?php endforeach; ?>
@@ -671,27 +671,27 @@
 									<ul>
 										<li>
 											<p>Overall Rating</p>
-											<div class="star"><span></span> <?php echo number_format($overallRating,1); ?></div>
+											<div class="star"><span></span> <?php echo number_format($serviceRatings[0]['overall_average_rating'],1); ?></div>
 										</li>
 										<li>
 											<p>Seller communication level</p>
 											<div class="star">
 												<span></span> 
-												<?php echo number_format($sellerCommunication[0]['average_rating'],1); ?>
+												<?php echo number_format($serviceRatings[0]['avg_seller_communication_rating'],1); ?>
 											</div>
 										</li>
 										<li>
 											<p>Recommend to a friend</p>
 											<div class="star">
 												<span></span> 
-												<?php echo $referalRating; ?>
+												<?php echo number_format($serviceRatings[0]['avg_recommended_service_rating'],1); ?>
 											</div>
 										</li>
 										<li>
 											<p>Service as described</p>
 											<div class="star">
 												<span></span> 
-												<?php echo number_format($serviceAsDescribed,1); ?>
+												<?php echo number_format($serviceRatings[0]['avg_rating'],1); ?>
 											</div>
 										</li>
 									</ul>
@@ -1391,4 +1391,4 @@
 		var days = $(this).data('days');
 		$('#delivery_in_days').text(days+' days');
 	});
-</script>												
+</script>

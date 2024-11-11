@@ -29,8 +29,8 @@
 	/*----------LOADER CSS END----------*/
 
 	.member-summary .member-image{
-		width: 165px;
-		height: 165px;
+		width: 60px;
+		height: 60px;
 		max-width: none;
 		max-height: none;
 	}
@@ -110,8 +110,11 @@
 	}
 	.rating-list .rating {
 		width: auto;
+		flex-direction:column;
 	}
-
+	.rating-list .rating > div {
+    margin-left: auto;
+	}
 
 	.rating-form h2 {
 		font-weight: 600;
@@ -168,34 +171,11 @@
 				</div>
 
 				<div class="rating-form">
-					<h2>
 						<?php if($order['is_review'] != 1):?>
+							<h2>
 							Public Feedback
-						<?php else: ?>
-							Review
-						<?php endif;?>						
-					</h2>
-					<h3>Share your experience with the community, to help them make better decisions.</h3>
-
-					<!-- <h4>Let other users know what is like working <?php // echo $tradesman['trading_name']; ?></h4>					 -->
-						<!-- <div class="member-summary mb-5">
-							<div class="summary member-summary-section">
-								<div class="member-image-container">
-									<?php 
-									if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-										$uprofileImg = base_url('img/profile/'.$tradesman['profile']);
-									}else{
-										$uprofileImg = base_url('img/default-img.png');
-									}
-									$suserName = ($tradesman['f_name'] ?? '').' '.($tradesman['l_name'] ??  '');
-									?>
-									<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $suserName;?>">
-								</div>											
-							</div>
-						</div>	 -->
-
-						<?php if($order['is_review'] != 1):?>
-
+								<h3>Share your experience with the community, to help them make better decisions.</h3>
+							</h2>
 							<form class="mt-3" id="order_service_review_form" style="width:100%">
 								<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
 								<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
@@ -204,10 +184,12 @@
 									<p><b>Communication With Seller</b><br> 
 									How responsive was the seller during the process?</p>
 									<div class="rating" id="orderRating">
-										<input type="hidden" name="rating" id="ratingValue">
-										<?php for($i=0; $i<=4; $i++):?>
-											<i class="fa fa-star-o star" style="--i: <?php echo $i?>;" onclick="handleStarClick(<?php echo $i?>)"></i>
-										<?php endfor;?>
+										<div id="orderStartDiv">
+											<input type="hidden" name="rating" id="ratingValue">
+											<?php for($i=0; $i<=4; $i++):?>
+												<i class="fa fa-star-o star" style="--i: <?php echo $i?>;" onclick="handleStarClick(<?php echo $i?>)"></i>
+											<?php endfor;?>
+										</div>
 									</div>
 								</div>
 								<div class="rating-list">
@@ -215,22 +197,25 @@
 										Did the result match the servies's description?
 									</p>
 									<div class="rating tradeRating" id="tRating">
-										<input type="hidden" name="tradesman_rating" id="ratingValue1">
-										<?php for($j=0; $j<=4; $j++):?>
-											<i class="fa fa-star-o tradeStar" style="--i: <?php echo $j?>;" onclick="handleTradeStarClick(<?php echo $j?>)"></i>
-										<?php endfor;?>
+										<div id="tradesStartDiv">
+											<input type="hidden" name="seller_communication_rating" id="ratingValue1">
+											<?php for($j=0; $j<=4; $j++):?>
+												<i class="fa fa-star-o tradeStar" style="--i: <?php echo $j?>;" onclick="handleTradeStarClick(<?php echo $j?>)"></i>
+											<?php endfor;?>
+										</div>	
 									</div>
 								</div>
-
 								<div class="rating-list">
 									<p><b>Buy Again or Recommanded</b><br>
 										Would you recommanded buying this service?
 									</p>
 									<div class="rating tradeRating2" id="tRating2">
-										<input type="hidden" name="tradesman_rating" id="ratingValue2">
-										<?php for($j=0; $j<=4; $j++):?>
-											<i class="fa fa-star-o tradeStar2" style="--i: <?php echo $j?>;" onclick="handleRecommandedStarClick(<?php echo $j?>)"></i>
-										<?php endfor;?>
+										<div id="recommandedStartDiv">
+											<input type="hidden" name="recommanded_service_rating" id="ratingValue2">
+											<?php for($j=0; $j<=4; $j++):?>
+												<i class="fa fa-star-o tradeStar2" style="--i: <?php echo $j?>;" onclick="handleRecommandedStarClick(<?php echo $j?>)"></i>
+											<?php endfor;?>
+										</div>
 									</div>
 								</div>
 
@@ -241,47 +226,163 @@
 								<div class="text-center mt-4">
 									<button type="submit" id="give-rating" class="btn btn-warning">
 										Submit
-									</button>											
+									</button>
 								</div>
 							</form>
 						<?php else: ?>
-							<p>Based on your expectations, how would you rate the quality of this delivery?
-							</p>
-							<div class="rating" id="orderRating">
-								<?php for($i=1; $i<=5; $i++):?>
+							<?php 
+								if(isset($homeOwner['profile']) && !empty($homeOwner['profile'])){
+									$uprofileImg = base_url('img/profile/'.$homeOwner['profile']);
+								}else{
+									$uprofileImg = base_url('img/default-img.png');
+								}
+								$homeUserName = ($homeOwner['f_name'] ?? '').' '.($homeOwner['l_name'] ??  '');
+							?>
+
+							<div class="member-summary mb-5">
+								<div class="summary member-summary-section">
+									<div class="member-image-container">
+										<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $homeUserName?>">
+									</div>
+									<div class="member-information-container">
+										<div class="member-name-container crop">
+											<h3 style="margin-bottom: 5px;"><?php echo $homeUserName?></h3>
+											<div class="member-job-title crop">
+												<?php echo $review['review']; ?>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="rating-list">
+								<p><b>Communication With Seller</b><br> 
+								How responsive was the seller during the process?</p>
+								<div class="rating" id="orderRating">
+									<div id="orderStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>
+											<?php $active = $review['rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star-o star <?php echo $active; ?>"></i>
+										<?php endfor;?>
+									</div>
+								</div>
+							</div>
+							<div class="rating-list">
+								<p><b>Service as Described</b><br>
+									Did the result match the servies's description?
+								</p>
+								<div class="rating tradeRating" id="tRating">
+									<div id="tradesStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>
+											<?php $active1 = $review['seller_communication_rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star-o star <?php echo $active1; ?>"></i>
+										<?php endfor;?>
+									</div>	
+								</div>
+							</div>
+							<div class="rating-list">
+								<p><b>Buy Again or Recommanded</b><br>
+									Would you recommanded buying this service?
+								</p>
+								<div class="rating tradeRating2" id="tRating2">
+									<div id="recommandedStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>
+											<?php $active2 = $review['recommanded_service_rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star-o star <?php echo $active2; ?>"></i>
+										<?php endfor;?>
+									</div>
+								</div>
+							</div>
+
+							<?php if($user_type == 1):?>
+								<?php if($review['is_responded'] == 0):?>
+									<form class="mt-3" id="seller_respond_form" style="width:100%">
+										<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+										<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+										<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+										<div class="review-div">
+											<label>You may respond to this review (This will be public)</label>
+											<textarea name="seller_response" class="form-control" rows="5" placeholder="Your reponse..."></textarea>
+										</div>
+										<div class="text-center mt-4">
+											<button type="submit" id="give-rating" class="btn btn-warning">
+												Submit
+											</button>
+										</div>
+									</form>
+								<?php else:?>									
 									<?php 
-									$active = $review['rating'] >= $i ? 'active' : '';
+										if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+											$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
+										}else{
+											$tProfileImg = base_url('img/default-img.png');
+										}
+										$tradeUserName = ($tradesman['trading_name'] ?? '');
 									?>
-									<i class="fa fa-star-o star <?php echo $active; ?>"></i>
-								<?php endfor;?>	
-							</div>
-
-							<p class="mt-4">
-								How was it working with <?php echo $tradesman['trading_name']; ?>
-							</p>
-							<div class="rating tradeRating" id="tRating">
-								<?php for($j=1; $j<=5; $j++):?>
+									<div class="member-summary mb-5 mt-5">
+										<h3 style="margin-bottom: 5px;">Seller's Response</h3>
+										<div class="summary member-summary-section">
+											<div class="member-image-container">
+												<img class="img-border-round member-image" src="<?php echo $tProfileImg;?>" alt="<?php echo $tradeUserName?>">
+											</div>
+											<div class="member-information-container">
+												<div class="member-name-container crop">
+													<h3 style="margin-bottom: 5px;"><?php echo $tradeUserName?></h3>
+													<div class="member-job-title crop">
+														<?php echo $review['seller_response']; ?>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>								
+								<?php endif;?>
+							<?php else:?>	
+								<?php if($review['is_responded'] == 1):?>
 									<?php 
-									$active1 = $tRate['rt_rate'] >= $j ? 'active' : '';
+										if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+											$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
+										}else{
+											$tProfileImg = base_url('img/default-img.png');
+										}
+										$tradeUserName = ($tradesman['trading_name'] ?? '');
 									?>
-									<i class="fa fa-star-o tradeStar <?php echo $active1; ?>"></i>
-								<?php endfor;?>	
-							</div>
-
-							<div class="mt-4" id="orderReviewd">
-								<label><b>Review By <?php echo $homeOwner['f_name'].' '.$homeOwner['l_name'];?></b></label>
-								<p><?php echo $review['review']; ?></p>
-							</div>
-						<?php endif; ?>
-
+									<div class="member-summary mb-5 mt-5">
+										<h3 style="margin-bottom: 5px;">Seller's Response</h3>
+										<div class="summary member-summary-section">
+											<div class="member-image-container">
+												<img class="img-border-round member-image" src="<?php echo $tProfileImg;?>" alt="<?php echo $tradeUserName?>">
+											</div>
+											<div class="member-information-container">
+												<div class="member-name-container crop">
+													<h3 style="margin-bottom: 5px;"><?php echo $tradeUserName?></h3>
+													<div class="member-job-title crop">
+														<?php echo $review['seller_response']; ?>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								<?php endif;?>
+							<?php endif;?>							
+						<?php endif;?>
 					</div>
 				</div>
 
 				<div class="col-sm-4">
 					<div class="box-border p-4 submit-requirements-sidebar">
-						<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
+						<?php 
+							$image_path = FCPATH . 'img/services/' . ($service['image'] ?? '');
+							$mime_type = get_mime_by_extension($image_path);
+              $is_image = strpos($mime_type, 'image') !== false;
+              $is_video = strpos($mime_type, 'video') !== false;
+						?>
+
 						<?php if (file_exists($image_path) && $service['image']): ?>
-							<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+							<?php if ($is_image): ?>
+								<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
+							<?php else: ?>
+								<video width="100%" controls autoplay><source src="<?php echo base_url('img/services/') . $service['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+							<?php endif; ?>
 						<?php else: ?>	
 							<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
 						<?php endif; ?>
@@ -331,28 +432,49 @@
 					rating: {
 						requiredHidden: true
 					},
-					tradesman_rating: {
+					seller_communication_rating: {
+						requiredHidden: true
+					},
+					recommanded_service_rating: {
 						requiredHidden: true
 					}
 				},
 				messages: {
 					reviews: "Please enter review for your order",
 					rating: "Please give rating of the order",
-					tradesman_rating: "Please give rating of the tradesman",
+					seller_communication_rating: "Please give rating of the seller coomunication",
+					recommanded_service_rating: "Please give rating of the recommanded service",
 				},
 				errorPlacement: function(error, element) {
 					if (element.attr("name") == "rating") {
-						error.insertAfter("#orderRating");
-					} else if (element.attr("name") == "tradesman_rating") {
-						error.insertAfter("#tRating");
-					}  else {
+						error.insertAfter("#orderStartDiv");
+					} else if (element.attr("name") == "seller_communication_rating") {
+						error.insertAfter("#tradesStartDiv");
+					} else if (element.attr("name") == "recommanded_service_rating") {
+						error.insertAfter("#recommandedStartDiv");
+					} else {
 						error.insertAfter(element);
 					}
 				},
 				submitHandler: function(form) {
 					giveRating();
 				}
-			});     
+			});
+
+			$("#seller_respond_form").validate({
+				ignore: [],
+				rules: {
+					seller_response: {
+						required: true,
+					}
+				},
+				messages: {
+					seller_response: "Please enter your response for this review",
+				},
+				submitHandler: function(form) {
+					giveRespond();
+				}
+			});
 		}); 
 
 	function handleStarClick(index) {
@@ -425,47 +547,92 @@
   }
 
 	/* Start Code For Submit Review & Rating */
-    function giveRating(){
-    	$('#loader').removeClass('hide');
-    	formData = $("#order_service_review_form").serialize();
+  function giveRating(){
+  	$('#loader').removeClass('hide');
+  	formData = $("#order_service_review_form").serialize();
 
-    	$.ajax({
-    		url: '<?= site_url().'users/submitReviewRating'; ?>',
-    		type: 'POST',
-    		data: formData,
-    		dataType: 'json',		                
-    		success: function(result) {
-    			$('#loader').addClass('hide');
-    			if(result.status == 0){
-    				swal({
-    					title: "Error",
-    					text: result.message,
-    					type: "error"
-    				}, function() {
-    					window.location.reload();
-    				});	
-    			}else if(result.status == 2){
-    				swal({
-    					title: "Login Required!",
-    					text: "If you want to order the please login first!",
-    					type: "warning"
-    				}, function() {
-    					window.location.href = '<?php echo base_url().'login'; ?>';
-    				});	
-    			}else{
-    				swal({
-    					title: "Success",
-    					text: result.message,
-    					type: "success"
-    				}, function() {
-    					window.location.reload();
-    				});
-    			}		                    
-    		},
-    		error: function(xhr, status, error) {
-            // Handle error
-    		}
-    	});
-    }
+  	$.ajax({
+  		url: '<?= site_url().'users/submitReviewRating'; ?>',
+  		type: 'POST',
+  		data: formData,
+  		dataType: 'json',		                
+  		success: function(result) {
+  			$('#loader').addClass('hide');
+  			if(result.status == 0){
+  				swal({
+  					title: "Error",
+  					text: result.message,
+  					type: "error"
+  				}, function() {
+  					window.location.reload();
+  				});	
+  			}else if(result.status == 2){
+  				swal({
+  					title: "Login Required!",
+  					text: "If you want to order the please login first!",
+  					type: "warning"
+  				}, function() {
+  					window.location.href = '<?php echo base_url().'login'; ?>';
+  				});	
+  			}else{
+  				swal({
+  					title: "Success",
+  					text: result.message,
+  					type: "success"
+  				}, function() {
+  					window.location.reload();
+  				});
+  			}		                    
+  		},
+  		error: function(xhr, status, error) {
+          // Handle error
+  		}
+  	});
+  }
 	/* End Code For Submit Review & Rating */
-	    </script>
+
+	/* Start Code For Submit Seller Respond */
+  function giveRespond(){
+  	$('#loader').removeClass('hide');
+  	formData = $("#seller_respond_form").serialize();
+
+  	$.ajax({
+  		url: '<?= site_url().'users/submitRespond'; ?>',
+  		type: 'POST',
+  		data: formData,
+  		dataType: 'json',		                
+  		success: function(result) {
+  			$('#loader').addClass('hide');
+  			if(result.status == 0){
+  				swal({
+  					title: "Error",
+  					text: result.message,
+  					type: "error"
+  				}, function() {
+  					window.location.reload();
+  				});	
+  			}else if(result.status == 2){
+  				swal({
+  					title: "Login Required!",
+  					text: "If you want to order the please login first!",
+  					type: "warning"
+  				}, function() {
+  					window.location.href = '<?php echo base_url().'login'; ?>';
+  				});	
+  			}else{
+  				swal({
+  					title: "Success",
+  					text: result.message,
+  					type: "success"
+  				}, function() {
+  					window.location.reload();
+  				});
+  			}		                    
+  		},
+  		error: function(xhr, status, error) {
+          // Handle error
+  		}
+  	});
+  }
+	/* End Code For Submit Seller Respond */
+	</script>

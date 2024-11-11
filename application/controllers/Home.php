@@ -2433,14 +2433,11 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
 		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
 
-		// echo '<pre>';
-		// print_r($data['service_details']);
-		// exit;
-
 		$data['package_data'] = !empty($data['service_details']['package_data']) ? json_decode($data['service_details']['package_data']) : [];
 
 		$data['referalRating'] = $this->common_model->get_referral_code_rating($uId);
-		$data['sellerCommunication'] = $this->common_model->get_service_avg_rating($uId);
+		$data['serviceRatings'] = $this->common_model->get_service_avg_rating_details($uId, $sId);
+
 		$data['serviceAsDescribed'] = $data['service_details']['average_rating'];
 		
 		$sellerCommunication = min($data['serviceAvgRating'][0]['average_rating'], 5);
