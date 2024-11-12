@@ -2376,7 +2376,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['service_details'] = $this->common_model->get_service_details('my_services',$slug);
 		$sId = $data['service_details']['id'];
 		$uId = $data['service_details']['user_id'];
-		$user_id = $this->session->userdata('user_id');
+		$user_id = $this->session->userdata('user_id') ? $this->session->userdata('user_id') : 0;
 		$data['lastOrder'] = [];
 		if($this->session->userdata('type') == 2){
 			$lastOrder = $this->common_model->GetSingleData('service_order',['service_id'=>$sId, 'user_id'=>$user_id], 'id');
@@ -2428,7 +2428,11 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
 		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
 		$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
-		$data['service_rating'] = $this->common_model->getRatingsWithUsers($sId,3);
+
+		$viewData['service_rating'] = $this->common_model->getRatingsWithUsers($sId,5,0,$user_id);
+		$data['service_rating_view'] = $this->load->view('site/review_list', $viewData, true);
+
+		$data['rating_count'] = count($viewData['service_rating']);
 		$data['service_user'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
 		$data['user_profile'] = $this->common_model->get_all_data('user_portfolio',['userid'=>$uId],'','',5);
 		$data['rating_percentage'] = $data['service_details']['average_rating'] * 100 / 5;
@@ -2533,11 +2537,17 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 	}
 
 	public function loadMoreReviews() {
-    $service_id = $this->input->post('service_id');
+		$service_id = $this->input->post('service_id');
     $limit = $this->input->post('limit');
     $offset = $this->input->post('offset');
-    $reviews = $this->common_model->getRatingsWithUsers($service_id, $limit, $offset);
-    echo json_encode($reviews);
+    $user_id = $this->session->userdata('user_id') ? $this->session->userdata('user_id') : 0;
+    $viewData['service_rating'] = $this->common_model->getRatingsWithUsers($service_id, $limit, $offset, $user_id);
+    $data['service_rating'] = $this->load->view('site/review_list', $viewData, true);
+    $data['reviewCount'] = count($viewData['service_rating']);
+    
+    $allReview = $this->common_model->get_all_data('service_rating', array('id' => $service_id));
+    $data['totalReviews'] = count($allReview);
+    echo json_encode($data);
 	}
 
 	public function categoryDetail($slug='', $slug2='', $slug3=''){

@@ -1,5 +1,19 @@
 <?php include ("include/header.php") ?>
 
+<style type="text/css">
+.icon-zoom-in-out {
+    transition: transform 0.3s ease;
+}
+
+.icon-zoom-in {
+    transform: scale(1.5);
+}
+
+.icon-zoom-out {
+    transform: scale(1);
+}
+</style>
+
 <div class="loader-bg hide" id='loader'>
 	<span class="loader"></span>
 </div>
@@ -85,39 +99,39 @@
 							</div>
 							
 							<?php if(!empty($extra_services)): ?>
-							<div class="order-hourlie-addons">								
-								<h2 class="title">Get more with Offer Add-ons</h2>
-								<div class="content-text clear addons-container">
-									<ul class="addons clearfix boxmodelfix">
-										<?php foreach($extra_services as $exs): ?>
-											<li class="item bg-fill clearfix clear">
-												<div class="checkbox col-xs-7 col-sm-9">
-													<div class="form-check">
-														<div class="check-box">
-															<input class="checkbox-effect" data-price="<?php echo $exs['price']?>" data-id="<?php echo $exs['id']?>" id="business_<?php echo $exs['id']?>" type="checkbox" value="<?php echo $exs['id']?>" name="extra_services[]">
-															<label for="business_<?php echo $exs['id']?>">
-																<div>
-																	<h6><?php echo $exs['ex_service_name']; ?></h6>
-																	<?php //if(!empty($exs['additional_working_days'])): ?>
+								<div class="order-hourlie-addons">								
+									<h2 class="title">Get more with Offer Add-ons</h2>
+									<div class="content-text clear addons-container">
+										<ul class="addons clearfix boxmodelfix">
+											<?php foreach($extra_services as $exs): ?>
+												<li class="item bg-fill clearfix clear">
+													<div class="checkbox col-xs-7 col-sm-9">
+														<div class="form-check">
+															<div class="check-box">
+																<input class="checkbox-effect" data-price="<?php echo $exs['price']?>" data-id="<?php echo $exs['id']?>" id="business_<?php echo $exs['id']?>" type="checkbox" value="<?php echo $exs['id']?>" name="extra_services[]">
+																<label for="business_<?php echo $exs['id']?>">
+																	<div>
+																		<h6><?php echo $exs['ex_service_name']; ?></h6>
+																		<?php //if(!empty($exs['additional_working_days'])): ?>
 																		<!--<span>
 																			Additional Working Days <?php //echo $exs['additional_working_days'];?>
 																		</span>-->
-																	<?php //endif; ?>
-																</div>
-															</label>
+																		<?php //endif; ?>
+																	</div>
+																</label>
+															</div>
 														</div>
-													</div>
-												</div>	
-												<div class="price-tag text-right col-xs-5 col-sm-3">
-													<span>
-														<i class="fa fa-plus"></i> <?php echo $exs['price']?>
-													</span>
-												</div>							
-											</li>
-										<?php endforeach; ?>							
-									</ul>
-								</div>								
-							</div>
+													</div>	
+													<div class="price-tag text-right col-xs-5 col-sm-3">
+														<span>
+															<i class="fa fa-plus"></i> <?php echo $exs['price']?>
+														</span>
+													</div>							
+												</li>
+											<?php endforeach; ?>							
+										</ul>
+									</div>								
+								</div>
 							<?php endif; ?>
 
 							<?php if(!empty($service_faqs)): ?>
@@ -171,41 +185,14 @@
 								</div>
 							<?php endif;?>
 
-							<?php if(!empty($service_rating)): ?>
+							<?php if($service_details['total_reviews'] > 0): ?>
 								<div class="client-reviews">
 									<h2 class="title">Reviews</h2>
 									<ul id="reviewList">
-										<?php foreach($service_rating as $rate): ?>
-											<li>
-												<div class="profile-img">
-													<?php 
-													if(isset($rate['rate_by_profile']) && !empty($rate['rate_by_profile'])){
-														$profileImg = base_url('img/profile/'.$rate['rate_by_profile']);
-													}else{
-														$profileImg = base_url('img/default-img.png');
-													}
-													$userName = ($rate['rate_by_fname'] ?? '').' '.($rate['rate_by_lname'] ??  '');
-													?>
-													<img src="<?php echo $profileImg; ?>" alt="<?php echo $userName; ?>" />
-												</div>
-												<div class="review-right">
-													<div class="review-name">
-														<h4><?php echo $userName; ?></h4>
-														<span><?php echo time_ago($rate['created_at']); ?></span>
-													</div>
-													<div class="review-star">
-														<?php
-														for($i=1; $i<=$rate['rating']; $i++){
-															echo '<i class="fa fa-star" aria-hidden="true"></i>';
-														}
-														?>										
-													</div>
-													<div class="review-text"><p><?php echo $rate['review']; ?></p></div>
-												</div>
-											</li>
-										<?php endforeach; ?>						
+										<?php echo $service_rating_view; ?>
 									</ul>
-									<?php if(count($service_rating) > 5): ?>
+									
+									<?php if($service_details['total_reviews'] > 5): ?>
 										<button type="button" class="btn btn-warning mt-3" id="loadReview">Load More Review</button>
 									<?php endif;?>	
 								</div>
@@ -253,21 +240,21 @@
 													$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
 													?>
 													<?php if(!empty($attributes)): ?>
-													<?php foreach($attributes as $att):?>
-													<?php 
+														<?php foreach($attributes as $att):?>
+															<?php 
 
-													$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
-													$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
-													$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
+															$bchecked = !empty($basicAtt) && in_array($att['id'], $basicAtt) ? 'check' : 'times';
+															$schecked = !empty($standardAtt) && in_array($att['id'], $standardAtt) ? 'check' : 'times';
+															$pchecked = !empty($premiumAtt) && in_array($att['id'], $premiumAtt) ? 'check' : 'times';
 
-													?>
-													<tr>
-														<td><?php echo $att['attribute_name']; ?></td>
-														<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
-														<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
-														<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
-													</tr>
-													<?php endforeach; ?>	
+															?>
+															<tr>
+																<td><?php echo $att['attribute_name']; ?></td>
+																<td><i class="fa fa-<?php echo $bchecked; ?>" aria-hidden="true"></i></td>
+																<td><i class="fa fa-<?php echo $schecked; ?>" aria-hidden="true"></i></td>
+																<td><i class="fa fa-<?php echo $pchecked; ?>" aria-hidden="true"></i></td>
+															</tr>
+														<?php endforeach; ?>	
 													<?php endif; ?>
 													<tr class="select-package">
 														<td class="package-row-label">Total</td>
@@ -286,7 +273,7 @@
 										</div>
 									</div>
 								</div>
-								<?php endif; ?>
+							<?php endif; ?>
 
 							
 						</div>
@@ -725,8 +712,8 @@
 											<?php $i=1;?>
 											<?php foreach($similar_service as $key => $list): ?>
 												<?php 
-													$package_data = json_decode($list['package_data'],true);
-													$servicePrice = $package_data['basic']['price'];				
+												$package_data = json_decode($list['package_data'],true);
+												$servicePrice = $package_data['basic']['price'];				
 												?>										
 												<div class="pull-left <?php echo $i != count($similar_service) ? 'similar-service' : ''?>">
 													<div class="img-name">
@@ -734,31 +721,31 @@
 															<?php $image_path = FCPATH . 'img/services/' . ($list['image'] ?? ''); ?>
 															<?php if (file_exists($image_path) && $list['image']): ?>
 																<?php
-													                $mime_type = get_mime_by_extension($image_path);
-													                $is_image = strpos($mime_type, 'image') !== false;
-													                $is_video = strpos($mime_type, 'video') !== false;
-													            ?>
-													            <?php if ($is_image): ?>
+																$mime_type = get_mime_by_extension($image_path);
+																$is_image = strpos($mime_type, 'image') !== false;
+																$is_video = strpos($mime_type, 'video') !== false;
+																?>
+																<?php if ($is_image): ?>
 																	<img src="<?php echo  base_url().'img/services/'.$list['image']; ?>" style="border-radius: 0!important;">
 																<?php elseif ($is_video): ?>
 																	<video src="<?php echo base_url('img/services/') . $list['image']; ?>" 
-																	type="<?php echo $mime_type; ?>" loop controls class="profileServiceVideo">
+																		type="<?php echo $mime_type; ?>" loop controls class="profileServiceVideo">
 																	</video>
 																<?php endif; ?>
 															<?php else: ?>
-															<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
+																<img src="<?php echo  base_url().'img/default-image.jpg'; ?>" style="border-radius: 0!important;">
 															<?php endif; ?>
 														</a>
 														<div class="names">
 															<a href="<?php echo base_url().'service/'.$list['slug']?>">
 																<p class="mb-0">
 																	<?php
-																		$totalChr = strlen($list['description']);
-																		if($totalChr > 50 ){
-																			echo substr($list['description'], 0, 50).'...';		
-																		}else{
-																			echo $list['description'];
-																		}
+																	$totalChr = strlen($list['description']);
+																	if($totalChr > 50 ){
+																		echo substr($list['description'], 0, 50).'...';		
+																	}else{
+																		echo $list['description'];
+																	}
 																	?>
 																	<span class="badge bg-green">
 																		<?php echo '£'.number_format($servicePrice,2); ?>
@@ -816,54 +803,54 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
+					<span aria-hidden="true">&times;</span>
+				</button>
 				<div class="modal-body">
 					<h3 class="sharing-title">Share This Service</h3>
 					<div class="sharing-description">
 						<p>Spread the word about this Service</p>
 					</div>
 					<div class="social-mediums-icons">
-							<div class="social-medium">
-								<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
-									<div>
-										<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-187 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g transform="translate(13)"><use fill="#3E5A99" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><path d="M36.0548085,23.6101303 L31.1603782,23.6101303 L31.1603782,20.6914819 C31.1603782,19.5844084 31.9761166,19.2824792 32.485953,19.2824792 L35.9528412,19.2824792 L35.9528412,14.4516129 L31.1603782,14.4516129 C25.8580786,14.4516129 24.7364383,18.0747626 24.7364383,20.3895528 L24.7364383,23.6101303 L21.6774194,23.6101303 L21.6774194,28.6422827 L24.7364383,28.6422827 L24.7364383,42.7323095 L31.1603782,42.7323095 L31.1603782,28.6422827 L35.4430047,28.6422827 L36.0548085,23.6101303 Z" fill="#FFF"></path></g></g></g></g></g></svg>
-									</div>
-									<span class="social-medium-title">Facebook</span>
-								</a>
-							</div>
-							<div class="social-medium">
-								<a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
-									<div>
-										<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-373.000000, -369.000000)"><g transform="translate(120.000000, 189.000000)"><g transform="translate(54.000000, 180.000000)"><g transform="translate(199.000000, 0.000000)"><use fill="#0677B5" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.1" fill="#000000" xlink:href="#path-1"></use><g transform="translate(14.451613, 14.451613)" fill="#FFFFFF"><polygon id="Fill-3" points="0.341578453 27.0700924 6.14841215 27.0700924 6.14841215 8.79564516 0.341578453 8.79564516"></polygon><path d="M3.24482451,6.31920138 C1.28074841,6.31920138 -0.000170789226,4.95288757 -0.000170789226,3.15960069 C-0.000170789226,1.36631381 1.28074841,-3.55271368e-15 3.24482451,-3.55271368e-15 C5.20890062,-3.55271368e-15 6.4044252,1.36631381 6.48981981,3.15960069 C6.57521443,4.86749295 5.29429523,6.31920138 3.24482451,6.31920138" id="Fill-5"></path><path d="M27.0702632,26.9848686 L21.2634295,26.9848686 L21.2634295,17.2498827 C21.2634295,14.7734389 20.4094833,13.1509412 18.3600126,13.1509412 C16.736661,13.1509412 15.7981742,14.2610712 15.3712012,15.3703472 C15.2004119,15.7973203 15.2004119,16.3105419 15.2004119,16.8229096 L15.2004119,26.9848686 L9.39357824,26.9848686 C9.39357824,26.9848686 9.47811891,10.5037082 9.39357824,8.71042134 L15.2004119,8.71042134 L15.2004119,11.2722597 C15.9689635,9.99134053 17.3352773,8.28344827 20.4094833,8.28344827 C24.2522409,8.28344827 27.0702632,10.9306813 27.0702632,16.4813311 L27.0702632,26.9848686 Z" id="Fill-6"></path></g></g></g></g></g></g></svg>
-									</div>
-									<span class="social-medium-title">LinkedIn</span>
-								</a>
-							</div>
-							<div class="social-medium">
-								<a href="https://twitter.com/intent/tweet?url=<?php echo base_url().'service/'.$service_details['slug']?>&text=Check%20this%20out!" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
-									<div>
-										<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-280 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g transform="translate(106)"><use fill="#60A9DD" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><path d="M42.1262216,19.1290952 C41.1407756,19.6357476 39.9910886,19.9735159 38.8414016,20.057958 C39.9910886,19.2979793 40.8944141,18.1157902 41.3050166,16.6802749 C40.2374501,17.3558115 39.0056426,17.862464 37.6917146,18.2002323 C36.6241481,17.0180432 35.1459791,16.2580645 33.5035691,16.2580645 C30.38299,16.2580645 27.8372545,18.960211 27.8372545,22.3378941 C27.8372545,22.8445466 27.919375,23.266757 28.0014955,23.6889674 C23.2385065,23.4356411 19.0503609,20.9868209 16.2582639,17.3558115 C15.7655409,18.2846744 15.5191794,19.2979793 15.5191794,20.3957263 C15.5191794,22.5067783 16.5046254,24.364504 18.0649149,25.462251 C17.1615894,25.462251 16.2582639,25.1244827 15.5191794,24.7022723 L15.5191794,24.7867144 C15.5191794,27.7421871 17.4900714,30.1918518 20.1179274,30.7821019 C19.6252044,30.950986 19.1324814,31.0362725 18.6397584,31.0362725 C18.3112764,31.0362725 17.9006739,31.0362725 17.5721919,30.950986 C18.3112764,33.3998063 20.364289,35.1730899 22.9100245,35.1730899 C20.9391325,36.7774894 18.4755174,37.7916388 15.8476614,37.7916388 C15.3549384,37.7916388 14.9443359,37.7916388 14.4516129,37.7063523 C16.9973484,39.3951938 19.9536864,40.4084988 23.156386,40.4084988 C33.6678101,40.4084988 39.3341246,31.1198702 39.3341246,23.0978728 L39.3341246,22.3378941 C40.4016911,21.4090313 41.3871371,20.3957263 42.1262216,19.1290952" fill="#FFF"></path></g></g></g></g></g></svg>
-									</div>
-									<span class="social-medium-title">Twitter</span>
-								</a>
-							</div>
-							<div class="social-medium">
-								<a href="https://api.whatsapp.com/send?text=Check%20this%20out!%20<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
-									<div>
-										<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-466 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g id="Whatsapp-hover" transform="translate(292)"><use fill="#0D9F16" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><g transform="translate(13 12)"><path d="M17.642644,28.0096291 C16.9446524,28.1278206 16.2430562,28.1906038 15.8734156,28.182968 C13.1552465,28.1749406 10.9390414,27.5685806 8.90103721,26.3405891 C8.64032262,26.1829785 8.41277082,26.1434291 8.10827611,26.2224627 C6.73831205,26.6002059 5.35851712,26.9388564 3.98645581,27.3009364 C3.69782156,27.3876059 3.67029514,27.3246922 3.74356786,27.0646838 C4.10711332,25.7656859 4.44922748,24.4743891 4.82496321,23.1907933 C4.92943256,22.8287133 4.8921408,22.5530417 4.68444736,22.2300543 C1.86547907,17.7184122 1.98410486,12.0965133 5.13909218,7.92306484 C8.41676871,3.57673432 12.8726419,1.79720379 18.2041831,2.93089011 C23.4583882,4.03351116 26.8073712,7.41107537 28.0389167,12.6161385 C29.7211091,19.7341954 24.8697074,26.8127027 17.642644,28.0096291 M30.5651873,11.8836248 C28.8668723,4.86803116 22.8061429,0.0826101053 15.4799188,-1.30526316e-05 C14.5151175,0.0157153684 13.5050288,0.0942922105 12.5066715,0.303134316 C2.28650233,2.36401432 -3.00938562,13.6474269 1.97230782,22.7577722 C2.1006334,23.0017259 2.11079197,23.1988206 2.03955095,23.4508017 C1.37721268,25.8523554 0.720904017,28.2539091 0.060597463,30.6474354 C-0.0462312896,31.0412985 -0.0462312896,31.0412985 0.349297252,30.9389659 C2.85007315,30.2854206 5.34678562,29.6395764 7.84559535,28.9783954 C8.05283002,28.9231827 8.2151704,28.9465469 8.40464397,29.0413091 C11.6232698,30.6788922 15.0135425,31.1594901 18.5636651,30.4745533 C27.0461958,28.8365133 32.5894939,20.2457933 30.5651873,11.8836248" fill="#FCFCFC"></path><path d="M19.5243964,22.7735333 C18.9730159,22.7972891 18.44713,22.6711354 17.9191469,22.5292533 C14.3709905,21.513628 11.7082674,19.3012069 9.56900529,16.3875985 C8.7605148,15.2930701 8.01153383,14.1593838 7.76255074,12.7971459 C7.46382347,11.1591712 7.93629493,9.77356905 9.16010677,8.63949116 C9.54960571,8.28511221 10.7354049,8.12789326 11.209908,8.35605326 C11.3860116,8.442788 11.4986078,8.60039853 11.571815,8.76564484 C12.0204302,9.82878168 12.4633436,10.8757333 12.9021934,11.9388701 C12.9852315,12.1436659 12.9495782,12.3404343 12.8568404,12.5451648 C12.6313203,13.0333985 12.2694133,13.4268701 11.9018044,13.8127059 C11.6232632,14.0965354 11.6111385,14.3561522 11.8167347,14.6948027 C13.0701702,16.7734343 14.8038108,18.2852554 17.0713985,19.1907164 C17.4094493,19.3245712 17.6645275,19.2773859 17.8895888,18.9940133 C18.2673562,18.5295354 18.666555,18.0647312 19.0243985,17.5845901 C19.2693182,17.2459396 19.5503499,17.1987543 19.8960687,17.3559733 C20.6454429,17.6946238 21.3944239,18.0490027 22.1437981,18.4033817 C22.3118404,18.4743227 22.4777854,18.5609922 22.6438615,18.6396343 C23.4029355,19.0177691 23.3952674,19.0254048 23.3299905,19.8599248 C23.2033034,21.4898722 21.9757558,22.2933922 20.520722,22.6948912 C20.2004979,22.7811691 19.8604154,22.7892617 19.5243964,22.7735333" fill="#FDFDFD"></path></g></g></g></g></g></g></svg>
-									</div>
-									<span class="social-medium-title">WhatsApp</span>
-								</a>
-							</div>
-							<div class="social-medium">
-								<a href="javascript:void(0)" onclick="copyToClipboard(); return false;">
-									<div>
-										<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-373 -556)"><g transform="translate(120 189)"><g transform="translate(54 260)"><g transform="translate(199 107)"><g class="circle-wrapper" fill="#FFF" stroke="#CCC"><circle class="background-circle" cx="28" cy="28" r="27.5" fill-opacity="0" fill="#000"></circle></g><path class="inner-image" d="M28.121892,24.7230821 C28.7203205,24.1246416 29.6823291,24.1176829 30.2824972,24.7161235 C30.8757068,25.3093451 30.8861445,26.2644145 30.2737991,26.8750326 L25.8795248,31.2711352 C25.2810963,31.8695757 24.3190877,31.8765344 23.7206592,31.2780938 C23.1257099,30.6831325 23.1152722,29.7298028 23.7276177,29.117445 L28.121892,24.7230821 Z M32.3996119,31.2085077 L30.2477048,29.0565572 L35.7014063,23.6010061 C36.2006766,23.1017257 35.9188585,21.6125829 34.6524169,20.3461157 C33.3946732,19.0883468 31.8916436,18.801304 31.402811,19.2901465 L25.942151,24.7509166 L23.7902439,22.5972264 L29.2491643,17.138196 C31.1766607,15.2106607 34.5341228,15.8508529 36.8408559,18.1593722 C39.1562871,20.47485 39.7877683,23.8202023 37.855053,25.7546962 L32.3996119,31.2085077 Z M28.0557865,31.24678 L30.2076936,33.4004702 L24.7539921,38.8542817 C22.8212768,40.7887756 19.4742524,40.1555419 17.1588212,37.8400641 C14.8520881,35.5332845 14.2101692,32.1774943 16.1376656,30.249959 L21.5983256,24.7891889 L23.7502327,26.9428791 L18.2895727,32.4036491 C17.8007401,32.8924916 18.0877771,34.3955516 19.3455207,35.6533205 C20.6119624,36.9197878 22.1028147,37.2016115 22.602085,36.7023312 L28.0557865,31.24678 Z" fill="#999"></path></g></g></g></g></g></svg>
-									</div>
-									<span class="social-medium-title copyTitle">Copy Link</span>
-								</a>
-							</div>
+						<div class="social-medium">
+							<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+								<div>
+									<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-187 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g transform="translate(13)"><use fill="#3E5A99" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><path d="M36.0548085,23.6101303 L31.1603782,23.6101303 L31.1603782,20.6914819 C31.1603782,19.5844084 31.9761166,19.2824792 32.485953,19.2824792 L35.9528412,19.2824792 L35.9528412,14.4516129 L31.1603782,14.4516129 C25.8580786,14.4516129 24.7364383,18.0747626 24.7364383,20.3895528 L24.7364383,23.6101303 L21.6774194,23.6101303 L21.6774194,28.6422827 L24.7364383,28.6422827 L24.7364383,42.7323095 L31.1603782,42.7323095 L31.1603782,28.6422827 L35.4430047,28.6422827 L36.0548085,23.6101303 Z" fill="#FFF"></path></g></g></g></g></g></svg>
+								</div>
+								<span class="social-medium-title">Facebook</span>
+							</a>
+						</div>
+						<div class="social-medium">
+							<a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+								<div>
+									<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-373.000000, -369.000000)"><g transform="translate(120.000000, 189.000000)"><g transform="translate(54.000000, 180.000000)"><g transform="translate(199.000000, 0.000000)"><use fill="#0677B5" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.1" fill="#000000" xlink:href="#path-1"></use><g transform="translate(14.451613, 14.451613)" fill="#FFFFFF"><polygon id="Fill-3" points="0.341578453 27.0700924 6.14841215 27.0700924 6.14841215 8.79564516 0.341578453 8.79564516"></polygon><path d="M3.24482451,6.31920138 C1.28074841,6.31920138 -0.000170789226,4.95288757 -0.000170789226,3.15960069 C-0.000170789226,1.36631381 1.28074841,-3.55271368e-15 3.24482451,-3.55271368e-15 C5.20890062,-3.55271368e-15 6.4044252,1.36631381 6.48981981,3.15960069 C6.57521443,4.86749295 5.29429523,6.31920138 3.24482451,6.31920138" id="Fill-5"></path><path d="M27.0702632,26.9848686 L21.2634295,26.9848686 L21.2634295,17.2498827 C21.2634295,14.7734389 20.4094833,13.1509412 18.3600126,13.1509412 C16.736661,13.1509412 15.7981742,14.2610712 15.3712012,15.3703472 C15.2004119,15.7973203 15.2004119,16.3105419 15.2004119,16.8229096 L15.2004119,26.9848686 L9.39357824,26.9848686 C9.39357824,26.9848686 9.47811891,10.5037082 9.39357824,8.71042134 L15.2004119,8.71042134 L15.2004119,11.2722597 C15.9689635,9.99134053 17.3352773,8.28344827 20.4094833,8.28344827 C24.2522409,8.28344827 27.0702632,10.9306813 27.0702632,16.4813311 L27.0702632,26.9848686 Z" id="Fill-6"></path></g></g></g></g></g></g></svg>
+								</div>
+								<span class="social-medium-title">LinkedIn</span>
+							</a>
+						</div>
+						<div class="social-medium">
+							<a href="https://twitter.com/intent/tweet?url=<?php echo base_url().'service/'.$service_details['slug']?>&text=Check%20this%20out!" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+								<div>
+									<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-280 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g transform="translate(106)"><use fill="#60A9DD" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><path d="M42.1262216,19.1290952 C41.1407756,19.6357476 39.9910886,19.9735159 38.8414016,20.057958 C39.9910886,19.2979793 40.8944141,18.1157902 41.3050166,16.6802749 C40.2374501,17.3558115 39.0056426,17.862464 37.6917146,18.2002323 C36.6241481,17.0180432 35.1459791,16.2580645 33.5035691,16.2580645 C30.38299,16.2580645 27.8372545,18.960211 27.8372545,22.3378941 C27.8372545,22.8445466 27.919375,23.266757 28.0014955,23.6889674 C23.2385065,23.4356411 19.0503609,20.9868209 16.2582639,17.3558115 C15.7655409,18.2846744 15.5191794,19.2979793 15.5191794,20.3957263 C15.5191794,22.5067783 16.5046254,24.364504 18.0649149,25.462251 C17.1615894,25.462251 16.2582639,25.1244827 15.5191794,24.7022723 L15.5191794,24.7867144 C15.5191794,27.7421871 17.4900714,30.1918518 20.1179274,30.7821019 C19.6252044,30.950986 19.1324814,31.0362725 18.6397584,31.0362725 C18.3112764,31.0362725 17.9006739,31.0362725 17.5721919,30.950986 C18.3112764,33.3998063 20.364289,35.1730899 22.9100245,35.1730899 C20.9391325,36.7774894 18.4755174,37.7916388 15.8476614,37.7916388 C15.3549384,37.7916388 14.9443359,37.7916388 14.4516129,37.7063523 C16.9973484,39.3951938 19.9536864,40.4084988 23.156386,40.4084988 C33.6678101,40.4084988 39.3341246,31.1198702 39.3341246,23.0978728 L39.3341246,22.3378941 C40.4016911,21.4090313 41.3871371,20.3957263 42.1262216,19.1290952" fill="#FFF"></path></g></g></g></g></g></svg>
+								</div>
+								<span class="social-medium-title">Twitter</span>
+							</a>
+						</div>
+						<div class="social-medium">
+							<a href="https://api.whatsapp.com/send?text=Check%20this%20out!%20<?php echo base_url().'service/'.$service_details['slug']?>" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+								<div>
+									<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-466 -369)"><g transform="translate(120 189)"><g transform="translate(54 180)"><g id="Whatsapp-hover" transform="translate(292)"><use fill="#0D9F16" xlink:href="#path-1"></use><use class="image-filter" fill-opacity="0.2" fill="#000" xlink:href="#path-1"></use><g transform="translate(13 12)"><path d="M17.642644,28.0096291 C16.9446524,28.1278206 16.2430562,28.1906038 15.8734156,28.182968 C13.1552465,28.1749406 10.9390414,27.5685806 8.90103721,26.3405891 C8.64032262,26.1829785 8.41277082,26.1434291 8.10827611,26.2224627 C6.73831205,26.6002059 5.35851712,26.9388564 3.98645581,27.3009364 C3.69782156,27.3876059 3.67029514,27.3246922 3.74356786,27.0646838 C4.10711332,25.7656859 4.44922748,24.4743891 4.82496321,23.1907933 C4.92943256,22.8287133 4.8921408,22.5530417 4.68444736,22.2300543 C1.86547907,17.7184122 1.98410486,12.0965133 5.13909218,7.92306484 C8.41676871,3.57673432 12.8726419,1.79720379 18.2041831,2.93089011 C23.4583882,4.03351116 26.8073712,7.41107537 28.0389167,12.6161385 C29.7211091,19.7341954 24.8697074,26.8127027 17.642644,28.0096291 M30.5651873,11.8836248 C28.8668723,4.86803116 22.8061429,0.0826101053 15.4799188,-1.30526316e-05 C14.5151175,0.0157153684 13.5050288,0.0942922105 12.5066715,0.303134316 C2.28650233,2.36401432 -3.00938562,13.6474269 1.97230782,22.7577722 C2.1006334,23.0017259 2.11079197,23.1988206 2.03955095,23.4508017 C1.37721268,25.8523554 0.720904017,28.2539091 0.060597463,30.6474354 C-0.0462312896,31.0412985 -0.0462312896,31.0412985 0.349297252,30.9389659 C2.85007315,30.2854206 5.34678562,29.6395764 7.84559535,28.9783954 C8.05283002,28.9231827 8.2151704,28.9465469 8.40464397,29.0413091 C11.6232698,30.6788922 15.0135425,31.1594901 18.5636651,30.4745533 C27.0461958,28.8365133 32.5894939,20.2457933 30.5651873,11.8836248" fill="#FCFCFC"></path><path d="M19.5243964,22.7735333 C18.9730159,22.7972891 18.44713,22.6711354 17.9191469,22.5292533 C14.3709905,21.513628 11.7082674,19.3012069 9.56900529,16.3875985 C8.7605148,15.2930701 8.01153383,14.1593838 7.76255074,12.7971459 C7.46382347,11.1591712 7.93629493,9.77356905 9.16010677,8.63949116 C9.54960571,8.28511221 10.7354049,8.12789326 11.209908,8.35605326 C11.3860116,8.442788 11.4986078,8.60039853 11.571815,8.76564484 C12.0204302,9.82878168 12.4633436,10.8757333 12.9021934,11.9388701 C12.9852315,12.1436659 12.9495782,12.3404343 12.8568404,12.5451648 C12.6313203,13.0333985 12.2694133,13.4268701 11.9018044,13.8127059 C11.6232632,14.0965354 11.6111385,14.3561522 11.8167347,14.6948027 C13.0701702,16.7734343 14.8038108,18.2852554 17.0713985,19.1907164 C17.4094493,19.3245712 17.6645275,19.2773859 17.8895888,18.9940133 C18.2673562,18.5295354 18.666555,18.0647312 19.0243985,17.5845901 C19.2693182,17.2459396 19.5503499,17.1987543 19.8960687,17.3559733 C20.6454429,17.6946238 21.3944239,18.0490027 22.1437981,18.4033817 C22.3118404,18.4743227 22.4777854,18.5609922 22.6438615,18.6396343 C23.4029355,19.0177691 23.3952674,19.0254048 23.3299905,19.8599248 C23.2033034,21.4898722 21.9757558,22.2933922 20.520722,22.6948912 C20.2004979,22.7811691 19.8604154,22.7892617 19.5243964,22.7735333" fill="#FDFDFD"></path></g></g></g></g></g></g></svg>
+								</div>
+								<span class="social-medium-title">WhatsApp</span>
+							</a>
+						</div>
+						<div class="social-medium">
+							<a href="javascript:void(0)" onclick="copyToClipboard(); return false;">
+								<div>
+									<svg class="social-medium-image" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><defs><circle id="path-1" cx="28" cy="28" r="28"></circle></defs><g fill="none" fill-rule="evenodd"><g transform="translate(-373 -556)"><g transform="translate(120 189)"><g transform="translate(54 260)"><g transform="translate(199 107)"><g class="circle-wrapper" fill="#FFF" stroke="#CCC"><circle class="background-circle" cx="28" cy="28" r="27.5" fill-opacity="0" fill="#000"></circle></g><path class="inner-image" d="M28.121892,24.7230821 C28.7203205,24.1246416 29.6823291,24.1176829 30.2824972,24.7161235 C30.8757068,25.3093451 30.8861445,26.2644145 30.2737991,26.8750326 L25.8795248,31.2711352 C25.2810963,31.8695757 24.3190877,31.8765344 23.7206592,31.2780938 C23.1257099,30.6831325 23.1152722,29.7298028 23.7276177,29.117445 L28.121892,24.7230821 Z M32.3996119,31.2085077 L30.2477048,29.0565572 L35.7014063,23.6010061 C36.2006766,23.1017257 35.9188585,21.6125829 34.6524169,20.3461157 C33.3946732,19.0883468 31.8916436,18.801304 31.402811,19.2901465 L25.942151,24.7509166 L23.7902439,22.5972264 L29.2491643,17.138196 C31.1766607,15.2106607 34.5341228,15.8508529 36.8408559,18.1593722 C39.1562871,20.47485 39.7877683,23.8202023 37.855053,25.7546962 L32.3996119,31.2085077 Z M28.0557865,31.24678 L30.2076936,33.4004702 L24.7539921,38.8542817 C22.8212768,40.7887756 19.4742524,40.1555419 17.1588212,37.8400641 C14.8520881,35.5332845 14.2101692,32.1774943 16.1376656,30.249959 L21.5983256,24.7891889 L23.7502327,26.9428791 L18.2895727,32.4036491 C17.8007401,32.8924916 18.0877771,34.3955516 19.3455207,35.6533205 C20.6119624,36.9197878 22.1028147,37.2016115 22.602085,36.7023312 L28.0557865,31.24678 Z" fill="#999"></path></g></g></g></g></g></svg>
+								</div>
+								<span class="social-medium-title copyTitle">Copy Link</span>
+							</a>
+						</div>
 						
 
 					</div>
@@ -887,9 +874,9 @@
 					</div>
 
 					<div class="order-hourlie-addons-sidebar p-0" id="sellerAvailability">
-					<div id="datepickerAvailability"></div>
-					<input type="hidden" name="selected_dates" id="selectedDates">
-					<div class="mt-4">
+						<div id="datepickerAvailability"></div>
+						<input type="hidden" name="selected_dates" id="selectedDates">
+						<div class="mt-4">
 						<!-- <select class="form-control input-md" name="time_slot" id="timeSlot">
 							<option value="">Select time slot from</option>
 							<?php for ($hour = 0; $hour <= 23; $hour++) {
@@ -900,13 +887,13 @@
 						</select> -->
 
 						<select class="form-control input-md" name="time_slot" id="timeSlot">
-						    <option value="">Select time slot from</option>
-						    <?php for ($hour = 0; $hour <= 23; $hour++) {
+							<option value="">Select time slot from</option>
+							<?php for ($hour = 0; $hour <= 23; $hour++) {
 						        $hour_padded = sprintf("%02d", $hour);  // Pad the hour to two digits
 						        echo "<option value=\"{$hour_padded}:00\">{$hour_padded}:00</option>\n";  // Display in 24-hour format
-						    }?>
-						</select>
-					</div>												
+						      }?>
+						    </select>
+						  </div>												
 					<!--<div style="padding: 10px 0;">
 						<span>
 							Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -916,41 +903,41 @@
 					</div>
 					<input type="hidden" id="packageType">
 					<input class="btn btn-warning btn-lg col-md-12 mt-4" type="button" id="openChat" value="Select & Continue">
-					</div>
-				</div>											
-			</div>
+				</div>
+			</div>											
 		</div>
 	</div>
-	
-	
+</div>
 
-	<?php if(!empty($browse_history)): ?>
-		<div class="container mt-5" id="browseHistory">
-			<h2 class="title">
-				Your Browsing History
-			</h2>
-			<div class="row">
-				<?php
-				$data['all_services'] = $browse_history;
-				$this->load->view('site/service_list',$data);
-				?>
-			</div>
-		</div>
-	<?php endif; ?>
 
-	<?php if(!empty($people_history)): ?>
-		<div class="container" id="peopleHistory">
-			<h2 class="title">
-				People Who Viewed This Service Also Viewed
-			</h2>
-			<div class="row">
-				<?php
-				$data['all_services'] = $people_history;
-				$this->load->view('site/service_list',$data);
-				?>			
-			</div>
+
+<?php if(!empty($browse_history)): ?>
+	<div class="container mt-5" id="browseHistory">
+		<h2 class="title">
+			Your Browsing History
+		</h2>
+		<div class="row">
+			<?php
+			$data['all_services'] = $browse_history;
+			$this->load->view('site/service_list',$data);
+			?>
 		</div>
-	<?php endif; ?>
+	</div>
+<?php endif; ?>
+
+<?php if(!empty($people_history)): ?>
+	<div class="container" id="peopleHistory">
+		<h2 class="title">
+			People Who Viewed This Service Also Viewed
+		</h2>
+		<div class="row">
+			<?php
+			$data['all_services'] = $people_history;
+			$this->load->view('site/service_list',$data);
+			?>			
+		</div>
+	</div>
+<?php endif; ?>
 </div>
 
 <?php include ("include/footer.php") ?>
@@ -1056,7 +1043,7 @@
 	        		console.log(JSON.stringify(e));
 	        	}
 	        });*/
-	    });
+	      });
 	});
 
 	/*$("#serviceOrder").submit(function(){
@@ -1087,8 +1074,8 @@
 		return false;
 	});*/
 
-	let offset = <?php echo count($service_rating); ?>;
-	const limit = 3;
+	let offset = <?php echo $rating_count; ?>;
+	const limit = 4;
 
 	function loadMoreReviews() {
 		var baseUrl = "<?php echo base_url(); ?>";
@@ -1101,40 +1088,19 @@
 				offset: offset
 			},
 			success: function(response) {
-				let reviews = JSON.parse(response);
-				if (reviews.length > 0) {
-					offset += limit;
-	                // Append reviews to your reviews container
-	                let reviewsHtml = '';
-	                reviews.forEach(review => {
-	                	let profileImg = review.rate_by_profile ? baseUrl + 'img/profile/' + review.rate_by_profile : baseUrl + 'img/default-img.png';
-	                	let userName = (review.rate_by_fname || '') + ' ' + (review.rate_by_lname || '');
-
-	                	reviewsHtml += `
-	                	<li>
-	                	<div class="profile-img">
-	                	<img src="${profileImg}" alt="${userName}" />
-	                	</div>
-	                	<div class="review-right">
-	                	<div class="review-name">
-	                	<h4>${userName}</h4>
-	                	<span></span>
-	                	</div>
-	                	<div class="review-star">
-	                	${getStars(review.rating)}
-	                	</div>
-	                	<div class="review-text"><p>${review.review}</p></div>
-	                	</div>
-	                	</li>
-	                	`;
-	                });
-
-	                $('#reviewList').append(reviewsHtml);
-	            } else {
-	            	$('#loadReview').hide();
-	            }
-	        }
-	    });
+			 	let data = JSON.parse(response);
+        
+        if(data.reviewCount > 0){
+        	offset += limit;
+        	$('#reviewList').append(data.service_rating);
+        	if (offset >= data.totalReviews) {
+            $('#loadReview').hide();
+          }
+        }else{
+        	$('#loadReview').hide();
+        }
+			}
+		});
 	}
 
 	$('#loadReview').on('click', function() {
@@ -1142,253 +1108,254 @@
 	});
 
 	function timeAgo(dateString) {
-	    // Function to format the time ago (e.g., using a library like moment.js)
-	    return moment(dateString).fromNow(); // Example using moment.js
-	}
+    // Function to format the time ago (e.g., using a library like moment.js)
+    return moment(dateString).fromNow(); // Example using moment.js
+  }
 
-	function getStars(rating) {
-	    // Generate star icons based on the rating
-	    let starsHtml = '';
-	    for (let i = 1; i <= rating; i++) {
-	    	starsHtml += '<i class="fa fa-star" aria-hidden="true"></i>';
-	    }
-	    return starsHtml;
-	}
+  function getStars(rating) {
+    // Generate star icons based on the rating
+  	let starsHtml = '';
+  	for (let i = 1; i <= rating; i++) {
+  		starsHtml += '<i class="fa fa-star" aria-hidden="true"></i>';
+  	}
+  	return starsHtml;
+  }
 
-	$('#timeSlot').on('change', function() {
-        updateAvailabilityMessage(); // Call formatSentence when time slot changes
-    });
+  $('#timeSlot').on('change', function() {
+    updateAvailabilityMessage(); // Call formatSentence when time slot changes
+  });
 
-    $('#timeSlotTo').on('change', function() {
-        updateAvailabilityMessage(); // Call formatSentence when time slot changes
-    });
+  $('#timeSlotTo').on('change', function() {
+    updateAvailabilityMessage(); // Call formatSentence when time slot changes
+  });
 
-	$('#openChat').on('click', function(){
-		$('#checkoutBtn').disabled = true;
-		var selectedDates = $('#selectedDates').val();
-		var timeSlot = $('#timeSlot').val();
-		var timeSlotTo = $('#timeSlotTo').val();
-		var isOpen = 1;
-		if(selectedDates == "" || timeSlot == ""){
-			isOpen = 0;
-		}
+  $('#openChat').on('click', function(){
+  	$('#checkoutBtn').disabled = true;
+  	var selectedDates = $('#selectedDates').val();
+  	var timeSlot = $('#timeSlot').val();
+  	var timeSlotTo = $('#timeSlotTo').val();
+  	var isOpen = 1;
+  	if(selectedDates == "" || timeSlot == ""){
+  		isOpen = 0;
+  	}
 
-		if(isOpen == 0){
-			swal({
-				title: "Error",
-				text: 'Please select date & time',
-				type: "error"
-			});	
-		}else{
-			var formId = $('#packageType').val();
-	        var formType = formId+'Form';
+  	if(isOpen == 0){
+  		swal({
+  			title: "Error",
+  			text: 'Please select date & time',
+  			type: "error"
+  		});	
+  	}else{
+  		var formId = $('#packageType').val();
+  		var formType = formId+'Form';
 
-	        var formData = $('#'+formType).serialize();
-			formData += '&date=' + encodeURIComponent($('#selectedDates').val());
-			formData += '&time=' + encodeURIComponent($('#timeSlot').val());
+  		var formData = $('#'+formType).serialize();
+  		formData += '&date=' + encodeURIComponent($('#selectedDates').val());
+  		formData += '&time=' + encodeURIComponent($('#timeSlot').val());
 
-	        // Submit the form using AJAX
-	        $.ajax({
-	        	url: "<?= site_url().'checkout/addToCart'; ?>", 
-	        	data: formData, 
-	        	type: "POST", 
-	        	dataType: 'json',
-	        	success: function (data) {
-	        		if (data.status == 1) {
-	        			window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
-	        		} else if (data.status == 2) {
-	        			swal({
-	        				title: "Login Required!",
-	        				text: "If you want to order the please login first!",
-	        				type: "warning"
-	        			}, function() {
-	        				window.location.href = '<?php echo base_url().'login'; ?>';
-	        			});        
-	        		} else {
-	        			alert('Something is wrong. Please try again!!!');
-	        		}            
-	        	},
-	        	error: function(e) {
-	        		console.log(JSON.stringify(e));
-	        	}
-	        });
+        // Submit the form using AJAX
+  		$.ajax({
+  			url: "<?= site_url().'checkout/addToCart'; ?>", 
+  			data: formData, 
+  			type: "POST", 
+  			dataType: 'json',
+  			success: function (data) {
+  				if (data.status == 1) {
+  					window.location.href = '<?php echo base_url().'serviceCheckout'; ?>';
+  				} else if (data.status == 2) {
+  					swal({
+  						title: "Login Required!",
+  						text: "If you want to order the please login first!",
+  						type: "warning"
+  					}, function() {
+  						window.location.href = '<?php echo base_url().'login'; ?>';
+  					});        
+  				} else {
+  					alert('Something is wrong. Please try again!!!');
+  				}            
+  			},
+  			error: function(e) {
+  				console.log(JSON.stringify(e));
+  			}
+  		});
+  	}
+  });
 
-			/*swal({
-				title: "Send Inquiry",
-				text: "Are you sure you want to continue with this service?",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonText: 'Yes, Continue',
-				cancelButtonText: 'Cancel'
-			}, function() {
-				$('#loader').removeClass('hide');
-				var serviceId = <?php echo $service_details['id']; ?>;
-				var msg = $('#notAvailablMsg').text();
+  $('#contactBtn').on('click', function(){
+  	$('#contactServiceName').val('<?php echo $service_details['slug']?>');
+  	$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
+  	$('#post_id-footer').val(<?php echo $service_details['id']?>)
+  	$('#rid-footer').val(<?php echo $service_user['id']?>)
+  	$('#chat_type').val('service');
+  	$('#ch_msg').val('Hello');
+  	send_msg();
+  	get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
+  	showdiv();
+  });
 
-				$.ajax({
-					url: '<?= site_url().'users/sendInquiry'; ?>',
-					type: 'POST',
-					data: {'serviceId':serviceId,'message':msg},
-					dataType: 'json',
-					success: function(result) {
-						if(result.status == 0){
-							swal({
-								title: "Error",
-								text: result.message,
-								type: "error"
-							}); 
-						}else if(result.status == 2){
-							swal({
-								title: "Login Required!",
-								text: "If you want to order the please login first!",
-								type: "warning"
-							}, function() {
-								window.location.href = '<?php echo base_url().'login'; ?>';
-							}); 
-						}else{
-							$('#loader').addClass('hide');
-							swal({
-								title: "Success",
-								text: result.message,
-								type: "success"
-							}, function() {
-								$('#checkoutBtn').disabled = false;
-								get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
-								showdiv();
-							});
-						}
-					},
-					error: function(xhr, status, error) {
-			                // Handle error
-			            }
-			        }); 
-			});*/
-		}
-	});
+  $(document).ready(function() {
+  	var $comparePackage = $("#comparePackage");
+  	var $browseHistory = $("#browseHistory");
+  	var $peopleHistory = $("#peopleHistory");
+  	var $footer = $("#footer");
 
-	$('#contactBtn').on('click', function(){
-		$('#contactServiceName').val('<?php echo $service_details['slug']?>');
-		$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
-		$('#post_id-footer').val(<?php echo $service_details['id']?>)
-		$('#rid-footer').val(<?php echo $service_user['id']?>)
-		$('#chat_type').val('service');
-		$('#ch_msg').val('Hello');
-		send_msg();
-		get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
-		showdiv();
-	});
+  	if ($browseHistory.length) {
+  		var $footerOffsetTop = $("#browseHistory").offset().top; 
+  	}else if ($peopleHistory.length) {
+  		var $footerOffsetTop = $("#peopleHistory").offset().top; 
+  	}else{
+  		var $footerOffsetTop = $("#footer").offset().top; 
+  	}
 
-	$(document).ready(function() {
-		var $comparePackage = $("#comparePackage");
-		var $browseHistory = $("#browseHistory");
-		var $peopleHistory = $("#peopleHistory");
-		var $footer = $("#footer");
+  	var $window = $(window);  
+  	var $sidebar = $(".sidebar-main"); 
+  	var $sidebarHeight = $sidebar.innerHeight();
+  	var $sidebarOffset = $sidebar.offset();
+  	var $sidebarwidth = $("#sidebar").width();
 
-		if ($browseHistory.length) {
-			var $footerOffsetTop = $("#browseHistory").offset().top; 
-		}else if ($peopleHistory.length) {
-			var $footerOffsetTop = $("#peopleHistory").offset().top; 
-		}else{
-			var $footerOffsetTop = $("#footer").offset().top; 
-		}
+  	$window.scroll(function() {
+  		if($window.scrollTop() > $sidebarOffset.top) {
+  			$sidebar.addClass("fixed");
+  			$sidebar.css('width', $sidebarwidth); 
+  		} else {
+  			$sidebar.removeClass("fixed");
+  			$sidebar.css('width', '100%');   
+  		}    
+  		if($window.scrollTop() + $sidebarHeight > $footerOffsetTop) {
+  			$sidebar.css({"top" : -($window.scrollTop() + $sidebarHeight - $footerOffsetTop)});        
+  		} else {
+  			$sidebar.css({"top": "0"});  
+  		}    
+  	});   
+  });
 
-		var $window = $(window);  
-		var $sidebar = $(".sidebar-main"); 
-		var $sidebarHeight = $sidebar.innerHeight();
-		var $sidebarOffset = $sidebar.offset();
-		var $sidebarwidth = $("#sidebar").width();
+  $('.save').on('click', function (){
+  	var sId = $(this).data('id');
+  	$.ajax({
+  		type:'POST',
+  		url:site_url+'users/updateWishlist',
+  		data:{sId:sId},
+  		dataType: 'json',
+  		success:function(response){
+  			if(response.status == 0){
+  				swal({
+  					title: "Login Required!",
+  					text: "If you want to add this service into your wishlist then please login first!",
+  					type: "warning"
+  				}, function() {
+  					window.location.href = '<?php echo base_url().'login'; ?>';
+  				});
+  			}else{
+  				if(response.status == 1){
+  					$('#serId_'+sId).attr('fill', '#ff0000');
+  					$('#serviceLike').css('color','#ff0000');
+  				}else{
+  					$('#serId_'+sId).attr('fill', '#b5b6ba');
+  					$('#serviceLike').css('color','#c6c7ca');
+  				}
+  				$('.totalLikes').text(response.totalLikes);
+  			}
+  		}
+  	});
+  });
 
-		$window.scroll(function() {
-			if($window.scrollTop() > $sidebarOffset.top) {
-				$sidebar.addClass("fixed");
-				$sidebar.css('width', $sidebarwidth); 
-			} else {
-				$sidebar.removeClass("fixed");
-				$sidebar.css('width', '100%');   
-			}    
-			if($window.scrollTop() + $sidebarHeight > $footerOffsetTop) {
-				$sidebar.css({"top" : -($window.scrollTop() + $sidebarHeight - $footerOffsetTop)});        
-			} else {
-				$sidebar.css({"top": "0"});  
-			}    
-		});   
-	});
+  function copyToClipboard() {
+  	var link = "<?php echo base_url().'service/'.$service_details['slug']; ?>";
+  	navigator.clipboard.writeText(link).then(function() {
+  		$('.copyTitle').text('Link copied');	        
+  	}).catch(function(err) {
+  		console.error("Failed to copy: ", err);
+  	});
 
-	$('.save').on('click', function (){
-	    var sId = $(this).data('id');
-	    $.ajax({
-	    	type:'POST',
-	      	url:site_url+'users/updateWishlist',
-	      	data:{sId:sId},
-	      	dataType: 'json',
-	      	success:function(response){
-		      	if(response.status == 0){
-		      		swal({
-			            title: "Login Required!",
-			            text: "If you want to add this service into your wishlist then please login first!",
-			            type: "warning"
-			        }, function() {
-			            window.location.href = '<?php echo base_url().'login'; ?>';
-			        });
-		      	}else{
-		      		if(response.status == 1){
-			          $('#serId_'+sId).attr('fill', '#ff0000');
-			          $('#serviceLike').css('color','#ff0000');
-			        }else{
-			          $('#serId_'+sId).attr('fill', '#b5b6ba');
-			          $('#serviceLike').css('color','#c6c7ca');
-			        }
-			        $('.totalLikes').text(response.totalLikes);
-		      	}
-	      	}
-	    });
-	});
+  	setTimeout(function() {
+  		$('#ShareThis').modal('hide');
+  	}, 2000);
+  }
 
-	function copyToClipboard() {
-	    var link = "<?php echo base_url().'service/'.$service_details['slug']; ?>";
-	    navigator.clipboard.writeText(link).then(function() {
-	        $('.copyTitle').text('Link copied');	        
-	    }).catch(function(err) {
-	        console.error("Failed to copy: ", err);
-	    });
+  $('#readMoreHowItWork').on('click', function(){
+  	var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p><p style="margin-top: 10px;">The process is straightforward: simply click the buy button, select the desired date and time for the service, make your payment, and submit any necessary details. Your payment is securely held in escrow until the job is completed.</p><p style="margin-top: 10px;">Once the task is finished and you are completely satisfied with the results, you can release the payment to the professional by accepting the delivery.</p>';					   
+  	$('#howItWorkText').empty().html(howToWork);
+  	$(this).hide();
+  	$('#readLessHowItWork').show();
+  });
 
-	    setTimeout(function() {
-            $('#ShareThis').modal('hide');
-        }, 2000);
-	}
-	
-	$('#readMoreHowItWork').on('click', function(){
-		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p><p style="margin-top: 10px;">The process is straightforward: simply click the buy button, select the desired date and time for the service, make your payment, and submit any necessary details. Your payment is securely held in escrow until the job is completed.</p><p style="margin-top: 10px;">Once the task is finished and you are completely satisfied with the results, you can release the payment to the professional by accepting the delivery.</p>';					   
-		$('#howItWorkText').empty().html(howToWork);
-		$(this).hide();
-		$('#readLessHowItWork').show();
-	});
-	
-	$('#readLessHowItWork').on('click', function(){
-		var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p>';					   
-		$('#howItWorkText').empty().html(howToWork);
-		$(this).hide();
-		$('#readMoreHowItWork').show();
-	});
-	
-	$('#readMoreAboutUs').on('click', function(){
-		var aboutUs = `<?php echo $service_user['about_business'];?>`;
-		console.log(aboutUs);
-		$('#aboutUsText').empty().html(aboutUs);
-		$(this).hide();
-		$('#readLessAboutUs').show();
-	});
-	
-	$('#readLessAboutUs').on('click', function(){
-		var aboutUs = `<?php echo substr($service_user['about_business'], 0, 215);?>`;
-		console.log(aboutUs);
-		$('#aboutUsText').empty().html(aboutUs);
-		$(this).hide();
-		$('#readMoreAboutUs').show();
-	});
-	
-	$('.packageTypes').on('click', function(){
-		var days = $(this).data('days');
-		$('#delivery_in_days').text(days+' days');
-	});
+  $('#readLessHowItWork').on('click', function(){
+  	var howToWork = '<p style="margin-top: 10px;">Our platform operates much like purchasing a product on Amazon or eBay. Services are prelisted with comprehensive details, outlining exactly what the seller will provide and what is excluded.</p>';					   
+  	$('#howItWorkText').empty().html(howToWork);
+  	$(this).hide();
+  	$('#readMoreHowItWork').show();
+  });
+
+  $('#readMoreAboutUs').on('click', function(){
+  	var aboutUs = `<?php echo $service_user['about_business'];?>`;
+  	$('#aboutUsText').empty().html(aboutUs);
+  	$(this).hide();
+  	$('#readLessAboutUs').show();
+  });
+
+  $('#readLessAboutUs').on('click', function(){
+  	var aboutUs = `<?php echo substr($service_user['about_business'], 0, 215);?>`;
+  	$('#aboutUsText').empty().html(aboutUs);
+  	$(this).hide();
+  	$('#readMoreAboutUs').show();
+  });
+
+  $('.packageTypes').on('click', function(){
+  	var days = $(this).data('days');
+  	$('#delivery_in_days').text(days+' days');
+  });
+
+  function toggleOrderReq(){
+		$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
+    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+  }
+
+  function helpfulRating (help,rateId,serviceId) {
+    // var help = $(this).data('help');
+  	// var rateId = $(this).data('id');
+  	// var serviceId = $(this).data('sid');
+
+  	$.ajax({
+  		type:'POST',
+  		url:site_url+'users/ratingHelpful',
+  		data:{rateId:rateId,serviceId:serviceId,help:help},
+  		dataType: 'json',
+  		success:function(response){
+  			if(response.status == 0){
+  				swal({
+  					title: "Login Required!",
+  					text: "If you want to mark this review as helpful, please login first!",
+  					type: "warning"
+  				}, function() {
+  					window.location.href = '<?php echo base_url().'login'; ?>';
+  				});
+  			}else{
+  				var targetYes = $('#helpYes_'+rateId);
+          var targetNo = $('#helpNo_'+rateId);
+
+          if (response.status == 1) {
+          	if(response.help == 'yes'){
+          		targetYes.empty().append('<i class="fa fa-thumbs-up text-danger icon-zoom-in-out icon-zoom-in"></i> Yes');
+              targetNo.empty().append('<i class="fa fa-thumbs-o-down icon-zoom-in-out icon-zoom-out"></i> No');
+          	}else{
+          		targetNo.empty().append('<i class="fa fa-thumbs-down text-danger icon-zoom-in-out icon-zoom-in"></i> No');
+              targetYes.empty().append('<i class="fa fa-thumbs-o-up icon-zoom-in-out icon-zoom-out"></i> Yes');
+          	}                
+          }
+
+          // Animate only the icon elements
+          $('.icon-zoom-in-out').each(function() {
+              var $icon = $(this);
+              $icon.addClass('icon-zoom-in');
+
+              // Remove the zoom-in effect after animation completes
+              setTimeout(function() {
+                  $icon.removeClass('icon-zoom-in');
+              }, 300);
+          });
+  			}
+  		}
+  	});
+  }
+
 </script>

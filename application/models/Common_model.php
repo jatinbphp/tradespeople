@@ -2982,16 +2982,60 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getRatingsWithUsers($service_id, $limit=0, $offset = 0) {
-        $this->db->select('service_rating.*, users.f_name as rate_by_fname, users.l_name as rate_by_lname, users.profile as rate_by_profile, users2.f_name as rate_to_fname, users2.l_name as rate_to_lname,, users2.profile as rate_to_profile');
+	public function getRatingsWithUsers($service_id, $limit=0, $offset = 0, $uId=0) {
+        /*$this->db->select('service_rating.*, users.f_name as rate_by_fname, users.l_name as rate_by_lname, users.profile as rate_by_profile, users2.f_name as rate_to_fname, users2.l_name as rate_to_lname, users2.profile as rate_to_profile, users.city as rate_by_location, so.price as order_amount, so.package_type as order_package_type, ser.package_data as service_package_data');
 
         $this->db->from('service_rating');
         $this->db->where('service_rating.service_id', $service_id);
         $this->db->join('users', 'service_rating.rate_by = users.id', 'left');
         $this->db->join('users as users2', 'service_rating.rate_to = users2.id', 'left');
+        $this->db->join('service_order as so', 'service_rating.order_id = so.id', 'left');
+        $this->db->join('my_services as ser', 'service_rating.service_id = ser.id', 'left');
         $this->db->limit($limit, $offset);
         $query = $this->db->get();
-        return $query->result_array();
+        return $query->result_array();*/
+
+        $this->db->select('
+		    service_rating.*, 
+		    users.f_name as rate_by_fname, 
+		    users.l_name as rate_by_lname, 
+		    users.profile as rate_by_profile, 
+		    users2.f_name as rate_to_fname, 
+		    users2.l_name as rate_to_lname, 
+		    users2.profile as rate_to_profile, 
+		    users.city as rate_by_location, 
+		    so.price as order_amount, 
+		    so.package_type as order_package_type, 
+		    ser.package_data as service_package_data,
+		    CASE 
+		        WHEN EXISTS (
+		            SELECT 1 
+		            FROM rating_helpful 
+		            WHERE rating_helpful.rating_id = service_rating.id 
+		            AND rating_helpful.user_id = '.$uId.' 
+		            AND rating_helpful.service_id = '.$service_id.'
+		        ) THEN 
+		            CASE 
+		                WHEN (SELECT is_helpful FROM rating_helpful 
+		                      WHERE rating_helpful.rating_id = service_rating.id 
+		                      AND rating_helpful.user_id = '.$uId.' 
+		                      AND rating_helpful.service_id = '.$service_id.') = "yes" 
+		                THEN 1 
+		                ELSE 2 
+		            END 
+		        ELSE 0 
+		    END as is_helpful
+		');
+
+		$this->db->from('service_rating');
+		$this->db->where('service_rating.service_id', $service_id);
+		$this->db->join('users', 'service_rating.rate_by = users.id', 'left');
+		$this->db->join('users as users2', 'service_rating.rate_to = users2.id', 'left');
+		$this->db->join('service_order as so', 'service_rating.order_id = so.id', 'left');
+		$this->db->join('my_services as ser', 'service_rating.service_id = ser.id', 'left');
+		$this->db->limit($limit, $offset);
+		$query = $this->db->get();
+		return $query->result_array();
     }
 
 	function get_chat_list($id)

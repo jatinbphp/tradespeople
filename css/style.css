@@ -9603,43 +9603,126 @@ button.switch-month:hover {
     list-style: none;
 }
 .client-reviews ul li .profile-img {
-    width: 80px;
-    min-width: 80px;
-    overflow: hidden;
-    margin-right: 30px;
+    margin-right: 15px;
 }
 .client-reviews ul li .profile-img img {
-    width: 100%;
-    height: 100%;
     display: inline-block;
-    max-height: 80px;
-    max-width: 80px;
+    width: 60px;
+    aspect-ratio: 1;
     border-radius: 50%;
 }
 .client-reviews ul li {
     display: flex;
+    flex-direction: column;
+    border: 1px solid #e1e1e1;
+    border-radius: 20px;
+    padding: 20px;
 }
 .client-reviews ul li+li {
     margin-top: 20px;
 }
+.client-reviews ul li .profile-img-name {
+    display: flex;
+    align-items: center;
+}
+.client-reviews ul li .location {
+    font-weight: 600;
+}
 .client-reviews ul li .review-name h4 {
     margin-top: 0;
     font-weight: 600;
+    margin-bottom: 5px;
 }
 .client-reviews ul li .review-star {
-    color: #f9d71c;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.client-reviews ul li .review-star div {
+    display: flex;
+    align-items: center;
     gap: 2px;
+}
+.client-reviews ul li .review-star span:last-child {
+    font-weight: 600;
+    font-size: 12px;
+}
+.client-reviews ul li .review-star i {
+/*    color: #f9d71c;*/
+    font-size: 16px;
 }
 .client-reviews ul li .review-name {
     display: flex;
     justify-content: space-between;
+        flex-direction: column;
 }
 .client-reviews ul li .review-right {
     width: 100%;
+    border-top: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 15px 0;
+    margin: 15px 0;
 }
 .client-reviews ul li .review-text p {
     font-size: 16px;
-    margin: 5px 0 0 0;
+    margin: 8px 0 8px 0;
+}
+.client-reviews ul li .price-duration {
+    display: flex;
+    align-items: center;
+}
+.client-reviews ul li .price-duration div span {
+    display: block;
+}
+.client-reviews ul li .price-duration div:last-child {
+    text-align: center;
+    padding-left: 30px;
+    margin-left: 30px;
+    position: relative;
+}
+.client-reviews ul li .price-duration div:last-child:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 1px;
+    background-color: #e1e1e1;
+    left: 0;
+    top: 10px;
+}
+.accordion-img-name {
+    display: flex;
+    align-items: center;
+        cursor: pointer;
+}
+.accordion-img-name img {
+    display: inline-block;
+    width: 40px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.accordion-img-name h5 {
+    font-weight: 600;
+    margin: 0;
+}
+.accordion-img-name i {
+    margin-left: auto !important;
+}
+.accordion-review-text {
+    margin-top: 10px;
+}
+.helpful {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    gap: 10px;
+    margin: 15px;
+}
+.helpful p {
+    margin: 0;
+}
+.helpful span {
+    cursor: pointer;
 }
 
 .gig-page-packages-table table {

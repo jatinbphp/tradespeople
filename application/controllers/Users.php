@@ -5350,4 +5350,36 @@ class Users extends CI_Controller
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong']);
     }	
 	}
+
+	public function ratingHelpful(){
+		$rateId = $this->input->post('rateId');
+		$serviceId = $this->input->post('serviceId');
+		$help = $this->input->post('help');
+		$userId = $this->session->userdata('user_id');
+
+		if($this->session->userdata('user_id')){
+			$helpfulRate=$this->common_model->get_single_data('rating_helpful',array('rating_id'=>$rateId,'service_id'=>$serviceId,'user_id'=>$userId));
+					
+			if(!empty($helpfulRate)){
+				$update2['is_helpFul'] = strtolower($help);
+				$runss1 = $this->common_model->update('rating_helpful',array('rating_id'=>$rateId,'service_id'=>$serviceId,'user_id'=>$userId),$update2);
+	    	echo json_encode(['status' => 1, 'help'=>strtolower($help)]);
+	    	exit;
+	    }else{
+	    	$data = array(
+					'rating_id'=>$rateId, 
+					'service_id'=>$serviceId,
+					'user_id'=>$userId,
+					'is_helpFul'=>strtolower($help),
+				);							
+				$run1 = $this->common_model->insert('rating_helpful',$data);
+
+				echo json_encode(['status' => 1, 'help'=>strtolower($help)]);
+				exit;
+	    }	
+		}else{
+			echo json_encode(['status' => 0]);
+			exit;
+		}
+	}
 }
