@@ -5448,7 +5448,7 @@ margin: 5px 0;
 }
 .crop {
     overflow: hidden;
-    white-space: nowrap;
+/*    white-space: nowrap;*/
     text-overflow: ellipsis;
 }
 .member-summary .cert-container {
@@ -9673,9 +9673,9 @@ button.switch-month:hover {
 }
 .client-reviews ul li .price-duration div span {
     display: block;
+    font-size: 13px;
 }
 .client-reviews ul li .price-duration div:last-child {
-    text-align: center;
     padding-left: 30px;
     margin-left: 30px;
     position: relative;
@@ -9803,9 +9803,6 @@ button.switch-month:hover {
 .compare-packages h2.title {
     margin-bottom: 15px;
 }
-
-
-
 .gig-page-packages-table tr.description td, 
 .gig-page-packages-table tr.package-type .package-type-price {
     padding-left: 16px;
@@ -10013,6 +10010,103 @@ button.switch-month:hover {
 #play-control-btn.playing #pause {
   display: block;
 }
+
+.accordion-completed-name {
+    display: flex;
+    align-items: center;
+        cursor: pointer;
+}
+.accordion-completed-name .icon-star {
+    width: 30px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.accordion-completed-name h5 {
+    font-weight: 600;
+    margin: 0;
+    font-size: 16px;
+}
+.accordion-completed-name h5 span {
+    color: rgba(0, 0, 0, 0.3);
+    font-style: italic;
+    font-size: 14px;
+}
+.accordion-completed-name .fa.pull-right {
+    margin-left: auto !important;
+}
+.accordion-order-review-text {
+    margin-top: 20px;
+}
+.overview-experience {
+    border: 1px solid #efeff0;
+    border-radius: 4px;
+    padding-bottom: 15px;
+}
+.overview-experience .title {
+    text-transform: uppercase;
+    background-color: #efeff0;
+    margin: 0;
+    padding: 10px 15px 8px 15px;
+    font-size: 16px;
+    color: inherit;
+}
+.overview-experience .rete-star {
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    justify-content: space-between;
+}
+.overview-experience .rete-star h3 {
+    font-size: 16px;
+    margin: 30px 0;
+    width: 100%;
+}
+.overview-experience .rete-star h3 span {
+    color: rgba(0, 0, 0, 0.3);
+    font-size: 12px;
+    display: block;
+    padding-top: 5px;
+}
+.overview-experience .rete-star .rating {
+    justify-content: end;
+    width: auto;
+    flex-direction: column;
+}
+.overview-experience .rete-star .rating .error {
+    white-space: nowrap;
+}
+.overview-experience .rete-star .rating div {
+    white-space: nowrap;
+    margin-left: auto;
+}
+.rating-form .overview-experience .review-div {
+    margin-top: 0;
+}
+.overview-experience form {
+    padding: 0 15px;
+}
+.rating-form .overview-experience .review-div label {
+    font-size: 16px;
+}
+.rating-form .overview-experience .review-div label.error {
+    font-size: 14px;
+    font-weight: normal;
+}
+.rating-form .review-div label.error {
+    font-size: 14px;
+    font-weight: normal;
+}
+.rating-form .overview-experience .review-div .form-control {
+    border-color: #efeff0;
+}
+
+
+
 
 /* Margin Utilities */
 .m-0 { margin: 0; }

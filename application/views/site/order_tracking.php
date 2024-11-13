@@ -558,7 +558,7 @@
 																</a>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'completed'):?>
+															<?php if($order['status'] == 'completed' && !empty($orderReview)):?>
 																<a href="<?php echo base_url('orderCompleted/'.$order['id']); ?>">
 																	<button type="button" class="btn btn-warning">
 																		View Review 

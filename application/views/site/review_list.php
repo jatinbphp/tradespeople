@@ -1,9 +1,11 @@
 <?php foreach($service_rating as $rate): ?>																			
 	<?php 
 		$isRespond = !empty($rate['seller_response']) && $rate['is_responded'] == 1 ? 1 : 0;
-		$package_data = json_decode($rate['service_package_data'],true);	
-		$data['days'] = $package_data[$rate['order_package_type']]['days'];
-		$data['rate'] = $rate;
+		$package_data = json_decode($rate['service_package_data'],true);
+		$prices = array_column($package_data, 'price');
+		$minPrice = !empty($prices) ? min($prices) : 0;
+		$maxPrice = !empty($prices) ? max($prices) : 0;
+		$days = $package_data[$rate['order_package_type']]['days'];
 	?>	
 	<li>
 		<div class="profile-img-name">
@@ -40,12 +42,17 @@
 				<p><?php echo $rate['review']; ?></p>
 				<div class="price-duration">
 					<div>
-						<b><?php echo '£'.number_format($rate['order_amount'],2); ?></b>
-						<span>Price</span>
+						<b>
+							<?php echo '£'.number_format($minPrice,2); ?>
+							<?php if($maxPrice > 0):?>-
+								<?php echo '£'.number_format($maxPrice,2); ?>
+							<?php endif; ?>	
+						</b>
+						<span class="text-muted">Price</span>
 					</div>
 					<div>
 						<b><?php echo $days; ?> Days</b>
-						<span>Duration</span>
+						<span class="text-muted">Duration</span>
 					</div>
 				</div>
 			</div>

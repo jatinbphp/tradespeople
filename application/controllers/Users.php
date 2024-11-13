@@ -4328,8 +4328,8 @@ class Users extends CI_Controller
 		}
 
 		if(!$this->session->userdata('user_id')){
-      		redirect('login');
-    	}
+    	redirect('login');
+  	}
 
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['id'=>$id]);
@@ -4337,8 +4337,17 @@ class Users extends CI_Controller
 		
 		if(!empty($order)){
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
-			
+
+			$ouid = $order['user_id'];
+			$suid = $data['service']['user_id'];
+
+			if(!in_array($user_id, [$ouid, $suid])){
+				redirect(base_url());
+				return;
+			}
+
 			$data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$order['task_address_id']]);
+			$data['orderReview'] = $this->common_model->GetSingleData('service_rating',['order_id'=>$order['id'],'rate_by'=>$order['user_id']]);
 
 			$package_data = json_decode($data['service']['package_data'],true);	
 			$data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$data['service']['user_id']]);
@@ -5302,18 +5311,29 @@ class Users extends CI_Controller
 
 	public function orderCompleted($id=null){
 		$oId = $id;
+		$user_id = $this->session->userdata('user_id');
 		
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+
+		$ouid = $serviceOrder['user_id'];
+		$suid = $service['user_id'];
+
+    if(!in_array($user_id, [$ouid, $suid])){
+			redirect(base_url());
+			return;
+		}
     
     $data['homeOwner'] = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
     
     $data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+    $data['orderReview'] = $this->common_model->GetSingleData('service_rating',['order_id'=>$serviceOrder['id'],'rate_by'=>$serviceOrder['user_id']]);
     
     $data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$serviceOrder['task_address_id']]);
     
-    $data['review'] = $this->common_model->GetSingleData('service_rating',['service_id'=>$service['id'], 'rate_by'=>$serviceOrder['user_id'], 'rate_to'=>$service['user_id']]);
+    $data['review'] = $this->common_model->GetSingleData('service_rating',['order_id'=>$serviceOrder['id'], 'service_id'=>$service['id'], 'rate_by'=>$serviceOrder['user_id'], 'rate_to'=>$service['user_id']]);
 
     $data['tRate'] = $this->common_model->GetSingleData('rating_table',['rate_type'=>'order', 'rt_rateBy'=>$serviceOrder['user_id'], 'rt_rateTo'=>$service['user_id']]);
 
@@ -5334,9 +5354,11 @@ class Users extends CI_Controller
 		$tId = $this->input->post('rate_to');
 		$oId = $this->input->post('order_id');
 		$seller_response = $this->input->post('seller_response');
+		$homeowner_rating = $this->input->post('homeowner_rating');
 
 		$getRating=$this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
 		if(!empty($getRating)){
+			$input['homeowner_rating'] = $homeowner_rating;
 			$input['seller_response'] = $seller_response;
 			$input['is_responded'] = 1;
     	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
