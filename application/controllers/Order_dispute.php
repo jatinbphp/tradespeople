@@ -1318,12 +1318,12 @@ class Order_dispute extends CI_Controller
 			$page['setting'] = $this->common_model->GetColumnName('admin', array('id' => 1));
 
 			$page['order'] = $this->common_model->GetSingleData('service_order',['id'=>$dispute_id]);
-			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$page['order']['service_id']]);
 
 			$ouid = $page['order']['user_id'];
 			$suid = $service['user_id'];
 
-	    	if(!in_array($user_id, [$ouid, $suid])){
+	    if(!in_array($user_id, [$ouid, $suid])){
 				redirect(base_url());
 				return;
 			}

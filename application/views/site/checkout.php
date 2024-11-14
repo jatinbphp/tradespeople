@@ -1,6 +1,26 @@
 <?php include ("include/header.php") ?>
+
+<?php
+$get_commision = $this->common_model->get_commision();
+
+$bank_Pay_info = '';
+$strip_Pay_info = '';
+$paypal_Pay_info = '';
+
+$paypal_comm_per = $setting['paypal_comm_per'];
+$paypal_comm_fix = $setting['paypal_comm_fix'];
+
+$stripe_comm_per = $setting['stripe_comm_per'];
+$stripe_comm_fix = $setting['stripe_comm_fix'];
+$bank_processing_fee = $setting['processing_fee'];
+
+if ($this->session->userdata('type') == 2) {
+	$strip_Pay_info = '<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Strip charges (' . $stripe_comm_per . '%+' . $stripe_comm_fix . ') processing fee and processes your payment immediately ." data-original-title="" class="red-tooltip toll stripe-tooltip"><i class="fa fa-info-circle"></i></a>';	
+}
+?>
+
 <style>
-	#card-element{
+	#card-element-checkout{
 		border-radius: 6px;
 		border:1px solid #dfdfdf;
 	}
@@ -33,7 +53,7 @@
 	/*----------LOADER CSS END----------*/
 
 	.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
-	.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
+
 	.imgUp{margin-bottom:15px}
 	.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
 	.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
@@ -52,6 +72,7 @@
 	.otherOption{display:none}
 	label{cursor:pointer;margin-right:10px}
 	input[name="select_address"]:checked + label{color:blue}
+	.all-pay-tooltip{display: flex; align-items: center;}
 </style>
 <div class="loader-bg hide" id='loader'>
 	<span class="loader"></span>
@@ -181,7 +202,7 @@
 						<!-- <p><b>Tradespeople Hub allows you to payment from your wallet</b></p> -->
 						<div id="card-detail" style="display:none; margin-bottom: 15px;">
 
-							<div class="p-4 mb-4" id="card-element"></div>
+							<div class="p-4 mb-4" id="card-element-checkout"></div>
 
 							<?php if($this->session->userdata('user_id')):?>
 								<div class="form-group">
@@ -405,6 +426,39 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="pay_when_accept_direct_hire_model" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Choose Type</h4>
+				</div>
+				<div class="modal-body pb-0">
+					<div class="msgs1"></div>
+					<div class="common_pay_main_div ">
+						<div class="alert alert-danger">Insufficient amount in your wallet. Click on pay now and add money to wallet. <span class="Current_wallet_amount"></span></div>
+						<div class="form-group">
+							<label>Enter Amount</label>
+							<input type="text" name="amount" id="amount" class="form-control quantity" value="" onkeyup="check_value(this.value)" onblur="check_value(this.value)" required>
+						</div>
+						<p class="instant-err alert alert-danger" style="display:none;"></p>
+						<div class="card pay_btns all-pay-tooltip">
+							<div class="pay_btn strip_btn" id="strip_btn">
+								<img style="width: auto;height: 40px;" src="<?= base_url(); ?>img/pay_with.png"></div> <?= $strip_Pay_info; ?>
+						</div>
+						<div class="common_pay_loader pay_btns_laoder text-center" style="display:none;">
+							<i class="fa fa-spin fa-spinner" style="font-size:26px"></i> Processing...
+						</div>						
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 <?php
 require_once('application/libraries/stripe-php-7.49.0/init.php');
@@ -634,11 +688,12 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 						success: function(result) {
 							$('#loader').addClass('hide');
 							if(result.status == 0){
-								swal({
+								/*swal({
 									title: "Error",
 									text: result.message,
 									type: "error"
-								});	
+								});*/
+								$('#pay_when_accept_direct_hire_model').modal('show');
 							}else if(result.status == 2){
 								swal({
 									title: "Login Required!",
@@ -683,7 +738,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 		var elements = stripe.elements();
 
 		const card = elements.create('card');
-		card.mount('#card-element');
+		card.mount('#card-element-checkout');
 
 		var style = {
 			base: {
@@ -1065,6 +1120,45 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 	//         }
 	//     }
 	// });
+
+	function check_value(value){
+     var min = <?= $setting['p_min_d']; ?>;
+     var max = <?= $setting['p_max_d']; ?>;
+     if(value >= min && value <= max){
+			 //$('.show_btn').prop('disabled',false);
+			 $('.instant-err').hide();
+			 $('.instant-err').html('');
+				 
+			var stripe_comm_per = <?= $stripe_comm_per; ?>;
+			var stripe_comm_fix = <?= $stripe_comm_fix; ?>;
+			var type = <?= $this->session->userdata('type'); ?>;
+			var processing_fee = 0;
+			var actual_amt = parseFloat(value);
+			
+			if(type == 2){
+				if(stripe_comm_per > 0 || stripe_comm_fix == 0){
+					processing_fee = (1 * actual_amt * stripe_comm_per)/100;
+					amounts = actual_amt + processing_fee + stripe_comm_fix;
+				} else {
+					amounts = actual_amt;
+				}
+			} else {
+				amounts = actual_amt;
+			}		
+			var amounts = amounts.toFixed(2);			 
+			$('#strip_btn').attr('onclick','show_lates_stripe_popup('+amounts+','+actual_amt+',11);');		
+			show_main_btn();
+     } else {
+       $('.card').hide();
+       $('.instant-err').show();
+       $('.instant-err').html('Deposit amount must be more than <i class="fa fa-gbp"></i>'+min+' and less than <i class="fa fa-gbp"></i>'+max+'!');
+       $('.pay_btns').hide();
+     }
+   }
+
+  function show_main_btn(){
+  	$('.pay_btns').show();
+  }
 
 </script>
 <?php include ("include/footer.php") ?>

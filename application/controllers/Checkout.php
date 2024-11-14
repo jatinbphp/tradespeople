@@ -100,6 +100,7 @@ class Checkout extends CI_Controller
 		$data['package_description'] = $package_data[$cartData['package_type']]['description'];
 		$data['delivery_date'] = $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']);
 		$data['task_addresses'] = $this->common_model->getTaskAddresses($uId);
+		$data['setting'] = $setting;
 
 		$this->load->view('site/checkout',$data);
 	}
@@ -389,6 +390,20 @@ class Checkout extends CI_Controller
 						'tr_amount'=>$mainPrice,
 						'tr_type'=>2,
 						'tr_transactionId'=>$transactionid,
+						'tr_message'=>$tr_message,
+						'tr_status'=>1,
+						'tr_created'=>date('Y-m-d H:i:s'),
+						'tr_update' =>date('Y-m-d H:i:s')
+					);				 
+					$this->common_model->insert('transactions',$data1);
+				}else{
+					$tr_message='£'.$mainPrice.'  has been debited with your card for ordering a service <a href="'.site_url().'service/'.$service_id.'">'.$service_details['service_name'].'.</a>';
+
+					$data1 = array(
+						'tr_userid'=>$users['id'], 
+						'tr_amount'=>$mainPrice,
+						'tr_type'=>2,
+						'tr_transactionId'=>!empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '',
 						'tr_message'=>$tr_message,
 						'tr_status'=>1,
 						'tr_created'=>date('Y-m-d H:i:s'),

@@ -569,7 +569,7 @@ class Dispute extends CI_Controller
 				$insert2['order_id'] = $order['id'];
 				$insert2['status'] = 'completed';
 				$insert2['is_cancel'] = 6;
-				$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
+				$insert2['description'] = 'Your order dispute has been closed by admin';
 				$run = $this->Common_model->insert('order_submit_conversation', $insert2);				
 			}
 

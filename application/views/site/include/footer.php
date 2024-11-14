@@ -1167,9 +1167,6 @@ function pay_chat_first(id,post,comm) {
                 <input type="text" name="card_u_name"  id="card_u_name" minlength="2" placeholder="Enter name"  value="" class="form-control" autofocus="" >
               </div>
               <div id="card-element" style="display:none;"><!--Stripe.js injects the Card Element--></div>
-              
-              
-              
             </div>
           </div>
           <div class="row">
@@ -1242,7 +1239,9 @@ type = 10 ask admin to step in
 
 */
 var stripe = Stripe('<?php echo $this->config->item('stripe_key'); ?>');
-function show_lates_stripe_popup(amount,actual_amt,type,onSuccess=null,onError=null,onCancel=null){  
+function show_lates_stripe_popup(amount,actual_amt,type,onSuccess=null,onError=null,onCancel=null){
+  $('#pay_when_accept_direct_hire_model').modal('hide');
+
   $('.latest-strip-deposit-amount').html(amount);
   
   $('#latest_stripe_modal').modal({
@@ -1430,6 +1429,9 @@ var orderComplete = function(actual_amt,result,customerID,type,onSuccess=null,on
             $('.instant-err___1').hide();
             $('.pay_btns_laoder___1').hide();
             submitAsktoAdmin();
+          } else if(type==11){
+            $('#latest_stripe_modal').modal('hide');            
+            $('#checkoutBtn').trigger('click');
           } else {
             loading(false);
             swal('Some problem occurred, please try again.');
@@ -1545,7 +1547,10 @@ var payWithSaveCard = function(actual_amt,type,cardID,onSuccess,onError,onCancel
             
             $('.pay_btns_laoder___1').hide();
             submitAsktoAdmin();
-          }
+          }else if(type==11){
+            $('#latest_stripe_modal').modal('hide');            
+            $('#checkoutBtn').trigger('click');
+          } 
           
           $('#latest-stipe-submit').prop('disabled',false);
           $('#latest-stipe-submit').html('Pay');
@@ -1798,8 +1803,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  //setInterval(function(){ user_list_refresher(); }, 5000);
+  setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
