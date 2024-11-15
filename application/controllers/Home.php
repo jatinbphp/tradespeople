@@ -2430,6 +2430,7 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
 
 		$viewData['service_rating'] = $this->common_model->getRatingsWithUsers($sId,5,0,$user_id);
+
 		$data['service_rating_view'] = $this->load->view('site/review_list', $viewData, true);
 
 		$data['rating_count'] = count($viewData['service_rating']);

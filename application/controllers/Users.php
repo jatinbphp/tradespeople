@@ -4689,20 +4689,33 @@ class Users extends CI_Controller
 		$recommandedRate = $this->input->post('recommanded_service_rating');
 		$review = $this->input->post('reviews');
 
-		$insert1 = [
-      'rate_by' => $hId,
-      'rate_to' => $tId,
-      'order_id' => $oId,
-      'service_id' => $this->input->post('service_id'),
-      'rating' => $rate,
-      'seller_communication_rating' => $tRate,
-      'recommanded_service_rating' => $recommandedRate,
-      'review' => $review
-    ];
-    $run = $this->common_model->insert('service_rating', $insert1);
+		$getRating = $this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
+
+		$input = [];
+
+		if(!empty($getRating)){
+			$input['rating'] = $rate;
+      $input['seller_communication_rating'] = $tRate;
+      $input['recommanded_service_rating'] = $recommandedRate;
+      $input['review'] = $review;
+    	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
+		}else{
+			$insert1 = [
+	      'rate_by' => $hId,
+	      'rate_to' => $tId,
+	      'order_id' => $oId,
+	      'service_id' => $this->input->post('service_id'),
+	      'rating' => $rate,
+	      'seller_communication_rating' => $tRate,
+	      'recommanded_service_rating' => $recommandedRate,
+	      'review' => $review
+	    ];
+	    $run = $this->common_model->insert('service_rating', $insert1);
+		}
+		
     if($run){
-    	$input['is_review'] = 1;
-    	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input);
+    	$input1['is_review'] = 1;
+    	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input1);
 
     	$data = array(
 	  		'rt_rateBy'=>$hId, 
@@ -5357,14 +5370,23 @@ class Users extends CI_Controller
 	public function submitRespond(){
 		$tId = $this->input->post('rate_to');
 		$oId = $this->input->post('order_id');
-		$seller_response = $this->input->post('seller_response');
+		$seller_review = $this->input->post('seller_review');
 		$homeowner_rating = $this->input->post('homeowner_rating');
+		$is_respond = $this->input->post('is_respond') ?? 0;
 
-		$getRating=$this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
+		$getRating = $this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
+
+		$order = $this->common_model->get_single_data('service_order',array('id'=>$oId));
+
 		if(!empty($getRating)){
-			$input['homeowner_rating'] = $homeowner_rating;
-			$input['seller_response'] = $seller_response;
-			$input['is_responded'] = 1;
+			if($is_respond == 1){
+				$input['seller_response'] = $seller_review;	
+				$input['is_responded'] = 1;
+			}else{
+				$input['homeowner_rating'] = $homeowner_rating;
+				$input['seller_review'] = $seller_review;	
+			}			
+			
     	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
 
     	if($run){
@@ -5373,7 +5395,20 @@ class Users extends CI_Controller
     		echo json_encode(['status' => 'error', 'message' => 'Your respond not submitted']);	
     	}			
     }else{
-			echo json_encode(['status' => 'error', 'message' => 'Something is wrong']);
+    	$insert1 = [
+	      'rate_by' => $order['user_id'],
+	      'rate_to' => $tId,
+	      'order_id' => $oId,
+	      'service_id' => $order['service_id'],
+	      'homeowner_rating' => $homeowner_rating,
+				'seller_review' => $seller_review
+	    ];
+	    $run = $this->common_model->insert('service_rating', $insert1);
+	    if($run){
+    		echo json_encode(['status' => 'success', 'message' => 'Your review submitted successfully']);	
+    	}else{
+    		echo json_encode(['status' => 'error', 'message' => 'Your review not submitted']);	
+    	}
     }	
 	}
 

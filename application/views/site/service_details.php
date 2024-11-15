@@ -1,17 +1,19 @@
 <?php include ("include/header.php") ?>
 
 <style type="text/css">
-.icon-zoom-in-out {
-    transition: transform 0.3s ease;
-}
+	.icon-zoom-in-out {
+	  transition: transform 0.3s ease;
+	}
 
-.icon-zoom-in {
-    transform: scale(1.5);
-}
+	.icon-zoom-in {
+	  transform: scale(1.5);
+	}
 
-.icon-zoom-out {
-    transform: scale(1);
-}
+	.icon-zoom-out {
+	  transform: scale(1);
+	}
+
+	.read-more-btn{cursor: pointer;}
 </style>
 
 <div class="loader-bg hide" id='loader'>

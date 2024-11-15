@@ -3003,6 +3003,7 @@ class Common_model extends CI_Model
 		    users2.f_name as rate_to_fname, 
 		    users2.l_name as rate_to_lname, 
 		    users2.profile as rate_to_profile, 
+		    users2.trading_name as tName, 
 		    users.city as rate_by_location, 
 		    so.price as order_amount, 
 		    so.package_type as order_package_type, 

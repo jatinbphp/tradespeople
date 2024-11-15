@@ -39,7 +39,16 @@
 				<span><?php echo time_ago($rate['created_at']); ?></span>										
 			</div>
 			<div class="review-text">
-				<p><?php echo $rate['review']; ?></p>
+				<p>
+					<?php if (strlen($rate['review']) > 305): ?>
+					<div class="paragraph" data-full-text="<?php echo $rate['review'];?>">
+			      <span class="content"></span>
+			      <span class="read-more-btn text-primary">Read More</span>
+			    </div>
+			  <?php else:?>
+			  	<?php echo $rate['review'];?>
+			  <?php endif;?>	
+				</p>
 				<div class="price-duration">
 					<div>
 						<b>
@@ -68,10 +77,9 @@
 						}else{
 							$rateToProfileImg = base_url('img/default-img.png');
 						}
-						$rateToUserName = ($rate['rate_to_fname'] ?? '').' '.($rate['rate_to_lname'] ??  '');
 						?>
 						<img src="<?php echo $rateToProfileImg; ?>" alt="<?php echo $rateToUserName; ?>" />
-						<h5><?php echo $rateToUserName; ?></h5>
+						<h5><?php echo $rate['tName']."'s Response"; ?></h5>
 						<i class="fa fa-angle-down pull-right"></i>
 					</div>
 					<div class="accordion-review-text" id="requirement-div"  style="display:none;">
@@ -101,3 +109,28 @@
 		</span>
 	</div>
 <?php endforeach; ?>	
+
+<script type="text/javascript">
+	const MAX_LENGTH = 305;
+  document.querySelectorAll(".paragraph").forEach(paragraph => {
+    const fullText = paragraph.getAttribute("data-full-text");
+    const truncatedText = fullText.slice(0, MAX_LENGTH) + "...";
+
+    const contentElement = paragraph.querySelector(".content");
+    const buttonElement = paragraph.querySelector(".read-more-btn");
+
+    // Initialize paragraph content to truncated text
+    contentElement.textContent = truncatedText;
+
+    // Add click event for the "Read More/Less" toggle
+    buttonElement.addEventListener("click", () => {
+      if (contentElement.textContent === truncatedText) {
+        contentElement.textContent = fullText; // Show full text
+        buttonElement.textContent = "Read Less";
+      } else {
+        contentElement.textContent = truncatedText; // Show truncated text
+        buttonElement.textContent = "Read More";
+      }
+    });
+  });
+</script>
