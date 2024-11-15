@@ -17,6 +17,34 @@ $bank_processing_fee = $setting['processing_fee'];
 if ($this->session->userdata('type') == 2) {
 	$strip_Pay_info = '<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Strip charges (' . $stripe_comm_per . '%+' . $stripe_comm_fix . ') processing fee and processes your payment immediately ." data-original-title="" class="red-tooltip toll stripe-tooltip"><i class="fa fa-info-circle"></i></a>';	
 }
+
+$min = $setting['p_min_d'];
+$max = $setting['p_max_d'];
+
+if ($remaining_amount >= $min && $remaining_amount <= $max) {
+  // Hide error message
+  echo "<script>$('.instant-err').hide(); $('.instant-err').html('');</script>";
+  
+  $stripe_comm_per = $stripe_comm_per;
+  $stripe_comm_fix = $stripe_comm_fix;
+  $type = $this->session->userdata('type');
+  $processing_fee = 0;
+  $actual_amt = (float)$remaining_amount;
+  $amounts = 0;
+
+  if ($type == 2) {
+      if ($stripe_comm_per > 0 || $stripe_comm_fix == 0) {
+          $processing_fee = (1 * $actual_amt * $stripe_comm_per) / 100;
+          $amounts = $actual_amt + $processing_fee + $stripe_comm_fix;
+      } else {
+          $amounts = $actual_amt;
+      }
+  } else {
+      $amounts = $actual_amt;
+  }
+  $amounts = number_format($amounts, 2, '.', '');
+}
+
 ?>
 
 <style>
@@ -438,14 +466,14 @@ if ($this->session->userdata('type') == 2) {
 				<div class="modal-body pb-0">
 					<div class="msgs1"></div>
 					<div class="common_pay_main_div ">
-						<div class="alert alert-danger">Insufficient amount in your wallet. Click on pay now and add money to wallet. <span class="Current_wallet_amount"></span></div>
+						<div class="alert alert-danger">Insufficient amount in your wallet. Click on pay now and add money to wallet. Your last updated waller amount is <?php echo '£'.number_format($loginUser['u_wallet'],2); ?></div>
 						<div class="form-group">
 							<label>Enter Amount</label>
-							<input type="text" name="amount" id="amount" class="form-control quantity" value="" onkeyup="check_value(this.value)" onblur="check_value(this.value)" required>
+							<input type="text" name="amount" id="amount" class="form-control quantity" value="<?php echo number_format($remaining_amount,2)?>" onkeyup="check_value(this.value)" onblur="check_value(this.value)" required>
 						</div>
 						<p class="instant-err alert alert-danger" style="display:none;"></p>
 						<div class="card pay_btns all-pay-tooltip">
-							<div class="pay_btn strip_btn" id="strip_btn">
+							<div class="pay_btn strip_btn" id="strip_btn" onclick="show_lates_stripe_popup(<?php echo $amounts?>, <?php echo $actual_amt?>, 11)">
 								<img style="width: auto;height: 40px;" src="<?= base_url(); ?>img/pay_with.png"></div> <?= $strip_Pay_info; ?>
 						</div>
 						<div class="common_pay_loader pay_btns_laoder text-center" style="display:none;">
@@ -1145,8 +1173,9 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 			} else {
 				amounts = actual_amt;
 			}		
-			var amounts = amounts.toFixed(2);			 
-			$('#strip_btn').attr('onclick','show_lates_stripe_popup('+amounts+','+actual_amt+',11);');		
+			var amounts = amounts.toFixed(2);
+
+			$('#strip_btn').attr('onclick','show_lates_stripe_popup('+amounts+','+actual_amt+',11);');
 			show_main_btn();
      } else {
        $('.card').hide();

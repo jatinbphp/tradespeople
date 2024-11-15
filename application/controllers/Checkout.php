@@ -101,6 +101,8 @@ class Checkout extends CI_Controller
 		$data['delivery_date'] = $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']);
 		$data['task_addresses'] = $this->common_model->getTaskAddresses($uId);
 		$data['setting'] = $setting;
+		$data['loginUser'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
+		$data['remaining_amount'] = ($data['totalPrice'] + $setting['service_fees']) - $data['loginUser']['u_wallet'];
 
 		$this->load->view('site/checkout',$data);
 	}

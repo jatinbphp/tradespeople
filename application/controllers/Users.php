@@ -4610,6 +4610,7 @@ class Users extends CI_Controller
 				$subject = "Order approved for order number: “".$serviceOrder['order_id']."”"; 
 				$flashMsg = 'Order Approved';
 				$flashErrMsg = 'Order Not Approved';
+				$this->session->set_userdata('completedFlashMessage',1);
 			}
 
 			$input['status'] = $status;
@@ -5346,6 +5347,9 @@ class Users extends CI_Controller
 		$data['created_date'] = $ocDate->format('D jS F, Y H:i');
 
 		$data['user_type'] = $this->session->userdata('type');
+
+		$data['completedFlashMessage'] = $this->session->userdata('completedFlashMessage');
+    $this->session->unset_userdata('completedFlashMessage');
 
     $this->load->view('site/completedOrder',$data);
 	}

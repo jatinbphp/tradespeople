@@ -178,21 +178,23 @@ $homeUserName = ($homeOwner['f_name'] ?? '').' '.($homeOwner['l_name'] ??  '');
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-8">
-				<div class="thank-purchase-msg alert alert-success">
-					<span class="icon">
-						<i class="fa fa-check" aria-hidden="true"></i>
-					</span>
-					<div>
-						<h2>
-							<?php if($order['is_review'] != 1):?>
-								Congratulation for completing your order
-							<?php else: ?>
-								Congratulation for completed your order
-							<?php endif;?>
-						</h2>
-						<p>Share your experience with other users</p>
+				<?php if (!empty($completedFlashMessage)): ?>
+					<div class="thank-purchase-msg alert alert-success">
+						<span class="icon">
+							<i class="fa fa-check" aria-hidden="true"></i>
+						</span>
+						<div>
+							<h2>
+								<?php if($order['is_review'] != 1):?>
+									Congratulation for completing your order
+								<?php else: ?>
+									Congratulation for completed your order
+								<?php endif;?>
+							</h2>
+							<p>Share your experience with other users</p>
+						</div>
 					</div>
-				</div>
+				<?php endifl; ?>	
 
 				<div class="rating-form">
 					<?php if($user_type != 1): ?>
