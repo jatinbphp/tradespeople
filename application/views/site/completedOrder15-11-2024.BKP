@@ -113,7 +113,7 @@
 	}
 
 	.rating-form {
-		/*padding: 0 30px;*/
+		padding: 0 30px;
 	}
 	.rating-list {
 		display: flex;
@@ -169,13 +169,6 @@ if(isset($homeOwner['profile']) && !empty($homeOwner['profile'])){
 	$uprofileImg = base_url('img/default-img.png');
 }
 $homeUserName = ($homeOwner['f_name'] ?? '').' '.($homeOwner['l_name'] ??  '');
-
-if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-	$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
-}else{
-	$tProfileImg = base_url('img/default-img.png');
-}
-$tradeUserName = ($tradesman['trading_name'] ?? '');
 ?>
 
 <div class="loader-bg hide" id='loader'>
@@ -201,170 +194,101 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 							<p>Share your experience with other users</p>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endif; ?>	
 
-				<?php if($user_type == 1): ?>
-					<?php if($order['is_review'] == 1):?>
-						<div class="rating-form">
-							<h2 class="mt-1">
-								Public Review Left
-							</h2>
-						</div>
-						<div class="member-summary mt-5 mb-5">
-							<div class="summary member-summary-section">
-								<div class="member-image-container">
-									<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $homeUserName?>">
-								</div>
-								<div class="member-information-container">
-									<div class="member-name-container crop">
-										<h3 class="mt-1" style="margin-bottom: 5px;"><?php echo $homeUserName."'s Feedback"?></h3>
-										<div class="member-job-title crop">
-											<?php echo $review['review']; ?>
+				<div class="rating-form">
+					<?php if($user_type != 1): ?>
+						<?php if($order['is_review'] == 1):?>
+							<!-- <h2>
+								Public review left by You
+								<h3>Share your experience of what is it like working with <?php echo $tradesman['trading_name']; ?>. </h3>
+							</h2>	 -->
+
+							<div class="member-summary mb-5">
+								<div class="summary member-summary-section">
+									<div class="member-image-container">
+										<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $homeUserName?>">
+									</div>
+									<div class="member-information-container">
+										<div class="member-name-container crop">
+											<h3 style="margin-bottom: 5px;"><?php echo $homeUserName?></h3>
+											<div class="member-job-title crop">
+												<?php echo $review['review']; ?>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
 
-						<div class="rating-list">
-							<p><b>Communication With Seller</b><br> 
-							How responsive was the seller during the process?</p>
-							<div class="rating" id="orderRating">
-								<div id="orderStartDiv">
-									<?php for($i=1; $i<=5; $i++):?>											
-										<?php $active = $review['rating'] >= $i ? 'active' : ''; ?>
-										<i class="fa fa-star star <?php echo $active; ?>"></i>
-									<?php endfor;?>
+							<div class="rating-list">
+								<p><b>Communication With Seller</b><br> 
+								How responsive was the seller during the process?</p>
+								<div class="rating" id="orderRating">
+									<div id="orderStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>											
+											<?php $active = $review['rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star star <?php echo $active; ?>"></i>
+										<?php endfor;?>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="rating-list">
-							<p><b>Service as Described</b><br>
-								Did the result match the servies's description?
-							</p>
-							<div class="rating tradeRating" id="tRating">
-								<div id="tradesStartDiv">
-									<?php for($i=1; $i<=5; $i++):?>
-										<?php $active1 = $review['seller_communication_rating'] >= $i ? 'active' : ''; ?>
-										<i class="fa fa-star star <?php echo $active1; ?>"></i>
-									<?php endfor;?>
-								</div>	
-							</div>
-						</div>
-						<div class="rating-list">
-							<p><b>Buy Again or Recommanded</b><br>
-								Would you recommanded buying this service?
-							</p>
-							<div class="rating tradeRating2" id="tRating2">
-								<div id="recommandedStartDiv">
-									<?php for($i=1; $i<=5; $i++):?>
-										<?php $active2 = $review['recommanded_service_rating'] >= $i ? 'active' : ''; ?>
-										<i class="fa fa-star star <?php echo $active2; ?>"></i>
-									<?php endfor;?>
+							<div class="rating-list">
+								<p><b>Service as Described</b><br>
+									Did the result match the servies's description?
+								</p>
+								<div class="rating tradeRating" id="tRating">
+									<div id="tradesStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>
+											<?php $active1 = $review['seller_communication_rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star star <?php echo $active1; ?>"></i>
+										<?php endfor;?>
+									</div>	
 								</div>
 							</div>
-						</div>
-						<hr>
-						<div class="accordion-completed-order">
-							<?php if($review['is_responded'] == 0):?>
-								<div class="accordion-order-review-text" id="requirement-div">
-									<form id="seller_respond_form" style="width:100%">
-										<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-										<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
-										<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
-										<input type="hidden" name="is_respond" value="1">
-										<div class="review-div mt-4">
-											<label>Respond to the Feddback (Public)</label>
-											<textarea name="seller_review" class="form-control" rows="5" placeholder="Your respond..."></textarea>
-										</div>
-										<div class="text-center mt-4">
-											<button type="submit" id="give-rating" class="btn btn-warning">
-												Submit
-											</button>
-										</div>
-									</form>
+							<div class="rating-list">
+								<p><b>Buy Again or Recommanded</b><br>
+									Would you recommanded buying this service?
+								</p>
+								<div class="rating tradeRating2" id="tRating2">
+									<div id="recommandedStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>
+											<?php $active2 = $review['recommanded_service_rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star star <?php echo $active2; ?>"></i>
+										<?php endfor;?>
+									</div>
 								</div>
-							<?php else:?>	
-								<div class="rating-form">
-									<h2 class="mt-1">
-										<?php echo $tradeUserName."'s Respond"?>
-									</h2>
-									<p><?php echo $review['seller_response']; ?></p>
-								</div>
-							<?php endif;?>
-						</div>
-					<?php else: ?>
-						<div class="rating-form">
-							<h2 class="mt-1">
-								Leave Public Review
-								<h4>
-									Share your experience of working with <?php echo $homeUserName; ?>
-								</h4>
-							</h2>
-							<div class="accordion-completed-order mt-5">
+							</div>
+
+							<?php if($review['is_responded'] == 1):?>
+							<!--<div class="accordion-completed-order">
 								<div class="accordion-completed-name" onclick="toggleTradsmanRespond();">
 									<div class="icon-star">
 										<i class="fa fa-star-o" aria-hidden="true"></i>
 									</div>
 									<h5>Review your experience with this buyer 
-										<span>May 19,9:34 PM</span>
-									</h5>
-									<i class="fa fa-angle-down pull-right"></i>
-								</div>
-
-								<div class="accordion-order-review-text" id="requirement-div">
-									<div class="overview-experience">
-										<h2 class="title">Overview Experience</h2>											
-
-										<?php if($review['is_responded'] == 0):?>
-											<form id="seller_respond_form" style="width:100%">
-												<div class="rete-star" style="padding-left: 0;">
-													<h3>Rate your experience
-														<span>
-															How would you rate your overall experience with this buyer?
-														</span>
-													</h3>
-													<div class="rating homeRating" id="homeownerRating">
-														<div id="homeownerStartDiv">
-															<input type="hidden" name="homeowner_rating" id="homeownerRatingValue">
-															<?php for($i=0; $i<=4; $i++):?>
-																<i class="fa fa-star homeownerStar" style="--i: <?php echo $i?>;" onclick="handleHomeownerStarClick(<?php echo $i?>)"></i>
-															<?php endfor;?>
-														</div>
-													</div>
-												</div>
-
-												<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-												<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
-												<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
-												<div class="review-div">
-													<label>Share some more about your experience by words (public)</label>
-													<textarea name="seller_review" class="form-control" rows="5" placeholder="Your review..."></textarea>
-												</div>
-												<div class="text-center mt-4">
-													<button type="submit" id="give-rating" class="btn btn-warning">
-														Submit
-													</button>
-												</div>
-											</form>
-										<?php else:?>
+										<span>May 19,9:34 PM</span></h5>
+										<i class="fa fa-angle-down pull-right"></i>
+									</div>
+									<div class="accordion-order-review-text" id="requirement-div">
+										<div class="overview-experience">
+											<h2 class="title">
+												Overview Experience
+											</h2>
 											<?php 
-											if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-												$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
-											}else{
-												$tProfileImg = base_url('img/default-img.png');
-											}
-											$tradeUserName = ($tradesman['trading_name'] ?? '');
+												if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+													$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
+												}else{
+													$tProfileImg = base_url('img/default-img.png');
+												}
+												$tradeUserName = ($tradesman['trading_name'] ?? '');
 											?>
 											<div class="member-summary">
 												<div class="summary member-summary-section">
 													<div class="member-information-container">
 														<div class="member-name-container crop p-3">
 															<div class="rating-list">
-																<p>
-																	<b>Rate your experience</b><br> 
-																	How would you rate your overall experience with this buyer?
-																</p>
+																<p><b>Rate your experience</b><br> 
+																How would you rate your overall experience with this buyer?</p>
 																<div class="rating homeRating" id="homeownerRating">
 																	<div id="homeownerStartDiv">
 																		<?php for($i=1; $i<=5; $i++):?>
@@ -376,174 +300,238 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 															</div>
 															<div class="member-job-title crop">
 																<p><b>Your response</b><br> 
-																	<?php echo $review['seller_response']; ?>
-																</p>
+																<?php echo $review['seller_response']; ?>
 															</div>
 														</div>
 													</div>
 												</div>
-											</div>								
-										<?php endif;?>
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-						</div>
-					<?php endif;?>
-				<?php endif;?>
+							</div>-->
+							<?php endif;?>
+						<?php else:?>
+							<!-- <h2>
+								Leave a public review
+								<h3>Share your experience of what is it like working with <?php echo $tradesman['trading_name']; ?>. </h3>
+							</h2> -->
 
-				<?php if($user_type == 2): ?>
-					<?php if($order['is_review'] != 1):?>
-						<form class="mt-3" id="order_service_review_form" style="width:100%">
-							<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-							<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
-							<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
-							<div class="rating-list">
-								<p><b>Communication With Seller</b><br> 
-								How responsive was the seller during the process?</p>
-								<div class="rating" id="orderRating">
-									<div id="orderStartDiv">
-										<input type="hidden" name="rating" id="ratingValue">
-										<?php for($i=0; $i<=4; $i++):?>
-											<i class="fa fa-star star" style="--i: <?php echo $i?>;" onclick="handleStarClick(<?php echo $i?>)"></i>
-										<?php endfor;?>
-									</div>
-								</div>
-							</div>
-							<div class="rating-list">
-								<p><b>Service as Described</b><br>
-									Did the result match the servies's description?
-								</p>
-								<div class="rating tradeRating" id="tRating">
-									<div id="tradesStartDiv">
-										<input type="hidden" name="seller_communication_rating" id="ratingValue1">
-										<?php for($j=0; $j<=4; $j++):?>
-											<i class="fa fa-star tradeStar" style="--i: <?php echo $j?>;" onclick="handleTradeStarClick(<?php echo $j?>)"></i>
-										<?php endfor;?>
-									</div>	
-								</div>
-							</div>
-							<div class="rating-list">
-								<p><b>Buy Again or Recommanded</b><br>
-									Would you recommanded buying this service?
-								</p>
-								<div class="rating tradeRating2" id="tRating2">
-									<div id="recommandedStartDiv">
-										<input type="hidden" name="recommanded_service_rating" id="ratingValue2">
-										<?php for($j=0; $j<=4; $j++):?>
-											<i class="fa fa-star tradeStar2" style="--i: <?php echo $j?>;" onclick="handleRecommandedStarClick(<?php echo $j?>)"></i>
-										<?php endfor;?>
-									</div>
-								</div>
-							</div>
-
-							<div class="review-div">
-								<label>What was it like working with this Seller?</label>
-								<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
-							</div>
-							<div class="text-center mt-4">
-								<button type="submit" id="give-rating" class="btn btn-warning">
-									Submit
-								</button>
-							</div>
-						</form>
-					<?php endif;?>
-
-					<?php if($order['is_review'] == 1 && !empty($review['seller_review'])):?>
-						<div class="rating-form">
-							<h2 class="mt-1">
-								Public Review Left
-							</h2>
-						</div>
-						<div class="member-summary mt-5 mb-5">
-							<div class="summary member-summary-section">
-								<div class="member-image-container">
-									<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $homeUserName?>">
-								</div>
-								<div class="member-information-container">
-									<div class="member-name-container crop">
-										<h3 class="mt-1" style="margin-bottom: 5px;"><?php echo $homeUserName."'s Feedback"?></h3>
-										<div class="member-job-title crop">
-											<?php echo $review['review']; ?>
+							<form class="mt-3" id="order_service_review_form" style="width:100%">
+								<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+								<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+								<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+								<div class="rating-list">
+									<p><b>Communication With Seller</b><br> 
+									How responsive was the seller during the process?</p>
+									<div class="rating" id="orderRating">
+										<div id="orderStartDiv">
+											<input type="hidden" name="rating" id="ratingValue">
+											<?php for($i=0; $i<=4; $i++):?>
+												<i class="fa fa-star star" style="--i: <?php echo $i?>;" onclick="handleStarClick(<?php echo $i?>)"></i>
+											<?php endfor;?>
 										</div>
 									</div>
 								</div>
-							</div>
-						</div>
+								<div class="rating-list">
+									<p><b>Service as Described</b><br>
+										Did the result match the servies's description?
+									</p>
+									<div class="rating tradeRating" id="tRating">
+										<div id="tradesStartDiv">
+											<input type="hidden" name="seller_communication_rating" id="ratingValue1">
+											<?php for($j=0; $j<=4; $j++):?>
+												<i class="fa fa-star tradeStar" style="--i: <?php echo $j?>;" onclick="handleTradeStarClick(<?php echo $j?>)"></i>
+											<?php endfor;?>
+										</div>	
+									</div>
+								</div>
+								<div class="rating-list">
+									<p><b>Buy Again or Recommanded</b><br>
+										Would you recommanded buying this service?
+									</p>
+									<div class="rating tradeRating2" id="tRating2">
+										<div id="recommandedStartDiv">
+											<input type="hidden" name="recommanded_service_rating" id="ratingValue2">
+											<?php for($j=0; $j<=4; $j++):?>
+												<i class="fa fa-star tradeStar2" style="--i: <?php echo $j?>;" onclick="handleRecommandedStarClick(<?php echo $j?>)"></i>
+											<?php endfor;?>
+										</div>
+									</div>
+								</div>
 
-						<div class="rating-list">
-							<p><b>Communication With Seller</b><br> 
-							How responsive was the seller during the process?</p>
-							<div class="rating" id="orderRating">
-								<div id="orderStartDiv">
-									<?php for($i=1; $i<=5; $i++):?>											
-										<?php $active = $review['rating'] >= $i ? 'active' : ''; ?>
-										<i class="fa fa-star star <?php echo $active; ?>"></i>
-									<?php endfor;?>
+								<div class="review-div">
+									<label>What was it like working with this Seller?</label>
+									<textarea name="reviews" class="form-control" rows="5" placeholder="Your review..."></textarea>
 								</div>
-							</div>
-						</div>
-						<div class="rating-list">
-							<p><b>Service as Described</b><br>
-								Did the result match the servies's description?
-							</p>
-							<div class="rating tradeRating" id="tRating">
-								<div id="tradesStartDiv">
-									<?php for($i=1; $i<=5; $i++):?>
-										<?php $active1 = $review['seller_communication_rating'] >= $i ? 'active' : ''; ?>
-										<i class="fa fa-star star <?php echo $active1; ?>"></i>
-									<?php endfor;?>
-								</div>	
-							</div>
-						</div>
-						<div class="rating-list">
-							<p><b>Buy Again or Recommanded</b><br>
-								Would you recommanded buying this service?
-							</p>
-							<div class="rating tradeRating2" id="tRating2">
-								<div id="recommandedStartDiv">
-									<?php for($i=1; $i<=5; $i++):?>
-										<?php $active2 = $review['recommanded_service_rating'] >= $i ? 'active' : ''; ?>
-										<i class="fa fa-star star <?php echo $active2; ?>"></i>
-									<?php endfor;?>
+								<div class="text-center mt-4">
+									<button type="submit" id="give-rating" class="btn btn-warning">
+										Submit
+									</button>
 								</div>
-							</div>
-						</div>
-						<?php if(!empty($review['seller_response'])):?>
-							<div class="rating-form">
-								<h2 class="mt-1">
-									<?php echo $tradeUserName."'s Respond"?>
-								</h2>
-								<p><?php echo $review['seller_response']; ?></p>
-							</div>
+							</form>
 						<?php endif;?>
-						<hr>
-						<div class="member-summary mb-5">
-							<div class="summary member-summary-section">
-								<div class="member-image-container">
-									<img class="img-border-round member-image" src="<?php echo $tProfileImg;?>" alt="<?php echo $tradeUserName?>">
-								</div>
-								<div class="member-information-container">
-									<div class="member-name-container crop">
-										<h3 class="mt-1" style="margin-bottom: 5px;"><?php echo $tradeUserName."'s Feedback"?></h3>
-										<div class="member-job-title crop">
-											<?php echo $review['seller_review']; ?>
+					<?php else: ?>
+						<?php if($order['is_review'] == 1):?>
+							<!-- <h2>
+								Leave Public Review
+								<h3><?php echo $homeUserName; ?> has left you a feedback. To see their review, please leave your own feedback. </h3>
+							</h2> -->
+
+							<?php if($order['is_review'] == 1):?>
+								<div class="member-summary mb-5">
+									<div class="summary member-summary-section">
+										<div class="member-image-container">
+											<img class="img-border-round member-image" src="<?php echo $uprofileImg;?>" alt="<?php echo $homeUserName?>">
+										</div>
+										<div class="member-information-container">
+											<div class="member-name-container crop">
+												<h3 style="margin-bottom: 5px;"><?php echo $homeUserName?></h3>
+												<div class="member-job-title crop">
+													<?php echo $review['review']; ?>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
+
+								<div class="rating-list">
+									<p><b>Communication With Seller</b><br> 
+									How responsive was the seller during the process?</p>
+									<div class="rating" id="orderRating">
+										<div id="orderStartDiv">
+											<?php for($i=1; $i<=5; $i++):?>
+												<?php $active = $review['rating'] >= $i ? 'active' : ''; ?>
+												<i class="fa fa-star star <?php echo $active; ?>"></i>
+											<?php endfor;?>
+										</div>
+									</div>
+								</div>
+								<div class="rating-list">
+									<p><b>Service as Described</b><br>
+										Did the result match the servies's description?
+									</p>
+									<div class="rating tradeRating" id="tRating">
+										<div id="tradesStartDiv">
+											<?php for($i=1; $i<=5; $i++):?>
+												<?php $active1 = $review['seller_communication_rating'] >= $i ? 'active' : ''; ?>
+												<i class="fa fa-star star <?php echo $active1; ?>"></i>
+											<?php endfor;?>
+										</div>	
+									</div>
+								</div>
+								<div class="rating-list" style="border-bottom: 1px solid #f1f1f1;">
+									<p><b>Buy Again or Recommanded</b><br>
+										Would you recommanded buying this service?
+									</p>
+									<div class="rating tradeRating2" id="tRating2">
+										<div id="recommandedStartDiv">
+											<?php for($i=1; $i<=5; $i++):?>
+												<?php $active2 = $review['recommanded_service_rating'] >= $i ? 'active' : ''; ?>
+												<i class="fa fa-star star <?php echo $active2; ?>"></i>
+											<?php endfor;?>
+										</div>
+									</div>
+								</div>
+							<?php endif; ?>	
+
+							<div class="accordion-completed-order">
+								<div class="accordion-completed-name" onclick="toggleTradsmanRespond();">
+									<div class="icon-star">
+										<i class="fa fa-star-o" aria-hidden="true"></i>
+									</div>
+									<h5>Review your experience with this buyer 
+										<span>May 19,9:34 PM</span></h5>
+										<i class="fa fa-angle-down pull-right"></i>
+									</div>
+
+									<div class="accordion-order-review-text" id="requirement-div">
+										<div class="overview-experience">
+											<h2 class="title">
+												Overview Experience
+											</h2>											
+
+											<?php if($review['is_responded'] == 0):?>
+												<form id="seller_respond_form" style="width:100%">
+													<div class="rete-star" style="padding-left: 0;">
+														<h3>Rate your experience
+															<span>
+																How would you rate your overall experience with this buyer?
+															</span>
+														</h3>
+														<div class="rating homeRating" id="homeownerRating">
+															<div id="homeownerStartDiv">
+																<input type="hidden" name="homeowner_rating" id="homeownerRatingValue">
+																<?php for($i=0; $i<=4; $i++):?>
+																	<i class="fa fa-star homeownerStar" style="--i: <?php echo $i?>;" onclick="handleHomeownerStarClick(<?php echo $i?>)"></i>
+																<?php endfor;?>
+															</div>
+														</div>
+													</div>
+
+													<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+													<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+													<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+													<div class="review-div">
+														<label>Share some more about your experience by words (public)</label>
+														<textarea name="seller_response" class="form-control" rows="5" placeholder="Your reponse..."></textarea>
+													</div>
+													<div class="text-center mt-4">
+														<button type="submit" id="give-rating" class="btn btn-warning">
+															Submit
+														</button>
+													</div>
+												</form>
+											<?php else:?>
+												<?php 
+												if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+													$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
+												}else{
+													$tProfileImg = base_url('img/default-img.png');
+												}
+												$tradeUserName = ($tradesman['trading_name'] ?? '');
+												?>
+												<div class="member-summary">
+													<div class="summary member-summary-section">
+														<div class="member-information-container">
+															<div class="member-name-container crop p-3">
+																<div class="rating-list">
+																	<p><b>Rate your experience</b><br> 
+																	How would you rate your overall experience with this buyer?</p>
+																	<div class="rating homeRating" id="homeownerRating">
+																		<div id="homeownerStartDiv">
+																			<?php for($i=1; $i<=5; $i++):?>
+																				<?php $active = $review['homeowner_rating'] >= $i ? 'active' : ''; ?>
+																				<i class="fa fa-star star <?php echo $active; ?>"></i>
+																			<?php endfor;?>
+																		</div>
+																	</div>
+																</div>
+																<div class="member-job-title crop">
+																	<p><b>Your response</b><br> 
+																	<?php echo $review['seller_response']; ?>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>								
+											<?php endif;?>
+										</div>
+									</div>
 							</div>
-						</div>
-					<?php endif;?>
-				<?php endif;?>
+						<?php endif; ?>		
+					<?php endif; ?>
+				</div>
 			</div>
 
 			<div class="col-sm-4">
 				<div class="box-border p-4 submit-requirements-sidebar">
 					<?php 
-						$image_path = FCPATH . 'img/services/' . ($service['image'] ?? '');
-						$mime_type = get_mime_by_extension($image_path);
-						$is_image = strpos($mime_type, 'image') !== false;
-						$is_video = strpos($mime_type, 'video') !== false;
+					$image_path = FCPATH . 'img/services/' . ($service['image'] ?? '');
+					$mime_type = get_mime_by_extension($image_path);
+					$is_image = strpos($mime_type, 'image') !== false;
+					$is_video = strpos($mime_type, 'video') !== false;
 					?>
+
 					<?php if (file_exists($image_path) && $service['image']): ?>
 						<?php if ($is_image): ?>
 							<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
@@ -568,31 +556,21 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 						<?php endif; ?>
 
 						<ul class="status-order" style="border-bottom: 1px solid #efeff0;">
-							<li>
-								<span>Status</span> <span class="bg-warning"><?php echo ucfirst($order['status'])?></span>
-							</li>
-							<li>
-								<span>Order</span> <span><?php echo ucfirst($order['order_id'])?></span>
-							</li>
-							<li>
-								<span>Order Date</span> <span><?php echo $created_date; ?></span>
-							</li>
-							<li>
-								<span>Quantity</span> <span><?php echo $order['service_qty']; ?></span>
-							</li>
-							<li>
-								<span>Price</span> <span><?php echo '£'.number_format($order['total_price'],2); ?></span>
-							</li>
+							<li><span>Status</span> <span class="bg-warning"><?php echo ucfirst($order['status'])?></span></li>
+							<li><span>Order</span> <span><?php echo ucfirst($order['order_id'])?></span></li>
+							<li><span>Order Date</span> <span><?php echo $created_date; ?></span></li>
+							<li><span>Quantity</span> <span><?php echo $order['service_qty']; ?></span></li>
+							<li><span>Price</span> <span><?php echo '£'.number_format($order['total_price'],2); ?></span></li>
 						</ul>
 						<?php if(!empty($taskAddress)):?>
 							<h5 class="mt-3"><b>Task Address</b></h5>
-							<span><?php echo $taskAddress['address']; ?></span>
+							<span><?php echo $taskAddress['address']; ?></span></li>
 						<?php endif; ?>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 <?php include ("include/footer.php") ?>
 <script>
 	$(document).ready(function(){
@@ -641,7 +619,7 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 		$("#seller_respond_form").validate({
 			ignore: [],
 			rules: {
-				seller_review: {
+				seller_response: {
 					required: true,
 				},
 				homeowner_rating: {
@@ -649,7 +627,7 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 				},
 			},
 			messages: {
-				seller_review: "Please enter your review for this review",
+				seller_response: "Please enter your response for this review",
 				homeowner_rating: "Please give rating for the homeowner",
 			},errorPlacement: function(error, element) {
 				if (element.attr("name") == "homeowner_rating") {

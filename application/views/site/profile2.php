@@ -496,20 +496,28 @@
 									<div class="rating">
 										<ul>
 											<li>
-												<p>Overall Rating</p><div class="star"><span></span> <?php echo number_format($overallRating,1); ?></div>
+												<p>Overall Rating</p><div class="star"><span></span> 
+												<?php echo number_format($serviceAvgRating[0]['overall_average_rating'],1); ?></div>
+											</li>
+
+											<li>
+												<p>Seller Communication Level</p>
+												<div class="star"><span></span> 
+													<?php echo number_format($serviceAvgRating[0]['avg_seller_communication_rating'],1); ?>
+												</div>
 											</li>
 
 											<li>
 												<p>Recommend to a friend</p>
 												<div class="star"><span></span> 
-													<?php echo $referalRating; ?>
+													<?php echo number_format($serviceAvgRating[0]['avg_recommended_service_rating'],1); ?>
 												</div>
 											</li>
 
 											<li>
 												<p>Service as described</p>
 												<div class="star"><span></span>
-													<?php echo !empty($serviceAvgRating[0]['average_rating']) ? number_format($serviceAvgRating[0]['average_rating'],1) : 0; ?>
+													<?php echo number_format($serviceAvgRating[0]['avg_rating'],1); ?>
 												</div>
 											</li>
 										</ul>

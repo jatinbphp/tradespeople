@@ -1313,10 +1313,20 @@ class Order_dispute extends CI_Controller
 				return redirect('/' );
 			}
 
+			$user_id = $this->session->userdata('user_id');
 			$page['dispute'] = $dispute;
 			$page['setting'] = $this->common_model->GetColumnName('admin', array('id' => 1));
 
 			$page['order'] = $this->common_model->GetSingleData('service_order',['id'=>$dispute_id]);
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$page['order']['service_id']]);
+
+			$ouid = $page['order']['user_id'];
+			$suid = $service['user_id'];
+
+	    if(!in_array($user_id, [$ouid, $suid])){
+				redirect(base_url());
+				return;
+			}
 			
 			$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$dispute_id."'","tbl_milestones.*",true);
 

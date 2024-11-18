@@ -24,8 +24,6 @@ if ($this->session->userdata('type') == 2) {
 	$bank_Pay_info = '<a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="We charge ' . $bank_processing_fee . '% processing fee and process your payment within 1-2 working days." data-original-title="" class="red-tooltip toll bank-tooltip"><i class="fa fa-info-circle"></i></a>';
 }
 
-
-
 $Claimant = $this->common_model->GetColumnName('users', array('id' => $dispute['disputed_by']), array('f_name', 'l_name', 'type', 'trading_name', 'profile'));
 $showStepIn = false;
 $new = date('Y-m-d H:i:s');

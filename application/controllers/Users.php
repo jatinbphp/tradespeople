@@ -4328,8 +4328,8 @@ class Users extends CI_Controller
 		}
 
 		if(!$this->session->userdata('user_id')){
-      		redirect('login');
-    	}
+    	redirect('login');
+  	}
 
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['id'=>$id]);
@@ -4337,8 +4337,17 @@ class Users extends CI_Controller
 		
 		if(!empty($order)){
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
-			
+
+			$ouid = $order['user_id'];
+			$suid = $data['service']['user_id'];
+
+			if(!in_array($user_id, [$ouid, $suid])){
+				redirect(base_url());
+				return;
+			}
+
 			$data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$order['task_address_id']]);
+			$data['orderReview'] = $this->common_model->GetSingleData('service_rating',['order_id'=>$order['id'],'rate_by'=>$order['user_id']]);
 
 			$package_data = json_decode($data['service']['package_data'],true);	
 			$data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$data['service']['user_id']]);
@@ -4601,6 +4610,7 @@ class Users extends CI_Controller
 				$subject = "Order approved for order number: “".$serviceOrder['order_id']."”"; 
 				$flashMsg = 'Order Approved';
 				$flashErrMsg = 'Order Not Approved';
+				$this->session->set_userdata('completedFlashMessage',1);
 			}
 
 			$input['status'] = $status;
@@ -4675,21 +4685,37 @@ class Users extends CI_Controller
 		$tId = $this->input->post('rate_to');
 		$oId = $this->input->post('order_id');
 		$rate = $this->input->post('rating');
-		$tRate = $this->input->post('tradesman_rating');
+		$tRate = $this->input->post('seller_communication_rating');
+		$recommandedRate = $this->input->post('recommanded_service_rating');
 		$review = $this->input->post('reviews');
 
-		$insert1 = [
-      'rate_by' => $hId,
-      'rate_to' => $tId,
-      'order_id' => $oId,
-      'service_id' => $this->input->post('service_id'),
-      'rating' => $rate,
-      'review' => $review
-    ];
-    $run = $this->common_model->insert('service_rating', $insert1);
+		$getRating = $this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
+
+		$input = [];
+
+		if(!empty($getRating)){
+			$input['rating'] = $rate;
+      $input['seller_communication_rating'] = $tRate;
+      $input['recommanded_service_rating'] = $recommandedRate;
+      $input['review'] = $review;
+    	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
+		}else{
+			$insert1 = [
+	      'rate_by' => $hId,
+	      'rate_to' => $tId,
+	      'order_id' => $oId,
+	      'service_id' => $this->input->post('service_id'),
+	      'rating' => $rate,
+	      'seller_communication_rating' => $tRate,
+	      'recommanded_service_rating' => $recommandedRate,
+	      'review' => $review
+	    ];
+	    $run = $this->common_model->insert('service_rating', $insert1);
+		}
+		
     if($run){
-    	$input['is_review'] = 1;
-    	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input);
+    	$input1['is_review'] = 1;
+    	$this->common_model->update('service_order',array('id'=>$this->input->post('order_id')),$input1);
 
     	$data = array(
 	  		'rt_rateBy'=>$hId, 
@@ -5299,18 +5325,29 @@ class Users extends CI_Controller
 
 	public function orderCompleted($id=null){
 		$oId = $id;
+		$user_id = $this->session->userdata('user_id');
 		
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
 		
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+
+		$ouid = $serviceOrder['user_id'];
+		$suid = $service['user_id'];
+
+    if(!in_array($user_id, [$ouid, $suid])){
+			redirect(base_url());
+			return;
+		}
     
     $data['homeOwner'] = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
     
     $data['tradesman'] = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+    $data['orderReview'] = $this->common_model->GetSingleData('service_rating',['order_id'=>$serviceOrder['id'],'rate_by'=>$serviceOrder['user_id']]);
     
     $data['taskAddress'] = $this->common_model->GetSingleData('task_addresses',['id'=>$serviceOrder['task_address_id']]);
     
-    $data['review'] = $this->common_model->GetSingleData('service_rating',['service_id'=>$service['id'], 'rate_by'=>$serviceOrder['user_id'], 'rate_to'=>$service['user_id']]);
+    $data['review'] = $this->common_model->GetSingleData('service_rating',['order_id'=>$serviceOrder['id'], 'service_id'=>$service['id'], 'rate_by'=>$serviceOrder['user_id'], 'rate_to'=>$service['user_id']]);
 
     $data['tRate'] = $this->common_model->GetSingleData('rating_table',['rate_type'=>'order', 'rt_rateBy'=>$serviceOrder['user_id'], 'rt_rateTo'=>$service['user_id']]);
 
@@ -5322,6 +5359,88 @@ class Users extends CI_Controller
 
 		$data['created_date'] = $ocDate->format('D jS F, Y H:i');
 
+		$data['user_type'] = $this->session->userdata('type');
+
+		$data['completedFlashMessage'] = $this->session->userdata('completedFlashMessage');
+    $this->session->unset_userdata('completedFlashMessage');
+
     $this->load->view('site/completedOrder',$data);
+	}
+
+	public function submitRespond(){
+		$tId = $this->input->post('rate_to');
+		$oId = $this->input->post('order_id');
+		$seller_review = $this->input->post('seller_review');
+		$homeowner_rating = $this->input->post('homeowner_rating');
+		$is_respond = $this->input->post('is_respond') ?? 0;
+
+		$getRating = $this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
+
+		$order = $this->common_model->get_single_data('service_order',array('id'=>$oId));
+
+		if(!empty($getRating)){
+			if($is_respond == 1){
+				$input['seller_response'] = $seller_review;	
+				$input['is_responded'] = 1;
+			}else{
+				$input['homeowner_rating'] = $homeowner_rating;
+				$input['seller_review'] = $seller_review;	
+			}			
+			
+    	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
+
+    	if($run){
+    		echo json_encode(['status' => 'success', 'message' => 'Your respond submitted successfully']);	
+    	}else{
+    		echo json_encode(['status' => 'error', 'message' => 'Your respond not submitted']);	
+    	}			
+    }else{
+    	$insert1 = [
+	      'rate_by' => $order['user_id'],
+	      'rate_to' => $tId,
+	      'order_id' => $oId,
+	      'service_id' => $order['service_id'],
+	      'homeowner_rating' => $homeowner_rating,
+				'seller_review' => $seller_review
+	    ];
+	    $run = $this->common_model->insert('service_rating', $insert1);
+	    if($run){
+    		echo json_encode(['status' => 'success', 'message' => 'Your review submitted successfully']);	
+    	}else{
+    		echo json_encode(['status' => 'error', 'message' => 'Your review not submitted']);	
+    	}
+    }	
+	}
+
+	public function ratingHelpful(){
+		$rateId = $this->input->post('rateId');
+		$serviceId = $this->input->post('serviceId');
+		$help = $this->input->post('help');
+		$userId = $this->session->userdata('user_id');
+
+		if($this->session->userdata('user_id')){
+			$helpfulRate=$this->common_model->get_single_data('rating_helpful',array('rating_id'=>$rateId,'service_id'=>$serviceId,'user_id'=>$userId));
+					
+			if(!empty($helpfulRate)){
+				$update2['is_helpFul'] = strtolower($help);
+				$runss1 = $this->common_model->update('rating_helpful',array('rating_id'=>$rateId,'service_id'=>$serviceId,'user_id'=>$userId),$update2);
+	    	echo json_encode(['status' => 1, 'help'=>strtolower($help)]);
+	    	exit;
+	    }else{
+	    	$data = array(
+					'rating_id'=>$rateId, 
+					'service_id'=>$serviceId,
+					'user_id'=>$userId,
+					'is_helpFul'=>strtolower($help),
+				);							
+				$run1 = $this->common_model->insert('rating_helpful',$data);
+
+				echo json_encode(['status' => 1, 'help'=>strtolower($help)]);
+				exit;
+	    }	
+		}else{
+			echo json_encode(['status' => 0]);
+			exit;
+		}
 	}
 }

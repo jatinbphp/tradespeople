@@ -377,9 +377,9 @@ class Wallet extends CI_Controller
 
   public function wallet(){
   	$setting=$this->common_model->get_all_data('admin');
-		if($setting[0]['payment_method'] == 0){
-			redirect('dashboard');
-		}
+		// if($setting[0]['payment_method'] == 0){
+		// 	redirect('dashboard');
+		// }
     if(isset($_GET['reject_reason']) && !isset($_GET['type'])){
       $whereRejectReason['id'] = $_GET['reject_reason'];
       $result = $this->common_model->fetch_records('homeowner_fund_withdrawal', $whereRejectReason);
