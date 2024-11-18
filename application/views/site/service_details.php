@@ -911,8 +911,6 @@
 	</div>
 </div>
 
-
-
 <?php if(!empty($browse_history)): ?>
 	<div class="container mt-5" id="browseHistory">
 		<h2 class="title">
@@ -1189,7 +1187,7 @@
   	$('#post_id-footer').val(<?php echo $service_details['id']?>)
   	$('#rid-footer').val(<?php echo $service_user['id']?>)
   	$('#chat_type').val('service');
-  	$('#ch_msg').val('Hello');
+  	$('#ch_msg').val('Contact for <?php echo $service_details['service_name']?>');
   	send_msg();
   	get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
   	showdiv();
