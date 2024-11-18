@@ -30,7 +30,7 @@
 				<div>
 					<?php
 						for($i=1; $i<=5; $i++){
-							$color = $i <= $rate['rating'] ? '#f9d71c' : '#dddcd7';
+							$color = $i <= $rate['rating'] ? '#fe8a0f' : '#dcd9d9';
 							echo '<i class="fa fa-star" aria-hidden="true" style="color:'.$color.'"></i>';
 						}
 					?>

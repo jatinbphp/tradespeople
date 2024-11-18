@@ -163,19 +163,19 @@
 </style>
 
 <?php 
-if(isset($homeOwner['profile']) && !empty($homeOwner['profile'])){
-	$uprofileImg = base_url('img/profile/'.$homeOwner['profile']);
-}else{
-	$uprofileImg = base_url('img/default-img.png');
-}
-$homeUserName = ($homeOwner['f_name'] ?? '').' '.($homeOwner['l_name'] ??  '');
+	if(isset($homeOwner['profile']) && !empty($homeOwner['profile'])){
+		$uprofileImg = base_url('img/profile/'.$homeOwner['profile']);
+	}else{
+		$uprofileImg = base_url('img/default-img.png');
+	}
+	$homeUserName = ($homeOwner['f_name'] ?? '').' '.($homeOwner['l_name'] ??  '');
 
-if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
-	$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
-}else{
-	$tProfileImg = base_url('img/default-img.png');
-}
-$tradeUserName = ($tradesman['trading_name'] ?? '');
+	if(isset($tradesman['profile']) && !empty($tradesman['profile'])){
+		$tProfileImg = base_url('img/profile/'.$tradesman['profile']);
+	}else{
+		$tProfileImg = base_url('img/default-img.png');
+	}
+	$tradeUserName = ($tradesman['trading_name'] ?? '');
 ?>
 
 <div class="loader-bg hide" id='loader'>
@@ -204,7 +204,7 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 				<?php endif; ?>
 
 				<?php if($user_type == 1): ?>
-					<?php if($order['is_review'] == 1):?>
+					<?php if($order['is_review'] == 1 && !empty($review['seller_review'])):?>
 						<div class="rating-form">
 							<h2 class="mt-1">
 								Public Review Left
@@ -225,7 +225,6 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 								</div>
 							</div>
 						</div>
-
 						<div class="rating-list">
 							<p><b>Communication With Seller</b><br> 
 							How responsive was the seller during the process?</p>
@@ -264,7 +263,6 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 								</div>
 							</div>
 						</div>
-						<hr>
 						<div class="accordion-completed-order">
 							<?php if($review['is_responded'] == 0):?>
 								<div class="accordion-order-review-text" id="requirement-div">
@@ -287,12 +285,100 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 							<?php else:?>	
 								<div class="rating-form">
 									<h2 class="mt-1">
-										<?php echo $tradeUserName."'s Respond"?>
+										<?php echo $tradeUserName."'s Response"?>
 									</h2>
 									<p><?php echo $review['seller_response']; ?></p>
 								</div>
 							<?php endif;?>
 						</div>
+						<hr>						
+						<?php if(empty($review['seller_review'])):?>
+							<hr>
+							<div class="rating-form">
+								<h2 class="mt-1">
+									Leave Public Review
+									<h4>
+										Share your experience of working with <?php echo $homeUserName; ?>
+									</h4>
+								</h2>
+								<div class="accordion-completed-order mt-5">
+									<div class="accordion-completed-name" onclick="toggleTradsmanRespond();">
+										<div class="icon-star">
+											<i class="fa fa-star-o" aria-hidden="true"></i>
+										</div>
+										<h5>Review your experience with this buyer 
+											<span>May 19,9:34 PM</span>
+										</h5>
+										<i class="fa fa-angle-down pull-right"></i>
+									</div>
+
+									<div class="accordion-order-review-text" id="requirement-div">
+										<div class="overview-experience">
+											<h2 class="title">Overview Experience</h2>											
+
+											<form id="seller_respond_form1" style="width:100%">
+												<div class="rete-star" style="padding-left: 0;">
+													<h3>Rate your experience
+														<span>
+															How would you rate your overall experience with this buyer?
+														</span>
+													</h3>
+													<div class="rating homeRating" id="homeownerRating">
+														<div id="homeownerStartDiv">
+															<input type="hidden" name="homeowner_rating" id="homeownerRatingValue">
+															<?php for($i=0; $i<=4; $i++):?>
+																<i class="fa fa-star homeownerStar" style="--i: <?php echo $i?>;" onclick="handleHomeownerStarClick(<?php echo $i?>)"></i>
+															<?php endfor;?>
+														</div>
+													</div>
+												</div>
+
+												<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+												<input type="hidden" name="service_id" value="<?php echo $order['service_id']; ?>">
+												<input type="hidden" name="rate_to" value="<?php echo $tradesman['id']; ?>">
+												<div class="review-div">
+													<label>Share some more about your experience by words (public)</label>
+													<textarea name="seller_review" class="form-control" rows="5" placeholder="Your review..."></textarea>
+												</div>
+												<div class="text-center mt-4">
+													<button type="submit" id="give-rating" class="btn btn-warning">
+														Submit
+													</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>							
+						<?php else: ?>	
+							<div class="member-summary mt-5 mb-5">
+								<div class="summary member-summary-section">
+									<div class="member-image-container">
+										<img class="img-border-round member-image" src="<?php echo $tProfileImg;?>" alt="<?php echo $tradeUserName?>">
+									</div>
+									<div class="member-information-container">
+										<div class="member-name-container crop">
+											<h3 class="mt-1" style="margin-bottom: 5px;"><?php echo $tradeUserName."'s Feedback"?></h3>
+											<div class="member-job-title crop">
+												<?php echo $review['seller_review']; ?>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="rating-list">
+								<p><b>Rate your experience</b><br> 
+								How would you rate your overall experience with this buyer?</p>
+								<div class="rating homeRating" id="homeownerRating">
+									<div id="homeownerStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>											
+											<?php $active = $review['homeowner_rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star star <?php echo $active; ?>"></i>
+										<?php endfor;?>
+									</div>
+								</div>
+							</div>
+						<?php endif;?>	
 					<?php else: ?>
 						<div class="rating-form">
 							<h2 class="mt-1">
@@ -448,7 +534,7 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 						</form>
 					<?php endif;?>
 
-					<?php if($order['is_review'] == 1 && !empty($review['seller_review'])):?>
+					<?php if($order['is_review'] == 1):?>
 						<div class="rating-form">
 							<h2 class="mt-1">
 								Public Review Left
@@ -517,21 +603,35 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 							</div>
 						<?php endif;?>
 						<hr>
-						<div class="member-summary mb-5">
-							<div class="summary member-summary-section">
-								<div class="member-image-container">
-									<img class="img-border-round member-image" src="<?php echo $tProfileImg;?>" alt="<?php echo $tradeUserName?>">
-								</div>
-								<div class="member-information-container">
-									<div class="member-name-container crop">
-										<h3 class="mt-1" style="margin-bottom: 5px;"><?php echo $tradeUserName."'s Feedback"?></h3>
-										<div class="member-job-title crop">
-											<?php echo $review['seller_review']; ?>
+						<?php if(!empty($review['seller_review'])):?>
+							<div class="member-summary mb-5">
+								<div class="summary member-summary-section">
+									<div class="member-image-container">
+										<img class="img-border-round member-image" src="<?php echo $tProfileImg;?>" alt="<?php echo $tradeUserName?>">
+									</div>
+									<div class="member-information-container">
+										<div class="member-name-container crop">
+											<h3 class="mt-1" style="margin-bottom: 5px;"><?php echo $tradeUserName."'s Feedback"?></h3>
+											<div class="member-job-title crop">
+												<?php echo $review['seller_review']; ?>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
+							<div class="rating-list">
+								<p><b>Rate your experience</b><br> 
+								How would you rate your overall experience with this buyer?</p>
+								<div class="rating homeRating" id="homeownerRating">
+									<div id="homeownerStartDiv">
+										<?php for($i=1; $i<=5; $i++):?>											
+											<?php $active = $review['homeowner_rating'] >= $i ? 'active' : ''; ?>
+											<i class="fa fa-star star <?php echo $active; ?>"></i>
+										<?php endfor;?>
+									</div>
+								</div>
+							</div>
+						<?php endif;?>
 					<?php endif;?>
 				<?php endif;?>
 			</div>
@@ -660,6 +760,31 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
 			},
 			submitHandler: function(form) {
 				giveRespond();
+			}
+		});
+
+		$("#seller_respond_form1").validate({
+			ignore: [],
+			rules: {
+				seller_review: {
+					required: true,
+				},
+				homeowner_rating: {
+					requiredHidden: true
+				},
+			},
+			messages: {
+				seller_review: "Please enter your review for this review",
+				homeowner_rating: "Please give rating for the homeowner",
+			},errorPlacement: function(error, element) {
+				if (element.attr("name") == "homeowner_rating") {
+					error.insertAfter("#homeownerStartDiv");
+				} else {
+					error.insertAfter(element);
+				}
+			},
+			submitHandler: function(form) {
+				giveHomeownerReview();
 			}
 		});
 	}); 
@@ -805,6 +930,49 @@ $tradeUserName = ($tradesman['trading_name'] ?? '');
   function giveRespond(){
   	$('#loader').removeClass('hide');
   	formData = $("#seller_respond_form").serialize();
+
+  	$.ajax({
+  		url: '<?= site_url().'users/submitRespond'; ?>',
+  		type: 'POST',
+  		data: formData,
+  		dataType: 'json',		                
+  		success: function(result) {
+  			$('#loader').addClass('hide');
+  			if(result.status == 0){
+  				swal({
+  					title: "Error",
+  					text: result.message,
+  					type: "error"
+  				}, function() {
+  					window.location.reload();
+  				});	
+  			}else if(result.status == 2){
+  				swal({
+  					title: "Login Required!",
+  					text: "If you want to order the please login first!",
+  					type: "warning"
+  				}, function() {
+  					window.location.href = '<?php echo base_url().'login'; ?>';
+  				});	
+  			}else{
+  				swal({
+  					title: "Success",
+  					text: result.message,
+  					type: "success"
+  				}, function() {
+  					window.location.reload();
+  				});
+  			}		                    
+  		},
+  		error: function(xhr, status, error) {
+          // Handle error
+  		}
+  	});
+  }
+
+  function giveHomeownerReview(){
+  	$('#loader').removeClass('hide');
+  	formData = $("#seller_respond_form1").serialize();
 
   	$.ajax({
   		url: '<?= site_url().'users/submitRespond'; ?>',
