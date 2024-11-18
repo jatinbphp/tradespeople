@@ -273,7 +273,7 @@ $("#startCustomOffer").click(function() {
       success: function(result) {
         if(result.status ==1){
           var services = result.services;
-
+          var serviceHtml = '';
           services.forEach(function(service) {
             if (service.image) {
                 var imagePath = `img/services/${service.image}`;
@@ -286,7 +286,7 @@ $("#startCustomOffer").click(function() {
                 var serviceFile = '<img src="'+site_url+'img/default-image.jpg'+'" alt="Default Image" width="50">';
             }
 
-            var serviceHtml = `<li onclick="nextStep(${service.id})">
+            serviceHtml += `<li onclick="nextStep(${service.id})">
               <a href="#">
                 <div class="box">
                   <div class="img">
@@ -298,8 +298,8 @@ $("#startCustomOffer").click(function() {
                 </div>
               </a>
             </li>`;
-            $('#chatServiceList').html(serviceHtml);
           });
+          $('#chatServiceList').html(serviceHtml);
         }else{
           var serviceHtml = `<li>
               <a href="#">
@@ -329,9 +329,12 @@ $('#is_expiry').change(function() {
 });
 
 function nextStep(sId){
-  $('#chatServiceId').val(sId);
+
+  window.location.href = '<?php echo base_url().'custom_offer/send'; ?>/'+sId+'/'+$('#rid-footer').val();
+
+  /*$('#chatServiceId').val(sId);
   $("#great-offer2").show();
-  $("#great-offer1").hide();
+  $("#great-offer1").hide();*/
 }
 
 function nextStep2(method){

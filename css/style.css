@@ -11164,3 +11164,174 @@ input:checked + .switch-slider:before {
 .bg-warning{
     background: #fe8a0f
 }
+
+.single-payment-offer {
+    padding: 30px 0;
+}
+.single-payment-offer h2 {
+    font-weight: bold;
+    margin: 0;
+}
+
+.single-payment-offer h3 {
+    font-weight: bold;
+    margin: 10px 0 30px 0;
+}
+
+.single-payment-offer form {
+    
+}
+
+.single-payment-offer form .form-group {
+    margin-bottom: 20px;
+}
+.single-payment-offer form .form-group label {
+    font-weight: bold;
+}
+.single-payment-offer form .img-textarea {
+    display: flex;
+    gap: 0 15px;
+    flex-wrap: wrap;
+
+}
+.single-payment-offer form .img-textarea img {
+    width: calc(25% - 15px);
+    border-radius: 5px;
+}
+.single-payment-offer form .img-textarea textarea {
+    width: 75%;
+}
+.single-payment-offer form .img-textarea label.error {
+    padding-left: 25%;
+    margin: 0;
+}
+
+.single-payment-offer .box-bg {
+    border: 1px solid #b0c0d3;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.12);
+}
+.single-payment-offer form .form-control {
+    border-width: 1px;
+}
+.single-payment-offer form input[type="checkbox"] { 
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    border-color: #b0c0d3;
+    border-radius: 4px;
+}
+.single-payment-offer form .form-check label {
+    padding: 4px 0 0 10px;
+    margin-bottom: 0;
+}
+.single-payment-offer form .form-check label:hover {
+    background-color: transparent;
+}
+.single-payment-offer form .form-check {
+    margin: 0;
+    align-items: center;
+}
+.single-payment-offer form .mainUl {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.single-payment-offer form ul li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 15px;
+}
+.single-payment-offer form ul li select {
+    max-width: 120px;
+}
+.single-payment-offer form ul li {
+    border-bottom: 1px solid #e1e1e1;
+    padding: 15px 0;
+}
+.single-payment-offer form .form-btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.single-payment-offer .accordion .accordion-item {
+    padding: 15px 0;
+}
+.single-payment-offer .accordion .accordion-item .accordion-label {
+    padding: 0 0 0 10px;
+    margin-bottom: 0;
+    top: -6px;
+    position: relative;
+}
+.single-payment-offer .accordion .accordion-item .accordion-label:hover {
+    background-color: transparent;
+}
+
+.single-payment-offer .accordion-label {
+    padding:15px;
+    font-weight:700;
+    cursor:pointer;
+}
+.single-payment-offer .accordion-content { 
+    max-height:0;
+    overflow:hidden;
+    padding-right: 5px;
+}
+.single-payment-offer .accordion input[type="checkbox"]:checked ~ .accordion-content {
+    max-height:280px;
+    overflow-y: scroll;
+/*    scrollbar-width: thin;*/
+}
+
+.single-payment-offer .accordion input[type="checkbox"]:checked ~ .accordion-content::-webkit-scrollbar-thumb {
+  background-color: #376cb6;
+  border: 4px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;  
+}
+
+.single-payment-offer .accordion input[type="checkbox"]:checked ~ .accordion-content::-webkit-scrollbar {
+ scrollbar-width: thin;
+}
+
+.single-payment-offer .accordion input[type="checkbox"]:checked ~ .accordion-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+@media (max-width: 575px) {
+    .single-payment-offer form .img-textarea img {
+        width: calc(35% - 15px);
+    }
+    .single-payment-offer form .img-textarea textarea {
+        min-width: 65%;
+    }
+}
+
+@media (max-width: 574px) {
+    .single-payment-offer form .img-textarea img {
+        width: 100%;
+        padding-bottom: 15px;
+    }
+    .single-payment-offer form .img-textarea textarea {
+        min-width: 100%;
+    }
+    .single-payment-offer form .img-textarea {
+        flex-direction: column;
+    }
+    .single-payment-offer form ul li select {
+        max-width: 100px;
+    }
+    .single-payment-offer h2 {
+        font-size: 26px;
+    }
+    .single-payment-offer h3 {
+        font-size: 18px;
+    }
+    .single-payment-offer form .img-textarea label.error {
+        padding-left: 0;
+    }
+}
+.single-payment-offer .error{font-weight: normal !important;}
