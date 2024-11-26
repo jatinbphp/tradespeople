@@ -8,6 +8,8 @@ class Custom_offer extends CI_Controller
 	}
 
 	public function send($id, $receiverId){
+
+		$uId = $this->session->userdata('user_id');
 		$data['title'] = 'Custom Offer';
 		$data['service_id'] = $id;
 		$data['receiver_id'] = $receiverId;
@@ -22,6 +24,8 @@ class Custom_offer extends CI_Controller
 		$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
 
 		$data['package_data'] = !empty($data['service']['package_data']) ? json_decode($data['service']['package_data']) : [];
+
+		$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$id, 'posted_user'=>$uId]);
 
 		$this->load->view('site/custom_offer',$data);
 	}
