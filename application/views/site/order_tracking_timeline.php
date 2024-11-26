@@ -290,7 +290,7 @@
 				<?php endif; ?>				
 
 				<?php
-					if($list['status'] == 'completed' && empty($list['description'])){
+					if(in_array($list['status'],['completed','cancelled']) && empty($list['description'])){
 					$style = 'display:none;';
 					}else{
 						$style = 'display:block;';

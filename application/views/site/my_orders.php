@@ -86,7 +86,7 @@
                                                             <th>View Order</th>
                                                         <?php endif; ?>
                                                         <?php if($this->session->userdata('type') == 1):?>
-                                                            <th>View Order</th>
+                                                            <th>Action</th>
                                                         <?php endif; ?>
                                                     </tr>
                                                 </thead>

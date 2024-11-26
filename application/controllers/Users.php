@@ -2075,13 +2075,11 @@ class Users extends CI_Controller
 			//echo '<pre>'; print_r($lists); die();
 			
 			$data['lists']=$lists;
-			
 		
 			$this->load->view('site/earnings',$data);
 		} else {
 			redirect('login');
 		}
-
 	}
 	
 	public function invoices() {
@@ -2401,7 +2399,9 @@ class Users extends CI_Controller
 
 	        	$requirements = '<button class="btn btn-warning requirements" data-id="'.$order['id'].'">Requirements</button>';
 
-	        	$viewOrder = '<a class="btn btn-anil_btn nx_btn" href="'.base_url('order-tracking/'.$order['id']).'">View Orders</a>';
+	        	$btnName = $order['status'] == 'offer_created' ? 'Respond Now' : 'View Order';
+
+	        	$viewOrder = '<a class="btn btn-anil_btn nx_btn" href="'.base_url('order-tracking/'.$order['id']).'">'.$btnName.'</a>';
 
 	        	$link = base_url('order-tracking/'.$order['id']);
 
@@ -3740,7 +3740,7 @@ class Users extends CI_Controller
 
 	public function getServiceList(){
 		$uId = $this->input->post('tradesMan');
-		$services = $this->common_model->get_my_service('my_services', $uId);
+		$services = $this->common_model->get_my_service('my_services', $uId, 'active');
 		if(!empty($services)){
 			echo json_encode(array('status'=>1, 'services'=>$services));
 			exit;
@@ -4334,6 +4334,10 @@ class Users extends CI_Controller
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['id'=>$id]);
 		$data['user'] = $this->common_model->GetSingleData('users',['id'=>$user_id]);
+
+		// echo '<pre>';
+		// print_r($order);
+		// exit;
 		
 		if(!empty($order)){
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
@@ -4362,7 +4366,21 @@ class Users extends CI_Controller
 			$days = 0;
 			$data['requirements'] = [];
 
-			if(!empty($statusHistory)){
+			if($order['is_custom'] == 1){
+				$days = $order['status'] == 'offer_created' ? $order['offer_expires_days'] : $order['delivery'];
+				$currentDate = new DateTime($order['created_at']);			
+				$currentDate->modify("+$days days");
+				$delivery_date = $currentDate->format('D jS F, Y H:i');	
+
+				$currentDate1 = new DateTime();
+				$interval = $currentDate1->diff($currentDate);
+
+				$rDays = $interval->days; 
+				$rHours = $interval->h;
+				$rMinutes = $interval->i;
+			}
+
+			if($order['is_custom'] == 0 && !empty($statusHistory)){
 				$days = $package_data[$order['package_type']]['days'];
 				$currentDate = new DateTime($statusHistory['created_at']);			
 				$currentDate->modify("+$days days");
@@ -5078,6 +5096,63 @@ class Users extends CI_Controller
 		}
 	}
 
+	public function offerCancel(){
+		$oId = $this->input->post('order_id');
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+
+		$input['status'] = 'cancelled';
+		$input['is_cancel'] = 1;
+		$input['status_update_time'] = date('Y-m-d H:i:s');
+
+		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
+		if($run){
+			$hId = $this->session->userdata('user_id');
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+      if($hId == $homeOwner['id']){
+      	$senderId = $hId;
+      	$receiverId = $tradesman['id'];
+      }
+      if($hId == $tradesman['id']){
+      	$senderId = $hId;
+      	$receiverId = $homeOwner['id'];
+      }
+
+			/*Manage Order History*/
+      $insert1 = [
+        'user_id' => $senderId,
+        'service_id' => $serviceOrder['service_id'],
+        'order_id' => $oId,
+        'status' => 'cancelled'
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
+
+      $insert['sender'] = $senderId;
+			$insert['receiver'] = $receiverId;
+			$insert['order_id'] = $oId;
+			$insert['is_cancel'] = 1;
+			$insert['status'] = 'cancelled';
+			$insert['description'] = $reason;
+			$run = $this->common_model->insert('order_submit_conversation', $insert);
+
+			/*Tradesman Email Code*/
+      if($tradesman){
+      	$subject = "Order cancelled for order number: “".$serviceOrder['order_id']."”"; 
+
+        $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
+        $html .= '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is cancelled</p>';                
+        $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Cancel:</b></p>';
+        $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
+        $this->common_model->send_mail($tradesman['email'],$subject,$html);
+      }
+      echo json_encode(['status' => 'error', 'message' => 'Offer cancelled successfully.']);
+		}else{
+			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Offer is not cancelled.']);
+		}
+	}
+
 	public function approve_decision($id){
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
@@ -5424,8 +5499,6 @@ class Users extends CI_Controller
 			if(!empty($helpfulRate)){
 				$update2['is_helpFul'] = strtolower($help);
 				$runss1 = $this->common_model->update('rating_helpful',array('rating_id'=>$rateId,'service_id'=>$serviceId,'user_id'=>$userId),$update2);
-	    	echo json_encode(['status' => 1, 'help'=>strtolower($help)]);
-	    	exit;
 	    }else{
 	    	$data = array(
 					'rating_id'=>$rateId, 
@@ -5434,10 +5507,16 @@ class Users extends CI_Controller
 					'is_helpFul'=>strtolower($help),
 				);							
 				$run1 = $this->common_model->insert('rating_helpful',$data);
+	    }
 
-				echo json_encode(['status' => 1, 'help'=>strtolower($help)]);
-				exit;
-	    }	
+	    $totalCount = $this->common_model->getTotalHelpfulReview($rateId, $serviceId, strtolower($help));
+	    if(strtolower($help) == 'yes'){
+				$totalPerson = $totalCount.' person found this helpful';
+			}else{
+				$totalPerson = $totalCount.' person found this unhelpful';
+			}
+    	echo json_encode(['status' => 1, 'help'=>strtolower($help), 'totalPerson' => $totalPerson]);
+    	exit;
 		}else{
 			echo json_encode(['status' => 0]);
 			exit;

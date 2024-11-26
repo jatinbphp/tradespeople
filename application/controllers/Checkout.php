@@ -68,37 +68,51 @@ class Checkout extends CI_Controller
 
 		$latestCartId = $this->session->userdata('latest_cartId');
 		$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
-
-		$sId = $cartData['service_id'];
 		$prices = 0;
 		$totalPrice = 0;
-		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
-		$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
+		$exOid = '';
+		$order = [];
+
+		if(isset($_GET['offer']) && !empty($_GET['offer'])){
+			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$_GET['offer']));
+			$serviceQty = $order['service_qty'];
+			$exsId = $cartData['ex_services'];
+			$servicePrice = $order['price'] * $serviceQty;
+			$package_type = 'custom';
+			$exOid = $_GET['offer'];
+		}else{
+			$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
+			$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
+			$package_data = json_decode($data['service_details']['package_data'],true);
+			$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
+			$package_type = $cartData['package_type'];
+		}
+
+		$sId = empty($order) ? $cartData['service_id'] : $order['service_id'];
+		
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 		$data['service_fee'] = $setting['service_fees'];
 		$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
+		$data['exOid'] = $exOid;
 		if(!empty($exsId)){
-			$data['ex_services'] = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $sId);	
+			$data['ex_services'] = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $sId);
 		}else{
 			$data['ex_services'] = [];
 		}
-		
+
 		if(!empty($data['ex_services']) && count($data['ex_services']) > 0){
 			$prices = array_column($data['ex_services'], 'price');
 			$totalPrice = array_sum($prices);	
-		}
-
-		$package_data = json_decode($data['service_details']['package_data'],true);
-		$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
+		}		
 
 		$data['exIds'] = $exsId;
 		$data['totalPrice'] = $totalPrice + $servicePrice;
 		$data['serviceQty'] = $serviceQty;
 		$data['userCardData'] = $this->getCardData($uId);
-		$data['package_type'] = $cartData['package_type'];
-		$data['package_price'] = $package_data[$cartData['package_type']]['price'];
-		$data['package_description'] = $package_data[$cartData['package_type']]['description'];
-		$data['delivery_date'] = $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']);
+		$data['package_type'] = $package_type;
+		$data['package_price'] = empty($order) ? $package_data[$cartData['package_type']]['price'] : $order['price'];
+		$data['package_description'] = empty($order) ? $package_data[$cartData['package_type']]['description'] : $order['description'];
+		$data['delivery_date'] = empty($order) ? $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']) : $order['delivery'];
 		$data['task_addresses'] = $this->common_model->getTaskAddresses($uId);
 		$data['setting'] = $setting;
 		$data['loginUser'] = $this->common_model->GetSingleData('users',['id'=>$uId]);
@@ -168,6 +182,12 @@ class Checkout extends CI_Controller
 		$latestCartId = $this->session->userdata('latest_cartId');
 		$pcode = $this->input->post('promo_code');
 		$promo_code = $this->common_model->get_single_data('promo_code',array('code'=>$pcode,'status'=>'active'));
+		$exOid = $this->input->post('exOid');
+		$order = [];
+
+		if(!empty($exOid)){
+			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$exOid));
+		}
 		
 		if(empty($promo_code)){
 			$data['status'] = 0;
@@ -176,7 +196,7 @@ class Checkout extends CI_Controller
 			exit;
 		}else{
 			$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
-			$service_id = $cartData['service_id'];
+			$service_id = !empty($order) ? $order['service_id'] : $cartData['service_id'];
 			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 			$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
 			$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
@@ -192,7 +212,10 @@ class Checkout extends CI_Controller
 			}
 
 			$package_data = json_decode($service_details['package_data'],true);
-			$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
+
+			$price = !empty($order) ? $order['price'] : $package_data[$cartData['package_type']]['price'];
+
+			$servicePrice = $price * $serviceQty;
 			$total_amount = $totalPrice + $servicePrice;
 
 			$result = $this->getDiscount($promo_code, $total_amount, 0);
@@ -256,11 +279,11 @@ class Checkout extends CI_Controller
 
 		if(!$this->session->userdata('user_id')){
 			$json['status'] = 2;
-      		echo json_encode($json);
-      		exit;
-    	}
+      echo json_encode($json);
+      exit;
+    }
 
-		$this->form_validation->set_rules('payment_method','Payment Method','required');
+		$this->form_validation->set_rules('payment_method','Payment Method','required');	
 
 		$task_address_id = $this->addAddresssToOrder($this->input->post());
 				
@@ -271,17 +294,23 @@ class Checkout extends CI_Controller
 			exit;
 		}
 
+		$order = [];
 		$previous_url = $this->session->userdata('previous_url');
 		$uId = $this->session->userdata('user_id');
 		$latestCartId = $this->session->userdata('latest_cartId');
 		$pcode = $this->input->post('promo_code');
 		$payment_method = $this->input->post('payment_method');
+		$exOid = $this->input->post('exOid');
 
-		$users=$this->common_model->get_single_data('users',array('id'=>$uId));
+		if(!empty($exOid)){
+			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$exOid));
+		} 
+
+		$users = $this->common_model->get_single_data('users',array('id'=>$uId));
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 		$promo_code = $this->common_model->get_single_data('promo_code',array('code'=>$pcode,'status'=>'active'));
 		$cartData = $this->common_model->get_single_data('cart',array('id'=>$latestCartId));
-		$service_id = $cartData['service_id'];
+		$service_id = !empty($order) ? $order['service_id'] : $cartData['service_id'];
 		$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
@@ -305,7 +334,8 @@ class Checkout extends CI_Controller
 		}
 
 		$package_data = json_decode($service_details['package_data'],true);
-		$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
+		$price = !empty($order) ? $order['price'] : $package_data[$cartData['package_type']]['price'];
+		$servicePrice = $price * $serviceQty;
 
 		$total_amount = $totalPrice + $servicePrice;
 		$discounted_amount = $total_amount;
@@ -343,28 +373,56 @@ class Checkout extends CI_Controller
 
 			$pmtype = !in_array($payment_method, ['card','wallet']) ? 'card' : $payment_method;
 
-			$insert['order_id'] = $this->common_model->generateOrderId(13);
-			$insert['user_id'] = $uId;
-			$insert['service_id'] = $service_id;
-			$insert['ex_services'] = rtrim($extraService,',');
-			$insert['price'] = $package_data[$cartData['package_type']]['price'];
-			$insert['service_qty'] = $serviceQty;
-			$insert['package_type'] = $cartData['package_type'];
-			$insert['service_fee'] = $setting['service_fees'];
-			$insert['promo_code'] = $promo_code['code'];
-			$insert['discount_type'] = $promo_code['discount_type'];
-			$insert['discount'] = $discount;
-			$insert['total_price'] = $mainPrice;
-			$insert['payment_method'] = $pmtype; 
-			$insert['payment_status'] = 'paid';
-			$insert['transaction_id'] = $transactionid ?? '';
-			$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';
-			$insert['previous_status'] = 'placed';
-			$insert['status'] = 'placed';
-			$insert['date'] = date('Y-m-d', strtotime($cartData['date']));
-			$insert['time'] = $cartData['time'];
-			$insert['task_address_id'] = $task_address_id;
-			$newOrder = $this->common_model->insert('service_order', $insert);
+			if(empty($order)){
+				$insert['order_id'] = $this->common_model->generateOrderId(13);
+				$insert['user_id'] = $uId;
+				$insert['service_id'] = $service_id;
+				$insert['ex_services'] = rtrim($extraService,',');
+				$insert['price'] = $package_data[$cartData['package_type']]['price'];
+				$insert['service_qty'] = $serviceQty;
+				$insert['package_type'] = $cartData['package_type'];
+				$insert['service_fee'] = $setting['service_fees'];
+				$insert['promo_code'] = $promo_code['code'];
+				$insert['discount_type'] = $promo_code['discount_type'];
+				$insert['discount'] = $discount;
+				$insert['total_price'] = $mainPrice;
+				$insert['payment_method'] = $pmtype; 
+				$insert['payment_status'] = 'paid';
+				$insert['transaction_id'] = $transactionid ?? '';
+				$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';
+				$insert['previous_status'] = 'placed';
+				$insert['status'] = 'placed';
+				$insert['date'] = date('Y-m-d', strtotime($cartData['date']));
+				$insert['time'] = $cartData['time'];
+				$insert['task_address_id'] = $task_address_id;
+				$newOrder = $this->common_model->insert('service_order', $insert);
+			}else{
+				$days = $order['delivery'];
+				$curDate = new DateTime();
+				$curDate->modify('+'.$days.' days');
+				$newDate = $curDate->format('Y-m-d');
+				$newTime = $curDate->format('H:i');
+
+				$insert['promo_code'] = $promo_code['code'];
+				$insert['promo_code'] = $promo_code['code'];
+				$insert['discount_type'] = $promo_code['discount_type'];
+				$insert['discount'] = $discount;
+				$insert['total_price'] = $mainPrice;
+				$insert['payment_method'] = $pmtype; 
+				$insert['payment_status'] = 'paid';
+				$insert['transaction_id'] = $transactionid ?? '';
+				$insert['payment_intent_id'] = !empty($this->input->post('pay_intent')) ? $this->input->post('pay_intent') : '';
+				$insert['previous_status'] = $order['status'];
+				$insert['status'] = $order['is_requirements'] == 1 ? 'placed' : 'active';
+				$insert['date'] = $newDate;
+				$insert['time'] = $newTime;
+				$insert['task_address_id'] = $task_address_id;
+				$insert['is_accepted'] = 1;
+
+				$this->common_model->update('service_order',array('id'=>$order['id']),$insert);
+
+				$newOrder = $order['id'];
+			}			
 
 			if($newOrder){
 				

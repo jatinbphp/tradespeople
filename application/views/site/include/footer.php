@@ -1804,8 +1804,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  //setInterval(function(){ user_list_refresher(); }, 5000);
+  setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
@@ -2449,6 +2449,21 @@ $(document).ready(function(){
     if(sentence != ""){
       $('#notAvailablMsg').show().html(sentence); // Update the availability text  
     }    
+  }
+
+  function acceptCustomOffer(element){
+    var dataUrl = $(element).data('url');
+    swal({
+      title: "Confirm?",
+      text: "Are you sure you want to accept this offer?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Accept',
+      cancelButtonText: 'Cancel'
+    }, function() {
+      window.location.href = dataUrl;
+      acceptOffer();
+    });
   }
 
   $('.icon-wishlist').on('click', function (){

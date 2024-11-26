@@ -2422,15 +2422,12 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$data['browse_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exIds);
 		$data['people_history']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,$exPids);
 		$data['similar_service']=$this->common_model->getServiceByCategoriesId(($category ?? 0),1,'',$sId);
-
 		$data['service_images']=$this->common_model->get_service_image('service_images',$sId);
-
 		$data['service_availability'] = $this->common_model->GetSingleData('service_availability',['service_id'=>$sId]);
 		$data['service_faqs'] = $this->common_model->get_all_data('service_faqs',['service_id'=>$sId]);
 		$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$sId]);
 
 		$viewData['service_rating'] = $this->common_model->getRatingsWithUsers($sId,5,0,$user_id);
-
 		$data['service_rating_view'] = $this->load->view('site/review_list', $viewData, true);
 
 		$data['rating_count'] = count($viewData['service_rating']);
@@ -2459,6 +2456,8 @@ private function send_how_it_works_email_marketer($to, $username, $subject){
 		$attributesArray = array_unique($attributesArray);
 
 		$data['attributes'] = $this->common_model->getAttributes($attributesArray);
+
+
 
 		$this->load->view('site/service_details',$data);
 	}

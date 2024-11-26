@@ -1306,9 +1306,15 @@
   });
 
   function toggleOrderReq(){
-		$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
+	$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
     $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
   }
+
+  function toggleSellerResponse(divId){
+	$("#"+divId).slideToggle(); // Toggle the visibility with sliding effect
+    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+  }
+
 
   function helpfulRating (help,rateId,serviceId) {
     // var help = $(this).data('help');
@@ -1330,6 +1336,9 @@
   					window.location.href = '<?php echo base_url().'login'; ?>';
   				});
   			}else{
+
+  				$('#totalPerson_'+rateId).text(response.totalPerson);
+
   				var targetYes = $('#helpYes_'+rateId);
           var targetNo = $('#helpNo_'+rateId);
 

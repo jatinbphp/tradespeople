@@ -41,7 +41,7 @@
 
 			<div class="box-bg">
 				<div class="row">
-					<div class="col-sm-3">
+					<!--<div class="col-sm-3">
 						<div class="form-group">
 							<label>Revisions (optional)</label>
 							<select class="form-control" name="revisions">
@@ -51,7 +51,7 @@
 								<option value="2">2</option>
 							</select>
 						</div>
-					</div>
+					</div>-->
 					<div class="col-sm-3">
 						<div class="form-group">
 							<label>Delivery</label>

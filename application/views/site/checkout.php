@@ -112,6 +112,7 @@ if ($remaining_amount >= $min && $remaining_amount <= $max) {
 				<form action="<?= site_url().'checkout/placeOrder'; ?>" id="checkoutForm" method="post">
 					<input type="hidden" name="service_id" value="<?php echo $service_details['id']; ?>">
 					<input type="hidden" name="ex_service_id" value="<?php echo $exIds; ?>">
+					<input type="hidden" name="exOid" id="exOid" value="<?php echo $exOid; ?>">
 
 					<?php if($this->session->flashdata('error')): ?>
 						<div class="col-md-12">
@@ -322,17 +323,26 @@ if ($remaining_amount >= $min && $remaining_amount <= $max) {
 									
 									<span>
 										<h4 style="margin-top:0px;"><b><?php echo $service_details['service_name']; ?></b></h4>
-										<p class="text-muted"><?php echo $package_description; ?></p>
+										<p class="text-muted">
+											<?php 
+												$char_count = strlen($package_description);
+												if($char_count > 100){
+													echo substr($package_description, 0, 95).'...';
+												}else{
+													echo $package_description;
+												}
+											?>
+										</p>
 									</span>
 								</a>
 							</div>
 							<ul>
 								<li>
-									<p>Price per <?php echo lcfirst($service_details['price_per_type']); ?></p> 
+									<p>Price per <?php echo !empty($exOid) ? 'Service' : lcfirst($service_details['price_per_type']); ?></p> 
 									<b><?php echo '£'.number_format($package_price,2); ?></b>
 								</li>
 								<li>
-									<p>No. of <?php echo lcfirst($service_details['price_per_type']); ?></p> 
+									<p>No. of <?php echo !empty($exOid) ? 'Service' : lcfirst($service_details['price_per_type']); ?></p> 
 									<b><?php echo $serviceQty; ?></b>
 								</li>
 								<?php if(!empty($ex_services) && count($ex_services) > 0): ?>
@@ -595,10 +605,11 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 
 		$('#codeApply').on('click', function(){
 			var promo_code= $('#promo_code').val();
+			var exOid= $('#exOid').val();
 			$.ajax({
 				url: "<?= site_url().'checkout/checkPromoCode'; ?>", 
 				type: "POST", 
-				data: {"promo_code":promo_code},
+				data: {"promo_code":promo_code, "exOid":exOid},
 				dataType: 'json',
 				success: function (data) {
 					if(data.status == 1){
@@ -659,6 +670,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 			$('#checkoutBtn').disabled = true;
 			var pMethod = $('input[name="payment_method"]:checked').val();
 			var termsConditions = $('input[name="terms"]:checked').val();
+			var exOid = $('#exOid').val();
 
 			if(termsConditions == undefined){
 				swal({
@@ -711,7 +723,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 					$.ajax({
 						url: '<?= site_url().'checkout/placeOrder'; ?>',
 						type: 'POST',
-						data: {'payment_method':pMethod, 'promo_code':promo_code, 'select_address':selectedAddress, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number},
+						data: {'payment_method':pMethod, 'promo_code':promo_code, 'select_address':selectedAddress, 'address':address, 'city':city, 'zip_code':zip_code, 'phone_number':phone_number, 'exOid':exOid},
 						dataType: 'json',		                
 						success: function(result) {
 							$('#loader').addClass('hide');
@@ -853,6 +865,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 			var city = $('input[name="city"]').val();
 			var zip_code = $('input[name="zip_code"]').val();
 			var phone_number = $('input[name="phone_number"]').val();
+			var exOid = $('#exOid').val();
 
 			var dataObj = {
 				payment_method: 'card',
@@ -865,6 +878,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 				city: city,
 				zip_code: zip_code,
 				phone_number: phone_number,
+				exOid: exOid,
 			};
 
 			$("#stripe-payment-success-3ds").modal('show');
@@ -913,6 +927,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 				var city = $('input[name="city"]').val();
 				var zip_code = $('input[name="zip_code"]').val();
 				var phone_number = $('input[name="phone_number"]').val();
+				var exOid = $('#exOid').val();
 
 				var dataObj = {
 					payment_method_id: result.paymentMethod.id,
@@ -925,6 +940,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 					city: city,
 					zip_code: zip_code,
 					phone_number: phone_number,
+					exOid: exOid,
 				};
 
 				$.ajax({
@@ -984,6 +1000,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 				var price = $('#totalPrice').text().trim();
 				var mainPrice = price.replace("£", "");
 				var saveCard = $('#Save_Card').is(':checked');
+				var exOid = $('#exOid').val();
 
 				var dataObj = {
 					payment_intent_id: result.paymentIntent.id,
@@ -991,6 +1008,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 					promo_code: promo_code,
 					saveCard: saveCard,
 					mainPrice: mainPrice,
+					exOid: exOid,
 				};
 
 				$.ajax({

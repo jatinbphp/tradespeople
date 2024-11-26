@@ -484,63 +484,76 @@
 											<div class="img-name p-0">
 												<div class="names" style="width:100%">
 													<span class="services-description">
-														<?php if(empty($requirements)):?>
+														<?php if($order['status'] == 'offer_created'):?>
 															<span>
-																<h4 style="color: #000;">One last step to get your order started!</h4>
+																<h4 style="color: #000;">Your custom offer is now created</h4>
 																<span class="text-muted">
-																	We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
+																	You should respond by <b class="text-b"><?php echo $delivery_date; ?></b>
+																	<br>
+																	We notified <?php echo $tradesman['trading_name']; ?> about your respond.
 																</span>
-															</span>	
-														<?php elseif($order['status'] == 'disputed'):?>
-															<span>
-																<h4 style="color: #000;">Your Order is disputed</h4>
 															</span>
-														<?php else:?>	
-															<?php if(!in_array($order['status'],['completed','cancelled'])):?>
+														<?php else:?>
+															<?php if(empty($requirements) && $order['is_cancel'] == 0):?>
 																<span>
-																	<h4 style="color: #000;">Your order is now in the works</h4>
+																	<h4 style="color: #000;">One last step to get your order started!</h4>
 																	<span class="text-muted">
-																		We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
-																		You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+																		We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
 																	</span>
-																</span>
-															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 1):?>	
+																</span>	
+															<?php elseif($order['status'] == 'disputed'):?>
 																<span>
-																	<h4 style="color: #000;">Your order has been cancelled</h4>
-																	<span class="text-muted">
-																		Your payment has been creadited to your Tradespeople Wallet and can be used or refunded at any time.
+																	<h4 style="color: #000;">Your Order is disputed</h4>
+																</span>
+															<?php else:?>	
+																<?php if(!in_array($order['status'],['completed','cancelled'])):?>
+																	<span>
+																		<h4 style="color: #000;">Your order is now in the works</h4>
+																		<span class="text-muted">
+																			We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
+																			You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+																		</span>
 																	</span>
-																</span>
-															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 2):?>	
-																<span>
-																	<h4 style="color: #000;">Order cancellation requested</h4>
-																	<span class="text-muted">
-																		<?php
-																			if($this->session->userdata('type')==1){
-																				if($all_conversation[0]['sender'] == $user['id']){
-																					$cUserName = 'You';
+																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 1):?>	
+																	<span>
+																		<h4 style="color: #000;">Your order has been cancelled</h4>
+																		<?php if($order['is_custom'] == 0 || $order['is_accepted'] == 1):?>
+																			<span class="text-muted">
+																				Your payment has been creadited to your Tradespeople Wallet and can be used or refunded at any time.
+																			</span>
+																		<?php endif; ?>
+																	</span>
+																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 2):?>	
+																	<span>
+																		<h4 style="color: #000;">Order cancellation requested</h4>
+																		<span class="text-muted">
+																			<?php
+																				if($this->session->userdata('type')==1){
+																					if($all_conversation[0]['sender'] == $user['id']){
+																						$cUserName = 'You';
+																					}else{
+																						$cUserName = $homeowner['f_name'].' '.$homeowner['l_name'];
+																					}	
 																				}else{
-																					$cUserName = $homeowner['f_name'].' '.$homeowner['l_name'];
-																				}	
-																			}else{
-																				if($all_conversation[0]['sender'] == $user['id']){
-																					$cUserName = 'You';
-																				}else{
-																					$cUserName = $tradesman['trading_name'];
-																				}	
-																			}																			
-																		?>
-																		<?php echo $cUserName; ?> has requested the cancellation of your order.
-																		<br>
-																		Please respond to the request before the <?php echo $orderCancelDateLimit; ?>.
+																					if($all_conversation[0]['sender'] == $user['id']){
+																						$cUserName = 'You';
+																					}else{
+																						$cUserName = $tradesman['trading_name'];
+																					}	
+																				}																			
+																			?>
+																			<?php echo $cUserName; ?> has requested the cancellation of your order.
+																			<br>
+																			Please respond to the request before the <?php echo $orderCancelDateLimit; ?>.
+																		</span>
 																	</span>
-																</span>
-															<?php else: ?>
-																<span>
-																	<h4 style="color: #000;">Your order is completed</h4>
-																</span>
-															<?php endif;?>	
-														<?php endif; ?>
+																<?php else: ?>
+																	<span>
+																		<h4 style="color: #000;">Your order is completed</h4>
+																	</span>
+																<?php endif;?>	
+															<?php endif; ?>	
+														<?php endif;?>
 													</span>
 													<span class="pull-right">
 														<?php if($this->session->userdata('type')==1):?>
@@ -581,13 +594,18 @@
 																	</button>
 																</a>	
 															<?php endif; ?>
-
 															<button class="btn btn-outline-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">
 																Chat
 															</button>
 
-															<?php if(empty($requirements)):?>
-																<button class="btn btn-warning" class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</button>
+															<?php if($order['status'] == 'offer_created'):?>
+																<?php if($order['is_accepted'] == 1 && empty($requirements)):?>
+																	<button class="btn btn-warning" class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</button>
+																<?php endif; ?>
+															<?php else: ?>
+																<?php if(empty($requirements) && $order['is_cancel'] == 0):?>
+																	<button class="btn btn-warning" class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</button>
+																<?php endif; ?>
 															<?php endif; ?>
 														<?php endif; ?>
 													</span>										
@@ -597,18 +615,28 @@
 									</div>
 									<div class="timeline-div bg-white p-4">
 										<ol class="timeline">
-											<?php if($order['status'] == 'active'):?>
+											<?php if($order['status'] == 'active' || ($order['status'] == 'offer_created')):?>
 												<li class="timeline-item">
 													<span class="timeline-item-icon | faded-icon">
 														<i class="fa fa-clock-o faicon"></i>
 													</span>
 													<div class="timeline-item-description">
-														<h5>Expected delivery <?php echo $delivery_date; ?></h5>						
+														<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $delivery_date; ?></h5>						
 														<ul class="delivery-time">
 															<li><b><?php echo $rDays; ?></b><br/>Days</li>
 															<li><b><?php echo $rHours; ?></b><br/>Hours</li>
 															<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
 														</ul>
+														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
+															<div id="approved-btn-div">
+																<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
+																	Accept
+																</button>
+																<button type="button" id="reject-offer-btn" class="btn btn-default">
+																	Reject
+																</button>
+															</div>
+														<?php endif; ?>	
 													</div>
 												</li>
 											<?php endif;?>
@@ -616,21 +644,25 @@
 											<?php include 'order_tracking_timeline.php'; ?>
 
 											<?php if(!empty($delivery_date)):?>
-												<li class="timeline-item">
-													<span class="timeline-item-icon | faded-icon">
-														<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
-													</span>
-													<div class="timeline-item-description">
-														<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
-													</div>
-												</li>
+												<?php if($order['is_custom'] == 0):?>
+													<li class="timeline-item">
+														<span class="timeline-item-icon | faded-icon">
+															<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
+														</span>
+														<div class="timeline-item-description">
+															<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
+														</div>
+													</li>
+												<?php endif;?>
 												<li class="timeline-item | extra-space">
 													<span class="timeline-item-icon | filled-icon ">
 														<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
 													</span>
 													<div class="timeline-item-wrapper">
 														<div class="timeline-item-description">
-															<h5>Order Started</h5>
+															<h5>
+																<?php echo $order['is_custom'] == 1 ? 'Offer Sent' : 'Order Started'; ?>
+															</h5>
 														</div>
 													</div>
 												</li>
@@ -642,8 +674,12 @@
 												</span>
 												<div class="timeline-item-description" style="width:100%">
 													<h5 id="order-requirement" onclick="toggleOrderReq();"> 
-														Order Requirement Submitted
-														<i class="fa fa-angle-down pull-right"></i>
+														<?php if($order['is_custom'] == 1 && empty($requirements)):?>
+															Order Requirement Requested
+														<?php else: ?>	
+															Order Requirement Submitted
+															<i class="fa fa-angle-down pull-right"></i>
+														<?php endif;?>
 													</h5>
 
 													<?php if(!empty($requirements)): ?>
@@ -695,7 +731,7 @@
 												</span>
 												<div class="timeline-item-description" style="width:100%">
 													<h5 id="order-created" onclick="toggleOrderCreated();">
-														Order Created
+														<?php echo $order['is_custom'] == 1 ? 'Offer Created' : 'Order Created'; ?>
 														<i class="fa fa-angle-down pull-right"></i>
 													</h5>
 													<div class="comment" id="order-created-div"  style="display:none; width: 100%;">
@@ -928,12 +964,12 @@
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 												</button>
 												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-													<?php if($order['status'] != 'disputed'):?>
-															<li>
-																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
-															</li>
+													<?php if(!in_array($order['status'], ['disputed','placed','pending','active']) || in_array($order['status'],[ 'delivered', 'request_modification'])):?>
+														<li>
+															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+														</li>
 													<?php endif; ?>
-													<?php if($order['status'] != 'delivered'):?>
+													<?php if(!in_array($order['status'], ['request_modification', 'delivered', 'disputed'])):?>
 														<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>	
 													<?php endif; ?>
 												</ul>
@@ -945,12 +981,12 @@
 														<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 													</button>
 													<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-														<?php if($order['status'] != 'disputed'):?>
+														<?php if(!in_array($order['status'], ['disputed','placed','pending','active']) || in_array($order['status'], ['delivered', 'request_modification'])):?>
 															<li>
 																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
 															</li>
 														<?php endif; ?>
-														<?php if($order['status'] != 'delivered'):?>
+														<?php if(!in_array($order['status'], ['request_modification', 'delivered', 'disputed'])):?>
 															<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
 														<?php endif; ?>
 													</ul>
@@ -988,9 +1024,25 @@
 													?>
 												</p>
 												<span class="badge bg-warning p-2 pl-4 pr-4 mt-4">
-													<?php if($this->session->userdata('type')==1):?>
-														<?php if(empty($requirements) && count($all_conversation) == 0):?>
-															Awaiting Requirement 
+													<?php if($order['status'] == 'offer_created'):?>
+														Awaiting Response
+													<?php else: ?>
+														<?php if($this->session->userdata('type')==1):?>
+															<?php if(empty($requirements) && count($all_conversation) == 0):?>
+																Awaiting Requirement 
+															<?php else: ?>
+																<?php if($order['status'] == 'active'):?>
+																	In Progress
+																<?php elseif($order['status'] == 'request_modification'):?>
+																	Revision
+																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '2'):?>
+																	Cancellation pending
+																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
+																	Cancelled
+																<?php else: ?>	
+																	<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
+																<?php endif; ?>
+															<?php endif; ?>
 														<?php else: ?>
 															<?php if($order['status'] == 'active'):?>
 																In Progress
@@ -1003,18 +1055,6 @@
 															<?php else: ?>	
 																<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 															<?php endif; ?>
-														<?php endif; ?>
-													<?php else: ?>
-														<?php if($order['status'] == 'active'):?>
-															In Progress
-														<?php elseif($order['status'] == 'request_modification'):?>
-															Revision
-														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '2'):?>
-															Cancellation pending
-														<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
-															Cancelled
-														<?php else: ?>	
-															<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 														<?php endif; ?>
 													<?php endif; ?>
 												</span>								
@@ -1679,7 +1719,9 @@
 
 		/* Start Code For Submit Request Modification & Approved Order */
 		const el1 = document.getElementsByClassName('addWorkImage1');
-		if(el1){
+
+		if(el1 && el1.length > 0){
+			console.log('inini');
 			const dropArea1 = document.querySelector(".addWorkImage1"),
 			button1 = dropArea1.querySelector("img"),
 			input1 = dropArea1.querySelector("input");
@@ -1814,6 +1856,33 @@
 			}	
 		}	
 
+		$('#reject-offer-btn').on('click', function(){
+			swal({
+				title: "Confirm?",
+				text: "Are you sure you want to reject this offer?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Reject',
+				cancelButtonText: 'Cancel'
+			}, function() {
+				cancelOffer();
+			});
+		});
+
+		$('#accept-offer-btn').on('click', function(){
+			swal({
+				title: "Confirm?",
+				text: "Are you sure you want to accept this offer?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Accept',
+				cancelButtonText: 'Cancel'
+			}, function() {
+				window.location.href = '<?php echo base_url().'serviceCheckout?offer='.substr($order['order_id'],1); ?>';
+				acceptOffer();
+			});
+		});
+
 		/* End Code For Submit Request Modification & Approved Order */
 
 		/* Start Code For Submit Review & Rating */
@@ -1908,8 +1977,7 @@
 		}
 		/* End Code For Dispute Order */
 
-		/* Start Code For Dispute Order */
-
+		/* Start Code For Cancel Order */
 		function cancelOrder(){
 			$('#loader').removeClass('hide');
 			formData = $("#order_cancel_form").serialize();
@@ -1952,7 +2020,52 @@
 				}
 			});
 		}
-		/* End Code For Dispute Order */
+		/* End Code For Cancel Order */
+
+		/* Start Code For Cancel Offer */
+		function cancelOffer(){
+			$('#loader').removeClass('hide');
+			formData = $("#order_cancel_form").serialize();
+
+			$.ajax({
+				url: '<?= site_url().'users/offerCancel'; ?>',
+				type: 'POST',
+				data: formData,
+				dataType: 'json',		                
+				success: function(result) {
+					$('#loader').addClass('hide');
+					if(result.status == 0){
+						swal({
+							title: "Error",
+							text: result.message,
+							type: "error"
+						}, function() {
+							window.location.reload();
+						});	
+					}else if(result.status == 2){
+						swal({
+							title: "Login Required!",
+							text: "If you want to order the please login first!",
+							type: "warning"
+						}, function() {
+							window.location.href = '<?php echo base_url().'login'; ?>';
+						});	
+					}else{
+						swal({
+							title: "Success",
+							text: result.message,
+							type: "success"
+						}, function() {
+							window.location.reload();
+						});
+					}		                    
+				},
+				error: function(xhr, status, error) {
+	                // Handle error
+				}
+			});
+		}
+		/* End Code For Cancel Offer */
 
 		function toggleOrderReq(){
 			$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect

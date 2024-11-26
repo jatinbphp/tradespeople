@@ -11512,3 +11512,76 @@ input:checked + .switch-slider:before {
     }
 }
 .single-payment-offer .error{font-weight: normal !important;}
+.message-order-description {
+    padding: 3px 0 3px 0;
+    font-size: 10px;
+    display: flex;
+    font-weight: 600;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+}
+.message .description {
+    font-size: 10px;
+    font-weight: 600;
+    color: #999999;
+    padding: 6px 0 6px 0;
+}
+.your-offer {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 0 3px 0;
+}
+.delivery-rights {
+    display: flex;
+    align-items: center;
+     padding: 0 0 3px 0;
+     gap: 5px;
+}
+.delivery-rights span {
+    font-size: 10px;
+    font-weight: 600;
+}
+.delivery-rights span i {
+    color: #468847;
+}
+
+.delivery-attributes {
+    display: grid;
+}
+
+.delivery-attributes span {
+    font-size: 10px;
+    font-weight: 600;
+}
+.delivery-attributes span i {
+    color: #468847;
+}
+
+.custom-attributes{
+    display: flex;
+    gap: 3px;
+}
+
+
+.message-order-box {
+    padding: 5px;
+    min-width: calc(100% + 40px);
+    border: 1px solid #eee;
+    border-radius: 3px;
+    margin-top: 5px;
+}
+.offer-btn {
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding-top: 5px;
+    gap: 10px;
+}
+.offer-btn a {
+    font-size: 10px;
+    font-weight: 600;
+}
+.offer-btn .btn {
+    padding: 3px 8px;
+} 
