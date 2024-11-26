@@ -69,7 +69,7 @@
 
 		<?php if($isRespond == 1):?>
 			<div class="accordion-profile">
-				<div class="accordion-profile-item" onclick="toggleOrderReq();">
+				<div class="accordion-profile-item" onclick="toggleSellerResponse('responseDiv_<?php echo $rate['id']?>');">
 					<div class="accordion-img-name">
 						<?php 
 						if(isset($rate['rate_to_profile']) && !empty($rate['rate_to_profile'])){
@@ -82,7 +82,7 @@
 						<h5><?php echo $rate['tName']."'s Response"; ?></h5>
 						<i class="fa fa-angle-down pull-right"></i>
 					</div>
-					<div class="accordion-review-text" id="requirement-div"  style="display:none;">
+					<div class="accordion-review-text" id="responseDiv_<?php echo $rate['id']?>"  style="display:none;">
 						<p><?php echo $rate['seller_response']; ?></p>
 					</div>
 				</div>
@@ -107,6 +107,7 @@
 				<i class="fa fa-thumbs-o-down"></i>
 			<?php endif;?> No
 		</span>
+		<span id="totalPerson_<?php echo $rate['id'];?>"></span>
 	</div>
 <?php endforeach; ?>	
 

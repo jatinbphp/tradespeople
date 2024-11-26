@@ -14,7 +14,6 @@
 				<a href="javascript:void(0)"></a>
 			</div>
 			<a href="<?php echo base_url().'service/'.$list['slug']?>">
-				
 				<?php $image_path = FCPATH . 'img/services/' . ($list['image'] ?? ''); ?>
 				<?php if (file_exists($image_path) && $list['image']): ?>
 					<?php
@@ -31,12 +30,18 @@
 					<?php else: ?>
 						<img src="<?php echo  base_url().'img/default-image.jpg'; ?>">
 					<?php endif; ?>
+				<?php else: ?>	
+					<img src="<?php echo  base_url().'img/default-image.jpg'; ?>">
 				<?php endif; ?>
 			</a>
 		</div>
 		<div class="tradespeople-box-avtar">
-			<div class="avtar">	
-				<img src="<?php echo  base_url().'img/profile/'.$list['profile']; ?>">
+			<div class="avtar">
+				<?php if (file_exists($image_path) && $list['image']): ?>	
+					<img src="<?php echo  base_url().'img/profile/'.$list['profile']; ?>">
+				<?php else: ?>	
+					<img src="<?php echo  base_url().'img/default-image.jpg'; ?>">
+				<?php endif; ?>
 			</div>
 			<div class="names">
 				<a href="<?php echo base_url().'profile/'.$list['user_id']?>">

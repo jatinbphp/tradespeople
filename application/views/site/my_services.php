@@ -149,7 +149,7 @@ $(function () {
                     if (row.image) {
                         // Check if the image is actually a video by checking the file extension
                         if (row.image.endsWith('.mp4')) {
-                            return '<video width="100" controls autoplay><source src="'+site_url+'img/services/'+row.image+'" type="video/mp4">Your browser does not support the video tag.</video>';
+                            return '<video width="300" controls autoplay><source src="'+site_url+'img/services/'+row.image+'" type="video/mp4">Your browser does not support the video tag.</video>';
                         } else {
                             return '<img src="'+site_url+'img/services/'+row.image+'" alt="Service Image" width="100">';
                         }

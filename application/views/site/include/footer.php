@@ -1,37 +1,37 @@
 <style type="text/css">
-.trads-offer{
-    color:#FF3500;
-}
-.tradsman-banner .card{
-    background:#fff;
-    border-radius:5px;
-    padding:20px 10px 10px 30px;
-    margin-bottom: 10px;
-}
-.tradsman-banner .card p{
-    font-size:18px;
-    font-weight:500;
-}
-	
-.tt-menu {
-    width: 100%; /* Make the dropdown the same width as the input */
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 1000; /* Ensure it appears above other elements */
-}
+  .trads-offer{
+      color:#FF3500;
+  }
+  .tradsman-banner .card{
+      background:#fff;
+      border-radius:5px;
+      padding:20px 10px 10px 30px;
+      margin-bottom: 10px;
+  }
+  .tradsman-banner .card p{
+      font-size:18px;
+      font-weight:500;
+  }
+  	
+  .tt-menu {
+      width: 100%; /* Make the dropdown the same width as the input */
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      z-index: 1000; /* Ensure it appears above other elements */
+  }
 
-.tt-suggestion {
-    padding: 10px;
-    cursor: pointer;
-}
+  .tt-suggestion {
+      padding: 10px;
+      cursor: pointer;
+  }
 
-.tt-suggestion:hover {
-    background-color: #f0f0f0;
-}	
-.live-chat h4, .live-chat1 h4{
-  display: flex!important;
-}
+  .tt-suggestion:hover {
+      background-color: #f0f0f0;
+  }	
+  .live-chat h4, .live-chat1 h4{
+    display: flex!important;
+  }
 </style>
 <div class="modal fade viewaccount"  role="dialog">
     <div class="modal-dialog">
@@ -86,7 +86,6 @@
         <div >
           <ul id="get_chat" class="user_chat"></ul>
         </div>
-
       </div>
     </div> 
     <div class="form_middle chet_fix">
@@ -152,7 +151,6 @@
               </a>
             </li>
           </ul>
-
       </div>
       <div class="great-offer-chat-footer">
          <a href="#" class="back">
@@ -1806,8 +1804,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  //setInterval(function(){ user_list_refresher(); }, 5000);
+  setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
@@ -2451,6 +2449,21 @@ $(document).ready(function(){
     if(sentence != ""){
       $('#notAvailablMsg').show().html(sentence); // Update the availability text  
     }    
+  }
+
+  function acceptCustomOffer(element){
+    var dataUrl = $(element).data('url');
+    swal({
+      title: "Confirm?",
+      text: "Are you sure you want to accept this offer?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Accept',
+      cancelButtonText: 'Cancel'
+    }, function() {
+      window.location.href = dataUrl;
+      acceptOffer();
+    });
   }
 
   $('.icon-wishlist').on('click', function (){

@@ -502,9 +502,9 @@ $closed_date = $get_commision[0]['closed_date'];
 
 										<td><?php echo $list['order_id']; ?></td>
 										<td>
-											<?php if ($is_image): ?>
+											<?php if (file_exists($image_path) && $is_image): ?>
 												<img class="mr-4" src="<?php echo base_url('img/services/') . $list['image']; ?>" alt="Service Image" width="100">               
-							                <?php elseif ($is_video): ?>
+							                <?php elseif (file_exists($image_path) && $is_video): ?>
 							                	<video class="mr-4" width="100" controls autoplay><source src="<?php echo base_url('img/services/') . $list['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
 							                <?php else:?>
 							                	<img class="mr-4" src="<?php echo base_url('img/default-image.jpg'); ?>" alt="Service Image" width="100">
@@ -515,7 +515,8 @@ $closed_date = $get_commision[0]['closed_date'];
 										<td><?php echo '£'.number_format($list['price'],2); ?></td>
 										<td><?php echo ucfirst(str_replace('_', ' ', $list['status'])); ?></td>
 										<td>
-											<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>">View Orders</a>
+											<?php $btnName = $list['status'] == 'offer_created' ? 'Respond Now' : 'View Order'; ?>
+											<a class="btn btn-anil_btn nx_btn" href="<?php echo base_url('order-tracking/'.$list['id']); ?>"><?php echo $btnName; ?></a>
 										</td>
 									</tr>
 								<?php endforeach; ?>

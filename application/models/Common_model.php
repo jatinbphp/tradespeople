@@ -3037,7 +3037,7 @@ class Common_model extends CI_Model
 		$this->db->limit($limit, $offset);
 		$query = $this->db->get();
 		return $query->result_array();
-    }
+  }
 
 	function get_chat_list($id)
 	{
@@ -3474,7 +3474,7 @@ class Common_model extends CI_Model
             my_services s ON so.service_id = s.id
         WHERE
             s.user_id = $user_id
-            AND so.status IN ('placed', 'pending')");
+            AND so.status IN ('placed', 'pending','offer_created')");
 
     	return $query->row_array();
 	}
@@ -3508,7 +3508,11 @@ class Common_model extends CI_Model
 		    $statusWhere .= ' AND so.is_review = 0';
 		}else{
 			if(!empty($status) && $status != 'all'){
-				$statusWhere = 'AND so.status = "'.$status.'"';
+				if($status == 'placed'){
+					$statusWhere = 'AND so.status = "'.$status.'" OR so.status = "offer_created"';
+				}else{
+					$statusWhere = 'AND so.status = "'.$status.'"';	
+				}				
 			}
 		}
 
@@ -3552,7 +3556,7 @@ class Common_model extends CI_Model
 		$query = $this->db->query("
 			    SELECT
 			    	COUNT(*) AS total_all,
-			        SUM(CASE WHEN so.status IN ('placed', 'pending') THEN 1 ELSE 0 END) AS total_placed,
+			        SUM(CASE WHEN so.status IN ('placed', 'pending', 'offer_created') THEN 1 ELSE 0 END) AS total_placed,
 			        SUM(CASE WHEN so.status = 'active' THEN 1 ELSE 0 END) AS total_active,
 			        SUM(CASE WHEN so.status = 'completed' THEN 1 ELSE 0 END) AS total_completed,
 			        SUM(CASE WHEN so.status = 'cancelled' THEN 1 ELSE 0 END) AS total_cancelled,
@@ -3978,5 +3982,11 @@ class Common_model extends CI_Model
 
     $query = $this->db->get();
     return $query->row_array();
+	}
+
+	public function getTotalHelpfulReview($rid, $sid, $type){
+		$query = $this->db->query("SELECT COUNT(*) as total_count FROM rating_helpful WHERE rating_id =$rid AND service_id = $sid AND is_helpFul = '$type'");
+		$result = $query->row_array();
+		return $result['total_count'];
 	}
 }

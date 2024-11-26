@@ -1,4 +1,4 @@
-<?php
+	<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Custom_offer extends CI_Controller
 { 
@@ -34,6 +34,7 @@ class Custom_offer extends CI_Controller
 		$uId = $this->session->userdata('user_id');
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 
+		$insert['is_custom'] = 1;
 		$insert['order_id'] = $this->common_model->generateOrderId(13);
 		$insert['user_id'] = $this->input->post('receiver_id');
 		$insert['service_id'] = $this->input->post('service_id');
@@ -42,7 +43,7 @@ class Custom_offer extends CI_Controller
 		$insert['package_type'] = 'custom';
 		$insert['service_fee'] = $setting['service_fees'];
 		$insert['total_price'] = ($this->input->post('price')+$setting['service_fees']);
-		$insert['status'] = 'placed';
+		$insert['status'] = 'offer_created';
 		$insert['description'] = $this->input->post('description');
 		//$insert['revisions'] = isset($_POST['revisions']) ? $this->input->post('revisions') : 0;
 		$insert['delivery'] = isset($_POST['delivery']) ? $this->input->post('delivery') : 0;
@@ -57,6 +58,7 @@ class Custom_offer extends CI_Controller
 			$insert = [];
 			$insert['type']='service';
 			$insert['post_id']=$this->input->post('service_id');
+			$insert['offer_id']=$newOrder;
 			$insert['sender_id']=$uId;
 			$insert['receiver_id']=$this->input->post('receiver_id');
 			$insert['mgs']='Here is your custom offer.';
