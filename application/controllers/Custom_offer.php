@@ -19,19 +19,23 @@ class Custom_offer extends CI_Controller
 			$this->load->view('site/My404');
 		}
 
-		$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$data['service']['category']]);			
+		$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$data['service']['category']]);
+
+		$data['price_per_type'] = !empty($service_category['price_type_list']) ? explode(',', $service_category['price_type_list']) : [];
 
 		$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
 
 		$data['package_data'] = !empty($data['service']['package_data']) ? json_decode($data['service']['package_data']) : [];
 
 		$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$id, 'posted_user'=>$uId]);
+		$data['service_category'] = $service_category;
 
 		$this->load->view('site/custom_offer',$data);
 	}
 
 	public function store() {
 		$uId = $this->session->userdata('user_id');
+		$tradesman=$this->common_model->get_single_data('users',array('id'=>$uId));
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 
 		$insert['is_custom'] = 1;
@@ -39,6 +43,7 @@ class Custom_offer extends CI_Controller
 		$insert['user_id'] = $this->input->post('receiver_id');
 		$insert['service_id'] = $this->input->post('service_id');
 		$insert['price'] = $this->input->post('price');
+		$insert['price_per_type'] = $this->input->post('price_per_type');
 		$insert['service_qty'] = 1;
 		$insert['package_type'] = 'custom';
 		$insert['service_fee'] = $setting['service_fees'];
@@ -69,6 +74,18 @@ class Custom_offer extends CI_Controller
 			$users=$this->common_model->get_single_data('users',array('id'=>$this->input->post('receiver_id')));
 			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$this->input->post('service_id')));
 			$homeOwner = $this->common_model->check_email_notification($users['id']);
+
+			/*Notification Code Start*/
+			$insertn['nt_userId'] = $this->input->post('receiver_id');
+    	$insertn['nt_message'] = $tradesman['trading_name'] .' has been created custom offer for you. <a href="' .site_url('order-tracking/'.$newOrder) .'" >View Offer</a>';
+	    $insertn['nt_satus'] = 0;
+	    $insertn['nt_create'] = date('Y-m-d H:i:s');
+	    $insertn['nt_update'] = date('Y-m-d H:i:s');
+	    $insertn['job_id'] = $newOrder;
+	    $insertn['posted_by'] = $uId;
+	    $run2 = $this->common_model->insert('notification',$insertn);
+	    /*Notification Code End*/				
+
 			if($homeOwner){
 				$subject = "Order Payment Made for “".$service_details['service_name']."”";				
 				$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Order Payment Made Successfully!</p>';

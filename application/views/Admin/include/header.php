@@ -660,7 +660,9 @@
 
             $totalDisputed = $this->db->select(['id','status'])->from('service_order')->where('status','disputed')->where('is_view',0)->count_all_results();
 
-            $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed;
+            $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('status','offer_created')->where('is_view',0)->count_all_results();
+
+            $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed + $totalCustomOffer;
 
           ?>
             <!-- <li class="DashboardManage">
@@ -701,6 +703,12 @@
                 <li>
                   <a href="<?php echo base_url(); ?>active-orders">
                     <i class="fa fa-circle-o"></i>Active Order
+                  </a>
+                </li>
+
+                <li>
+                  <a href="<?php echo base_url(); ?>custom-orders">
+                    <i class="fa fa-circle-o"></i>Custom Offer
                   </a>
                 </li>
               </ul>

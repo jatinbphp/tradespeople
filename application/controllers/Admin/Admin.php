@@ -3135,7 +3135,7 @@ class Admin extends CI_Controller
         $this->load->view('Admin/service_order_list', $result);
     }
 
-    public function disputed_ordes(){
+    public function disputed_orders(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','disputed');
         $result['counter'] = $this->orderCounter('disputed');
         $result['menu'] = 'Disputed Orders';
@@ -3148,12 +3148,26 @@ class Admin extends CI_Controller
         $this->load->view('Admin/service_order_list', $result);
     }
 
-    public function active_ordes(){
+    public function active_orders(){
         $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','active');
         $result['counter'] = $this->orderCounter('active');
         $result['menu'] = 'Active Orders';
         $result['service_fee'] = 'show';
         $where_array = ['status' => 'active'];        
+        $update_array = [
+            'is_view' => 1,
+        ];
+
+        $this->My_model->update_entry('service_order', $update_array, $where_array);
+        $this->load->view('Admin/service_order_list', $result);
+    }
+
+    public function custom_orders(){
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','offer_created');
+        $result['counter'] = $this->orderCounter('offer_created');
+        $result['menu'] = 'Custom Offers';
+        $result['service_fee'] = 'show';
+        $where_array = ['status' => 'offer_created'];        
         $update_array = [
             'is_view' => 1,
         ];

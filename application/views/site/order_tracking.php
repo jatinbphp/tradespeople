@@ -628,14 +628,22 @@
 															<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
 														</ul>
 														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
-															<div id="approved-btn-div">
-																<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
-																	Accept
-																</button>
-																<button type="button" id="reject-offer-btn" class="btn btn-default">
-																	Reject
-																</button>
-															</div>
+															<?php if($this->session->userdata('type')==1):?>
+																<div id="approved-btn-div">
+																	<button type="button" id="withdraw-offer-btn" class="btn btn-default">
+																		Withdraw Offer
+																	</button>
+																</div>
+															<?php else: ?>
+																<div id="approved-btn-div">
+																	<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
+																		Accept
+																	</button>
+																	<button type="button" id="reject-offer-btn" class="btn btn-default">
+																		Reject
+																	</button>
+																</div>
+															<?php endif; ?>	
 														<?php endif; ?>	
 													</div>
 												</li>
@@ -752,7 +760,13 @@
 											<div class="col-md-2 text-right pr-0">
 												<span>Total Price</span>
 											</div>
-											<div class="col-md-10 pl-0">
+											<?php if(!empty($order['description'])):?>
+												<div class="col-md-10 pl-0">
+													<?php echo $order['description']; ?>
+												</div>
+											<?php endif?>
+
+											<div class="col-md-10 mt-3 pl-0">
 												<span>
 													Ordered From 
 													<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
@@ -763,7 +777,7 @@
 													<?php endif;?>	
 												</span>
 											</div>
-											<div class="col-md-2 text-right pr-0">
+											<div class="col-md-2 mt-3 text-right pr-0">
 												<span><b><?php echo '£'.number_format($order['total_price'],2); ?></b></span>
 											</div>
 										</div>
@@ -1863,6 +1877,18 @@
 				type: "warning",
 				showCancelButton: true,
 				confirmButtonText: 'Yes, Reject',
+				cancelButtonText: 'Cancel'
+			}, function() {
+				cancelOffer();
+			});
+		});
+		$('#withdraw-offer-btn').on('click', function(){
+			swal({
+				title: "Confirm?",
+				text: "Are you sure you want to withdraw this offer?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Withdraw',
 				cancelButtonText: 'Cancel'
 			}, function() {
 				cancelOffer();

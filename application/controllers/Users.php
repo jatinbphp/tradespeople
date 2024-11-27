@@ -964,7 +964,6 @@ class Users extends CI_Controller
 		echo json_encode($json);
 
 	}
-	
 
 	public function success(){
 		$type=$this->uri->segment(3);
@@ -1028,6 +1027,7 @@ class Users extends CI_Controller
 		return $percentage;
 
 	}
+
 	public function verify() {
 		$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
 		$this->load->view('site/account_verify',$data);
@@ -1045,6 +1045,7 @@ class Users extends CI_Controller
 		}
 
 	}
+
 	public function my_posts() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1056,6 +1057,7 @@ class Users extends CI_Controller
 			$this->load->view('site/my_post_page',$data);
 		}
 	}
+
 	public function in_progress() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1067,6 +1069,7 @@ class Users extends CI_Controller
 			$this->load->view('site/in_progress_jobs',$data);
 		}
 	}
+
 	public function completed_jobs() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1078,6 +1081,7 @@ class Users extends CI_Controller
 			$this->load->view('site/completed-jobs',$data);
 		}
 	}
+
 	public function disputed_milestones() {
 		if($this->session->userdata('user_id')) {
 			if($this->session->userdata('type')==1) {
@@ -1091,6 +1095,7 @@ class Users extends CI_Controller
 			redirect('login');
 		}
 	}
+
 	public function rewards(){
 		if($this->session->userdata('user_id')) {
 			$data['rewards']=$this->common_model->get_user_rewards($this->session->userdata('user_id'));
@@ -1099,6 +1104,7 @@ class Users extends CI_Controller
 			redirect('login');
 		}
 	}
+
 	public function jobs_completed() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1109,6 +1115,7 @@ class Users extends CI_Controller
 			$this->load->view('site/work_in_progress',$data);
 		}
 	}
+
 	public function jobs_rejected() {
 		$user_id = $this->session->userdata('user_id');
 		if(!$user_id){
@@ -1120,6 +1127,7 @@ class Users extends CI_Controller
 			$this->load->view('site/work_in_progress',$data);
 		}
 	}
+
 	public function new_jobs() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1130,6 +1138,7 @@ class Users extends CI_Controller
 			$this->load->view('site/work_in_progress',$data);
 		}
 	}
+
 	public function recent_jobs() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1146,6 +1155,7 @@ class Users extends CI_Controller
 			}
 		}
 	} 
+
 	public function exists_refferals() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1163,16 +1173,15 @@ class Users extends CI_Controller
 		}
 	}
 
-	public function payout_request_list()
-	{
+	public function payout_request_list(){
 		$user_id = $this->session->userdata('user_id');
 		$data['pending_payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id], 'id','desc');
 		// $data['pending_payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id, 'status'=>0]);
 		// $data['approved_payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id, 'status'=>1]);
 		// $data['rejected_payout_requests'] = $this->common_model->GetAllData('referral_payout_requests', ['user_id'=>$user_id, 'status'=>2]);
 		$this->load->view('site/referral_payout', $data);
-
 	}
+
 	public function payment_settings() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1200,6 +1209,7 @@ class Users extends CI_Controller
 			$this->load->view('site/new_referral',$data);
 		}
 	}
+
 	public function work_in_progress() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1210,6 +1220,7 @@ class Users extends CI_Controller
 			$this->load->view('site/trades_work_progress',$data);
 		}
 	}
+
 	public function completed() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1234,6 +1245,7 @@ class Users extends CI_Controller
 			$this->load->view('site/my_jobs',$data);
 		}
 	}
+
 	public function jobs_in_progress() {
 		if(!$this->session->userdata('user_id')){
 			redirect('login');
@@ -1244,6 +1256,7 @@ class Users extends CI_Controller
 			$this->load->view('site/work_in_progress',$data);
 		}
 	}
+
 	public function my_job_bids() {
 		if(!$this->session->userdata('user_id')){ 
 			redirect('login');
@@ -1375,9 +1388,9 @@ class Users extends CI_Controller
 				$this->session->set_flashdata('msg','<div class="alert alert-danger">Please enter valid UK postcode</div>');
 			}
 			
-		redirect('edit-profile'); 
-	
+		redirect('edit-profile');
 	}
+
 	public function update_marketer_profile(){
 		$user_id = $this->session->userdata('user_id');
 		$insert['u_website'] = $this->input->post('u_website');
@@ -1404,6 +1417,7 @@ class Users extends CI_Controller
 		 	echo json_encode('1');
 		 		die(); 
 	}	
+
 	public function update_marketers_account_details_old(){
 		$user_id = $this->session->userdata('user_id');
 		$insert['account_holder_name'] = $this->input->post('account_holder_name');
@@ -1440,7 +1454,6 @@ class Users extends CI_Controller
 	 	die();
 	}
 
-
 	public function reset_password(){
 		$user_id = $this->session->userdata('user_id');
 		$insert['password'] = $this->input->post('password');
@@ -1448,6 +1461,7 @@ class Users extends CI_Controller
 		 	echo json_encode('1');
 		 		die();
 	}
+
 	public function trades() {
 		if($this->session->userdata('user_id')) {
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
@@ -1458,6 +1472,7 @@ class Users extends CI_Controller
 			redirect('login');
 		}
 	}
+
 	public function company() {
 		if($this->session->userdata('user_id')) {
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$this->session->userdata('user_id')));
@@ -1466,6 +1481,7 @@ class Users extends CI_Controller
 			redirect('login');
 		}
 	}
+
 	public function update_company() {
 		$user_id=$this->session->userdata('user_id');
 		$insert['company'] = $this->input->post('company');
@@ -1481,9 +1497,11 @@ class Users extends CI_Controller
 		}
 		redirect('company');
 	}
+
 	public function change_password() {
 		$this->load->view('site/change-password');
 	}
+
 	public function upload_address($userid,$page=null) {
 		if($_FILES['u_address']['name']) {
 			$ext=end(explode(".",$_FILES['u_address']['name']));
@@ -1676,6 +1694,7 @@ class Users extends CI_Controller
 		echo json_encode($json);
 	
 	  }
+	
 	public function update_image($id) {
 		if($_FILES['u_profile']['name']){ 
 			$config['upload_path']="img/profile";
@@ -1704,9 +1723,11 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$id);		
 	}
+
 	public function portfolio() {
 	  	$this->load->view('site/add-portfolio');
 	}
+
 	public function update_data($id) {
 		$update['about_business'] = $this->input->post('about_business');
 		$run = $this->common_model->update('users',array('id'=>$id),$update);
@@ -1717,6 +1738,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$id);
 	}
+
 	public function add_portfolio() {
 		$id=$this->session->userdata['user_id'];
 		$insert['userid']=$id;
@@ -1776,6 +1798,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ids);
 	}
+
 	public function update_skills($id) {
 		$insert1['skills']=implode(',',$this->input->post('skills'));
 		$run = $this->common_model->update('users',array('id'=>$id),$insert1);
@@ -1786,6 +1809,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$id);
 	}
+
 	public function update_catgory($id) {
 		$insert1['category']=implode(',',$this->input->post('category'));
 		$run = $this->common_model->update('users',array('id'=>$id),$insert1);
@@ -1807,6 +1831,7 @@ class Users extends CI_Controller
 			redirect('profile/'.$id);
 		}
 	}
+
 	public function update_subcatgory($id) {
 		$insert1['subcategory']=implode(',',$this->input->post('subcategory'));
 		$run = $this->common_model->update('users',array('id'=>$id),$insert1);
@@ -1828,6 +1853,7 @@ class Users extends CI_Controller
 			redirect('profile/'.$id);
 		}
 	}
+
 	public function my_reviews() {
 		if($this->session->userdata('user_id')) {
 			$data['reviews']=$this->common_model->get_all_feedback($this->session->userdata('user_id'));
@@ -1836,6 +1862,7 @@ class Users extends CI_Controller
 			redirect('login');
 		}
 	}
+
 	public function delete_portfolio($id) {
 		$ida=$this->session->userdata('user_id');
 		$result=$this->common_model->delete(array('id'=>$id),'user_portfolio'); 
@@ -1847,6 +1874,7 @@ class Users extends CI_Controller
 
 		redirect('profile/'.$ida);
 	}
+
 	public function add_education() {
 		$id=$this->session->userdata('user_id');
 		$insert['institute'] = $this->input->post('institute');
@@ -1863,6 +1891,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$id);
 	}
+
 	public function edit_education($id) {
 		$ida=$this->session->userdata('user_id');
 		$insert['institute'] = $this->input->post('institute');
@@ -1878,6 +1907,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ida);
 	}
+
 	public function delete_education($id) {
 		$ida=$this->session->userdata('user_id');
 		$result=$this->common_model->delete(array('id'=>$id),'user_education');
@@ -1888,6 +1918,7 @@ class Users extends CI_Controller
 		} 
 		redirect('profile/'.$ida);
 	}
+
 	public function add_publication() {
 		$id=$this->session->userdata('user_id');
 		$insert['heading'] = $this->input->post('heading');
@@ -1902,6 +1933,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$id);
 	}
+
 	public function edit_publication($id) {
 		$ids=$this->session->userdata('user_id');
 		$insert['heading'] = $this->input->post('heading');
@@ -1916,6 +1948,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ids);
 	}
+
 	public function delete_publication($id) {
 		$ida=$this->session->userdata('user_id');
 		$result=$this->common_model->delete(array('id'=>$id),'user_publication'); 
@@ -1926,6 +1959,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ida);
 	}
+
 	public function add_insurance() {
 		$ids=$this->session->userdata('user_id');
 		$insert['insurance_liability'] = $this->input->post('insurance_liability');
@@ -1950,6 +1984,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ids);
 	}
+
 	public function delete_insurance() {
 		$ids=$this->session->userdata('user_id');
 	  	$insert['insurance_liability'] = '';
@@ -1964,6 +1999,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ids);
 	}
+
 	public function add_certification() {
 		$id=$this->session->userdata('user_id');
 		$insert['title'] = $this->input->post('title');
@@ -1986,6 +2022,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$id);
 	}
+
 	public function edit_certification($id) {
 		$ids=$this->session->userdata('user_id');
 		$insert['title'] = $this->input->post('title');
@@ -2018,6 +2055,7 @@ class Users extends CI_Controller
 		}
 		redirect('profile/'.$ids);
 	}
+
 	public function delete_certificate($id) {
 		$ida=$this->session->userdata('user_id');
 		$result=$this->common_model->delete(array('id'=>$id),'user_certification');
@@ -2028,6 +2066,7 @@ class Users extends CI_Controller
 		} 
 		redirect('profile/'.$ida);
 	}
+
 	public function milestone_requests() {
 		$data['milestones']=$this->common_model->get_milestone_request('tbl_milestones',$this->session->userdata('user_id'));
 		$this->load->view('site/milestone_request',$data);
@@ -4410,7 +4449,21 @@ class Users extends CI_Controller
 			$ocDate = new DateTime($order['created_at']);
 			$data['created_date'] = $ocDate->format('D jS F, Y H:i');
 
-			$attributesArray = $package_data[$order['package_type']]['attributes'];
+			if($order['is_custom'] == 0){
+				$attributesArray = $package_data[$order['package_type']]['attributes'];
+			}else{
+				if(!empty($order['offer_includes_ids'])){
+					$attributes = json_decode($order['offer_includes_ids'], true);
+					foreach ($attributes as $key => $value) {
+						if(!empty($value)){
+							foreach($value as $v){
+								$attributesArray[] = $v;
+							}
+						}							
+					}
+				}
+				$attributesArray = array_unique($attributesArray);
+			}			
 			
 			$data['attributes'] = $this->common_model->getAttributes($attributesArray);
 			$data['extra_services'] = $this->common_model->get_all_data('tradesman_extra_service',['service_id'=>$order['service_id']]);
@@ -5369,7 +5422,7 @@ class Users extends CI_Controller
 		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['userid']));
 
     	$insertn['nt_userId'] = $serviceOrder['user_id'];
-    	$insertn['nt_message'] = $get_users1['trading_name'] .' rejected your order cancellation request. <a href="' .site_url('order-tracking?'.$id) .'" >View reason</a>';
+    	$insertn['nt_message'] = $get_users1['trading_name'] .' rejected your order cancellation request. <a href="' .site_url('order-tracking/'.$id) .'" >View reason</a>';
 	    $insertn['nt_satus'] = 0;
 	    $insertn['nt_create'] = date('Y-m-d H:i:s');
 	    $insertn['nt_update'] = date('Y-m-d H:i:s');

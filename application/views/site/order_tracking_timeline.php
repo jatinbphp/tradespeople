@@ -136,7 +136,11 @@
 
 							<?php if($list['status'] == 'cancelled' && $list['is_cancel'] == 1):?>
 								<h5>
-									You accepted order cancellation request
+									<?php if($order['is_custom'] == 1):?>
+										Your custom offer is cancelled
+									<?php else:?>
+										You accepted order cancellation request
+									<?php endif; ?>	
 									<span class="text-muted" style="font-size: 12px;">
 										<i><?php echo $conversation_date ?></i>
 									</span>
