@@ -235,90 +235,6 @@
 										<?php 
 									} 
 								}?>
-								<hr>
-								<div class="card-body">
-									<ul class="mainUl">
-										<li>
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" id="is_offer_expires" name="is_offer_expires" value="1" onclick="toggleSelectBox()">
-												<label class="form-check-label" for="is_offer_expires">Offer expires in</label>
-											</div>
-											<div class="form-group" style="margin-bottom: 0px;">
-												<select class="form-control" id="offer_expires_days" disabled name="offer_expires_days">
-													<option value="">Select Days</option>
-													<option value="1">1 day</option>
-													<option value="3">3 days</option>
-													<option value="6">6 days</option>
-												</select>
-											</div>
-										</li>
-										<li>
-											<div class="form-check">
-												<input class="form-check-input" type="checkbox" id="is_requirements" name="is_requirements" value="1">
-												<label class="form-check-label" for="is_requirements">Request for requirements</label>
-											</div>
-										</li>					
-									</ul>
-
-									<div>
-										<h4>Offer includes</h4>
-										<?php 
-											$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-											$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-											$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-										?>
-										<?php if(!empty($attributes)):?>
-											<ul class="pl-0">
-												<?php foreach($attributes as $key => $value):?>
-													<?php 
-														$bchecked = !empty($basicAtt) && in_array($value['id'], $basicAtt) ? 'checked' : '';
-														$schecked = !empty($standardAtt) && in_array($value['id'], $standardAtt) ? 'checked' : '';
-														$pchecked = !empty($premiumAtt) && in_array($value['id'], $premiumAtt) ? 'checked' : '';
-													?>
-
-													<?php
-													if($bchecked=='checked'){ ?>
-														<li>
-															<div class="form-check">
-																<input class="form-check-input" name="offer_includes_ids[basic][]" type="checkbox" value="<?php echo $value['id']?>" id="basic_<?php echo $value['id']?>">
-																<label class="form-check-label" for="basic_<?php echo $value['id']?>">
-																	<?php echo $value['attribute_name']?>
-																</label>
-															</div>
-														</li>
-														<?php
-													} ?>
-
-													<?php
-													if($schecked=='checked'){ ?>
-														<li>
-															<div class="form-check">
-																<input class="form-check-input" name="offer_includes_ids[standard][]" type="checkbox" value="<?php echo $value['id']?>" id="standard_<?php echo $value['id']?>">
-																<label class="form-check-label" for="standard_<?php echo $value['id']?>">
-																	<?php echo $value['attribute_name']?>
-																</label>
-															</div>
-														</li>
-														<?php
-													} ?>
-
-													<?php
-													if($pchecked=='checked'){ ?>
-														<li>
-															<div class="form-check">
-																<input class="form-check-input" name="offer_includes_ids[premium][]" type="checkbox" value="<?php echo $value['id']?>" id="premium_<?php echo $value['id']?>">
-																<label class="form-check-label" for="premium_<?php echo $value['id']?>">
-																	<?php echo $value['attribute_name']?>
-																</label>
-															</div>
-														</li>
-														<?php
-													} ?>
-												<?php endforeach; ?>
-											</ul>
-										<?php endif;?>
-									</div>
-								</div>
 							</div>
 						</div>
 					</div>
@@ -379,11 +295,11 @@
 			<ul class="mainUl">
 				<li>
 					<div class="form-check">
-						<input class="form-check-input" type="checkbox" id="is_offer_expires" name="is_offer_expires" value="1" onclick="toggleSelectBox()">
+						<input class="form-check-input" type="checkbox" id="is_offer_expires" name="is_offer_expires" value="1" onclick="toggleSelectBox(0)">
 						<label class="form-check-label" for="is_offer_expires">Offer expires in</label>
 					</div>
 					<div class="form-group" style="margin-bottom: 0px;">
-						<select class="form-control" id="offer_expires_days" disabled name="offer_expires_days">
+						<select class="form-control" id="offer_expires_days0" disabled name="offer_expires_days">
 							<option value="">Select Days</option>
 							<option value="1">1 day</option>
 							<option value="3">3 days</option>
@@ -399,25 +315,18 @@
 				</li>					
 			</ul>
 
-			<div>
-				<h4>Offer includes</h4>
-				<?php 
-					$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-					$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-					$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
-				?>
-
-				<?php if(!empty($attributes)):?>
+			<?php if(!empty($attributes)):?>
+				<div>				
+					<h4>Offer includes</h4>
+					<?php 
+						$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
+						$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
+						$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+						$allAttributes = array_unique(array_merge($basicAtt, $standardAtt, $premiumAtt));
+					?>
 					<ul class="pl-0">
 						<?php foreach($attributes as $key => $value):?>
-							<?php 
-							$bchecked = !empty($basicAtt) && in_array($value['id'], $basicAtt) ? 'checked' : '';
-							$schecked = !empty($standardAtt) && in_array($value['id'], $standardAtt) ? 'checked' : '';
-							$pchecked = !empty($premiumAtt) && in_array($value['id'], $premiumAtt) ? 'checked' : '';
-							?>
-
-							<?php
-							if($bchecked=='checked'){ ?>
+							<?php if(in_array($value['id'], $allAttributes)):?>
 								<li>
 									<div class="form-check">
 										<input class="form-check-input" name="offer_includes_ids[basic][]" type="checkbox" value="<?php echo $value['id']?>" id="basic_<?php echo $value['id']?>">
@@ -426,38 +335,11 @@
 										</label>
 									</div>
 								</li>
-								<?php
-							} ?>
-
-							<?php
-							if($schecked=='checked'){ ?>
-								<li>
-									<div class="form-check">
-										<input class="form-check-input" name="offer_includes_ids[standard][]" type="checkbox" value="<?php echo $value['id']?>" id="standard_<?php echo $value['id']?>">
-										<label class="form-check-label" for="standard_<?php echo $value['id']?>">
-											<?php echo $value['attribute_name']?>
-										</label>
-									</div>
-								</li>
-								<?php
-							} ?>
-
-							<?php
-							if($pchecked=='checked'){ ?>
-								<li>
-									<div class="form-check">
-										<input class="form-check-input" name="offer_includes_ids[premium][]" type="checkbox" value="<?php echo $value['id']?>" id="premium_<?php echo $value['id']?>">
-										<label class="form-check-label" for="premium_<?php echo $value['id']?>">
-											<?php echo $value['attribute_name']?>
-										</label>
-									</div>
-								</li>
-								<?php
-							} ?>
+							<?php endif; ?>	
 						<?php endforeach; ?>
 					</ul>
-				<?php endif;?>
-			</div>
+				</div>
+			<?php endif;?>
 			<div class="form-btn-group">
 				<button class="btn" type="submit"><i class="fa fa-arrow-left"></i> Back</button>
 				<button class="btn btn-warning sendbtn1" type="submit">Send Offer</button>
@@ -492,9 +374,10 @@ function toggleMilestones() {
     isFirstClick = !isFirstClick; // Toggle the flag
   }
 
-  function toggleSelectBox() {
+  function toggleSelectBox(dId) {
+  	console.log(dId);
   	var checkBox = document.getElementById("is_offer_expires");
-  	var selectBox = document.getElementById("offer_expires_days");
+  	var selectBox = document.getElementById("offer_expires_days"+dId);
   	selectBox.disabled = !checkBox.checked;
   }
 

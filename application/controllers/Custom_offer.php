@@ -94,6 +94,19 @@ class Custom_offer extends CI_Controller
 				$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
 				
 				$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
+
+				try {
+			        $sent = $this->common_model->send_mail($homeOwner['email'], $subject, $html);
+			        
+			        if ($sent) {
+			            log_message('Debug', 'Email sent successfully.');
+			        } else {
+			            log_message('Debug', 'Failed to send email. Please try again later.');
+			        }
+			    } catch (Exception $e) {
+			        // Catch the error and log the exception message
+			        log_message('Error', 'Email sending failed. Error: ' . $e->getMessage());
+			    }
 			}
 
 			$this->session->set_flashdata('success',"Order has been added successfully.");

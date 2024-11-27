@@ -457,12 +457,12 @@
       <?php if (in_array(23, $my_access)) { ?>
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="info-box">
-              <span class="info-box-icon bg-success"><i class="fa fa-shopping-cart"></i></span>
+              <span class="info-box-icon bg-green"><i class="fa fa-shopping-cart"></i></span>
               <div class="info-box-content">
                 <?php
-                  $serviceOrders = $this->db->select('*')->from('service_order')->where('status','offer_created')->count_all_results();
+                  $serviceOrders = $this->db->select('*')->from('service_order')->where('is_custom',1)->count_all_results();
 
-                  $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where('status','offer_created')->count_all_results();
+                  $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where('is_custom',1)->count_all_results();
                 ?>
                 <span class="info-box-text">
                   Custom Offers

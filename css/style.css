@@ -11391,6 +11391,7 @@ input:checked + .switch-slider:before {
 }
 .single-payment-offer form .form-control {
     border-width: 1px;
+    margin-left: auto;
 }
 .single-payment-offer form input[type="checkbox"] { 
     width: 26px;

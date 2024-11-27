@@ -660,7 +660,7 @@
 
             $totalDisputed = $this->db->select(['id','status'])->from('service_order')->where('status','disputed')->where('is_view',0)->count_all_results();
 
-            $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('status','offer_created')->where('is_view',0)->count_all_results();
+            $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('is_custom',1)->where('is_view',0)->count_all_results();
 
             $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed + $totalCustomOffer;
 

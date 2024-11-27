@@ -72,6 +72,7 @@ class Checkout extends CI_Controller
 		$totalPrice = 0;
 		$exOid = '';
 		$order = [];
+		$data['price_per_type'] = '';
 
 		if(isset($_GET['offer']) && !empty($_GET['offer'])){
 			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$_GET['offer']));
@@ -80,6 +81,7 @@ class Checkout extends CI_Controller
 			$servicePrice = $order['price'] * $serviceQty;
 			$package_type = 'custom';
 			$exOid = $_GET['offer'];
+			$data['price_per_type'] = $order['price_per_type'];
 		}else{
 			$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
 			$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';

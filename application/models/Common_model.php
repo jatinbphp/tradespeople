@@ -1613,15 +1613,19 @@ class Common_model extends CI_Model
 				$mail->Body = $msg;
 
 				if (!$mail->send()) {
+					log_message('Error', 'Email sending failed. Error 0');
 					return 0;
 				} else {
+					log_message('Error', 'Email sending failed. Error 1');
 					return 1;
 				}
 			} else {
 				return 0;
 			}
 		} catch (Exception $e) {
+			log_message('Error', 'Email sending failed. Error In Comman Modal: ' . $e->getMessage());
 			return false;
+
 			//print_r($e);
 		}
 	}
@@ -3535,6 +3539,8 @@ class Common_model extends CI_Model
 		if(!empty($status) && $status != 'all'){
 			if($status == 'pending'){
 				$statusWhere = 'WHERE so.status IN ("placed")';	
+			}elseif($status == 'offer_created'){
+				$statusWhere = 'WHERE so.is_custom = 1';	
 			}else{
 				$statusWhere = 'WHERE so.status = "'.$status.'"';	
 			}			
@@ -3964,7 +3970,11 @@ class Common_model extends CI_Model
     $this->db->from("service_order");
 
     if ($status) {
-        $this->db->where("status", $status);
+    	if($status == 'offer_created'){
+    		$this->db->where("is_custom", 1);	
+    	}else{
+    		$this->db->where("status", $status);
+    	}        
     }
 
     $query = $this->db->get();
@@ -3972,16 +3982,20 @@ class Common_model extends CI_Model
 	}
 
 	public function allServiceFee($status = null){
-    $this->db->select("SUM(service_fee) AS total_service_fees");
-    $this->db->from("service_order");
+	    $this->db->select("SUM(service_fee) AS total_service_fees");
+	    $this->db->from("service_order");
 
-    // Add condition based on status if provided
-    if ($status) {
-        $this->db->where("status", $status);
-    }
+	    // Add condition based on status if provided
+	    if ($status) {
+	    	if($status == 'offer_created'){
+	    		$this->db->where("is_custom", 1);	
+	    	}else{
+	    		$this->db->where("status", $status);
+	    	}
+	    }
 
-    $query = $this->db->get();
-    return $query->row_array();
+	    $query = $this->db->get();
+	    return $query->row_array();
 	}
 
 	public function getTotalHelpfulReview($rid, $sid, $type){

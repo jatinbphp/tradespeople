@@ -123,7 +123,7 @@ if (!in_array(22, $my_access)) {redirect('Admin_dashboard');}
 										<td><?php echo $lists['f_name'].' '.$lists['l_name']; ?></td>
 										<td><?php echo '£'.number_format($lists['price'],2); ?></td>
 										<td><?php echo ucfirst($lists['payment_method']); ?></td>												
-										<td><?php echo ucfirst($lists['status']); ?></td>												
+										<td><?php echo ucfirst(str_replace('_', ' ', $lists['status'])); ?></td>
 										<td><?php echo $lists['created_at']; ?></td>
 									</tr>
 								<?php }?>

@@ -338,7 +338,7 @@ if ($remaining_amount >= $min && $remaining_amount <= $max) {
 							</div>
 							<ul>
 								<li>
-									<p>Price per <?php echo !empty($exOid) ? 'Service' : lcfirst($service_details['price_per_type']); ?></p> 
+									<p>Price per <?php echo !empty($exOid) ? $price_per_type : lcfirst($service_details['price_per_type']); ?></p> 
 									<b><?php echo '£'.number_format($package_price,2); ?></b>
 								</li>
 								<li>
