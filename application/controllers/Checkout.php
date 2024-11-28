@@ -73,6 +73,11 @@ class Checkout extends CI_Controller
 		$exOid = '';
 		$order = [];
 		$data['price_per_type'] = '';
+		$sId = empty($order) ? $cartData['service_id'] : $order['service_id'];
+		
+		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
+		$data['service_fee'] = $setting['service_fees'];
+		$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
 
 		if(isset($_GET['offer']) && !empty($_GET['offer'])){
 			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$_GET['offer']));
@@ -89,12 +94,7 @@ class Checkout extends CI_Controller
 			$servicePrice = $package_data[$cartData['package_type']]['price'] * $serviceQty;
 			$package_type = $cartData['package_type'];
 		}
-
-		$sId = empty($order) ? $cartData['service_id'] : $order['service_id'];
 		
-		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
-		$data['service_fee'] = $setting['service_fees'];
-		$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
 		$data['exOid'] = $exOid;
 		if(!empty($exsId)){
 			$data['ex_services'] = $this->common_model->get_extra_service('tradesman_extra_service',$exsId, $sId);
@@ -114,7 +114,7 @@ class Checkout extends CI_Controller
 		$data['package_type'] = $package_type;
 		$data['package_price'] = empty($order) ? $package_data[$cartData['package_type']]['price'] : $order['price'];
 		$data['package_description'] = empty($order) ? $package_data[$cartData['package_type']]['description'] : $order['description'];
-		$data['delivery_date'] = empty($order) ? $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']) : $order['delivery'];
+		$data['delivery_date'] = empty($order) ? $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']) : $this->common_model->get_date_format($order['delivery']);
 		$data['task_addresses'] = $this->common_model->getTaskAddresses($uId);
 		$data['setting'] = $setting;
 		$data['loginUser'] = $this->common_model->GetSingleData('users',['id'=>$uId]);

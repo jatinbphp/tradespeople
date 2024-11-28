@@ -579,7 +579,7 @@
 																</a>
 															<?php endif; ?>
 
-															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat()">Chat</button>
+															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat(<?php echo $order['user_id']?>)">Chat</button>
 														<?php else: ?>
 															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
 																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
@@ -594,7 +594,7 @@
 																	</button>
 																</a>	
 															<?php endif; ?>
-															<button class="btn btn-outline-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat()">
+															<button class="btn btn-outline-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat(<?php echo $service['user_id']?>)">
 																Chat
 															</button>
 
@@ -2108,8 +2108,8 @@
 		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 		}
 
-		function openChat(){
-			get_chat_onclick(<?php echo $service['user_id'];?>, <?php echo $service['id'];?>);
+		function openChat(uId){
+			get_chat_onclick(uId, <?php echo $service['id'];?>);
 			showdiv();
 		}
 

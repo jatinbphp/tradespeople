@@ -27,7 +27,11 @@ class Custom_offer extends CI_Controller
 
 		$data['package_data'] = !empty($data['service']['package_data']) ? json_decode($data['service']['package_data']) : [];
 
-		$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$id, 'posted_user'=>$uId]);
+		// echo '<pre>';
+		// print_r($data['package_data']);
+		// exit;
+
+		$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$id, 'post_id'=>$id, 'posted_user'=>$uId]);
 		$data['service_category'] = $service_category;
 
 		$this->load->view('site/custom_offer',$data);
@@ -96,17 +100,17 @@ class Custom_offer extends CI_Controller
 				$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
 
 				try {
-			        $sent = $this->common_model->send_mail($homeOwner['email'], $subject, $html);
-			        
-			        if ($sent) {
-			            log_message('Debug', 'Email sent successfully.');
-			        } else {
-			            log_message('Debug', 'Failed to send email. Please try again later.');
-			        }
-			    } catch (Exception $e) {
-			        // Catch the error and log the exception message
-			        log_message('Error', 'Email sending failed. Error: ' . $e->getMessage());
-			    }
+		        $sent = $this->common_model->send_mail($homeOwner['email'], $subject, $html);
+		        
+		        if ($sent) {
+		            log_message('Debug', 'Email sent successfully.');
+		        } else {
+		            log_message('Debug', 'Failed to send email. Please try again later.');
+		        }
+		    } catch (Exception $e) {
+		        // Catch the error and log the exception message
+		        log_message('Error', 'Email sending failed. Error: ' . $e->getMessage());
+		    }
 			}
 
 			$this->session->set_flashdata('success',"Order has been added successfully.");

@@ -9,7 +9,7 @@
 
 		<h2 id="mainTitle">Create a single payment offer</h2>
 		<h3><?php echo $service['service_name']; ?></h3>
-		<h5><?php echo $service['description']; ?></h5>
+		<p><?php echo $service['description']; ?></p>
 
 		<form method="POST" name="submit_form" id="submit_form" enctype="multipart/form-data">
 			<input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
@@ -315,13 +315,13 @@
 				</li>					
 			</ul>
 
-			<?php if(!empty($attributes)):?>
+			<?php if(!empty($attributes) && !empty($package_data)):?>
 				<div>				
 					<h4>Offer includes</h4>
 					<?php 
-						$basicAtt = isset($package_data) ? $package_data->basic->attributes : [];
-						$standardAtt = isset($package_data) ? $package_data->standard->attributes : [];
-						$premiumAtt = isset($package_data) ? $package_data->premium->attributes : [];
+						$basicAtt = isset($package_data) && isset($package_data->basic->attributes) ? $package_data->basic->attributes : [];
+						$standardAtt = isset($package_data) && isset($package_data->standard->attributes) ? $package_data->standard->attributes : [];
+						$premiumAtt = isset($package_data) && isset($package_data->premium->attributes) ? $package_data->premium->attributes : [];
 						$allAttributes = array_unique(array_merge($basicAtt, $standardAtt, $premiumAtt));
 					?>
 					<ul class="pl-0">
