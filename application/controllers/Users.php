@@ -4487,6 +4487,13 @@ class Users extends CI_Controller
 			$newTime = '';			
 			$newTime = date('jS F Y', strtotime($order['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
 			$data['newTime'] = $newTime;
+
+			$milestones = [];
+			if($order['is_custom'] == 1 && $order['order_type'] == 'milestone'){
+				$milestones = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$order['id']]);
+			}
+
+			$data['milestones'] = $milestones;
 			
 			$this->load->view('site/order_tracking',$data);
 		}else{

@@ -649,6 +649,78 @@
 												</li>
 											<?php endif;?>
 
+											<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
+												<li class="timeline-item" id="milestoneList">
+													<div>
+														<h4>Created Milestones</h4>
+														<table class="table">
+															<thead>
+																<th>Delivery Date</th>
+																<th>Description</th>
+																<th>Status</th>
+																<th>Amount</th>
+																<th>Action</th>
+															</thead>
+															<tbody>
+																<?php foreach($milestones as $list):?>
+																	<?php 
+																		if($list['status'] == 0){
+																			$mStatus = 'Pending';
+																		}
+																		if($list['status'] == 1){
+																			$mStatus = 'Escrow';
+																		}
+																		if($list['status'] == 2){
+																			$mStatus = 'Release';
+																		}
+																		if($list['status'] == 3){
+																			$mStatus = 'Requested';
+																		}
+																		if($list['status'] == 4){
+																			$mStatus = 'Cancelled';
+																		}
+																		if($list['status'] == 5){
+																			$mStatus = 'Dispute';
+																		}
+																		if($list['status'] == 6){
+																			$mStatus = 'Resolved';
+																		}
+																		if($list['status'] == 7){
+																			$mStatus = 'Approved';
+																		}
+																		if($list['status'] == 8){
+																			$mStatus = 'Declined';
+																		}
+																	?>
+																	<tr>
+																		<td><?php echo date("d F Y", strtotime($list['cdate'])); ?></td>
+																		<td>
+																			<?php 
+																				$totalDescriptionChr = strlen($list['description']);
+																				if($totalDescriptionChr > 50){
+																					echo substr($list['description'], 0, 50).'...';
+																				}else{
+																					echo $list['description'];
+																				}
+																			?>
+																		</td>
+																		<td><?php echo $mStatus; ?></td>
+																		<td><?php echo '£'.number_format($list['milestone_amount'],2); ?></td>
+																		<td>
+																			<?php if($this->session->userdata('type')==1):?>
+																				<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modaltest">Deliver Work</button>
+																			<?php else: ?>
+																				<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>
+																			<?php endif; ?>	
+																		</td>
+																	</tr>
+																<?php endforeach;?>
+															</tbody>
+														</table>
+													</div>													
+												</li>
+											<?php endif; ?>
+
 											<?php include 'order_tracking_timeline.php'; ?>
 
 											<?php if(!empty($delivery_date)):?>

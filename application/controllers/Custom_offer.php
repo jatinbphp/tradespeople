@@ -14,6 +14,7 @@ class Custom_offer extends CI_Controller
 		$data['service_id'] = $id;
 		$data['receiver_id'] = $receiverId;
 		$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+		$latestOid = $this->session->userdata('latest_custom_order');
 
 		if(empty($data['service'])){
 			$this->load->view('site/My404');
@@ -27,31 +28,57 @@ class Custom_offer extends CI_Controller
 
 		$data['package_data'] = !empty($data['service']['package_data']) ? json_decode($data['service']['package_data']) : [];
 
-		// echo '<pre>';
-		// print_r($data['package_data']);
-		// exit;
-
-		$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$id, 'post_id'=>$id, 'posted_user'=>$uId]);
+		$data['milestones'] = [];
+		$data['custom_order'] = [];
+		$data['totalAmtDays'] = [];
 		$data['service_category'] = $service_category;
+		$data['milestoneList'] = '';
+		$data['mIds'] = '';
+
+		if(!empty($latestOid)){
+			$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$latestOid, 'posted_user'=>$uId]);
+
+			$data['totalAmtDays'] = $this->common_model->getTotalMilestone($latestOid);
+			$data['milestoneList'] = $this->load->view('site/milestoneList',$data, true);
+
+			if(!empty($data['milestones'])){
+				foreach($data['milestones'] as $list){
+					$data['mIds'] .= $list['id'].',';
+				}
+			}
+			$data['custom_order'] = $this->common_model->GetSingleData('service_order',['id'=>$latestOid]);
+		}		
 
 		$this->load->view('site/custom_offer',$data);
 	}
 
 	public function store() {
 		$uId = $this->session->userdata('user_id');
+		$oId = $this->input->post('customOrderId');
 		$tradesman=$this->common_model->get_single_data('users',array('id'=>$uId));
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 
+		$order_type = $this->input->post('order_type');
+
+		if($order_type == 'single'){
+			$price = $this->input->post('price');
+			$totalPrice = $price + $setting['service_fees'];
+		}else{
+			$price = 0;
+			$totalPrice = 0;
+		}
+
 		$insert['is_custom'] = 1;
+		$insert['order_type'] = $order_type;
 		$insert['order_id'] = $this->common_model->generateOrderId(13);
 		$insert['user_id'] = $this->input->post('receiver_id');
 		$insert['service_id'] = $this->input->post('service_id');
-		$insert['price'] = $this->input->post('price');
+		$insert['price'] = $price;
 		$insert['price_per_type'] = $this->input->post('price_per_type');
 		$insert['service_qty'] = 1;
 		$insert['package_type'] = 'custom';
 		$insert['service_fee'] = $setting['service_fees'];
-		$insert['total_price'] = ($this->input->post('price')+$setting['service_fees']);
+		$insert['total_price'] = $totalPrice;
 		$insert['status'] = 'offer_created';
 		$insert['description'] = $this->input->post('description');
 		//$insert['revisions'] = isset($_POST['revisions']) ? $this->input->post('revisions') : 0;
@@ -61,9 +88,31 @@ class Custom_offer extends CI_Controller
 		$insert['is_requirements'] = isset($_POST['is_requirements']) ? $this->input->post('is_requirements') : 0;
 		$insert['offer_includes'] = isset($_POST['offer_includes']) ? $this->input->post('offer_includes') : 0;
 		$insert['offer_includes_ids'] = isset($_POST['offer_includes_ids']) ? json_encode($this->input->post('offer_includes_ids')) : null;
-		$newOrder = $this->common_model->insert('service_order', $insert);
+
+		if(!empty($oId)){
+			$this->common_model->update('service_order',array('id'=>$oId),$insert);
+			$newOrder = $oId;
+		}else{
+			$newOrder = $this->common_model->insert('service_order', $insert);	
+		}
 
 		if($newOrder) {
+
+			$tPrice = 0;
+
+			if($this->input->post('order_type') == 'milestone'){
+				$totalAmtDays = $this->common_model->getTotalMilestone($newOrder);
+
+				if(!empty($totalAmtDays)){
+					$insert1['price'] = $totalAmtDays[0]['mAmount'];
+					$insert1['delivery'] = $totalAmtDays[0]['totalDays'];
+					$insert1['total_price'] = $totalAmtDays[0]['mAmount'] + $setting['service_fees'];
+					$tPrice = $totalAmtDays[0]['mAmount'] + $setting['service_fees'];
+
+					$this->common_model->update('service_order', ['id'=>$newOrder], $insert1);	
+				}				
+			}
+
 			$insert = [];
 			$insert['type']='service';
 			$insert['post_id']=$this->input->post('service_id');
@@ -91,33 +140,88 @@ class Custom_offer extends CI_Controller
 	    /*Notification Code End*/				
 
 			if($homeOwner){
-				$subject = "Order Payment Made for “".$service_details['service_name']."”";				
-				$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Order Payment Made Successfully!</p>';
+				$subject = $tradesman['trading_name']." has been created custom offer for “".$service_details['service_name']."”";				
+				$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">'.$tradesman['trading_name'].'has been created custom offer for '.$service_details['service_name'].'</p>';
 				$html .= '<p style="margin:0;padding:10px 0px">Hi '.$homeOwner['f_name'].'!</p>';
-				$html .= '<p style="margin:0;padding:10px 0px">Service payment amount:  £'.($this->input->post('price')+$setting['service_fees']).'</p>';
+				$html .= '<p style="margin:0;padding:10px 0px">Service payment amount: £'.$tPrice.'</p>';
+				$html .= '<p style="margin:0;padding:10px 0px"><a href="'.site_url().'order-tracking/'.$newOrder.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Offer</a></p>';
 				$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
 				
 				$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
-
-				try {
-		        $sent = $this->common_model->send_mail($homeOwner['email'], $subject, $html);
-		        
-		        if ($sent) {
-		            log_message('Debug', 'Email sent successfully.');
-		        } else {
-		            log_message('Debug', 'Failed to send email. Please try again later.');
-		        }
-		    } catch (Exception $e) {
-		        // Catch the error and log the exception message
-		        log_message('Error', 'Email sending failed. Error: ' . $e->getMessage());
-		    }
 			}
-
+			$this->session->unset_userdata('latest_custom_order');
 			$this->session->set_flashdata('success',"Order has been added successfully.");
 			$json['success'] = "Order has been added successfully.";
-	   	} else {
-	   		$json['error'] = "Something went wrong, try again later.";
-	   	}
+   	} else {
+   		$json['error'] = "Something went wrong, try again later.";
+   	}
 		echo json_encode($json); 
+	}
+
+	public function milestoneStore(){
+		$uId = $this->session->userdata('user_id');
+		$service_id = $this->input->post('service_id');		
+		$receiver_id = $this->input->post('receiver_id');		
+		$order_type = $this->input->post('order_type');		
+		$name = $this->input->post('name');		
+		$delivery = $this->input->post('delivery');		
+		$price = $this->input->post('price');		
+		$delivery = $this->input->post('delivery');		
+		$description = $this->input->post('description');		
+		$price_per_type = $this->input->post('price_per_type');	
+		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
+
+		$insert['is_custom'] = 1;
+		$insert['order_type'] = $order_type;
+		$insert['order_id'] = $this->common_model->generateOrderId(13);
+		$insert['user_id'] = $receiver_id;
+		$insert['service_id'] = $service_id;
+		$insert['service_fee'] = $setting['service_fees'];
+		$insert['status'] = 'offer_created';
+
+		$latestOid = $this->session->userdata('latest_custom_order');
+
+		if(!empty($latestOid)){
+			$this->common_model->update('service_order', ['id'=>$latestOid], $insert);
+			$newOrder = $latestOid;
+		}else{
+			$newOrder = $this->common_model->insert('service_order', $insert);
+			$this->session->set_userdata('latest_custom_order',$newOrder);
+		}
+
+		$data1 = [
+			'milestone_type' => 'service',
+			'milestone_name' => $name,
+			'milestone_amount' => $price,
+			'userid' => $receiver_id,
+			'post_id' => $newOrder,
+			'cdate' => date('Y-m-d H:i:s'),
+			'posted_user' => $uId,
+			'created_by' => $uId,
+			'bid_id' => $service_id,
+			'description' => $description,
+			'delivery' => $delivery,
+			'price_per_type' => $price_per_type,
+		];
+
+		$run = $this->common_model->insert('tbl_milestones',$data1);
+
+		if($run){
+			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$id]);
+			$data['service_category'] = $this->common_model->GetSingleData('service_category',['cat_id'=>$data['service']['category']]);
+			$data['price_per_type'] = !empty($data['service_category']['price_type_list']) ? explode(',', $service_category['price_type_list']) : [];
+
+			$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$newOrder]);
+
+			$json['status'] = 1;
+			$json['oId'] = $newOrder;
+			$json['milestoneId'] = $run;
+			//$json['milestoneList'] = $this->load->view('site/milestoneList',$data);
+			$json['success'] = "Milestone added successfully.";
+		}else{
+			$json['status'] = 0;
+			$json['error'] = "Something went wrong, try again later.";
+		}
+		echo json_encode($json);
 	}
 }

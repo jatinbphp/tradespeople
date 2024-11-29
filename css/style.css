@@ -11583,6 +11583,39 @@ input:checked + .switch-slider:before {
     font-size: 10px;
     font-weight: 600;
 }
+
 .offer-btn .btn {
     padding: 3px 8px;
 } 
+
+.milestoneList{
+    padding: 15px 0;
+    margin:  0 15px;
+    font-size: 15px;
+    border-bottom: 1px solid #d1d1d1;
+}
+#milestoneForm .card-header .row {
+    margin: 0;
+}
+#milestoneForm .card-header .col-md-2 h4 {
+    padding-right: 5px;
+    padding-left: 0;
+}
+#milestoneForm .card-header h4 {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+#accordion #milestoneForm .card-header {
+    border-bottom: none;
+}
+.youll-text {
+    padding: 0 25px;
+}
+
+.pr-15{
+    padding-right: 15px!important;
+}
+
+.pr-9{
+    padding-right: 9px!important;
+}
