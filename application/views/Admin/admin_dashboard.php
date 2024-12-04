@@ -465,7 +465,7 @@
                   $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('is_view',0)->where('is_custom',1)->count_all_results();
                 ?>
                 <span class="info-box-text">
-                  Custom Offers
+                  Custom Orders
                   <?php echo ($totalCustomOffer > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalCustomOffer . '</span>' : ''; ?>
                 </span>
                 <span class="info-box-number"><?=$serviceOrders;?></span>

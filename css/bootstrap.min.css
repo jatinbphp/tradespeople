@@ -5145,3 +5145,20 @@ th.visible-print, td.visible-print {
 	display: none!important
 }
 }
+
+.modal-dialog.modal-lg {
+    width: 800px;
+}
+
+@media (min-width:992px) {
+	.modal-lg,
+	.modal-xl {
+		max-width: 800px!important
+	}
+}
+
+@media (min-width:1200px) {
+	.modal-xl {
+		max-width: 1140px!important
+	}
+}

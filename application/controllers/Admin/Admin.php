@@ -3163,8 +3163,10 @@ class Admin extends CI_Controller
     }
 
     public function custom_orders(){
-        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','offer_created');
-        $result['counter'] = $this->orderCounter('offer_created');
+        $is_accepted = isset($_GET['is_accepted']) && !empty($_GET['is_accepted']) ? $_GET['is_accepted'] : 0;
+        
+        $result['order_list'] = $this->Common_model->getAllOrderForAdmin('service_order','offer_created',$is_accepted);
+        $result['counter'] = $this->orderCounter('offer_created',$is_accepted);
         $result['menu'] = 'Custom Offers';
         $result['service_fee'] = 'show';
         $where_array = ['status' => 'offer_created'];        
@@ -3974,9 +3976,9 @@ class Admin extends CI_Controller
         echo json_encode($json);
     }
 
-    public function orderCounter($status){
-      $totalCompletedOrderAmount = $this->Common_model->adminOrderCounter($status);
-      $totalServiceFees = $this->Common_model->allServiceFee($status);
+    public function orderCounter($status, $is_accepted=0){
+      $totalCompletedOrderAmount = $this->Common_model->adminOrderCounter($status, $is_accepted);
+      $totalServiceFees = $this->Common_model->allServiceFee($status, $is_accepted);
 
       $data['totalCompletedOrderAmount'] = $totalCompletedOrderAmount['total_order_amount'];
       $data['totalCompletedOrder'] = $totalCompletedOrderAmount['total_orders'];

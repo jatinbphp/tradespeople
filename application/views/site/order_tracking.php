@@ -562,7 +562,13 @@
 															<?php endif; ?>
 
 															<?php if($order['status'] == 'active'):?>	
-																<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
+																<?php if($order['is_custom'] == 1):?>
+																	<?php if($order['order_type'] == 'single'):?>
+																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
+																	<?php endif;?>
+																<?php else:?>	
+																	<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
+																<?php endif; ?>	
 															<?php endif; ?>
 
 															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
@@ -693,7 +699,15 @@
 																		}
 																	?>
 																	<tr>
-																		<td><?php echo date("d F Y", strtotime($list['cdate'])); ?></td>
+																		<td>
+																			<?php
+																				$days = $list['delivery'];
+																				$currentDate = new DateTime($list['cdate']);
+																				$currentDate->modify("+$days days");
+																				$milestone_delivery_date = $currentDate->format('jS F, Y');	
+																				echo $milestone_delivery_date;
+																			?>																				
+																			</td>
 																		<td>
 																			<?php 
 																				$totalDescriptionChr = strlen($list['description']);
@@ -825,20 +839,20 @@
 
 								<div id="Details" class="tab-pane fade">
 									<div class="timeline-div bg-white mt-4 p-5">
-										<div class="row pb-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-											<div class="col-md-10 pl-0">
+										<div class="row ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+											<div class="col-md-12 pl-0">
 												<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
 											</div>
-											<div class="col-md-2 text-right pr-0">
+											<!-- <div class="col-md-2 text-right pr-0">
 												<span>Total Price</span>
-											</div>
+											</div> -->
 											<?php if(!empty($order['description'])):?>
-												<div class="col-md-10 pl-0">
+												<div class="col-md-12 pl-0">
 													<?php echo $order['description']; ?>
 												</div>
 											<?php endif?>
 
-											<div class="col-md-10 mt-3 pl-0">
+											<!--<div class="col-md-10 mt-3 pl-0">
 												<span>
 													Ordered From 
 													<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
@@ -851,14 +865,40 @@
 											</div>
 											<div class="col-md-2 mt-3 text-right pr-0">
 												<span><b><?php echo '£'.number_format($order['total_price'],2); ?></b></span>
-											</div>
+											</div>-->
 										</div>
-										<div class="row pb-4 pt-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-											<div class="col-md-6 pl-0">
+										<div class="row pt-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+											<!-- <div class="col-md-12 pl-0">
 												Order number: <?php echo $order['order_id']; ?>
-											</div>
-											<div class="col-md-6 text-right pr-0">
-												<span>View billing history</span>
+											</div> -->
+											<div class="col-md-12 pl-0">
+												<!-- <span>View billing history</span> -->
+
+												<?php if(!empty($attributes)): ?>
+													<b>Offer Includes</b>
+													<ul class="pl-4">
+														<?php foreach($attributes as $att):?>
+															<li>
+																<?php echo $att['attribute_name']; ?>
+															</li>
+														<?php endforeach; ?>
+													</ul>
+												<?php endif; ?>
+
+												<?php if(!empty($order['ex_services'])):?>
+													<b>Extra Services</b>
+													<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
+														<ul class="pl-4">
+															<?php foreach($extra_services as $exs):?>
+																<?php if(in_array($exs['id'], $selectedExs)): ?>
+																	<li>
+																		<?php echo $exs['ex_service_name']; ?>
+																	</li>
+																<?php endif;?>
+															<?php endforeach; ?>
+														</ul>
+													<?php endif; ?>
+												<?php endif;?>
 											</div>
 										</div>
 										<h4 class="mt-3 mb-0"><?php echo $service['service_name']; ?></h4>
@@ -866,14 +906,14 @@
 											<div class="col-md-12">
 												<table class="table table-striped">
 													<thead class="bg-gray">
-														<tr>
+														<!--<tr>
 															<td colspan="4">
 																<b>Your Order</b>
 																<span class="ml-2" style="font-size:12px;">
 																	<i><?php echo $created_date; ?></i>
 																</span>
 															</td>
-														</tr>
+														</tr>-->
 														<tr>
 															<th>Item</th>                     
 															<th>Qty</th>                     
@@ -885,72 +925,49 @@
 														<tr>
 															<td>
 																<b><?php echo $service['service_name']; ?></b>
-																<?php if(!empty($attributes)): ?>
-																	<ul>
-																		<?php foreach($attributes as $att):?>
-																			<li>
-																				<?php echo $att['attribute_name']; ?>
-																			</li>
-																		<?php endforeach; ?>
-																	</ul>
-																<?php endif; ?>
-																<?php if(!empty($order['ex_services'])):?>
-																	<b>Extra Services</b>
-																	<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
-																	<ul>
-																		<?php foreach($extra_services as $exs):?>
-																			<?php if(in_array($exs['id'], $selectedExs)): ?>
-																				<li>
-																					<?php echo $exs['ex_service_name']; ?>
-																				</li>
-																			<?php endif;?>
-																		<?php endforeach; ?>
-																	</ul>
-																<?php endif; ?>
-															<?php endif;?>	
-														</td>
-														<td class="text-center">
-															<?php echo $order['service_qty'];?>
-														</td>
-														<td class="text-right"><?php echo $duration.' Days'; ?></td>
-														<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
-													</tr>                                        	
-												</tbody>
-												<tfoot>
-													<tr class="bg-gray">
-														<td><b>Sub Total</b></td>
-														<td colspan="3" class="text-right">
-															<b>
-																<?php 
-																$subTotal = $order['total_price'] - $order['service_fee'];
-																echo '£'.number_format($subTotal,2); 
-																?>
-															</b>
-														</td>
-													</tr>
-													<tr class="bg-gray">
-														<td><b>Service Fee</b></td>
-														<td colspan="3" class="text-right">
-															<b>
-																<?php echo '£'.number_format($order['service_fee'],2); ?>
-															</b>
-														</td>
-													</tr>
-													<tr class="bg-gray">
-														<td>
-															<b>Total</b>
-														</td>
-														<td colspan="3" class="text-right">
-															<b>
-																<?php echo '£'.number_format($order['total_price'],2); ?>
-															</b>
-														</td>
-													</tr>
-												</tfoot>
-											</table>
+															</td>
+															<td class="text-center">
+																<?php echo $order['service_qty'];?>
+															</td>
+															<td class="text-right"><?php echo $duration.' Days'; ?></td>
+															<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
+														</tr>                                        	
+													</tbody>
+													<tfoot>
+														<tr class="bg-gray">
+															<td><b>Sub Total</b></td>
+															<td colspan="3" class="text-right">
+																<b>
+																	<?php 
+																	$subTotal = $order['total_price'] - $order['service_fee'];
+																	echo '£'.number_format($subTotal,2); 
+																	?>
+																</b>
+															</td>
+														</tr>
+														<tr class="bg-gray">
+															<td><b>Service Fee</b></td>
+															<td colspan="3" class="text-right">
+																<b>
+																	<?php echo '£'.number_format($order['service_fee'],2); ?>
+																</b>
+															</td>
+														</tr>
+														<tr class="bg-gray">
+															<td>
+																<b>Total</b>
+															</td>
+															<td colspan="3" class="text-right">
+																<b>
+																	<?php echo '£'.number_format($order['total_price'],2); ?>
+																</b>
+															</td>
+														</tr>
+													</tfoot>
+												</table>
+											</div>
 										</div>
 									</div>
-								</div>
 								</div>
 
 								<div id="Requirements" class="tab-pane fade">

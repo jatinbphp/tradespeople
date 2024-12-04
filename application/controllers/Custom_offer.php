@@ -7,61 +7,66 @@ class Custom_offer extends CI_Controller
 		$this->load->model('common_model');
 	}
 
-	public function send($id, $receiverId){
-
+	public function send($id, $receiverId, $pMethod){
 		$uId = $this->session->userdata('user_id');
+		$this->session->unset_userdata('latest_custom_order');
+		$this->session->unset_userdata('totalDays');
+		$this->session->unset_userdata('totalAmount');
+
 		$data['title'] = 'Custom Offer';
 		$data['service_id'] = $id;
 		$data['receiver_id'] = $receiverId;
 		$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$id]);
-		$latestOid = $this->session->userdata('latest_custom_order');
-
+		$data['pMethod'] = $pMethod;
+		
 		if(empty($data['service'])){
 			$this->load->view('site/My404');
-		}
+		}else{
+			$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$data['service']['category']]);
 
-		$service_category = $this->common_model->GetSingleData('service_category',['cat_id'=>$data['service']['category']]);
+			$data['price_per_type'] = !empty($service_category['price_type_list']) ? explode(',', $service_category['price_type_list']) : [];
 
-		$data['price_per_type'] = !empty($service_category['price_type_list']) ? explode(',', $service_category['price_type_list']) : [];
+			$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
 
-		$data['attributes'] = $this->common_model->get_all_data('service_attribute',['service_cat_id'=>$service_category['cat_id']]);
+			$data['package_data'] = !empty($data['service']['package_data']) ? json_decode($data['service']['package_data']) : [];
 
-		$data['package_data'] = !empty($data['service']['package_data']) ? json_decode($data['service']['package_data']) : [];
+			$data['milestones'] = [];
+			$data['custom_order'] = [];
+			$data['totalAmtDays'] = [];
+			$data['service_category'] = $service_category;
+			$data['milestoneList'] = '';
+			$data['mIds'] = '';
 
-		$data['milestones'] = [];
-		$data['custom_order'] = [];
-		$data['totalAmtDays'] = [];
-		$data['service_category'] = $service_category;
-		$data['milestoneList'] = '';
-		$data['mIds'] = '';
+			if(!empty($latestOid)){
+				$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$latestOid, 'posted_user'=>$uId]);
 
-		if(!empty($latestOid)){
-			$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$latestOid, 'posted_user'=>$uId]);
+				$data['totalAmtDays'] = $this->common_model->getTotalMilestone($latestOid);
+				$data['milestoneList'] = $this->load->view('site/milestoneList',$data, true);
 
-			$data['totalAmtDays'] = $this->common_model->getTotalMilestone($latestOid);
-			$data['milestoneList'] = $this->load->view('site/milestoneList',$data, true);
-
-			if(!empty($data['milestones'])){
-				foreach($data['milestones'] as $list){
-					$data['mIds'] .= $list['id'].',';
+				if(!empty($data['milestones'])){
+					foreach($data['milestones'] as $list){
+						$data['mIds'] .= $list['id'].',';
+					}
 				}
-			}
-			$data['custom_order'] = $this->common_model->GetSingleData('service_order',['id'=>$latestOid]);
-		}		
+				$data['custom_order'] = $this->common_model->GetSingleData('service_order',['id'=>$latestOid]);
+			}		
 
-		$this->load->view('site/custom_offer',$data);
+			$viewData = $this->load->view('site/custom_offer',$data, true);
+			echo $viewData; 
+		}
 	}
 
 	public function store() {
 		$uId = $this->session->userdata('user_id');
 		$oId = $this->input->post('customOrderId');
+		$quantity = $this->input->post('quantity');
 		$tradesman=$this->common_model->get_single_data('users',array('id'=>$uId));
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 
 		$order_type = $this->input->post('order_type');
 
 		if($order_type == 'single'){
-			$price = $this->input->post('price');
+			$price = $this->input->post('price') * $quantity;
 			$totalPrice = $price + $setting['service_fees'];
 		}else{
 			$price = 0;
@@ -75,7 +80,7 @@ class Custom_offer extends CI_Controller
 		$insert['service_id'] = $this->input->post('service_id');
 		$insert['price'] = $price;
 		$insert['price_per_type'] = $this->input->post('price_per_type');
-		$insert['service_qty'] = 1;
+		$insert['service_qty'] = $quantity;
 		$insert['package_type'] = 'custom';
 		$insert['service_fee'] = $setting['service_fees'];
 		$insert['total_price'] = $totalPrice;
@@ -163,6 +168,7 @@ class Custom_offer extends CI_Controller
 		$service_id = $this->input->post('service_id');		
 		$receiver_id = $this->input->post('receiver_id');		
 		$order_type = $this->input->post('order_type');		
+		$main_description = $this->input->post('main_description');		
 		$name = $this->input->post('name');		
 		$delivery = $this->input->post('delivery');		
 		$price = $this->input->post('price');		
@@ -176,6 +182,7 @@ class Custom_offer extends CI_Controller
 		$insert['order_id'] = $this->common_model->generateOrderId(13);
 		$insert['user_id'] = $receiver_id;
 		$insert['service_id'] = $service_id;
+		$insert['description'] = $main_description;
 		$insert['service_fee'] = $setting['service_fees'];
 		$insert['status'] = 'offer_created';
 
@@ -210,18 +217,19 @@ class Custom_offer extends CI_Controller
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$id]);
 			$data['service_category'] = $this->common_model->GetSingleData('service_category',['cat_id'=>$data['service']['category']]);
 			$data['price_per_type'] = !empty($data['service_category']['price_type_list']) ? explode(',', $service_category['price_type_list']) : [];
-
+			$totalAmtDays = $this->common_model->getTotalMilestone($newOrder);
 			$data['milestones'] = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$newOrder]);
 
 			$json['status'] = 1;
 			$json['oId'] = $newOrder;
 			$json['milestoneId'] = $run;
-			//$json['milestoneList'] = $this->load->view('site/milestoneList',$data);
+			$json['totalDays'] = $totalAmtDays[0]['totalDays'];
+			$json['totalAmount'] = '£'.number_format($totalAmtDays[0]['mAmount'],2);
 			$json['success'] = "Milestone added successfully.";
+			$json['viewData'] = $this->load->view('site/milestoneList',$data, true);
+			echo json_encode($json);
 		}else{
-			$json['status'] = 0;
-			$json['error'] = "Something went wrong, try again later.";
-		}
-		echo json_encode($json);
+			echo "Something went wrong, try again later.";
+		}		
 	}
 }

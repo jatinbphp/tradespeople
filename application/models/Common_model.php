@@ -3534,13 +3534,13 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function getAllOrderForAdmin($table, $status = ''){
+	public function getAllOrderForAdmin($table, $status = '', $is_accepted = 0){
 		$statusWhere = '';
 		if(!empty($status) && $status != 'all'){
 			if($status == 'pending'){
 				$statusWhere = 'WHERE so.status IN ("placed")';	
 			}elseif($status == 'offer_created'){
-				$statusWhere = 'WHERE so.is_custom = 1';	
+				$statusWhere = 'WHERE so.is_custom = 1 AND so.is_accepted ='.$is_accepted;	
 			}else{
 				$statusWhere = 'WHERE so.status = "'.$status.'"';	
 			}			
@@ -3965,13 +3965,14 @@ class Common_model extends CI_Model
 		return $query->result_array();
 	}
 
-	public function adminOrderCounter($status){
+	public function adminOrderCounter($status, $is_accepted = 0){
 		$this->db->select("COUNT(id) AS total_orders, SUM(price) AS total_order_amount");
     $this->db->from("service_order");
 
     if ($status) {
     	if($status == 'offer_created'){
     		$this->db->where("is_custom", 1);	
+    		$this->db->where("is_accepted", $is_accepted);	
     	}else{
     		$this->db->where("status", $status);
     	}        
@@ -3981,7 +3982,7 @@ class Common_model extends CI_Model
     return $query->row_array();
 	}
 
-	public function allServiceFee($status = null){
+	public function allServiceFee($status = null, $is_accepted = 0){
 	    $this->db->select("SUM(service_fee) AS total_service_fees");
 	    $this->db->from("service_order");
 
@@ -3989,6 +3990,7 @@ class Common_model extends CI_Model
 	    if ($status) {
 	    	if($status == 'offer_created'){
 	    		$this->db->where("is_custom", 1);	
+	    		$this->db->where("is_accepted", $is_accepted);	
 	    	}else{
 	    		$this->db->where("status", $status);
 	    	}

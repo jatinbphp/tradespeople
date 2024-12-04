@@ -1,4 +1,7 @@
 <style type="text/css">
+  #accordion .card-body, #accordion h4{padding: 15px 20px; margin: 0px;}
+  #accordion .card-header{border-bottom: 1px solid #dbdbdb;}
+
   .trads-offer{
       color:#FF3500;
   }
@@ -33,7 +36,7 @@
     display: flex!important;
   }
 </style>
-<div class="modal fade viewaccount"  role="dialog">
+<div class="modal fade viewaccount" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
@@ -63,6 +66,12 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="customOfferPopUp" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content single-payment-offer" id="customOfferModalBody"></div>
     </div>
 </div>
 
@@ -328,18 +337,45 @@ $('#is_expiry').change(function() {
 
 function nextStep(sId){
 
-  window.location.href = '<?php echo base_url().'custom_offer/send'; ?>/'+sId+'/'+$('#rid-footer').val();
+  //window.location.href = '<?php echo base_url().'custom_offer/send'; ?>/'+sId+'/'+$('#rid-footer').val();
 
-  /*$('#chatServiceId').val(sId);
+  $('#chatServiceId').val(sId);
   $("#great-offer2").show();
-  $("#great-offer1").hide();*/
+  $("#great-offer1").hide();
 }
 
 function nextStep2(method){
-  $('#paymentType').val(method);
+  $("#great-offer2").show();
+  $("#great-offer1").hide();
 
   var sId = $('#chatServiceId').val();
 
+  var baseUrl = '<?php echo rtrim(base_url().'custom_offer/send', '/'); ?>'; // Ensure there's no trailing slash
+  var sId = encodeURIComponent(sId); // Encode the sId
+  var ridFooter = encodeURIComponent($('#rid-footer').val()); // Encode the value of #rid-footer
+  var pMethod = encodeURIComponent(method); // Encode the pMethod
+  var url = baseUrl + '/' + sId + '/' + ridFooter + '/' + pMethod;
+
+
+  $.ajax({
+    url: url,
+    type: 'GET',
+    processData: false,
+    contentType: false,
+    cache: false,
+    success: function (resp) {
+      $('#customOfferModalBody').html(resp);
+      $('#customOfferPopUp').modal('show');
+    }
+  });
+ 
+  //window.location.href = url;
+
+
+  //window.location.href = '<?php echo base_url().'custom_offer/send'; ?>/'+sId+'/'+$('#rid-footer').val()+'?pMethod='+method;
+
+  /*
+  var pMethod = $('#paymentType').val(method);
   $.ajax({
     url: '<?= site_url().'users/getServiceDetail'; ?>',
     type: 'POST',
@@ -392,7 +428,7 @@ function nextStep2(method){
         console.error('AJAX request failed:', status, error);
     }
   });
-  $("#great-offer2").hide();
+  $("#great-offer2").hide();*/
 }
 
 $('#sendOfferBtn').on('click', function(){
@@ -481,20 +517,20 @@ $('#sendOfferBtn').on('click', function(){
 //   $("#great-offer1").hide();
 //  }); 
 
-$("#great-offer2 .great-offer-list li").click(function() {
-    $("#great-offer3").show();
+/*$("#great-offer2 .great-offer-list li").click(function() {
+    //$("#great-offer3").show();
     $("#great-offer2").hide();
- }); 
+ }); */
 
 $("#great-offer2 .back").click(function() {
     $("#great-offer2").hide();
     $("#great-offer1").show();
 }); 
 
-$("#great-offer3 .back").click(function() {
+/*$("#great-offer3 .back").click(function() {
   $("#great-offer3").hide();
     $("#great-offer2").show();
-}); 
+});*/ 
 
 
 </script>
@@ -1804,8 +1840,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  setInterval(function(){ user_list_refresher(); }, 5000);
+  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  //setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
@@ -2548,3 +2584,213 @@ $(document).ready(function(){
       unset($_SESSION['error']);
   }
 ?>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script>
+let isFirstClick = true; // Initialize the toggle flag
+
+function toggleMilestones() {
+  if (isFirstClick) {
+    $('.regular_div').css('display', 'none');
+    $('.milestone_div').css('display', 'block');
+    $('#toggle-milestones').text('Switch to single payment offer');
+    $('#mainTitle').text('Create a milestones offer');
+    $('#orderType').val('milestone');
+      /*$('#milestoneName').css('display', 'block');
+      $('#milestoneDetails').css('display', 'block');
+      $('.milestone_name').prop('required', true);
+      $('.milestone_details').prop('required', true);*/
+  } else {
+    $('.regular_div').css('display', 'block');
+    $('.milestone_div').css('display', 'none');
+    $('#toggle-milestones').text('Switch to miletones');
+    $('#mainTitle').text('Create a single payment offer');
+    $('#orderType').val('single');
+      /*$('#milestoneName').css('display', 'none');
+      $('#milestoneDetails').css('display', 'none');
+      $('.milestone_name').prop('required', false);
+      $('.milestone_details').prop('required', false);*/
+  }
+  isFirstClick = !isFirstClick; // Toggle the flag
+}
+
+function toggleSelectBox(dId) {
+  console.log(dId);
+  var checkBox = document.getElementById("is_offer_expires");
+  var selectBox = document.getElementById("offer_expires_days"+dId);
+  selectBox.disabled = !checkBox.checked;
+}
+  
+function initializeValidation() {
+  $("#custom_offer_submit").validate({
+    rules: {
+      description: "required",
+      delivery: "required",
+      price_per_type: "required",
+      quantity: "required",
+      price: {
+        required: true,
+        number: true
+      },
+      offer_expires_days: {
+        required: function () {
+          return $("#is_offer_expires").is(":checked");
+        }
+      }
+    },
+    messages: {
+      description: "Please enter a description",
+      delivery: "Please select delivery",
+      price_per_type: "Please select the type of charge",
+      quantity: "Please enter an quantity",
+      price: {
+        required: "Please enter a price",
+        number: "Please enter a valid price"
+      },
+      offer_expires_days: "Please select the number of days for offer expiration"
+    },
+    submitHandler: function (form) {
+      $.ajax({
+        url: "<?php echo site_url('custom_offer/store') ?>",
+        type: 'POST',
+        data: new FormData(form),
+        dataType: 'JSON',
+        processData: false,
+        contentType: false,
+        cache: false,
+        beforeSend: function () {
+          $('.sendbtn1').prop('disabled', true);
+          $('.sendbtn1').html('<i class="fa fa-spin fa-spinner"></i> Sending...');
+        },
+        success: function (resp) {
+          $('.sendbtn1').prop('disabled', false);
+          $('.sendbtn1').html(resp.button);
+
+          if (resp.success) {
+            $('#customOfferPopUp').modal('hide');
+            $("#custom_offer_submit").trigger('reset');
+            swal(resp.success);
+            setTimeout(function(){
+              window.location.href = "<?php echo site_url('my-orders') ?>";
+            }, 2000);
+          } else if (resp.error) {
+            swal(resp.error);
+            setTimeout(function(){
+              location.reload();
+            }, 2000);
+          }
+        }
+      });
+    }
+  });
+}
+
+$('#customOfferPopUp').on('shown.bs.modal', function() {
+    initializeValidation();
+});
+
+  $(document).ready(function () {
+    initializeValidation();
+
+    <?php if(!empty($milestones)): ?>
+      $('#toggle-milestones').trigger('click');
+    <?php endif; ?>
+
+    function validateCustomOfferField(selector, validationType, errorMessage) {
+      var field = $(selector);
+      var value = field.val();
+
+      console.log(selector);
+      console.log(value);
+
+      var errorContainer = $(selector + "_error");
+
+      errorContainer.text('');
+      field.removeClass('is-invalid');
+
+      if (validationType == 'required' && !value.trim()) {
+          field.addClass('is-invalid');
+          errorContainer.text(errorMessage || "This field is required.");
+          return false;
+      } 
+
+      if (validationType == 'number' && isNaN(value)) {
+          field.addClass('is-invalid');
+          errorContainer.text(errorMessage || "Please enter a valid number.");
+          return false;
+      } else if (validationType == 'min' && parseFloat(value) <= 0) {
+          field.addClass('is-invalid');
+          errorContainer.text(errorMessage || "Value must be greater than 0.");
+          return false;
+      }
+
+      return true;
+    }
+
+    function resetMilestoneForm() {
+      $('#milestoneForm').find('input[type="text"], input[type="number"], input[type="radio"], input[type="checkbox"], select, textarea').each(function () {
+          $(this).val(''); // Reset the value
+          $(this).prop('checked', false); // For checkboxes and radio buttons
+      });
+      $('#milestoneForm').find('.error-message').text('');
+      $('#milestoneForm').find('.is-invalid').removeClass('is-invalid');
+    }
+
+    $('#customOfferModalBody').on('click', '#milestoneSave', function (event) {
+      $('#description_error').text('');
+      var isValid = true;
+      isValid &= validateCustomOfferField('#main_description', 'required', "Please enter a description");
+      isValid &= validateCustomOfferField('#milestone_name', 'required', "Please enter a milestone name");
+      isValid &= validateCustomOfferField('#milestone_delivery', 'required', "Please select a delivery option");
+      isValid &= validateCustomOfferField('#milestone_price', 'required', "Please enter a price");
+      if ($('#milestone_price').val() != '') {
+        isValid &= validateCustomOfferField('#milestone_price', 'number', "Please enter a valid price");
+      }
+      
+      isValid &= validateCustomOfferField('#milestone_details', 'required', "Please enter a description");
+
+      if ($('#milestone_price_per_type').val() === '') {
+        $('#milestone_price_per_type').addClass('is-invalid');
+        $('#price_per_type_error').text("Please select a charge per option");
+        isValid = false;
+      } else {
+        $('#milestone_price_per_type').removeClass('is-invalid');
+        $('#price_per_type_error').text('');
+      }
+
+      var main_description = $('#main_description').val();
+      var name = $('#milestone_name').val();
+      var delivery = $('#milestone_delivery').val();
+      var price = $('#milestone_price').val();
+      var description = $('#milestone_details').val();
+      var price_per_type = $('#milestone_price_per_type').val();
+      var service_id = $('#service_id').val();
+      var receiver_id = $('#receiver_id').val();
+      var order_type = $('#orderType').val();
+
+      if (isValid) {
+        $.ajax({
+          url: "<?php echo site_url('custom_offer/milestoneStore') ?>",
+          type: 'POST',
+          data: {main_description:main_description,name:name,delivery:delivery,price:price,description:description,price_per_type:price_per_type,service_id:service_id,receiver_id:receiver_id,order_type:order_type},
+          // dataType: 'json',
+          beforeSend: function () {
+            $(this).prop('disabled', true);
+            $(this).html('<i class="fa fa-spin fa-spinner"></i> Save...');
+          },
+          success: function (resp) {
+            var data = JSON.parse(resp);
+            resetMilestoneForm();
+            $('#customOfferModalBody #milestoneList').empty();
+            $('#customOfferModalBody #totalDays').text('Total: '+data.totalDays+' days');
+            $('#customOfferModalBody #totalAmounts').text(data.totalAmount);
+            $('#customOfferModalBody #milestoneList').html(data.viewData);
+            $('#customOfferModalBody #customOrderId').val(data.oId);
+            $(this).prop('disabled', false);
+            $(this).html('Save');
+          }
+        });
+      }
+    });
+  });
+</script>  

@@ -660,9 +660,9 @@
 
             $totalDisputed = $this->db->select(['id','status'])->from('service_order')->where('status','disputed')->where('is_view',0)->count_all_results();
 
-            $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('is_custom',1)->where('is_view',0)->count_all_results();
+            // $totalCustomOffer = $this->db->select(['id','status'])->from('service_order')->where('is_custom',1)->where('is_view',0)->count_all_results();
 
-            $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed + $totalCustomOffer;
+            $totalOrder = $totalPending + $totalCompleted + $totalCancelled + $totalDisputed;
 
           ?>
             <!-- <li class="DashboardManage">
@@ -704,11 +704,42 @@
                   <a href="<?php echo base_url(); ?>active-orders">
                     <i class="fa fa-circle-o"></i>Active Order
                   </a>
-                </li>
+                </li>               
+              </ul>
+            </li>
 
+          <?php
+            $totalPendingOffer = $this->db->select(['id','status'])->from('service_order')->where('is_accepted',0)->where('is_custom',1)->where('is_view',0)->count_all_results();
+
+            $totalAcceptedOffer = $this->db->select(['id','status'])->from('service_order')->where('is_accepted',1)->where('is_custom',1)->where('is_view',0)->count_all_results();
+
+            $totalRejectedOffer = $this->db->select(['id','status'])->from('service_order')->where('is_accepted',2)->where('is_custom',1)->where('is_view',0)->count_all_results();
+
+            $totalOffer = $totalPendingOffer + $totalAcceptedOffer + $totalRejectedOffer;
+
+          ?>
+            <li class="us_er3">
+              <a href="#">
+                <i class="fa fa-tasks"></i> 
+                <span>Custom Orders <?php echo ($totalOffer > 0) ? ' <span style="background:red;color:#fff;" class="badge">' . $totalOffer . '</span>' : ''; ?></span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu">
                 <li>
-                  <a href="<?php echo base_url(); ?>custom-orders">
-                    <i class="fa fa-circle-o"></i>Custom Offer
+                  <a href="<?php echo base_url(); ?>custom-orders?is_accepted=0">
+                    <i class="fa fa-circle-o"></i>Pending Orders
+                  </a>
+                </li>                
+                <li>
+                  <a href="<?php echo base_url(); ?>custom-orders?is_accepted=1">
+                    <i class="fa fa-circle-o"></i>Accepted Orders
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo base_url(); ?>custom-orders?is_accepted=2">
+                    <i class="fa fa-circle-o"></i>Rejected Orders
                   </a>
                 </li>
               </ul>

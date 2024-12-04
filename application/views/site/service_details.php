@@ -138,7 +138,6 @@
 
 							<?php if(!empty($service_faqs)): ?>
 								<div class="faq-accordion help-center">
-
 									<h2 class="title">FAQ</h2>
 									<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 										<?php foreach($service_faqs as $key => $faq): ?>
@@ -870,7 +869,7 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<div class="modal-body">
-					<h3 class="sharing-title">Availability Of Seller</h3>
+					<h3 class="sharing-title" style="margin-top:0!important">Availability Of Seller</h3>
 					<div class="sharing-description">
 						<p>Choose your date & time</p>
 					</div>

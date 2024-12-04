@@ -2403,6 +2403,7 @@ class Users extends CI_Controller
 
 	public function getAllOrders() {
 		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
+		$type = $this->session->userdata('type');
 	    if($this->session->userdata('user_id')) {
 	        $orders = $this->common_model->getAllOrder('service_order', $this->session->userdata('user_id'), $status);
 
@@ -2438,7 +2439,11 @@ class Users extends CI_Controller
 
 	        	$requirements = '<button class="btn btn-warning requirements" data-id="'.$order['id'].'">Requirements</button>';
 
-	        	$btnName = $order['status'] == 'offer_created' ? 'Respond Now' : 'View Order';
+	        	if($type == 1){
+					$btnName = $order['status'] == 'offer_created' ? 'Withdraw Offer' : 'View Order';
+	        	}else{
+	        		$btnName = $order['status'] == 'offer_created' ? 'Respond Now' : 'View Order';	
+	        	}
 
 	        	$viewOrder = '<a class="btn btn-anil_btn nx_btn" href="'.base_url('order-tracking/'.$order['id']).'">'.$btnName.'</a>';
 
@@ -5162,6 +5167,7 @@ class Users extends CI_Controller
 
 		$input['status'] = 'cancelled';
 		$input['is_cancel'] = 1;
+		$input['is_accepted'] = 2;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);

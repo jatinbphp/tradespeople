@@ -60,7 +60,7 @@
                                                 <a href="<?php echo base_url().'my-orders?status='.$list; ?>">
                                                     <?php echo ucfirst($list); ?> 
                                                     <span class="<?php echo $list == $_GET['status'] ? 'bg-yellow text-white' : 'bg-gray'; ?>">
-                                                        <?php echo $totalStatusOrder['total_'.$list]; ?>
+                                                        <?php echo $totalStatusOrder['total_'.$list] > 0 ? $totalStatusOrder['total_'.$list] : 0; ?>
                                                     </span>
                                                 </a>
                                             </li>                                            
