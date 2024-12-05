@@ -103,7 +103,9 @@
 										<div class="row">
 											<div class="col-sm-3">
 												<div class="form-group">
-													<label><?php echo ordinal(count($milestones) + 1); ?> Milestone Name</label>
+													<label id="milestoneNumber">
+														<?php echo ordinal(count($milestones) + 1); ?> Milestone Name
+													</label>
 													<input type="text" class="form-control" name="milestone_name" id="milestone_name" placeholder="Enter Milestone Name">
 													<div class="error" id="milestone_name_error"></div>
 												</div>

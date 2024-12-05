@@ -1,4 +1,4 @@
-	<?php
+<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Custom_offer extends CI_Controller
 { 
@@ -227,9 +227,20 @@ class Custom_offer extends CI_Controller
 			$json['totalAmount'] = '£'.number_format($totalAmtDays[0]['mAmount'],2);
 			$json['success'] = "Milestone added successfully.";
 			$json['viewData'] = $this->load->view('site/milestoneList',$data, true);
+			$json['nextMilestone'] = $this->ordinal(count($data['milestones']) + 1).' Milestone Name';
 			echo json_encode($json);
 		}else{
 			echo "Something went wrong, try again later.";
 		}		
 	}
+
+	public function ordinal($number) {
+		$suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+		if ((($number % 100) >= 11) && (($number % 100) <= 13)) {
+			return $number . 'th';
+		} else {
+			return $number . $suffixes[$number % 10];
+		}
+	}
 }
+

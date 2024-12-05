@@ -2615,7 +2615,6 @@ function toggleMilestones() {
 }
 
 function toggleSelectBox(dId) {
-  console.log(dId);
   var checkBox = document.getElementById("is_offer_expires");
   var selectBox = document.getElementById("offer_expires_days"+dId);
   selectBox.disabled = !checkBox.checked;
@@ -2699,12 +2698,7 @@ $('#customOfferPopUp').on('shown.bs.modal', function() {
     function validateCustomOfferField(selector, validationType, errorMessage) {
       var field = $(selector);
       var value = field.val();
-
-      console.log(selector);
-      console.log(value);
-
       var errorContainer = $(selector + "_error");
-
       errorContainer.text('');
       field.removeClass('is-invalid');
 
@@ -2786,6 +2780,7 @@ $('#customOfferPopUp').on('shown.bs.modal', function() {
             $('#customOfferModalBody #totalAmounts').text(data.totalAmount);
             $('#customOfferModalBody #milestoneList').html(data.viewData);
             $('#customOfferModalBody #customOrderId').val(data.oId);
+            $('#customOfferModalBody #milestoneNumber').text(data.nextMilestone);
             $(this).prop('disabled', false);
             $(this).html('Save');
           }
