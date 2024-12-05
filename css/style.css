@@ -10445,6 +10445,11 @@ button.switch-month:hover {
     object-fit: cover;
     border-radius: 4px;
 }
+#great-offer2 .great-offer-list li .box .img img {
+    height: auto;
+    padding: 5px;
+    border: 1px solid #ddd;
+}
 .great-offer-list li h3 {
     color: #464c5b;
     margin: 0 0 5px 0;
@@ -11635,4 +11640,12 @@ input:checked + .switch-slider:before {
 
 .pr-9{
     padding-right: 9px!important;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
 }

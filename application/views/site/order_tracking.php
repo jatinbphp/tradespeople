@@ -1,6 +1,16 @@
 	<?php
 	include 'include/header.php';
 	$get_commision = $this->common_model->get_commision();
+
+	function ordinal($number) {
+		$suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+		if ((($number % 100) >= 11) && (($number % 100) <= 13)) {
+			return $number . 'th';
+		} else {
+			return $number . $suffixes[$number % 10];
+		}
+	}
+
 	?>
 	<style type="text/css">
 		.width-100{
@@ -657,84 +667,86 @@
 
 											<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
 												<li class="timeline-item" id="milestoneList">
-													<div>
+													<div style="max-width: 100%;">
 														<h4>Created Milestones</h4>
-														<table class="table">
-															<thead>
-																<th>Milestone Name</th>
-																<th>Delivery Date</th>
-																<th>Description</th>
-																<th>Status</th>
-																<th>Amount</th>
-																<?php if($this->session->userdata('type')==1):?>
-																	<th>Action</th>
-																<?php endif; ?>	
-															</thead>
-															<tbody>
-																<?php foreach($milestones as $list):?>
-																	<?php 
-																		if($list['status'] == 0){
-																			$mStatus = 'Pending';
-																		}
-																		if($list['status'] == 1){
-																			$mStatus = 'Escrow';
-																		}
-																		if($list['status'] == 2){
-																			$mStatus = 'Release';
-																		}
-																		if($list['status'] == 3){
-																			$mStatus = 'Requested';
-																		}
-																		if($list['status'] == 4){
-																			$mStatus = 'Cancelled';
-																		}
-																		if($list['status'] == 5){
-																			$mStatus = 'Dispute';
-																		}
-																		if($list['status'] == 6){
-																			$mStatus = 'Resolved';
-																		}
-																		if($list['status'] == 7){
-																			$mStatus = 'Approved';
-																		}
-																		if($list['status'] == 8){
-																			$mStatus = 'Declined';
-																		}
-																	?>
-																	<tr>
-																		<td><?php echo $list['milestone_name']; ?></td>
-																		<td>
-																			<?php
-																				$days = $list['delivery'];
-																				$currentDate = new DateTime($list['cdate']);
-																				$currentDate->modify("+$days days");
-																				$milestone_delivery_date = $currentDate->format('jS F, Y');	
-																				echo $milestone_delivery_date;
-																			?>																				
+														<div class="table-responsive">
+															<table class="table">
+																<thead>
+																	<th>Milestone Name</th>
+																	<th>Delivery Date</th>
+																	<th>Description</th>
+																	<th>Status</th>
+																	<th>Amount</th>
+																	<?php if($this->session->userdata('type')==1):?>
+																		<th>Action</th>
+																	<?php endif; ?>	
+																</thead>
+																<tbody>
+																	<?php foreach($milestones as $list):?>
+																		<?php 
+																			if($list['status'] == 0){
+																				$mStatus = 'Pending';
+																			}
+																			if($list['status'] == 1){
+																				$mStatus = 'Escrow';
+																			}
+																			if($list['status'] == 2){
+																				$mStatus = 'Release';
+																			}
+																			if($list['status'] == 3){
+																				$mStatus = 'Requested';
+																			}
+																			if($list['status'] == 4){
+																				$mStatus = 'Cancelled';
+																			}
+																			if($list['status'] == 5){
+																				$mStatus = 'Dispute';
+																			}
+																			if($list['status'] == 6){
+																				$mStatus = 'Resolved';
+																			}
+																			if($list['status'] == 7){
+																				$mStatus = 'Approved';
+																			}
+																			if($list['status'] == 8){
+																				$mStatus = 'Declined';
+																			}
+																		?>
+																		<tr>
+																			<td><?php echo $list['milestone_name']; ?></td>
+																			<td>
+																				<?php
+																					$days = $list['delivery'];
+																					$currentDate = new DateTime($list['cdate']);
+																					$currentDate->modify("+$days days");
+																					$milestone_delivery_date = $currentDate->format('jS F, Y');	
+																					echo $milestone_delivery_date;
+																				?>																				
+																				</td>
+																			<td>
+																				<?php 
+																					$totalDescriptionChr = strlen($list['description']);
+																					if($totalDescriptionChr > 50){
+																						echo substr($list['description'], 0, 50).'...';
+																					}else{
+																						echo $list['description'];
+																					}
+																				?>
 																			</td>
-																		<td>
-																			<?php 
-																				$totalDescriptionChr = strlen($list['description']);
-																				if($totalDescriptionChr > 50){
-																					echo substr($list['description'], 0, 50).'...';
-																				}else{
-																					echo $list['description'];
-																				}
-																			?>
-																		</td>
-																		<td><?php echo $mStatus; ?></td>
-																		<td><?php echo '£'.number_format($list['milestone_amount'],2); ?></td>
-																		<td>
-																			<?php if($this->session->userdata('type')==1):?>
-																				<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modaltest">Deliver Work</button>
-																			<?php else: ?>
-																				<!--<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>-->
-																			<?php endif; ?>	
-																		</td>
-																	</tr>
-																<?php endforeach;?>
-															</tbody>
-														</table>
+																			<td><?php echo $mStatus; ?></td>
+																			<td><?php echo '£'.number_format($list['milestone_amount'],2); ?></td>
+																			<td>
+																				<?php if($this->session->userdata('type')==1):?>
+																					<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modaltest">Deliver Work</button>
+																				<?php else: ?>
+																					<!--<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>-->
+																				<?php endif; ?>	
+																			</td>
+																		</tr>
+																	<?php endforeach;?>
+																</tbody>
+															</table>
+														</div>
 													</div>													
 												</li>
 											<?php endif; ?>
@@ -886,44 +898,71 @@
 											<div class="col-md-12">
 												<table class="table table-striped">
 													<thead class="bg-gray">
-														<tr>
-															<th>Price <?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?></th>                     
-															<th class="text-right">
-																<?php echo '£'.number_format($order['total_price'],2); ?><?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?>
-															</th>
-														</tr>
-														<tr>
-															<th>Duration</th>                     
-															<th class="text-right">
-																<?php echo $duration.' Days'; ?>
-															</th>
-														</tr>
+														<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): $i=0;?>
+															<?php foreach($milestones as $list): $i++; ?>
+																<tr>
+																	<th colspan="2"><?php echo ordinal($i); ?> Milestone</th>
+																</tr>
+																<tr>
+																	<th>Milestone Name</th>
+																	<th class="text-right"><?php echo $list['milestone_name']; ?> </th>
+																</tr>
+																<tr>
+																	<th>Price <?php echo !empty($list['price_per_type']) ? '/'.$list['price_per_type'] : ''; ?></th>                     
+																	<th class="text-right">
+																		<?php echo '£'.number_format($list['milestone_amount'],2); ?><?php echo !empty($list['price_per_type']) ? '/'.$list['price_per_type'] : ''; ?>
+																	</th>
+																</tr>
+																<tr>
+																	<th>Duration</th>                     
+																	<th class="text-right">
+																		<?php echo $list['delivery'].' Days'; ?>
+																	</th>
+																</tr>
+																<tr>
+																	<th>Sub Total</th>                     
+																	<th class="text-right">
+																		<?php echo '£'.number_format($list['milestone_amount'],2); ?>
+																	</th>
+																</tr>
+															<?php endforeach; ?>
+														<?php else: ?>
+															<tr>
+																<th>Price <?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?></th>                     
+																<th class="text-right">
+																	<?php echo '£'.number_format($order['total_price'],2); ?><?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?>
+																</th>
+															</tr>
 
-														<?php if($order['is_custom'] == 1 && $order['order_type'] == 'single'|| $order['is_custom'] == 0): ?>
+															<tr>
+																<th>Duration</th>                     
+																<th class="text-right">
+																	<?php echo $duration.' Days'; ?>
+																</th>
+															</tr>
 															<tr>
 																<th>Quantity</th>
 																<th class="text-right">
 																	<?php echo $order['service_qty'];?>
 																</th>
-															</tr>	
-														<?php endif;?>
-														
-														<tr>
-															<th>Sub Total</th>                     
-															<th class="text-right">
-																<?php 
-																	$subTotal = $order['total_price'] - $order['service_fee'];
-																	echo '£'.number_format($subTotal,2); 
-																	?>
-															</th>
-														</tr>
+															</tr>															
+															<tr>
+																<th>Sub Total</th>                     
+																<th class="text-right">
+																	<?php 
+																		$subTotal = $order['total_price'] - $order['service_fee'];
+																		echo '£'.number_format($subTotal,2); 
+																		?>
+																</th>
+															</tr>
+														<?php endif; ?>	
+
 														<tr>
 															<th>Service Fee</th>
 															<th class="text-right">
 																<?php echo '£'.number_format($order['service_fee'],2); ?>
 															</th>
-														</tr>
-														
+														</tr>														
 														<tr>
 															<th>Total</th>                     
 															<th class="text-right">
