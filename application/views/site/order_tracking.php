@@ -661,11 +661,14 @@
 														<h4>Created Milestones</h4>
 														<table class="table">
 															<thead>
+																<th>Milestone Name</th>
 																<th>Delivery Date</th>
 																<th>Description</th>
 																<th>Status</th>
 																<th>Amount</th>
-																<th>Action</th>
+																<?php if($this->session->userdata('type')==1):?>
+																	<th>Action</th>
+																<?php endif; ?>	
 															</thead>
 															<tbody>
 																<?php foreach($milestones as $list):?>
@@ -699,6 +702,7 @@
 																		}
 																	?>
 																	<tr>
+																		<td><?php echo $list['milestone_name']; ?></td>
 																		<td>
 																			<?php
 																				$days = $list['delivery'];
@@ -724,7 +728,7 @@
 																			<?php if($this->session->userdata('type')==1):?>
 																				<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modaltest">Deliver Work</button>
 																			<?php else: ?>
-																				<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>
+																				<!--<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>-->
 																			<?php endif; ?>	
 																		</td>
 																	</tr>
@@ -843,37 +847,14 @@
 											<div class="col-md-12 pl-0">
 												<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
 											</div>
-											<!-- <div class="col-md-2 text-right pr-0">
-												<span>Total Price</span>
-											</div> -->
 											<?php if(!empty($order['description'])):?>
 												<div class="col-md-12 pl-0">
 													<?php echo $order['description']; ?>
 												</div>
 											<?php endif?>
-
-											<!--<div class="col-md-10 mt-3 pl-0">
-												<span>
-													Ordered From 
-													<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-														<?php echo $tradesman['trading_name']; ?>
-													</a>
-													<?php if(!empty($delivery_date)): ?>
-														| Delivery Date <?php echo $delivery_date; ?>
-													<?php endif;?>	
-												</span>
-											</div>
-											<div class="col-md-2 mt-3 text-right pr-0">
-												<span><b><?php echo '£'.number_format($order['total_price'],2); ?></b></span>
-											</div>-->
 										</div>
 										<div class="row pt-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
-											<!-- <div class="col-md-12 pl-0">
-												Order number: <?php echo $order['order_id']; ?>
-											</div> -->
 											<div class="col-md-12 pl-0">
-												<!-- <span>View billing history</span> -->
-
 												<?php if(!empty($attributes)): ?>
 													<b>Offer Includes</b>
 													<ul class="pl-4">
@@ -901,69 +882,55 @@
 												<?php endif;?>
 											</div>
 										</div>
-										<h4 class="mt-3 mb-0"><?php echo $service['service_name']; ?></h4>
 										<div class="row mt-3">
 											<div class="col-md-12">
 												<table class="table table-striped">
 													<thead class="bg-gray">
-														<!--<tr>
-															<td colspan="4">
-																<b>Your Order</b>
-																<span class="ml-2" style="font-size:12px;">
-																	<i><?php echo $created_date; ?></i>
-																</span>
-															</td>
-														</tr>-->
 														<tr>
-															<th>Item</th>                     
-															<th>Qty</th>                     
-															<th class="text-right">Duration</th> 
-															<th class="text-right">Price</th>                                                 
+															<th>Price <?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?></th>                     
+															<th class="text-right">
+																<?php echo '£'.number_format($order['total_price'],2); ?><?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?>
+															</th>
 														</tr>
-													</thead>
-													<tbody>
 														<tr>
-															<td>
-																<b><?php echo $service['service_name']; ?></b>
-															</td>
-															<td class="text-center">
-																<?php echo $order['service_qty'];?>
-															</td>
-															<td class="text-right"><?php echo $duration.' Days'; ?></td>
-															<td class="text-right"><?php echo '£'.number_format($order['total_price'],2); ?></td>
-														</tr>                                        	
-													</tbody>
-													<tfoot>
-														<tr class="bg-gray">
-															<td><b>Sub Total</b></td>
-															<td colspan="3" class="text-right">
-																<b>
-																	<?php 
+															<th>Duration</th>                     
+															<th class="text-right">
+																<?php echo $duration.' Days'; ?>
+															</th>
+														</tr>
+
+														<?php if($order['is_custom'] == 1 && $order['order_type'] == 'single'|| $order['is_custom'] == 0): ?>
+															<tr>
+																<th>Quantity</th>
+																<th class="text-right">
+																	<?php echo $order['service_qty'];?>
+																</th>
+															</tr>	
+														<?php endif;?>
+														
+														<tr>
+															<th>Sub Total</th>                     
+															<th class="text-right">
+																<?php 
 																	$subTotal = $order['total_price'] - $order['service_fee'];
 																	echo '£'.number_format($subTotal,2); 
 																	?>
-																</b>
-															</td>
+															</th>
 														</tr>
-														<tr class="bg-gray">
-															<td><b>Service Fee</b></td>
-															<td colspan="3" class="text-right">
-																<b>
-																	<?php echo '£'.number_format($order['service_fee'],2); ?>
-																</b>
-															</td>
+														<tr>
+															<th>Service Fee</th>
+															<th class="text-right">
+																<?php echo '£'.number_format($order['service_fee'],2); ?>
+															</th>
 														</tr>
-														<tr class="bg-gray">
-															<td>
-																<b>Total</b>
-															</td>
-															<td colspan="3" class="text-right">
-																<b>
-																	<?php echo '£'.number_format($order['total_price'],2); ?>
-																</b>
-															</td>
+														
+														<tr>
+															<th>Total</th>                     
+															<th class="text-right">
+																<?php echo '£'.number_format($order['total_price'],2); ?>
+															</th>
 														</tr>
-													</tfoot>
+													</thead>
 												</table>
 											</div>
 										</div>

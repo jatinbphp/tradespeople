@@ -108,26 +108,10 @@
 													<div class="error" id="milestone_name_error"></div>
 												</div>
 											</div>
-											<!--<div class="col-sm-3">
-												<div class="form-group">
-													<label>Revisions (optional)</label>
-													<select class="form-control" name="revisions">
-														<option value="">Please Select</option>
-														<option value="0">0</option>
-														<option value="1">1</option>
-														<option value="2">2</option>
-													</select>
-												</div>
-											</div>-->
 											<div class="col-sm-3">
 												<div class="form-group">
 													<label>Delivery</label>
-													<select class="form-control" name="milestone_delivery" id="milestone_delivery">
-														<option value="">Please Select</option>
-														<option value="3">3 days</option>
-														<option value="6">6 days</option>
-														<option value="9">9 days</option>
-													</select>
+													<input type="number" class="form-control" name="milestone_delivery" id="milestone_delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter Delivery Days">
 													<div class="error" id="milestone_delivery_error"></div>
 												</div>
 											</div>
@@ -185,26 +169,10 @@
 
 		<div class="box-bg regular_div" style="display: <?php echo isset($pMethod) && $pMethod == 1 ? 'block' : 'none'?>;">
 			<div class="row">
-				<!--<div class="col-sm-3">
-					<div class="form-group">
-						<label>Revisions (optional)</label>
-						<select class="form-control" name="revisions">
-							<option value="">Please Select</option>
-							<option value="0">0</option>
-							<option value="1">1</option>
-							<option value="2">2</option>
-						</select>
-					</div>
-				</div>-->
 				<div class="col-sm-3">
 					<div class="form-group">
 						<label>Delivery</label>
-						<select class="form-control" name="delivery">
-							<option value="">Please Select</option>
-							<option value="3">3 days</option>
-							<option value="6">6 days</option>
-							<option value="9">9 days</option>
-						</select>
+						<input type="number" class="form-control" name="delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter Delivery Days">
 					</div>
 				</div>
 				<div class="col-sm-3">
