@@ -101,7 +101,7 @@
 								<div id="collapse<?php echo count($milestones); ?>" class="<?php if (count($milestones)>0) { ?>collapse<?php } else { ?>in<?php } ?>" data-parent="#accordion">
 									<div class="card-body">
 										<div class="row">
-											<div class="col-sm-3">
+											<div class="col-xs-3 col-sm-3">
 												<div class="form-group">
 													<label id="milestoneNumber">
 														<?php echo ordinal(count($milestones) + 1); ?> Milestone Name
@@ -110,14 +110,14 @@
 													<div class="error" id="milestone_name_error"></div>
 												</div>
 											</div>
-											<div class="col-sm-3">
+											<div class="col-xs-3 col-sm-3">
 												<div class="form-group">
-													<label>Delivery</label>
-													<input type="number" class="form-control" name="milestone_delivery" id="milestone_delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter Delivery Days">
+													<label>Delivery In</label>
+													<input type="number" class="form-control" name="milestone_delivery" id="milestone_delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="No. of Days">
 													<div class="error" id="milestone_delivery_error"></div>
 												</div>
 											</div>
-											<div class="col-sm-3">
+											<div class="col-xs-3 col-sm-3">
 												<div class="form-group">
 													<label>Price</label>
 													<input type="number" class="form-control" name="milestone_price" id="milestone_price" step="0.01" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter price">
@@ -125,7 +125,7 @@
 												</div>
 											</div>
 											<?php if($service_category['price_type'] == 1):?>
-												<div class="col-sm-3">
+												<div class="col-xs-3 col-sm-3">
 							              <label>Charge Per</label>
 						                <select class="form-control input-md" name="milestone_price_per_type" id="milestone_price_per_type">
 						                    <option value="">Please Select</option>
@@ -173,8 +173,8 @@
 			<div class="row">
 				<div class="col-sm-3">
 					<div class="form-group">
-						<label>Delivery</label>
-						<input type="number" class="form-control" name="delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter Delivery Days">
+						<label>Delivery In</label>
+						<input type="number" class="form-control" name="delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="No. of Days">
 					</div>
 				</div>
 				<div class="col-sm-3">
@@ -244,7 +244,7 @@
 					$premiumAtt = isset($package_data) && isset($package_data->premium->attributes) ? $package_data->premium->attributes : [];
 					$allAttributes = array_unique(array_merge($basicAtt, $standardAtt, $premiumAtt));
 				?>
-				<ul class="pl-0">
+				<ul class="pl-0 selectOffers">
 					<?php foreach($attributes as $key => $value):?>
 						<?php if(in_array($value['id'], $allAttributes)):?>
 							<li>

@@ -11649,3 +11649,8 @@ input:checked + .switch-slider:before {
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 }
+
+.selectOffers{
+    height: 150px;
+    overflow-y: auto;
+}

@@ -908,20 +908,20 @@
 																	<th class="text-right"><?php echo $list['milestone_name']; ?> </th>
 																</tr>
 																<tr>
-																	<th>Price <?php echo !empty($list['price_per_type']) ? '/'.$list['price_per_type'] : ''; ?></th>                     
-																	<th class="text-right">
+																	<th class="font-12">Price</th>                     
+																	<th class="text-right font-12">
 																		<?php echo '£'.number_format($list['milestone_amount'],2); ?><?php echo !empty($list['price_per_type']) ? '/'.$list['price_per_type'] : ''; ?>
 																	</th>
 																</tr>
 																<tr>
-																	<th>Duration</th>                     
-																	<th class="text-right">
+																	<th class="font-12">Duration</th>                     
+																	<th class="text-right font-12">
 																		<?php echo $list['delivery'].' Days'; ?>
 																	</th>
 																</tr>
 																<tr>
-																	<th>Sub Total</th>                     
-																	<th class="text-right">
+																	<th class="font-12">Sub Total</th>                     
+																	<th class="text-right font-12">
 																		<?php echo '£'.number_format($list['milestone_amount'],2); ?>
 																	</th>
 																</tr>

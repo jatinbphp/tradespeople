@@ -4411,7 +4411,7 @@ class Users extends CI_Controller
 			$data['requirements'] = [];
 
 			if($order['is_custom'] == 1){
-				$days = $order['status'] == 'offer_created' ? $order['offer_expires_days'] : $order['delivery'];
+				$days = $order['delivery'];
 				$currentDate = new DateTime($order['created_at']);			
 				$currentDate->modify("+$days days");
 				$delivery_date = $currentDate->format('D jS F, Y H:i');	

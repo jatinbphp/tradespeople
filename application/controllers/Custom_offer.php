@@ -184,7 +184,7 @@ class Custom_offer extends CI_Controller
 		$insert['service_id'] = $service_id;
 		$insert['description'] = $main_description;
 		$insert['service_fee'] = $setting['service_fees'];
-		$insert['status'] = 'offer_created';
+		$insert['status'] = 'create';
 
 		$latestOid = $this->session->userdata('latest_custom_order');
 

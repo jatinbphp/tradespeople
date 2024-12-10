@@ -364,6 +364,7 @@ function nextStep2(method){
     contentType: false,
     cache: false,
     success: function (resp) {
+      $("#great-offer2").hide();
       $('#customOfferModalBody').html(resp);
       $('#customOfferPopUp').modal('show');
     }
