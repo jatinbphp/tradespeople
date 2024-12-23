@@ -766,7 +766,7 @@ class Common_model extends CI_Model
 		}
 	}
 
-	public function get_all_data($table, $id = null, $ob = null, $obc = 'desc', $limit = null, $select = null)
+	public function get_all_data($table, $id = null, $ob = null, $obc = 'desc', $limit = null, $select = null, $joins = [])
 	{
 		if ($id) {
 			$this->db->where($id);
@@ -780,14 +780,24 @@ class Common_model extends CI_Model
 		if ($select) {
 			$this->db->select($select);
 		}
-		$query = $this->db->get($table);
+
+		$this->db->from($table);
+
+    // Add JOINs if provided
+    if (!empty($joins)) {
+        foreach ($joins as $join_table => $join_condition) {
+            $this->db->join($join_table, $join_condition);
+        }
+    }
+
+    $query = $this->db->get();
 
 		if ($query->num_rows()) {
 			return $query->result_array();
 		} else {
 			return array();
 		}
-	}
+	}	
 
 	public function get_single_data($table, $id = null)
 	{
@@ -3489,7 +3499,7 @@ class Common_model extends CI_Model
                            FROM $table so
                            LEFT JOIN users u ON so.user_id = u.id
                            LEFT JOIN my_services ms ON ms.id = so.service_id
-                           WHERE so.status NOT IN ('disputed','cancelled','completed') AND ms.user_id = $user_id
+                           WHERE so.status NOT IN ('create','disputed','cancelled','completed') AND ms.user_id = $user_id
                            ORDER BY so.id DESC
                            LIMIT 500");		
 		}else{
@@ -3497,7 +3507,7 @@ class Common_model extends CI_Model
                            FROM $table so
                            LEFT JOIN users u ON so.user_id = u.id
                            LEFT JOIN my_services ms ON ms.id = so.service_id
-                           WHERE so.status NOT IN ('disputed','cancelled','completed') AND ms.user_id = $user_id
+                           WHERE so.status NOT IN ('create','disputed','cancelled','completed') AND ms.user_id = $user_id
                            ORDER BY so.id DESC
                            LIMIT $limit");	
 		}
@@ -3505,10 +3515,10 @@ class Common_model extends CI_Model
 	}
 
 	public function getAllOrder($table, $user_id, $status='', $limit=0, $dashboard=0){
-		$statusWhere = '';		
+		$statusWhere = ' AND so.status NOT IN ("create")';
 
 		if ($dashboard == 1) {
-		    $statusWhere = ' AND so.status NOT IN ("disputed", "cancelled", "completed")';
+		    $statusWhere = ' AND so.status NOT IN ("create", "disputed", "cancelled", "completed")';
 		    $statusWhere .= ' AND so.is_review = 0';
 		}else{
 			if(!empty($status) && $status != 'all'){
@@ -3573,7 +3583,7 @@ class Common_model extends CI_Model
 			    JOIN
 			        my_services s ON so.service_id = s.id
 			    WHERE
-			        $tblPrefix.user_id = $user_id");
+			        $tblPrefix.user_id = $user_id AND so.status != 'create'");
 
 		return $query->row_array();
 	}
@@ -4007,7 +4017,17 @@ class Common_model extends CI_Model
 	}
 
 	public function getTotalMilestone($post_id){
-		$query = $this->db->query("SELECT SUM(milestone_amount) as mAmount, SUM(delivery) as totalDays  FROM tbl_milestones where post_id=$post_id AND milestone_type = 'service' order by id desc");
+		$query = $this->db->query("SELECT SUM(total_amount) as mAmount, SUM(delivery) as totalDays  FROM tbl_milestones where post_id=$post_id AND milestone_type = 'service' order by id desc");
+		return $query->result_array();
+	}
+
+	public function getCountMilestone($post_id){
+		$query = $this->db->query("SELECT COUNT(*) as total FROM tbl_milestones WHERE post_id = $post_id AND milestone_type = 'service'");
+		return $query->result_array();
+	}
+
+	public function getCountCompletedMilestone($post_id){
+		$query = $this->db->query("SELECT COUNT(*) as total FROM tbl_milestones WHERE post_id = $post_id AND milestone_type = 'service' AND status = 'completed'");
 		return $query->result_array();
 	}
 }

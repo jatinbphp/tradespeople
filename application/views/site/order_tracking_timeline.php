@@ -68,10 +68,15 @@
 						</span>
 					</h5>		
 				<?php else: ?>
-					<?php if($list['sender'] == $tradesman['id']): ?>
+					<?php if($list['milestone_id'] > 0):?>
+            <h4 class="mt-1 mb-0" style="width:100%;"> 
+            	<b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
+            </h4>
+          <?php endif;?>
+					<?php if($list['sender'] == $tradesman['id']): ?>						
 						<?php if($this->session->userdata('type')==1):?>
 							<?php if($list['status'] == 'delivered'):?>
-			            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
+									<h4 class="mt-1 mb-0"><b>Delivery <?php echo '#'.$total_deliveries1--; ?></b></h4>
 			            <h5>
 										You delivered your order 
 										<span class="text-muted" style="font-size: 12px;">
@@ -148,7 +153,7 @@
 							<?php endif;?>
 						<?php else:?>
 							<?php if($list['status'] == 'delivered'):?>
-			            <h4 class="mt-1 mb-0"><b>Deliver <?php echo '#'.$total_deliveries1--; ?></b></h4>
+									<h4 class="mt-1 mb-0"><b>Delivery <?php echo '#'.$total_deliveries1--; ?></b></h4>
 			            <h5>
 										<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
 											<?php echo $tradesman['trading_name']; ?>
@@ -310,7 +315,6 @@
 
 					<?php if(!empty($conAttachments)):?>
 						<h5 style="width: 100%; font-size: 15px;">Attachments</h5>
-
 						<div class="row other-post-view" id="con_attachments">
 							<?php foreach ($conAttachments as $con_key => $con_value): ?>
 								<?php $image_path = FCPATH . 'img/services/' . ($con_value['attachment'] ?? ''); ?>
@@ -380,10 +384,16 @@
 						</div>																
 				<?php endif;?>
 
-				<?php //if($this->session->userdata('type')==2 && $ckey == 0 && !in_array($list['status'],['disputed','request_modification','completed','cancelled','declined','withdraw_cancelled'])):?>
-				<?php if($this->session->userdata('type')==2 && $ckey == 0 && $order['status'] == 'delivered'):?>
-					<form id="approved_order_form" style="width:100%">
+				<?php 
+					$is_milestone = 0;
+					if($list['milestone_id'] && $list['milestone_id'] > 0 && $list['service_status'] == 'delivered'){
+						$is_milestone = 1;
+					}
+				?>
+				<?php if($this->session->userdata('type')==2 && ($order['status'] == 'delivered' && $ckey == 0 || $is_milestone == 1)):?>
+					<form id="approved_order_form_<?php echo $list['id']; ?>" style="width:100%">
 						<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
+						<input type="hidden" name="milestone_id" value="<?php echo $list['milestone_id']?>">
 						<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
 						<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
 						<input type="hidden" name="status" value="completed">
@@ -396,7 +406,7 @@
 					</p>
 
 					<div id="approved-btn-div">
-						<button type="button" id="approved-order-btn" class="btn btn-warning mr-3">
+						<button type="button" id="approved-order-btn" data-id="<?php echo $list['id']; ?>" class="btn btn-warning mr-3 approved-order-btn">
 							Approve
 						</button>
 						<button type="button" id="modification-btn" class="btn btn-default">
@@ -404,8 +414,9 @@
 						</button>
 					</div>
 					<div id="modification-div" style="display:none; width: 100%;">
-						<form id="request_modification_form">
+						<form id="request_modification_form_<?php echo $list['id']; ?>">
 							<input type="hidden" name="order_id" value="<?php echo $order['id']?>">
+							<input type="hidden" name="milestone_id" value="<?php echo $list['milestone_id']?>">
 							<input type="hidden" name="tradesman_id" value="<?php echo $tradesman['id']; ?>">
 							<input type="hidden" name="homeowner_id" value="<?php echo $user['id']?>">
 							<input type="hidden" name="status" value="request_modification">
@@ -425,7 +436,7 @@
 							<div class="row" id="previousModificationImg">
 							</div>
 							<div class="text-center">
-								<button type="button" onclick="submitModification('request_modification_form')" class="btn btn-warning mr-3">
+								<button type="button" onclick="submitModification('request_modification_form_<?php echo $list['id']; ?>')" class="btn btn-warning mr-3">
 									Submit request
 								</button>
 							</div>

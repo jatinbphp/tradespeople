@@ -75,8 +75,7 @@
 		.imgUp{margin-bottom:15px}
 		.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
 		.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
-		.boxImage img { height: 100%;object-fit: contain; border-radius: 10px;}
-		
+		.boxImage img { height: 100%;object-fit: contain; border-radius: 10px;}		
 		.videoPreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
 		.boxImage video { height: 100%;object-fit: contain;}
 
@@ -238,7 +237,7 @@
 
 		.timeline-item-description {
 			display: flex;
-			padding-top: 6px;
+			/*padding-top: 6px;*/
 			gap: 8px;
 			color: var(--c-grey-400);
 			flex-wrap: wrap;
@@ -568,7 +567,13 @@
 													<span class="pull-right">
 														<?php if($this->session->userdata('type')==1):?>
 															<?php if($order['status'] == 'request_modification'):?>
-																<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
+																<?php if($order['is_custom'] == 1):?>
+																	<?php if($order['order_type'] == 'single'):?>
+																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
+																	<?php endif;?>
+																<?php else:?>	
+																	<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
+																<?php endif; ?>
 															<?php endif; ?>
 
 															<?php if($order['status'] == 'active'):?>	
@@ -667,6 +672,9 @@
 
 											<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
 												<li class="timeline-item" id="milestoneList">
+													<span class="timeline-item-icon | faded-icon">
+														<i class="fa fa-clock-o faicon"></i>
+													</span>
 													<div style="max-width: 100%;">
 														<h4>Created Milestones</h4>
 														<div class="table-responsive">
@@ -674,6 +682,7 @@
 																<thead>
 																	<th>Milestone Name</th>
 																	<th>Delivery Date</th>
+																	<th>Unit</th>
 																	<th>Description</th>
 																	<th>Status</th>
 																	<th>Amount</th>
@@ -722,7 +731,8 @@
 																					$milestone_delivery_date = $currentDate->format('jS F, Y');	
 																					echo $milestone_delivery_date;
 																				?>																				
-																				</td>
+																			</td>
+																			<td><?php echo $list['quantity']; ?></td>
 																			<td>
 																				<?php 
 																					$totalDescriptionChr = strlen($list['description']);
@@ -737,12 +747,45 @@
 																			<td><?php echo '£'.number_format($list['milestone_amount'],2); ?></td>
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
-																					<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modaltest">Deliver Work</button>
+																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>
+																						<?php if(!in_array($list['service_status'],['delivered','request_modification','completed'])):?>
+																							<button type="button" class="btn btn-warning btn-sm milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>">
+																								Deliver Work
+																							</button>
+																						<?php elseif($list['service_status'] == 'request_modification'):?>	
+																							<button type="button" class="btn btn-warning milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>" >Re-deliver Work</button>
+																						<?php elseif($list['service_status'] == 'completed'):?>	
+																							<span class="text-info">Completed</span>
+																						<?php else:?>
+																							<span class="text-info">Delivered</span>
+																						<?php endif;?>
+																					<?php else:?>
+																							<span class="text-info">Awaiting Requirement</span>
+																					<?php endif;?>
 																				<?php else: ?>
 																					<!--<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>-->
 																				<?php endif; ?>	
 																			</td>
 																		</tr>
+																		<?php if(!empty($list['order_submit_conversation']) && count($list['order_submit_conversation']) > 0):?>
+																			<tr>
+																				<?php
+																					$colspan = 6;
+																					if($this->session->userdata('type')==1){
+																						$colspan = 7;
+																					}
+																				?>	
+																				<td colspan="<?php echo $colspan; ?> ">
+																					<h4 class="mt-1 mb-0" style="width:100%; cursor:pointer" onclick="togglemilestoneDeliveryData(<?php echo $list['id']?>);"> 
+																	          <b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
+																	          <i class="fa fa-angle-down pull-right"></i>
+																	        </h4>
+																	        <div class="mt-4" id="milestoneDeliveryData_<?php echo $list['id']?>" style="display:none; width: 100%; border-top: 1px solid #eee;">
+																						<?php include 'milestone_tracking_timeline.php'; ?>	
+																					</div>
+																				</td>
+																			</tr>
+																		<?php endif;?>	
 																	<?php endforeach;?>
 																</tbody>
 															</table>
@@ -751,7 +794,11 @@
 												</li>
 											<?php endif; ?>
 
-											<?php include 'order_tracking_timeline.php'; ?>
+											<?php
+												if($order['is_custom'] == 0 || $order['is_custom'] == 1 && $order['order_type'] == 'single' ){
+													include 'order_tracking_timeline.php';
+												}
+											?>
 
 											<?php if(!empty($delivery_date)):?>
 												<?php if($order['is_custom'] == 0):?>
@@ -859,15 +906,15 @@
 											<div class="col-md-12 pl-0">
 												<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
 											</div>
-											<?php if(!empty($order['description'])):?>
+											<?php if(!empty($description)):?>
 												<div class="col-md-12 pl-0">
-													<?php echo $order['description']; ?>
+													<?php echo $description; ?>
 												</div>
 											<?php endif?>
 										</div>
-										<div class="row pt-4 ml-0 mr-0" style="border-bottom:1px solid #f1f1f1; ">
+										<div class="row pt-4 ml-0 mr-0" <?php if(!empty($attributes) && !empty($order['offer_includes_ids']) || !empty($order['ex_services'])):?> style="border-bottom:1px solid #f1f1f1;" <?php endif;?> >
 											<div class="col-md-12 pl-0">
-												<?php if(!empty($attributes)): ?>
+												<?php if(!empty($attributes) && !empty($order['offer_includes_ids'])): ?>
 													<b>Offer Includes</b>
 													<ul class="pl-4">
 														<?php foreach($attributes as $att):?>
@@ -903,10 +950,10 @@
 																<tr>
 																	<th colspan="2"><?php echo ordinal($i); ?> Milestone</th>
 																</tr>
-																<tr>
+																<!--<tr>
 																	<th>Milestone Name</th>
 																	<th class="text-right"><?php echo $list['milestone_name']; ?> </th>
-																</tr>
+																</tr>-->
 																<tr>
 																	<th class="font-12">Price</th>                     
 																	<th class="text-right font-12">
@@ -914,23 +961,35 @@
 																	</th>
 																</tr>
 																<tr>
-																	<th class="font-12">Duration</th>                     
+																	<th class="font-12">Duration</th>
 																	<th class="text-right font-12">
 																		<?php echo $list['delivery'].' Days'; ?>
 																	</th>
 																</tr>
 																<tr>
+																	<th class="font-12">Total no. of <?php echo !empty($list['price_per_type']) ? $list['price_per_type'] : ''; ?></th>
+																	<th class="text-right font-12">
+																		<?php echo $list['quantity']; ?>
+																	</th>
+																</tr>
+																<tr>
 																	<th class="font-12">Sub Total</th>                     
 																	<th class="text-right font-12">
-																		<?php echo '£'.number_format($list['milestone_amount'],2); ?>
+																		<?php echo '£'.number_format($list['total_amount'],2); ?>
 																	</th>
 																</tr>
 															<?php endforeach; ?>
 														<?php else: ?>
 															<tr>
-																<th>Price <?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?></th>                     
+																<th>Price</th>                     
 																<th class="text-right">
-																	<?php echo '£'.number_format($order['total_price'],2); ?><?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?>
+																	<?php
+																		$servicePrice = $order['price'];
+																		if($order['is_custom'] == 1 && $order['order_type'] == 'single'){
+																			$servicePrice = $order['price'] / $order['service_qty'];
+																		}
+																	?>
+																	<?php echo '£'.number_format($servicePrice,2); ?><?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?>
 																</th>
 															</tr>
 
@@ -940,12 +999,14 @@
 																	<?php echo $duration.' Days'; ?>
 																</th>
 															</tr>
+
 															<tr>
-																<th>Quantity</th>
+																<th>Total no. of <?php echo !empty($order['price_per_type']) ? $order['price_per_type'] : ''; ?></th>
 																<th class="text-right">
-																	<?php echo $order['service_qty'];?>
+																	<?php echo $order['service_qty']; ?>
 																</th>
-															</tr>															
+															</tr>
+
 															<tr>
 																<th>Sub Total</th>                     
 																<th class="text-right">
@@ -1054,7 +1115,20 @@
 
 										<div class="timeline-div bg-white mt-4 p-4">
 											<ol class="timeline">
-												<?php include 'order_tracking_timeline.php'; ?>
+												<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
+													<?php foreach($milestones as $list):?>
+														<?php if(!empty($list['order_submit_conversation']) && count($list['order_submit_conversation']) > 0):?>
+															<h4 class="mt-1 mb-0"> 
+											          <b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
+											        </h4>
+											        <div class="mt-4">
+																<?php include 'milestone_tracking_timeline.php'; ?>	
+															</div>
+														<?php endif; ?>	
+													<?php endforeach;?>
+												<?php else: ?>	
+													<?php include 'order_tracking_timeline.php'; ?>
+												<?php endif; ?>
 											</ol>
 										</div>
 									<?php endif; ?>
@@ -1515,6 +1589,7 @@
 				<div class="modal-content">         	
 					<form method="post" id="order_submit_form" enctype="multipart/form-data">
 						<input type="hidden" name="orderId" id="orderId" value="<?php echo $order['id']; ?>">
+						<input type="hidden" name="milestoneId" id="milestoneId" value="0">
 						<div class="modal-header">
 							<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -1898,7 +1973,8 @@
 				});
 			}
 
-			$('#approved-order-btn').on('click', function(){
+			$('.approved-order-btn').on('click', function(){
+				var cId = $(this).data('id');
 				swal({
 					title: "Confirm?",
 					text: "Are you sure you want to approved this order?",
@@ -1907,7 +1983,7 @@
 					confirmButtonText: 'Yes, Approved',
 					cancelButtonText: 'Cancel'
 				}, function() {
-					submitModification('approved_order_form');
+					submitModification('approved_order_form_'+cId);
 				});
 			});
 
@@ -2203,6 +2279,11 @@
 		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 		}
 
+		function togglemilestoneDeliveryData(id){
+			$("#milestoneDeliveryData_"+id).slideToggle(); // Toggle the visibility with sliding effect
+		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+		}
+
 		function openChat(uId){
 			get_chat_onclick(uId, <?php echo $service['id'];?>);
 			showdiv();
@@ -2465,6 +2546,12 @@
       });
       return false;
    }
+
+   $('.milestoneBtn').on('click', function(){
+   		var mId = $(this).data('mid');
+   		$('#milestoneId').val(mId);
+   		$('#order_submit_modal').modal('show');
+   });
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
 	

@@ -110,14 +110,14 @@
 													<div class="error" id="milestone_name_error"></div>
 												</div>
 											</div>
-											<div class="col-xs-3 col-sm-3">
+											<div class="col-xs-2 col-sm-2">
 												<div class="form-group">
 													<label>Delivery In</label>
 													<input type="number" class="form-control" name="milestone_delivery" id="milestone_delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="No. of Days">
 													<div class="error" id="milestone_delivery_error"></div>
 												</div>
 											</div>
-											<div class="col-xs-3 col-sm-3">
+											<div class="col-xs-2 col-sm-2">
 												<div class="form-group">
 													<label>Price</label>
 													<input type="number" class="form-control" name="milestone_price" id="milestone_price" step="0.01" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter price">
@@ -125,7 +125,7 @@
 												</div>
 											</div>
 											<?php if($service_category['price_type'] == 1):?>
-												<div class="col-xs-3 col-sm-3">
+												<div class="col-xs-2 col-sm-2">
 							              <label>Charge Per</label>
 						                <select class="form-control input-md" name="milestone_price_per_type" id="milestone_price_per_type">
 						                    <option value="">Please Select</option>
@@ -143,6 +143,13 @@
 						                <div class="error" id="price_per_type_error"></div>
 							          </div>
 							     		<?php endif; ?>
+
+							     		<div class="col-xs-3 col-sm-3">
+												<div class="form-group">
+													<label id="milestoneTotalLabel">Total no. of</label>
+													<input type="number" class="form-control" name="mQuantity" id="milestoneQty" min="1" step="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Total no. of">
+												</div>
+											</div>
 										</div>
 
 										<div class="row">
@@ -205,8 +212,8 @@
 
 		 		<div class="col-sm-3">
 					<div class="form-group">
-						<label>Quantity</label>
-						<input type="number" class="form-control" name="quantity" min="1" step="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter quantity">
+						<label id="totalLabel">Total no. of</label>
+						<input type="number" class="form-control" name="quantity" id="quantity" min="1" step="1" pattern="^\d+(\.\d{1,2})?$" placeholder="Total no. of">
 					</div>
 				</div>
 			</div>
@@ -263,6 +270,6 @@
 </div>
   <div class="modal-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      <button class="btn btn-warning sendbtn1" type="submit">Send Offer</button>
+      <button class="btn btn-warning sendbtn1" type="submit">Send Offer</button>      
   </div>
 </form>

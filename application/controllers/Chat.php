@@ -314,6 +314,11 @@ class Chat extends CI_Controller
 				if($job_data['direct_hired']==0 || ($get_plan_bids && $get_plan_bids['up_status']==1 && strtotime($get_plan_bids['up_enddate'])>=strtotime(date('Y-m-d')) || $get_plan_bids['valid_type']==1) || $get_chat_paid){
 				
 					$get_users=$this->common_model->get_single_data('users',array('id'=>$_REQUEST['id']));
+
+					$uName = $get_users['type'] == 1 ? $get_users['trading_name'] : $get_users['f_name'].' '.$get_users['l_name'];
+
+					$uName = $get_users['type'] == 1 ? $get_users['trading_name'] : $get_users['f_name'].' '.$get_users['l_name'];
+
 					$userid=$this->session->userdata('user_id');
 					$get_chats=$this->common_model->get_all_chats($_REQUEST['id'],$userid,$_REQUEST['post']);
 
@@ -343,7 +348,7 @@ class Chat extends CI_Controller
 						}							
 					}					
 
-					$json['userdetail'] .= '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
+					$json['userdetail'] .= '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$uName.'</span></a>'.$serviceName.'</span></h4>';
 					$json['data']='';
 				
 					if($get_chats) {
@@ -371,7 +376,7 @@ class Chat extends CI_Controller
 
 							} else {
 					
-								$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
+								$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['trading_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 							}								 
 						}
 					}else {
@@ -380,6 +385,7 @@ class Chat extends CI_Controller
 					$json['status']=1;
 				} else {
 					$get_users=$this->common_model->get_single_data('users',array('id'=>$_REQUEST['id']));
+					$uName = $get_users['type'] == 1 ? $get_users['trading_name'] : $get_users['f_name'].' '.$get_users['l_name'];
 					$userid=$this->session->userdata('user_id');
 				
 					if($get_users['profile']) {
@@ -391,12 +397,13 @@ class Chat extends CI_Controller
 
 					$json['userdetail'] =   '';
 				
-					$json['userdetail'] .=  '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
+					$json['userdetail'] .=  '<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$uName.'</span></a>'.$serviceName.'</span></h4>';
 					$json['status']=0;
 					$json['data'] .= '<div class="alert alert-warning">To start chat please buy a plan.</div><div class="row"><div class="col-sm-4"></div><div class="col-sm-4"><a href="javascript:void(0);" data-target="#chat_payment_model" data-toggle="modal" class="btn btn-primary">Buy Now</a></div><div class="col-sm-4"></div></div>';
 				}
 			}else{
 				$get_users=$this->common_model->get_single_data('users',array('id'=>$_REQUEST['id']));
+				$uName = $get_users['type'] == 1 ? $get_users['trading_name'] : $get_users['f_name'].' '.$get_users['l_name'];
 				$userid=$this->session->userdata('user_id');
 				$get_chats=$this->common_model->get_all_chats($_REQUEST['id'],$userid,$_REQUEST['post']);
 		
@@ -426,7 +433,7 @@ class Chat extends CI_Controller
 					}							
 				}
 
-				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
+				$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$uName.'</span></a>'.$serviceName.'</span></h4>';
 				$json['data']='';
 			
 				if($get_chats) {
@@ -452,7 +459,7 @@ class Chat extends CI_Controller
 						if($row['sender_id']==$userid) {
 							$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 						} else {				
-							$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
+							$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['trading_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 						}							 
 					}
 				}else {
@@ -462,6 +469,7 @@ class Chat extends CI_Controller
 			}
 		} else {
 			$get_users=$this->common_model->get_single_data('users',array('id'=>$_REQUEST['id']));
+			$uName = $get_users['type'] == 1 ? $get_users['trading_name'] : $get_users['f_name'].' '.$get_users['l_name'];
 			$userid=$this->session->userdata('user_id');
 			$get_chats=$this->common_model->get_all_chats($_REQUEST['id'],$userid,$_REQUEST['post']);
 	
@@ -491,7 +499,7 @@ class Chat extends CI_Controller
 				}
 			}
 
-			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$get_users['f_name'].' '.$get_users['l_name'].'</span></a>'.$serviceName.'</span></h4>';
+			$json['userdetail'] .= 	'<h4 class="mine_headr"><span id="image"><a href="'.site_url().'profile/'.$get_users['id'].'"><img src="'.site_url().'img/profile/'.$us_profile.'"></a></span><span><a href="'.site_url().'profile/'.$get_users['id'].'"><span id="chatername" style="color:#fff;">'.$uName.'</span></a>'.$serviceName.'</span></h4>';
 			$json['data']='';
 	
 			if($get_chats){
@@ -516,7 +524,7 @@ class Chat extends CI_Controller
 					if($row['sender_id']==$userid) {
 						$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 					} else {		
-						$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
+						$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['trading_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 					}					 
 				}
 			}else {
@@ -1401,19 +1409,17 @@ class Chat extends CI_Controller
 				$route2 = site_url().'serviceCheckout?offer='.$oIds;
 
 				$attributesArray = [];
-				if($order['offer_includes'] == 1){
-					if(!empty($order['offer_includes_ids'])){
+				if(!empty($order['offer_includes_ids'])){
 						$attributes = json_decode($order['offer_includes_ids'], true);
 						foreach ($attributes as $key => $value) {
 							if(!empty($value)){
 								foreach($value as $v){
 									$attributesArray[] = $v;
 								}
-							}							
+							}
 						}
-					}					
-				}
-				
+					}
+
 				$attributesArray = array_unique($attributesArray);
 				
 				$selectedAttr = '';
@@ -1439,7 +1445,7 @@ class Chat extends CI_Controller
 											</div>
 											<div class="offer-btn">
 											<a href="'.$route1.'">View Offer</a>
-											<a href="javascript:void(0)" data-url="'.$route2.'" class="btn btn-primary accept-offer-chat-btn" onclick="acceptCustomOffer(this)">Accept Offer</a>
+											<a href="javascript:void(0)" data-url="'.$route2.'" class="btn btn-warning accept-offer-chat-btn" onclick="acceptCustomOffer(this)">Accept Offer</a>
 											</div>
 											</div>';	
 			}								

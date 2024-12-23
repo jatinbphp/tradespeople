@@ -175,6 +175,7 @@ class Custom_offer extends CI_Controller
 		$delivery = $this->input->post('delivery');		
 		$description = $this->input->post('description');		
 		$price_per_type = $this->input->post('price_per_type');	
+		$quantity = $this->input->post('quantity');	
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 
 		$insert['is_custom'] = 1;
@@ -196,7 +197,10 @@ class Custom_offer extends CI_Controller
 			$this->session->set_userdata('latest_custom_order',$newOrder);
 		}
 
+		$totalMilestone = $this->common_model->getCountMilestone($newOrder);
+
 		$data1 = [
+			'milestone_level' => $totalMilestone[0]['total'] + 1,
 			'milestone_type' => 'service',
 			'milestone_name' => $name,
 			'milestone_amount' => $price,
@@ -209,6 +213,10 @@ class Custom_offer extends CI_Controller
 			'description' => $description,
 			'delivery' => $delivery,
 			'price_per_type' => $price_per_type,
+			'quantity' => $quantity,
+			'service_status' => 'offer_created',
+			'service_previous_status' => 'offer_created',
+			'total_amount' => $price * $quantity,
 		];
 
 		$run = $this->common_model->insert('tbl_milestones',$data1);

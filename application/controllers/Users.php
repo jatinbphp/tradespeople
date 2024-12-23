@@ -3743,26 +3743,41 @@ class Users extends CI_Controller
 
 	public function submitProject(){
 		$oId = $this->input->post('orderId');
+		$mId = $this->input->post('milestoneId');
 		$tuser_id = $this->session->userdata('user_id');
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		$milestone = $this->common_model->GetSingleData('tbl_milestones',['id'=>$mId]);
 		if(!empty($serviceOrder)){
+			$milestone = $this->common_model->GetSingleData('tbl_milestones',['id'=>$mId]);
+
+
 			$input['status'] = 'delivered';
 			$input['previous_status'] = 'delivered';
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
+			if($mId > 0){
+				$inputMilestone['service_status'] = $input['status'];
+				$inputMilestone['service_previous_status'] = $input['previous_status'];
+				$inputMilestone['status_update_time'] = $input['status_update_time'];
+				$this->common_model->update('tbl_milestones',array('id'=>$mId),$inputMilestone);	
+			}			
 
 			/*Manage Order History*/
-            $insert1 = [
-	            'user_id' => $tuser_id,
-	            'service_id' => $serviceOrder['service_id'],
-	            'order_id' => $oId,
-	            'status' => 'delivered'
-	        ];
-	        $this->common_model->insert('service_order_status_history', $insert1);
+      $insert1 = [
+          'user_id' => $tuser_id,
+          'service_id' => $serviceOrder['service_id'],
+          'order_id' => $oId,
+          'milestone_id' => $mId,
+          'milestone_level' => $mId > 0 ? $milestone['milestone_level'] : 0,
+          'status' => 'delivered'
+      ];
+      $this->common_model->insert('service_order_status_history', $insert1);
 
 			$insert['sender'] = $tuser_id;
 			$insert['receiver'] = $serviceOrder['user_id'];
 			$insert['order_id'] = $oId;
+			$insert['milestone_id'] = $mId;
+			$insert['milestone_level'] = $mId > 0 ? $milestone['milestone_level'] : 0;
 			$insert['status'] = 'delivered';
 			$insert['description'] = $this->input->post('description');
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
@@ -4455,8 +4470,10 @@ class Users extends CI_Controller
 			$data['created_date'] = $ocDate->format('D jS F, Y H:i');
 
 			if($order['is_custom'] == 0){
+				$data['description'] = $package_data[$order['package_type']]['description'];
 				$attributesArray = $package_data[$order['package_type']]['attributes'];
 			}else{
+				$data['description'] = $order['description'];
 				if(!empty($order['offer_includes_ids'])){
 					$attributes = json_decode($order['offer_includes_ids'], true);
 					foreach ($attributes as $key => $value) {
@@ -4485,7 +4502,23 @@ class Users extends CI_Controller
 			$data['selectedExs'] = $existExs;
 			$data['conversation'] = $this->common_model->GetSingleData('order_submit_conversation',['order_id'=>$order['id']]);
 
-			$data['all_conversation']=$this->common_model->get_all_data('order_submit_conversation',['order_id'=>$order['id']],'id');
+			if($order['is_custom'] == 0 || ($order['is_custom'] == 1 && $order['order_type'] == 'single')){
+				$data['all_conversation'] = $this->common_model->get_all_data(
+			    'order_submit_conversation', 
+			    ['order_id' => $order['id']], 
+			    'order_submit_conversation.id');
+			}else{
+				$data['all_conversation'] = $this->common_model->get_all_data(
+			    'order_submit_conversation', 
+			    ['order_id' => $order['id']], 
+			    'order_submit_conversation.id', // Specify table name to avoid ambiguity
+			    'desc', 
+			    null, 
+			    'order_submit_conversation.*, tbl_milestones.milestone_name, tbl_milestones.service_status', // Example selected columns
+			    [
+			        'tbl_milestones' => 'order_submit_conversation.milestone_id = tbl_milestones.id'
+			    ]);	
+			}			
 
 			$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
 
@@ -4496,9 +4529,17 @@ class Users extends CI_Controller
 			$milestones = [];
 			if($order['is_custom'] == 1 && $order['order_type'] == 'milestone'){
 				$milestones = $this->common_model->get_all_data('tbl_milestones',['milestone_type'=>'service', 'post_id'=>$order['id']]);
+
+				foreach ($milestones as &$milestone) {
+			    $milestone['order_submit_conversation'] = $this->common_model->get_all_data('order_submit_conversation',['milestone_id' => $milestone['id']],'id');
+				}
 			}
 
 			$data['milestones'] = $milestones;
+
+			// echo '<pre>';
+			// print_r($data['milestones']);
+			// exit;
 			
 			$this->load->view('site/order_tracking',$data);
 		}else{
@@ -4673,10 +4714,12 @@ class Users extends CI_Controller
 
 	public function submitModification(){
 		$oId = $this->input->post('order_id');
+		$mId = $this->input->post('milestone_id');
 		$tuser_id = $this->input->post('tradesman_id');
 		$homeowner_id = $this->input->post('homeowner_id');
 		$status = $this->input->post('status');
 
+		$milestone = $this->common_model->GetSingleData('tbl_milestones',['id'=>$mId]);
 		$homeOwner = $this->common_model->GetSingleData('users',['id'=>$homeowner_id]);
     $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
     $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
@@ -4697,13 +4740,35 @@ class Users extends CI_Controller
 			}
 
 			$input['status'] = $status;
-			$input['previous_status'] = $status;
+			$input['previous_status'] = $serviceOrder['status'];
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
+			if($mId > 0){
+				// $mInput['status'] = $status;
+				$mInput['service_status'] = $status;
+				$mInput['service_previous_status'] = $serviceOrder['status'];
+				$mInput['status_update_time'] = $input['status_update_time'];
+				$this->common_model->update('tbl_milestones',array('id'=>$mId),$mInput);
+
+				$totleMilestone = $this->common_model->getCountMilestone($oId);
+				$totleCompletedMilestone = $this->common_model->getCountCompletedMilestone($oId);
+
+				if($totleMilestone == $totleCompletedMilestone){
+					$input['status'] = $serviceOrder['status'];
+					$this->common_model->update('service_order',array('id'=>$oId),$input);
+				}
+			}			
+
 			if($status != 'request_modification'){
 				$withdrawable_balance = $tradesman['withdrawable_balance'];
-				$update1['withdrawable_balance'] = $withdrawable_balance + $serviceOrder['price'];
+
+				if($mId > 0){
+					$update1['withdrawable_balance'] = $withdrawable_balance + $milestone['total_amount'];
+				}else{
+					$update1['withdrawable_balance'] = $withdrawable_balance + $serviceOrder['price'];	
+				}				
+
 				$runss1 = $this->common_model->update('users',array('id'=>$tradesman['id']),$update1);
 
 				$transactionid = md5(rand(1000,999).time());
@@ -4726,6 +4791,8 @@ class Users extends CI_Controller
         'user_id' => $tuser_id,
         'service_id' => $serviceOrder['service_id'],
         'order_id' => $oId,
+        'milestone_id' => $mId,
+        'milestone_level' => $mId > 0 ? $milestone['milestone_level'] : 0,
         'status' => $status
       ];
       $this->common_model->insert('service_order_status_history', $insert1);
@@ -4733,6 +4800,8 @@ class Users extends CI_Controller
 			$insert['sender'] = $homeowner_id;
 			$insert['receiver'] = $tuser_id;			
 			$insert['order_id'] = $oId;
+			$insert['milestone_id'] = $mId;
+			$insert['milestone_level'] = $mId > 0 ? $milestone['milestone_level'] : 0;
 			$insert['status'] = $status;
 			$insert['description'] = $description;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);

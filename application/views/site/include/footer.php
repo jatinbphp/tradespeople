@@ -75,10 +75,59 @@
     </div>
 </div>
 
+<div class="modal fade" id="customOfferPreview" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="customOfferPreviewModalBody">
+          <div class="card-summary">
+            <div class="summary-box">
+              <div class="summary-box-heding">
+                <h4>Offer Summary</h4>
+              </div>
+
+              <div class="summary-feature-article">
+                <a href="<?php echo base_url().'service/'.$service_details['slug']?>">
+                  <img src="<?php echo base_url('img/default-image.jpg'); ?>" id="serviceImg" class="img-responsive">
+                  <span>
+                    <p class="text-muted" id="serviceDescription"></p>
+                  </span>
+                </a>
+              </div>
+              <ul>
+                <li>
+                  <p id="preiceType"></p> 
+                  <b id="customOfferPrice"></b>
+                </li>
+                <li>
+                  <p id="noOfType"></p> 
+                  <b id="typeQty"></b>
+                </li>
+                <li>
+                  <p>Total</p>
+                  <b id="offerTotalPrice"></b>  
+                </li>
+                <li style="font-size:14px;">
+                  <p>Delivered By</p>
+                  <b id="offerDeliveryDays" style="color:#4B8024"></b>  
+                </li>
+              </ul>
+              <div class="form-group" style="margin-top:15px;">
+                <div class="row">
+                  <div class="col-sm-12 text-center">                   
+                    <button class="btn btn-warning btn-lg sendbtn1" type="button" id="offerPreviewSend">
+                      Send Offer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
 <?php if($this->session->userdata('user_id') && $this->session->userdata('type')!=3){ ?>
 
-<div class="live-chat live-users" id="chat_user" style="display: none;" >
-        
+<div class="live-chat live-users" id="chat_user" style="display: none;" >        
   <header class="clearfix">
     <a href="#" class="chat-close">x</a> 
     <div id="userdetail">
@@ -1841,8 +1890,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  //setInterval(function(){ user_list_refresher(); }, 5000);
+  setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
@@ -2743,6 +2792,7 @@ $('#customOfferPopUp').on('shown.bs.modal', function() {
       }
       
       isValid &= validateCustomOfferField('#milestone_details', 'required', "Please enter a description");
+      isValid &= validateCustomOfferField('#milestoneQty', 'required', "Please enter a quantity");
 
       if ($('#milestone_price_per_type').val() === '') {
         $('#milestone_price_per_type').addClass('is-invalid');
@@ -2762,12 +2812,13 @@ $('#customOfferPopUp').on('shown.bs.modal', function() {
       var service_id = $('#service_id').val();
       var receiver_id = $('#receiver_id').val();
       var order_type = $('#orderType').val();
+      var quantity = $('#milestoneQty').val();
 
       if (isValid) {
         $.ajax({
           url: "<?php echo site_url('custom_offer/milestoneStore') ?>",
           type: 'POST',
-          data: {main_description:main_description,name:name,delivery:delivery,price:price,description:description,price_per_type:price_per_type,service_id:service_id,receiver_id:receiver_id,order_type:order_type},
+          data: {main_description:main_description,name:name,delivery:delivery,price:price,description:description,price_per_type:price_per_type,service_id:service_id,receiver_id:receiver_id,order_type:order_type,quantity:quantity},
           // dataType: 'json',
           beforeSend: function () {
             $(this).prop('disabled', true);
@@ -2788,5 +2839,17 @@ $('#customOfferPopUp').on('shown.bs.modal', function() {
         });
       }
     });
+  });
+
+  $('#customOfferModalBody').on('change', '#price_per_type', function (event) {
+    var perType = $(this).val();
+    $('#totalLabel').text('Total no. of '+perType);
+    $('#quantity').attr('placeholder', 'Total no. of '+perType);
+  });
+
+  $('#customOfferModalBody').on('change', '#milestone_price_per_type', function (event) {
+    var perType = $(this).val();
+    $('#milestoneTotalLabel').text('Total no. of '+perType);
+    $('#milestoneQty').attr('placeholder', 'Total no. of '+perType);
   });
 </script>  

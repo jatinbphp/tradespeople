@@ -3662,6 +3662,7 @@ a:focus
 }
 .chhhat_list .message-data {
 	padding-right: 55px;
+    /*padding-right: 42px;*/
 	position: relative;
 }
 .chhhat_list ul{
@@ -11536,7 +11537,7 @@ input:checked + .switch-slider:before {
 .single-payment-offer .error{font-weight: normal !important;}
 .message-order-description {
     padding: 3px 0 3px 0;
-    font-size: 10px;
+    font-size: 12px;
     display: flex;
     font-weight: 600;
     gap: 10px;
@@ -11594,7 +11595,8 @@ input:checked + .switch-slider:before {
 }
 .offer-btn {
     border-top: 1px solid #eee;
-    display: flex;
+/*    display: flex;*/
+    text-align: center;
     align-items: center;
     justify-content: end;
     padding-top: 5px;

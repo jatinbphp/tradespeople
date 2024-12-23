@@ -21,7 +21,7 @@
 					<?php echo $value['delivery'].' days'?>
 				</div>
 				<div class="col-md-3 text-right">
-					<?php echo '£'.number_format($value['milestone_amount'],2); ?>
+					<?php echo '£'.number_format($value['total_amount'],2); ?>
 				</div>
 			</div>
 		<?php endforeach; ?>
