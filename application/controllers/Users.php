@@ -4423,7 +4423,7 @@ class Users extends CI_Controller
 			$rHours = '';
 			$rMinutes = '';
 			$days = 0;
-			$data['requirements'] = [];
+			$data['requirements'] = $order['is_custom'] == 1 && $order['is_requirements'] == 0 ? [0=>''] : [];
 
 			if($order['is_custom'] == 1){
 				$days = $order['delivery'];

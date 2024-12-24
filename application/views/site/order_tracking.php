@@ -682,7 +682,7 @@
 																<thead>
 																	<th>Milestone Name</th>
 																	<th>Delivery Date</th>
-																	<th>Unit</th>
+																	<th>Total no. of <?php echo $milestones[0]['price_per_type']; ?></th>
 																	<th>Description</th>
 																	<th>Status</th>
 																	<th>Amount</th>
@@ -744,7 +744,7 @@
 																				?>
 																			</td>
 																			<td><?php echo $mStatus; ?></td>
-																			<td><?php echo '£'.number_format($list['milestone_amount'],2); ?></td>
+																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
 																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>
@@ -780,7 +780,7 @@
 																	          <b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
 																	          <i class="fa fa-angle-down pull-right"></i>
 																	        </h4>
-																	        <div class="mt-4" id="milestoneDeliveryData_<?php echo $list['id']?>" style="display:none; width: 100%; border-top: 1px solid #eee;">
+																	        <div class="mt-4" id="milestoneDeliveryData_<?php echo $list['id']?>" style="width: 100%; border-top: 1px solid #eee;">
 																						<?php include 'milestone_tracking_timeline.php'; ?>	
 																					</div>
 																				</td>
@@ -907,7 +907,7 @@
 												<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
 											</div>
 											<?php if(!empty($description)):?>
-												<div class="col-md-12 pl-0">
+												<div class="col-md-12 p-3" style="border: 1px solid #eee;">
 													<?php echo $description; ?>
 												</div>
 											<?php endif?>
@@ -1017,17 +1017,18 @@
 																</th>
 															</tr>
 														<?php endif; ?>	
-
+														<?php if($this->session->userdata('type')==2):?>
 														<tr>
 															<th>Service Fee</th>
 															<th class="text-right">
 																<?php echo '£'.number_format($order['service_fee'],2); ?>
 															</th>
-														</tr>														
+														</tr>
+													<?php endif; ?>
 														<tr>
 															<th>Total</th>                     
 															<th class="text-right">
-																<?php echo '£'.number_format($order['total_price'],2); ?>
+																<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
 															</th>
 														</tr>
 													</thead>
@@ -1271,7 +1272,7 @@
 										</li>
 										<li>
 											<p>Total Price</p>
-											<p><b><?php echo '£'.number_format($order['total_price'],2); ?></b></p>
+											<p><b><?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?></b></p>
 										</li>
 										<li class="mb-3">
 											<p>Order Number</p>

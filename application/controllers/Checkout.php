@@ -311,9 +311,11 @@ class Checkout extends CI_Controller
 		$pcode = $this->input->post('promo_code');
 		$payment_method = $this->input->post('payment_method');
 		$exOid = $this->input->post('exOid');
+		$is_requirements = 1;
 
 		if(!empty($exOid)){
 			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$exOid));
+			$is_requirements = $order['is_requirements'];
 		} 
 
 		$users = $this->common_model->get_single_data('users',array('id'=>$uId));
@@ -513,6 +515,7 @@ class Checkout extends CI_Controller
 				$data['status'] = 1;
 				$data['message'] = 'Your order placed succesfully';
 				$data['order_id'] = $newOrder;
+				$data['is_requirements'] = $is_requirements;
 				echo json_encode($data);
 				exit;
 			}else{
