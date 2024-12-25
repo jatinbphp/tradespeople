@@ -11644,6 +11644,11 @@ input:checked + .switch-slider:before {
     padding-right: 9px!important;
 }
 
+#milestoneDataTable {
+    table-layout: fixed;
+    width: 100%!important;
+}
+
 .table-responsive {
     display: block;
     width: 100%;
@@ -11655,4 +11660,17 @@ input:checked + .switch-slider:before {
 .selectOffers{
     height: 150px;
     overflow-y: auto;
+}
+
+.customMilestoneForm label{
+    font-size: 13px;
+}
+
+.milestoneTable th, td{
+    font-size: 13px;
+}
+
+.milestoneTable .btn-sm{
+    font-size: 10px;
+    padding: 5px 5px;
 }

@@ -99,7 +99,7 @@
 								</div>
 
 								<div id="collapse<?php echo count($milestones); ?>" class="<?php if (count($milestones)>0) { ?>collapse<?php } else { ?>in<?php } ?>" data-parent="#accordion">
-									<div class="card-body">
+									<div class="card-body customMilestoneForm">
 										<div class="row">
 											<div class="col-xs-3 col-sm-3">
 												<div class="form-group">
@@ -126,6 +126,7 @@
 											</div>
 											<?php if($service_category['price_type'] == 1):?>
 												<div class="col-xs-2 col-sm-2">
+													<div class="form-group">
 							              <label>Charge Per</label>
 						                <select class="form-control input-md" name="milestone_price_per_type" id="milestone_price_per_type">
 						                    <option value="">Please Select</option>
@@ -141,6 +142,7 @@
 						                    <?php endif;?>    
 						                </select>
 						                <div class="error" id="price_per_type_error"></div>
+						              </div>						                
 							          </div>
 							     		<?php endif; ?>
 

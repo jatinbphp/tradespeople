@@ -2578,52 +2578,6 @@ $(document).ready(function(){
       }
     });
   });
-  
-  let clip = document.querySelector(".serviceVideo") 
-  // clip.addEventListener("mouseover", function (e) { 
-  //     clip.play(); 
-  // }) 
-
-  // clip.addEventListener("mouseout", function (e) { 
-  //     clip.pause(); 
-  // })
-
-
-  const bar = document.getElementById('bar'),
-      video = document.getElementsByTagName('video')[0],
-      btn = document.getElementById('play-control-btn'),
-      totalLength = bar.getTotalLength();
-  let   playing = true;
-
-  const playVideo = () => {
-    playing = true;
-    btn.classList.add("playing");
-    video.play();
-  }
-
-  const pauseVideo = () => {
-    playing = false;
-    btn.classList.remove("playing");
-    video.pause();
-  }
-
-  bar.setAttribute('stroke-dasharray', totalLength);
-  bar.setAttribute('stroke-dashoffset', totalLength);
-
-  video.addEventListener("timeupdate", () => {
-    const currentTime = video.currentTime,
-          duration = video.duration,
-          calc = totalLength - ( currentTime / duration * totalLength );
-
-    bar.setAttribute('stroke-dashoffset', calc);
-  });
-
-  video.addEventListener("ended", () => {
-    pauseVideo();
-    video.currentTime = 0;
-  });
-
-  video.addEventListener("mouseover", () => playing ? pauseVideo() : playVideo());
 </script>
 
 <?php 

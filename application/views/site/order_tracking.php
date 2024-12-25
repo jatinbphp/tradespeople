@@ -120,7 +120,7 @@
 		}
 
 		.timeline {
-			width: 85%;
+			width: 95%;
 			max-width: 700px;
 			margin-left: auto;
 			margin-right: auto;
@@ -677,14 +677,13 @@
 													</span>
 													<div style="max-width: 100%;">
 														<h4>Created Milestones</h4>
-														<div class="table-responsive">
-															<table class="table">
+														<div class="">
+															<table class="table milestoneTable table-responsive nowrap" id="milestoneDataTable">
 																<thead>
 																	<th>Milestone Name</th>
 																	<th>Delivery Date</th>
 																	<th>Total no. of <?php echo $milestones[0]['price_per_type']; ?></th>
 																	<th>Description</th>
-																	<th>Status</th>
 																	<th>Amount</th>
 																	<?php if($this->session->userdata('type')==1):?>
 																		<th>Action</th>
@@ -692,35 +691,6 @@
 																</thead>
 																<tbody>
 																	<?php foreach($milestones as $list):?>
-																		<?php 
-																			if($list['status'] == 0){
-																				$mStatus = 'Pending';
-																			}
-																			if($list['status'] == 1){
-																				$mStatus = 'Escrow';
-																			}
-																			if($list['status'] == 2){
-																				$mStatus = 'Release';
-																			}
-																			if($list['status'] == 3){
-																				$mStatus = 'Requested';
-																			}
-																			if($list['status'] == 4){
-																				$mStatus = 'Cancelled';
-																			}
-																			if($list['status'] == 5){
-																				$mStatus = 'Dispute';
-																			}
-																			if($list['status'] == 6){
-																				$mStatus = 'Resolved';
-																			}
-																			if($list['status'] == 7){
-																				$mStatus = 'Approved';
-																			}
-																			if($list['status'] == 8){
-																				$mStatus = 'Declined';
-																			}
-																		?>
 																		<tr>
 																			<td><?php echo $list['milestone_name']; ?></td>
 																			<td>
@@ -743,7 +713,6 @@
 																					}
 																				?>
 																			</td>
-																			<td><?php echo $mStatus; ?></td>
 																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
@@ -1028,7 +997,11 @@
 														<tr>
 															<th>Total</th>                     
 															<th class="text-right">
-																<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
+																<?php if($this->session->userdata('type')==2):?>
+																	<?php echo '£'.number_format($order['total_price'],2); ?>
+																<?php else:?>	
+																	<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
+																<?php endif;?>
 															</th>
 														</tr>
 													</thead>
@@ -1272,7 +1245,15 @@
 										</li>
 										<li>
 											<p>Total Price</p>
-											<p><b><?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?></b></p>
+											<p>
+												<b>
+													<?php if($this->session->userdata('type')==2):?>
+														<?php echo '£'.number_format($order['total_price'],2); ?>
+													<?php else:?>	
+														<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
+													<?php endif;?>	
+												</b>
+											</p>
 										</li>
 										<li class="mb-3">
 											<p>Order Number</p>
@@ -1627,9 +1608,27 @@
 	</div>
 
 	<?php include 'include/footer.php'; ?>
-	
+
+	<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 	<script>
 		$(document).ready(function () {
+			$('#milestoneDataTable').DataTable({
+	      paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+	      responsive: true,
+	      columnDefs: [
+            { width: "10%", targets: 0 },
+            { width: "15%", targets: 1 },
+            { width: "10%", targets: 2 },
+            { width: "30%", targets: 3 },
+            { width: "15%", targets: 4 },
+            { width: "10%", targets: 5 },
+        ]
+	    });
+
 			$.validator.addMethod("requiredHidden", function(value, element) {
 		        return $(element).val() !== ""; // Validate that the value is not empty
 		    }, "This field is required.");
