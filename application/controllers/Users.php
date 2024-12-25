@@ -4724,18 +4724,20 @@ class Users extends CI_Controller
     $tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
     $service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		$is_review = 0;
 		
 		if(!empty($serviceOrder)){
 			if($status == 'request_modification'){
 				$description = $this->input->post('modification_decription');
 				$subject = "You received request of modification for order number: “".$serviceOrder['order_id']."”";
 				$flashMsg = 'Modification Request Submited';
-				$flashErrMsg = 'Modification Request Not Submitted';
+				$flashErrMsg = 'Modification Request Not Submitted';				
 			}else{
 				$description = $this->input->post('approve_decription');
 				$subject = "Order approved for order number: “".$serviceOrder['order_id']."”"; 
 				$flashMsg = 'Order Approved';
 				$flashErrMsg = 'Order Not Approved';
+				$is_review = $mId == 0 ? 1 : 0;
 				$this->session->set_userdata('completedFlashMessage',1);
 			}
 
@@ -4754,11 +4756,12 @@ class Users extends CI_Controller
 				$totleMilestone = $this->common_model->getCountMilestone($oId);
 				$totleCompletedMilestone = $this->common_model->getCountCompletedMilestone($oId);
 
-				if($totleMilestone == $totleCompletedMilestone){
-					$input['status'] = $serviceOrder['status'];
+				if($totleMilestone == $totleCompletedMilestone && $status == 'completed'){
+					$input['status'] = $status;
 					$this->common_model->update('service_order',array('id'=>$oId),$input);
+					$is_review = 1;
 				}
-			}			
+			}
 
 			if($status != 'request_modification'){
 				$withdrawable_balance = $tradesman['withdrawable_balance'];
@@ -4826,7 +4829,7 @@ class Users extends CI_Controller
           $this->common_model->send_mail($tradesman['email'],$subject,$html);
         }		        
 			}
-			echo json_encode(['status' => 'success', 'message' => $flashMsg]);
+			echo json_encode(['status' => 'success', 'message' => $flashMsg, 'is_review' => $is_review]);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => $flashErrMsg]);
 		}

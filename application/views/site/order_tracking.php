@@ -2012,7 +2012,8 @@
 								window.location.href = '<?php echo base_url().'login'; ?>';
 							});	
 						}else{
-							if(frmId == 'approved_order_form'){
+							//if(frmId == 'approved_order_form'){
+							if(result.is_review == 1){
 								window.location.href = '<?php echo base_url().'orderCompleted/'.$order['id']; ?>';
 							}else{
 								swal({
@@ -2050,6 +2051,7 @@
 				cancelOffer();
 			});
 		});
+
 		$('#withdraw-offer-btn').on('click', function(){
 			swal({
 				title: "Confirm?",

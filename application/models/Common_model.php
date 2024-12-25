@@ -4027,7 +4027,7 @@ class Common_model extends CI_Model
 	}
 
 	public function getCountCompletedMilestone($post_id){
-		$query = $this->db->query("SELECT COUNT(*) as total FROM tbl_milestones WHERE post_id = $post_id AND milestone_type = 'service' AND status = 'completed'");
+		$query = $this->db->query("SELECT COUNT(*) as total FROM tbl_milestones WHERE post_id = $post_id AND milestone_type = 'service' AND service_status = 'completed'");
 		return $query->result_array();
 	}
 }
