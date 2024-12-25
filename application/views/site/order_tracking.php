@@ -678,7 +678,7 @@
 													<div style="max-width: 100%;">
 														<h4>Created Milestones</h4>
 														<div class="">
-															<table class="table milestoneTable table-responsive nowrap" id="milestoneDataTable">
+															<table class="table milestoneTable table-responsive nowrap">
 																<thead>
 																	<th>Milestone Name</th>
 																	<th>Delivery Date</th>
@@ -740,15 +740,12 @@
 																			<tr>
 																				<?php
 																					$colspan = 6;
-																					if($this->session->userdata('type')==1){
-																						$colspan = 7;
-																					}
 																				?>	
-																				<td colspan="<?php echo $colspan; ?> ">
-																					<h4 class="mt-1 mb-0" style="width:100%; cursor:pointer" onclick="togglemilestoneDeliveryData(<?php echo $list['id']?>);"> 
+																				<td colspan="6" class="pl-0">
+																					<h6 class="mt-1 mb-0" style="width:100%; cursor:pointer" onclick="togglemilestoneDeliveryData(<?php echo $list['id']?>);"> 
 																	          <b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
 																	          <i class="fa fa-angle-down pull-right"></i>
-																	        </h4>
+																	        </h6>
 																	        <div class="mt-4" id="milestoneDeliveryData_<?php echo $list['id']?>" style="width: 100%; border-top: 1px solid #eee;">
 																						<?php include 'milestone_tracking_timeline.php'; ?>	
 																					</div>
@@ -2547,11 +2544,11 @@
       return false;
    }
 
-   $('.milestoneBtn').on('click', function(){
-   		var mId = $(this).data('mid');
-   		$('#milestoneId').val(mId);
-   		$('#order_submit_modal').modal('show');
-   });
+	$('.milestoneBtn').on('click', function(){
+   	var mId = $(this).data('mid');
+   	$('#milestoneId').val(mId);
+   	$('#order_submit_modal').modal('show');
+  });
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
 	

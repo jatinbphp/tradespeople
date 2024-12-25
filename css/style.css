@@ -10181,7 +10181,7 @@ button.switch-month:hover {
 .pb-4 { padding-bottom: 1.5rem; }
 .pb-5 { padding-bottom: 3rem; }
 
-.pl-0 { padding-left: 0; }
+.pl-0 { padding-left: 0!important; }
 .pl-1 { padding-left: 0.25rem; }
 .pl-2 { padding-left: 0.5rem; }
 .pl-3 { padding-left: 1rem; }
@@ -11666,6 +11666,10 @@ input:checked + .switch-slider:before {
     font-size: 13px;
 }
 
+.milestoneTable thead tr th{
+    white-space: nowrap;
+}
+
 .milestoneTable th, td{
     font-size: 13px;
 }
@@ -11673,4 +11677,8 @@ input:checked + .switch-slider:before {
 .milestoneTable .btn-sm{
     font-size: 10px;
     padding: 5px 5px;
+}
+
+.milestoneTable h4, h5, span{
+    font-size: 13px!important;
 }
