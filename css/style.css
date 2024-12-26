@@ -3700,6 +3700,7 @@ a:focus
 	margin-top: 0;
 	padding: 2px 5px;
 	word-break: break-word;
+    font-size: 13px;
 }
 .other-message .message-data {
 	padding-left: 55px;
@@ -11536,8 +11537,8 @@ input:checked + .switch-slider:before {
 }
 .single-payment-offer .error{font-weight: normal !important;}
 .message-order-description {
-    padding: 3px 0 3px 0;
-    font-size: 12px;
+    padding: 0 0 3px 0;
+    font-size: 13px;
     display: flex;
     font-weight: 600;
     gap: 10px;
@@ -11550,7 +11551,7 @@ input:checked + .switch-slider:before {
     padding: 6px 0 6px 0;
 }
 .your-offer {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: bold;
     padding: 3px 0 3px 0;
 }
@@ -11561,7 +11562,7 @@ input:checked + .switch-slider:before {
      gap: 5px;
 }
 .delivery-rights span {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
 }
 .delivery-rights span i {
@@ -11573,7 +11574,7 @@ input:checked + .switch-slider:before {
 }
 
 .delivery-attributes span {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
 }
 .delivery-attributes span i {
@@ -11582,12 +11583,12 @@ input:checked + .switch-slider:before {
 
 .custom-attributes{
     display: flex;
-    gap: 3px;
+    gap: 5px;
 }
 
 
 .message-order-box {
-    padding: 5px;
+    padding: 8px;
     min-width: calc(100% + 40px);
     border: 1px solid #eee;
     border-radius: 3px;
@@ -11603,7 +11604,7 @@ input:checked + .switch-slider:before {
     gap: 10px;
 }
 .offer-btn a {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
 }
 

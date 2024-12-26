@@ -306,9 +306,11 @@ class Checkout extends CI_Controller
 		$payment_method = $this->input->post('payment_method');
 		$exOid = $this->input->post('exOid');
 		$is_requirements = 1;
+		$is_custom = 0;
 
 		if(!empty($exOid)){
 			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$exOid));
+			$is_custom = 1;
 			$is_requirements = $order['is_requirements'];
 		} 
 
@@ -506,8 +508,10 @@ class Checkout extends CI_Controller
 				$this->common_model->delete(['id'=>$latestCartId],'cart');
 				$this->session->set_userdata('latest_order',$newOrder);
 
-				$this->session->set_flashdata('false_message', '<h2>Thank You for your Purchase</h2>
-						<p><b>A receipt was sent to your email address</b></p>');
+				if($is_custom == 1){
+					$this->session->set_flashdata('false_message', '<h2>Thank You for your Purchase</h2>
+						<p><b>A receipt was sent to your email address</b></p>');	
+				}				
 
 				$data['status'] = 1;
 				$data['message'] = 'Your order placed succesfully';
