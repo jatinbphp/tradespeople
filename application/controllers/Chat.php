@@ -355,6 +355,7 @@ class Chat extends CI_Controller
 						foreach ($get_chats as $row) {
 							/*Make Custom Offer Design*/
 							$serviceDiv = $this->makeDiv($row);
+							$serviceDiv1 = $this->makeDiv($row,1);
 
 							$get_time=$this->common_model->time_ago($row['create_time']); 
 							$get_user_details=$this->common_model->get_single_data('users',array('id'=>$row['sender_id']));
@@ -372,7 +373,7 @@ class Chat extends CI_Controller
 							$json['data'].='';
 										
 							if($row['sender_id']==$userid) {
-								$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
+								$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv1.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 
 							} else {
 					
@@ -440,6 +441,7 @@ class Chat extends CI_Controller
 					foreach ($get_chats as $row) {
 						/*Make Custom Offer Design*/
 						$serviceDiv = $this->makeDiv($row);
+						$serviceDiv1 = $this->makeDiv($row,1);
 
 						$get_time=$this->common_model->time_ago($row['create_time']); 
 						$get_user_details=$this->common_model->get_single_data('users',array('id'=>$row['sender_id']));
@@ -457,7 +459,7 @@ class Chat extends CI_Controller
 						$json['data'].='';
 									
 						if($row['sender_id']==$userid) {
-							$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
+							$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv1.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 						} else {				
 							$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['trading_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 						}							 
@@ -506,6 +508,7 @@ class Chat extends CI_Controller
 				foreach ($get_chats as $row) {
 					/*Make Custom Offer Design*/
 					$serviceDiv = $this->makeDiv($row);
+					$serviceDiv1 = $this->makeDiv($row,1);
 
 					$get_time=$this->common_model->time_ago($row['create_time']); 
 					$get_user_details=$this->common_model->get_single_data('users',array('id'=>$row['sender_id']));
@@ -522,7 +525,7 @@ class Chat extends CI_Controller
 					$json['data'].='';
 					
 					if($row['sender_id']==$userid) {
-						$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
+						$json['data'].='<li class="my-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['f_name'].' '.$get_user_details['l_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv1.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 					} else {		
 						$json['data'].='<li class="other-message"><div class="message-data"><a href="'.site_url().'profile/'.$get_user_details['id'].'"><img src="'.site_url().'img/profile/'.$u_profile.'" width="60" height="60"></a><div class="message me-message"><span class="message-data-name">'.$get_user_details['trading_name'].'</span><span class="Messsagee">'.$row['mgs'].'</span><br><span>'.$serviceDiv.'</span><br><span class="time">'.$get_time.'</span></div></div></li>';
 					}					 
@@ -1022,8 +1025,6 @@ class Chat extends CI_Controller
 			$sent = $this->common_model->send_mail($has_email_noti['email'],$subject,$html,null,$get_users['f_name'].' via Tradespeoplehub');
 			}
 		}
-		
-   	
 	
 		$insert['post_id']=$post_id;
 		$insert['sender_id']=$userid;
@@ -1395,10 +1396,10 @@ class Chat extends CI_Controller
     echo json_encode($response);
   }
 
-  public function makeDiv($row){
+  public function makeDiv($row, $isTrades = 0){
   	$serviceDiv = '';
   	$userid=$this->session->userdata('user_id');
-  	if($userid == $row['receiver_id'] && $row['type'] == 'service'){
+  	if($row['type'] == 'service'){
 			$order = $this->common_model->GetSingleData('service_order',['id'=>$row['offer_id']]);
 
 			if(!empty($order) && $order['status'] == 'offer_created' && $order['is_accepted'] == 0){
@@ -1408,17 +1409,31 @@ class Chat extends CI_Controller
 				$route1 = site_url().'order-tracking/'.$order['id'];
 				$route2 = site_url().'serviceCheckout?offer='.$oIds;
 
+				$btn = '<a href="javascript:void(0)" data-url="'.$route2.'" class="btn btn-warning accept-offer-chat-btn" onclick="acceptCustomOffer(this)">Accept Offer</a>';
+
+				if($isTrades == 1){
+					$btn = '<a href="javascript:void(0)" data-oid="'.$order['id'].'" class="btn btn-warning accept-offer-chat-btn" onclick="withdrawCustomOffer(this)">Withdraw Offer</a>';
+				}
+
 				$attributesArray = [];
 				if(!empty($order['offer_includes_ids'])){
-						$attributes = json_decode($order['offer_includes_ids'], true);
-						foreach ($attributes as $key => $value) {
-							if(!empty($value)){
-								foreach($value as $v){
-									$attributesArray[] = $v;
-								}
+					$attributes = json_decode($order['offer_includes_ids'], true);
+					foreach ($attributes as $key => $value) {
+						if(!empty($value)){
+							foreach($value as $v){
+								$attributesArray[] = $v;
 							}
 						}
 					}
+				}
+
+				$cls1 = 'message-order-box';
+				$cls2 = '';
+
+				if($isTrades == 1){
+					$cls1 = 'message-order-box2';
+					$cls2 = 'text-left';
+				}
 
 				$attributesArray = array_unique($attributesArray);
 				
@@ -1430,22 +1445,22 @@ class Chat extends CI_Controller
 					}
 				}
 				
-				$serviceDiv = '<div class="message-order-box">
+				$serviceDiv = '<div class="'.$cls1.'">
 												<div class="message-order-description">
 												<span class="name">'.$description.'</span>
 												<span class="price">'.$price.'</span>
 											</div>
 											<!--<div class="description">'.$description.'</div>-->
-											<div class="your-offer">Your Offer Includes</div>
+											<div class="your-offer '.$cls2.'">Your Offer Includes</div>
 											<div class="delivery-rights">
 												<span class="custom-attributes"><i class="fa fa-clock-o"></i> '.$order['delivery'].' Days Delivery</span>
 											</div>
-											<div class="delivery-attributes">
+											<div class="delivery-attributes '.$cls2.'">
 												'.$selectedAttr.'
 											</div>
 											<div class="offer-btn">
 											<a href="'.$route1.'">View Offer</a>
-											<a href="javascript:void(0)" data-url="'.$route2.'" class="btn btn-warning accept-offer-chat-btn" onclick="acceptCustomOffer(this)">Accept Offer</a>
+											'.$btn.'
 											</div>
 											</div>';	
 			}								

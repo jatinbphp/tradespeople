@@ -36,6 +36,9 @@
     display: flex!important;
   }
 </style>
+<div class="loader-bg hide" id='loader'>
+  <span class="loader"></span>
+</div>
 <div class="modal fade viewaccount" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
@@ -1895,8 +1898,8 @@ var loading = function(isLoading) {
       }
     });
   }
-  setInterval(function(){ get_chat_history_interwal(); }, 5000);
-  setInterval(function(){ user_list_refresher(); }, 5000);
+  //setInterval(function(){ get_chat_history_interwal(); }, 5000);
+  //setInterval(function(){ user_list_refresher(); }, 5000);
 </script>
 
 <script>
@@ -2913,5 +2916,57 @@ $('#offerSendBackBtn').on('click', function (event) {
 $("#offerSendBtn").on("click", function () {
   customOfferSend();
 });
+
+function withdrawCustomOffer(element){
+  var oId = $(element).data('oid');
+
+  swal({
+    title: "Confirm?",
+    text: "Are you sure you want to withdraw this offer?",
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Withdraw',
+    cancelButtonText: 'Cancel'
+  }, function() {
+    $('#loader').removeClass('hide');
+    $.ajax({
+      url: '<?= site_url().'users/offerCancel'; ?>',
+      type: 'POST',
+      data: {order_id:oId},
+      success: function(result) {
+        $('#loader').addClass('hide');
+        if(result.status == 0){
+          swal({
+            title: "Error",
+            text: result.message,
+            type: "error"
+          }, function() {
+            window.location.reload();
+          }); 
+        }else if(result.status == 2){
+          swal({
+            title: "Login Required!",
+            text: "If you want to order the please login first!",
+            type: "warning"
+          }, function() {
+            window.location.href = '<?php echo base_url().'login'; ?>';
+          }); 
+        }else{
+          swal({
+            title: "Success",
+            text: result.message,
+            type: "success"
+          }, function() {
+            window.location.reload();
+          });
+        }                       
+      },
+      error: function(xhr, status, error) {
+                // Handle error
+      }
+    });
+  });
+}
+
   
 </script>  

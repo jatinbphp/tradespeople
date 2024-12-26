@@ -2446,7 +2446,7 @@ class Users extends CI_Controller
 	        	$requirements = '<button class="btn btn-warning requirements" data-id="'.$order['id'].'">Requirements</button>';
 
 	        	if($type == 1){
-					$btnName = $order['status'] == 'offer_created' ? 'Withdraw Offer' : 'View Order';
+							$btnName = $order['status'] == 'offer_created' ? 'Withdraw Offer' : 'View Order';
 	        	}else{
 	        		$btnName = $order['status'] == 'offer_created' ? 'Respond Now' : 'View Order';	
 	        	}
