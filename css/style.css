@@ -10117,7 +10117,7 @@ button.switch-month:hover {
 .m-4 { margin: 1.5rem; }
 .m-5 { margin: 3rem; }
 
-.mt-0 { top: 0; }
+.mt-0 { margin-top: 0!important; }
 .mt-1 { margin-top: 0.25rem; }
 .mt-2 { margin-top: 0.5rem; }
 .mt-3 { margin-top: 1rem; }
@@ -11670,15 +11670,10 @@ input:checked + .switch-slider:before {
     white-space: nowrap;
 }
 
-.milestoneTable th, td{
+.milestoneTable th, .milestoneTable td{
     font-size: 13px;
 }
 
-.milestoneTable .btn-sm{
-    font-size: 10px;
-    padding: 5px 5px;
-}
-
-.milestoneTable h4, h5, span{
-    font-size: 13px!important;
+.milestoneTable h4, .milestoneTable h5, .milestoneTable span{
+    font-size: 13px;
 }

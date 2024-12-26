@@ -682,7 +682,7 @@
 																<thead>
 																	<th>Milestone Name</th>
 																	<th>Delivery Date</th>
-																	<th>Total no. of <?php echo $milestones[0]['price_per_type']; ?></th>
+																	<th><?php echo $milestones[0]['price_per_type']; ?></th>
 																	<th>Description</th>
 																	<th>Amount</th>
 																	<?php if($this->session->userdata('type')==1):?>

@@ -59,7 +59,7 @@
 					</span>
 					<div>
 						<h2>Thank You for your Purchase</h2>
-						<p><b>A recept wes sent to your email address</b></p>
+						<p><b>A receipt was sent to your email address</b></p>
 					</div>
 					<!-- <button type="button" class="btn-close" aria-label="Close">&times;</button> -->
 				</div>

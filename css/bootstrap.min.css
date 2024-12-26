@@ -5169,3 +5169,7 @@ th.visible-print, td.visible-print {
 		max-width: 1140px!important
 	}
 }
+
+.modal-sm{
+	max-width:400px!important;
+}

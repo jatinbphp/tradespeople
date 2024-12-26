@@ -76,50 +76,57 @@
 </div>
 
 <div class="modal fade" id="customOfferPreview" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="customOfferPreviewModalBody">
-          <div class="card-summary">
-            <div class="summary-box">
-              <div class="summary-box-heding">
-                <h4>Offer Summary</h4>
-              </div>
-
-              <div class="summary-feature-article">
-                <a href="<?php echo base_url().'service/'.$service_details['slug']?>">
-                  <img src="<?php echo base_url('img/default-image.jpg'); ?>" id="serviceImg" class="img-responsive">
-                  <span>
-                    <p class="text-muted" id="serviceDescription"></p>
-                  </span>
-                </a>
-              </div>
-              <ul>
-                <li>
-                  <p id="preiceType"></p> 
-                  <b id="customOfferPrice"></b>
-                </li>
-                <li>
-                  <p id="noOfType"></p> 
-                  <b id="typeQty"></b>
-                </li>
-                <li>
-                  <p>Total</p>
-                  <b id="offerTotalPrice"></b>  
-                </li>
-                <li style="font-size:14px;">
-                  <p>Delivered By</p>
-                  <b id="offerDeliveryDays" style="color:#4B8024"></b>  
-                </li>
-              </ul>
-              <div class="form-group" style="margin-top:15px;">
-                <div class="row">
-                  <div class="col-sm-12 text-center">                   
-                    <button class="btn btn-warning btn-lg sendbtn1" type="button" id="offerPreviewSend">
-                      Send Offer
-                    </button>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Offer Summary</h4>
+          </div>
+          <div class="modal-body p-0" id="customOfferPreviewModalBody">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-summary">
+                  <div class="summary-box">
+                    <div class="summary-feature-article">          
+                      <a href="javascript:void(0)">
+                        <span id="imgVidPreview"></span>
+                        <span>
+                          <p id="serviceDescriptionPreview"></p>
+                        </span>
+                      </a>
+                    </div>
+                    <ul>
+                      <li>
+                        <p id="previewDescription"></p>
+                      </li>
+                      <li>
+                        <p id="previewPriceLabel"></p> 
+                        <b id="previewPrice"></b>
+                      </li>
+                      <li>
+                        <p id="previewQtyLabel"></p> 
+                        <b id="previewQty"></b>
+                      </li>
+                      <li>
+                        <p>Total</p>
+                        <b id="previewTotalPrice"></b>  
+                      </li>
+                      <li style="font-size:14px;">
+                        <p>Delivered By</p>
+                        <b id="previewDelivery" style="color:#4B8024"></b>  
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div class="modal-footer mt-0 p-3">
+            <button class="btn" type="button" id="offerSendBackBtn">
+              Back
+            </button>
+            <button class="btn btn-warning" type="button" id="offerSendBtn">
+              Send Offer
+            </button>
           </div>
         </div>
     </div>
@@ -127,7 +134,7 @@
 
 <?php if($this->session->userdata('user_id') && $this->session->userdata('type')!=3){ ?>
 
-<div class="live-chat live-users" id="chat_user" style="display: none;" >        
+<div class="live-chat live-users" id="chat_user" style="display: none;" >
   <header class="clearfix">
     <a href="#" class="chat-close">x</a> 
     <div id="userdetail">
@@ -557,8 +564,6 @@ $('#sendOfferBtn').on('click', function(){
     });
   }  
 });
-
-
 
 // $(".great-offer-list .serviceList").click(function() {
 //   var chatServiceId = $(this).attr('data-id');
@@ -2258,6 +2263,7 @@ $(document).ready(function(){
     }
     return false;
   }
+
   function send_review_invitation(id){
     $.ajax({
       type:'post',
@@ -2296,7 +2302,8 @@ $(document).ready(function(){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/bootstrap-tagsinput.min.js">  
 </script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-ui-multidatespicker@1.6.6/jquery-ui.multidatespicker.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-ui-multidatespicker@1.6.6/jquery-ui.multidatespicker.js">
+</script>
  
 <script type="text/javascript">
   /*Check Logout Code Start*/
@@ -2334,6 +2341,7 @@ $(document).ready(function(){
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
   ];
+
   $(document).ready(function() {
     var dateObjects  = [];
     if(selectedDate){
@@ -2625,6 +2633,8 @@ function toggleSelectBox(dId) {
 }
   
 function initializeValidation() {
+  console.log('function calling');
+
   $("#custom_offer_submit").validate({
     rules: {
       description: "required",
@@ -2651,39 +2661,41 @@ function initializeValidation() {
         number: "Please enter a valid price"
       },
       offer_expires_days: "Please select the number of days for offer expiration"
-    },
-    submitHandler: function (form) {
-      $.ajax({
-        url: "<?php echo site_url('custom_offer/store') ?>",
-        type: 'POST',
-        data: new FormData(form),
-        dataType: 'JSON',
-        processData: false,
-        contentType: false,
-        cache: false,
-        beforeSend: function () {
-          $('.sendbtn1').prop('disabled', true);
-          $('.sendbtn1').html('<i class="fa fa-spin fa-spinner"></i> Sending...');
-        },
-        success: function (resp) {
-          $('.sendbtn1').prop('disabled', false);
-          $('.sendbtn1').html(resp.button);
+    }
+  });
+}
 
-          if (resp.success) {
-            $('#customOfferPopUp').modal('hide');
-            $("#custom_offer_submit").trigger('reset');
-            swal(resp.success);
-            setTimeout(function(){
-              window.location.href = "<?php echo site_url('my-orders') ?>";
-            }, 2000);
-          } else if (resp.error) {
-            swal(resp.error);
-            setTimeout(function(){
-              location.reload();
-            }, 2000);
-          }
-        }
-      });
+function customOfferSend(){
+  var form = $('#custom_offer_submit')[0];
+  $.ajax({
+    url: "<?php echo site_url('custom_offer/store') ?>",
+    type: 'POST',
+    data: new FormData(form),
+    dataType: 'JSON',
+    processData: false,
+    contentType: false,
+    cache: false,
+    beforeSend: function () {
+      $('#offerSendBtn').prop('disabled', true);
+      $('#offerSendBtn').html('<i class="fa fa-spin fa-spinner"></i> Sending...');
+    },
+    success: function (resp) {
+      $('#offerSendBtn').prop('disabled', false);
+      $('#offerSendBtn').html(resp.button);
+
+      if (resp.success) {
+        $('#customOfferPopUp').modal('hide');
+        $("#custom_offer_submit").trigger('reset');
+        swal(resp.success);
+        setTimeout(function(){
+          window.location.href = "<?php echo site_url('my-orders') ?>";
+        }, 2000);
+      } else if (resp.error) {
+        swal(resp.error);
+        setTimeout(function(){
+          location.reload();
+        }, 2000);
+      }
     }
   });
 }
@@ -2692,118 +2704,214 @@ $('#customOfferPopUp').on('shown.bs.modal', function() {
     initializeValidation();
 });
 
-  $(document).ready(function () {
-    initializeValidation();
+$(document).ready(function () {
+  <?php if(!empty($milestones)): ?>
+    $('#toggle-milestones').trigger('click');
+  <?php endif; ?>
 
-    <?php if(!empty($milestones)): ?>
-      $('#toggle-milestones').trigger('click');
-    <?php endif; ?>
+  function validateCustomOfferField(selector, validationType, errorMessage) {
+    var field = $(selector);
+    var value = field.val();
+    var errorContainer = $(selector + "_error");
+    errorContainer.text('');
+    field.removeClass('is-invalid');
 
-    function validateCustomOfferField(selector, validationType, errorMessage) {
-      var field = $(selector);
-      var value = field.val();
-      var errorContainer = $(selector + "_error");
-      errorContainer.text('');
-      field.removeClass('is-invalid');
+    if (validationType == 'required' && !value.trim()) {
+        field.addClass('is-invalid');
+        errorContainer.text(errorMessage || "This field is required.");
+        return false;
+    } 
 
-      if (validationType == 'required' && !value.trim()) {
-          field.addClass('is-invalid');
-          errorContainer.text(errorMessage || "This field is required.");
-          return false;
-      } 
-
-      if (validationType == 'number' && isNaN(value)) {
-          field.addClass('is-invalid');
-          errorContainer.text(errorMessage || "Please enter a valid number.");
-          return false;
-      } else if (validationType == 'min' && parseFloat(value) <= 0) {
-          field.addClass('is-invalid');
-          errorContainer.text(errorMessage || "Value must be greater than 0.");
-          return false;
-      }
-
-      return true;
+    if (validationType == 'number' && isNaN(value)) {
+        field.addClass('is-invalid');
+        errorContainer.text(errorMessage || "Please enter a valid number.");
+        return false;
+    } else if (validationType == 'min' && parseFloat(value) <= 0) {
+        field.addClass('is-invalid');
+        errorContainer.text(errorMessage || "Value must be greater than 0.");
+        return false;
     }
 
-    function resetMilestoneForm() {
-      $('#milestoneForm').find('input[type="text"], input[type="number"], input[type="radio"], input[type="checkbox"], select, textarea').each(function () {
-          $(this).val(''); // Reset the value
-          $(this).prop('checked', false); // For checkboxes and radio buttons
-      });
-      $('#milestoneForm').find('.error-message').text('');
-      $('#milestoneForm').find('.is-invalid').removeClass('is-invalid');
-    }
+    return true;
+  }
 
-    $('#customOfferModalBody').on('click', '#milestoneSave', function (event) {
-      $('#description_error').text('');
-      var isValid = true;
-      isValid &= validateCustomOfferField('#main_description', 'required', "Please enter a description");
-      isValid &= validateCustomOfferField('#milestone_name', 'required', "Please enter a milestone name");
-      isValid &= validateCustomOfferField('#milestone_delivery', 'required', "Please select a delivery option");
-      isValid &= validateCustomOfferField('#milestone_price', 'required', "Please enter a price");
-      if ($('#milestone_price').val() != '') {
-        isValid &= validateCustomOfferField('#milestone_price', 'number', "Please enter a valid price");
-      }
-      
-      isValid &= validateCustomOfferField('#milestone_details', 'required', "Please enter a description");
-      isValid &= validateCustomOfferField('#milestoneQty', 'required', "Please enter a quantity");
-
-      if ($('#milestone_price_per_type').val() === '') {
-        $('#milestone_price_per_type').addClass('is-invalid');
-        $('#price_per_type_error').text("Please select a charge per option");
-        isValid = false;
-      } else {
-        $('#milestone_price_per_type').removeClass('is-invalid');
-        $('#price_per_type_error').text('');
-      }
-
-      var main_description = $('#main_description').val();
-      var name = $('#milestone_name').val();
-      var delivery = $('#milestone_delivery').val();
-      var price = $('#milestone_price').val();
-      var description = $('#milestone_details').val();
-      var price_per_type = $('#milestone_price_per_type').val();
-      var service_id = $('#service_id').val();
-      var receiver_id = $('#receiver_id').val();
-      var order_type = $('#orderType').val();
-      var quantity = $('#milestoneQty').val();
-
-      if (isValid) {
-        $.ajax({
-          url: "<?php echo site_url('custom_offer/milestoneStore') ?>",
-          type: 'POST',
-          data: {main_description:main_description,name:name,delivery:delivery,price:price,description:description,price_per_type:price_per_type,service_id:service_id,receiver_id:receiver_id,order_type:order_type,quantity:quantity},
-          // dataType: 'json',
-          beforeSend: function () {
-            $(this).prop('disabled', true);
-            $(this).html('<i class="fa fa-spin fa-spinner"></i> Save...');
-          },
-          success: function (resp) {
-            var data = JSON.parse(resp);
-            resetMilestoneForm();
-            $('#customOfferModalBody #milestoneList').empty();
-            $('#customOfferModalBody #totalDays').text('Total: '+data.totalDays+' days');
-            $('#customOfferModalBody #totalAmounts').text(data.totalAmount);
-            $('#customOfferModalBody #milestoneList').html(data.viewData);
-            $('#customOfferModalBody #customOrderId').val(data.oId);
-            $('#customOfferModalBody #milestoneNumber').text(data.nextMilestone);
-            $(this).prop('disabled', false);
-            $(this).html('Save');
-          }
-        });
-      }
+  function resetMilestoneForm() {
+    $('#milestoneForm').find('input[type="text"], input[type="number"], input[type="radio"], input[type="checkbox"], select, textarea').each(function () {
+        $(this).val(''); // Reset the value
+        $(this).prop('checked', false); // For checkboxes and radio buttons
     });
-  });
+    $('#milestoneForm').find('.error-message').text('');
+    $('#milestoneForm').find('.is-invalid').removeClass('is-invalid');
+  }
 
-  $('#customOfferModalBody').on('change', '#price_per_type', function (event) {
-    var perType = $(this).val();
-    $('#totalLabel').text('Total no. of '+perType);
-    $('#quantity').attr('placeholder', 'Total no. of '+perType);
-  });
+  $('#customOfferModalBody').on('click', '#milestoneSave', function (event) {
+    $('#description_error').text('');
+    var isValid = true;
+    isValid &= validateCustomOfferField('#main_description', 'required', "Please enter a description");
+    isValid &= validateCustomOfferField('#milestone_name', 'required', "Please enter a milestone name");
+    isValid &= validateCustomOfferField('#milestone_delivery', 'required', "Please select a delivery option");
+    isValid &= validateCustomOfferField('#milestone_price', 'required', "Please enter a price");
+    if ($('#milestone_price').val() != '') {
+      isValid &= validateCustomOfferField('#milestone_price', 'number', "Please enter a valid price");
+    }
+    
+    isValid &= validateCustomOfferField('#milestone_details', 'required', "Please enter a description");
+    isValid &= validateCustomOfferField('#milestoneQty', 'required', "Please enter a quantity");
 
-  $('#customOfferModalBody').on('change', '#milestone_price_per_type', function (event) {
-    var perType = $(this).val();
-    $('#milestoneTotalLabel').text('Total no. of '+perType);
-    $('#milestoneQty').attr('placeholder', 'Total no. of '+perType);
+    if ($('#milestone_price_per_type').val() === '') {
+      $('#milestone_price_per_type').addClass('is-invalid');
+      $('#price_per_type_error').text("Please select a charge per option");
+      isValid = false;
+    } else {
+      $('#milestone_price_per_type').removeClass('is-invalid');
+      $('#price_per_type_error').text('');
+    }
+
+    var main_description = $('#main_description').val();
+    var name = $('#milestone_name').val();
+    var delivery = $('#milestone_delivery').val();
+    var price = $('#milestone_price').val();
+    var description = $('#milestone_details').val();
+    var price_per_type = $('#milestone_price_per_type').val();
+    var service_id = $('#service_id').val();
+    var receiver_id = $('#receiver_id').val();
+    var order_type = $('#orderType').val();
+    var quantity = $('#milestoneQty').val();
+
+    if (isValid) {
+      $.ajax({
+        url: "<?php echo site_url('custom_offer/milestoneStore') ?>",
+        type: 'POST',
+        data: {main_description:main_description,name:name,delivery:delivery,price:price,description:description,price_per_type:price_per_type,service_id:service_id,receiver_id:receiver_id,order_type:order_type,quantity:quantity},
+        // dataType: 'json',
+        beforeSend: function () {
+          $(this).prop('disabled', true);
+          $(this).html('<i class="fa fa-spin fa-spinner"></i> Save...');
+        },
+        success: function (resp) {
+          var data = JSON.parse(resp);
+          resetMilestoneForm();
+          $('#customOfferModalBody #milestoneList').empty();
+          $('#customOfferModalBody #totalDays').text('Total: '+data.totalDays+' days');
+          $('#customOfferModalBody #totalDaysData').val(data.totalDays);
+          $('#customOfferModalBody #totalAmounts').text('£'+data.totalAmount);
+          $('#customOfferModalBody #totalAmountsData').val(data.totalAmount);
+          $('#customOfferModalBody #totalQty').val(data.totalQty);
+          $('#customOfferModalBody #customPriceType').val(data.priceType);
+          $('#customOfferModalBody #milestoneList').html(data.viewData);
+          $('#customOfferModalBody #customOrderId').val(data.oId);
+          $('#customOfferModalBody #milestoneNumber').text(data.nextMilestone);
+          $(this).prop('disabled', false);
+          $(this).html('Save');
+        }
+      });
+    }
   });
+});
+
+$('#customOfferModalBody').on('change', '#price_per_type', function (event) {
+  var perType = $(this).val();
+  $('#totalLabel').text('Total no. of '+perType);
+  $('#quantity').attr('placeholder', 'Total no. of '+perType);
+});
+
+$('#customOfferModalBody').on('change', '#milestone_price_per_type', function (event) {
+  var perType = $(this).val();
+  $('#milestoneTotalLabel').text('Total no. of '+perType);
+  $('#milestoneQty').attr('placeholder', 'Total no. of '+perType);
+});
+
+$('#customOfferModalBody').on('click', '.previewBtn', function (event) {
+  if ($("#custom_offer_submit").valid()) {
+    var orderType = $('#customOfferModalBody #orderType').val();
+    const mDescription = $('#customOfferModalBody #serviceDescription').text();
+    const serviceName = $('#customOfferModalBody #serviceName').text();
+
+    const imgTextareaDiv = document.querySelector('#customOfferModalBody #imgVidTag');
+    const imgTag = imgTextareaDiv.querySelector('img');
+    const videoTag = imgTextareaDiv.querySelector('video');
+    var imgVidPreview = '';
+
+    if (imgTag) {
+        imgVidPreview = imgTag.outerHTML;
+    }
+
+    if (videoTag) {
+        imgVidPreview = videoTag.outerHTML;
+    }
+
+    let descriptionResult;
+
+    if (mDescription.length > 95) {
+        descriptionResult = mDescription.slice(0, 95) + '...';
+    } else {
+        descriptionResult = mDescription; // Keep the original text
+    }
+
+    if(orderType == 'milestone'){
+      var totalQty = $('#customOfferModalBody #totalQty').val();
+      var totalDays = $('#customOfferModalBody #totalDaysData').val();
+      var totalPrice = $('#customOfferModalBody #totalAmountsData').val();
+      var totalAmount = totalPrice / totalQty;
+      var priceType = $('#customOfferModalBody #customPriceType').text();
+      var mainPrice = totalPrice;
+    }else{
+      var totalDays = $('#customOfferModalBody #regularDelivery').val();
+      var totalAmount = $('#customOfferModalBody #regularPrice').val();
+      var totalQty = $('#customOfferModalBody #quantity').val();
+      var priceType = $('#customOfferModalBody #price_per_type').val();      
+      var mainPrice = totalAmount * totalQty;
+    }
+
+    var description = $('#customOfferModalBody #main_description').val();
+    var deliveryDate = addDaysToDate(totalDays);
+
+    $('#customOfferPreviewModalBody #serviceNamePreview').text(serviceName);
+    $('#customOfferPreviewModalBody #serviceDescriptionPreview').text(descriptionResult);
+    $('#customOfferPreviewModalBody #imgVidPreview').html(imgVidPreview);
+    $('#customOfferPreviewModalBody #previewDescription').text(description).css({
+        'border': '1px solid #dfdfdf','padding': '1rem'});
+    $('#customOfferPreviewModalBody #previewPriceLabel').text('Price per '+priceType);
+    $('#customOfferPreviewModalBody #previewPrice').text('£'+parseFloat(totalAmount).toFixed(2));
+    $('#customOfferPreviewModalBody #previewQtyLabel').text('No. of '+priceType);
+    $('#customOfferPreviewModalBody #previewQty').text(totalQty);
+    $('#customOfferPreviewModalBody #previewTotalPrice').text('£'+parseFloat(mainPrice).toFixed(2));
+    $('#customOfferPreviewModalBody #previewDelivery').text(deliveryDate);
+
+    $('#customOfferPopUp').modal('hide');
+    $('#customOfferPreview').modal('show');
+  }else{
+    initializeValidation();
+  }
+}); 
+
+function addDaysToDate(totalDays) {
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() + totalDays);
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const dayOfWeek = daysOfWeek[currentDate.getDay()];
+  const day = currentDate.getDate();
+  const month = months[currentDate.getMonth()];
+  const year = currentDate.getFullYear();
+
+  const suffix = (day % 10 === 1 && day !== 11) ? "st" :
+                 (day % 10 === 2 && day !== 12) ? "nd" :
+                 (day % 10 === 3 && day !== 13) ? "rd" : "th";
+  return `${dayOfWeek} ${day}${suffix} ${month}, ${year}`;
+} 
+
+$('#offerSendBackBtn').on('click', function (event) {
+  $('#customOfferPreview').modal('hide');
+  $('#customOfferPopUp').modal('show');
+});
+
+$("#offerSendBtn").on("click", function () {
+  customOfferSend();
+});
+  
 </script>  

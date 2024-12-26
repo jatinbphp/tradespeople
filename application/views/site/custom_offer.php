@@ -10,14 +10,14 @@
 </div>
 <form method="POST" name="custom_offer_submit" id="custom_offer_submit" enctype="multipart/form-data">
   <div class="modal-body">
-		<h3><?php echo $service['service_name']; ?></h3>
-		<p><?php echo $service['description']; ?></p>		
+		<h3 id="serviceName"><?php echo $service['service_name']; ?></h3>
+		<p id="serviceDescription"><?php echo $service['description']; ?></p>		
 		<input type="hidden" name="service_id" id="service_id" value="<?php echo $service_id; ?>">
 		<input type="hidden" name="receiver_id" id="receiver_id" value="<?php echo $receiver_id; ?>">
 		<input type="hidden" name="order_type" id="orderType" value="<?php echo $pMethod == 1 ? 'single' : 'milestone'; ?>">
 		<input type="hidden" name="customOrderId" id="customOrderId" value="<?php echo !empty($custom_order) ? $custom_order['id'] : ''; ?>">
 		<input type="hidden" name="milestoneIds" id="milestoneIds" value="<?php echo rtrim($mIds,','); ?>">
-		<div class="form-group img-textarea">
+		<div class="form-group img-textarea" id="imgVidTag">
 			<?php $image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); ?>
 			<?php if (file_exists($image_path) && $service['image']): ?>
 				<?php
@@ -85,6 +85,12 @@
 												</a>
 											</h4>
 										</div>
+
+										<input type="hidden" id="totalQty">
+										<input type="hidden" id="totalAmountsData">
+										<input type="hidden" id="customPriceType">
+										<input type="hidden" id="totalDaysData">
+										
 										<div class="col-md-3 text-right">
 											<h4 class="w-100" id="totalDays">
 												Total: <?php echo $totalAmtDays[0]['totalDays'] > 0 ? $totalAmtDays[0]['totalDays'] : 0; ?> days
@@ -183,13 +189,13 @@
 				<div class="col-sm-3">
 					<div class="form-group">
 						<label>Delivery In</label>
-						<input type="number" class="form-control" name="delivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="No. of Days">
+						<input type="number" class="form-control" name="delivery" id="regularDelivery" step="1" min="1" pattern="^\d+(\.\d{1,2})?$" placeholder="No. of Days">
 					</div>
 				</div>
 				<div class="col-sm-3">
 					<div class="form-group">
 						<label>Price</label>
-						<input type="number" class="form-control" name="price" step="0.01" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter price">
+						<input type="number" class="form-control" name="price" id="regularPrice" step="0.01" pattern="^\d+(\.\d{1,2})?$" placeholder="Enter price">
 					</div>
 				</div>
 				
@@ -272,6 +278,7 @@
 </div>
   <div class="modal-footer">
       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      <button class="btn btn-warning sendbtn1" type="submit">Send Offer</button>      
+      <button class="btn btn-warning previewBtn" type="button">Preview Offer</button>      
+      <button class="btn btn-warning sendbtn1" type="submit" style="display:none;">Send Offer</button>
   </div>
 </form>

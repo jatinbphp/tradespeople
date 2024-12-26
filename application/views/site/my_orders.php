@@ -36,6 +36,16 @@
                 	<?php include 'include/sidebar.php'; ?>
                 </div>
             	<div class="col-sm-9">
+                    <?php if (!empty($flashMessage)): ?>
+                        <div class="thank-purchase-msg alert alert-success">
+                            <span class="icon">
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                               <?php echo $flashMessage; ?>
+                            </div>
+                        </div>      
+                    <?php endif; ?>
                     <?php if($this->session->flashdata('error')): ?>
                         <div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
                         <?php unset($_SESSION['error']) ?>

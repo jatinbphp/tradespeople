@@ -1506,9 +1506,12 @@ th, td {
         });
 		var modal = document.getElementById("myModal");
 		var btn = document.getElementById("myBtn");
-		btn.onclick = function() {
-		  modal.style.display = "block";
+		if (btn) {
+			btn.onclick = function() {
+			  modal.style.display = "block";
+			}	
 		}
+		
 		// window.onclick = function(event) {
 		//     if (event.target == modal_wallet) {
 		//     modal_wallet.style.display = "none";

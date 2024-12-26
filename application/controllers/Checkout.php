@@ -168,12 +168,6 @@ class Checkout extends CI_Controller
 		}
 
 		$data['ex_services'] = $ex_services;
-
-		// echo '<pre>';
-		// print_r($data);
-		// exit;
-
-
 		$this->load->view('site/submit-requirements',$data);
 	}
 
@@ -511,6 +505,9 @@ class Checkout extends CI_Controller
 				
 				$this->common_model->delete(['id'=>$latestCartId],'cart');
 				$this->session->set_userdata('latest_order',$newOrder);
+
+				$this->session->set_flashdata('false_message', '<h2>Thank You for your Purchase</h2>
+						<p><b>A receipt was sent to your email address</b></p>');
 
 				$data['status'] = 1;
 				$data['message'] = 'Your order placed succesfully';

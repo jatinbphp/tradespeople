@@ -749,8 +749,14 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 									type: "success"
 								}, function() {
 									window.location.href = '<?php echo base_url("submitRequirements"); ?>';
-								});*/
-								window.location.href = '<?php echo base_url("submitRequirements"); ?>';
+								});*/							
+
+								if(result.is_requirements == 1){
+									window.location.href = '<?php echo base_url("submitRequirements"); ?>';
+								}else{
+									window.location.href = '<?php echo base_url("my-orders"); ?>';	
+								}	
+
 							}		                    
 						},
 						error: function(xhr, status, error) {

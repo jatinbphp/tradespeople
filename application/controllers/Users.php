@@ -2392,6 +2392,12 @@ class Users extends CI_Controller
 	public function my_orders(){
 		$status = isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : '';
 		if($this->session->userdata('user_id')) {
+			$flashMessage = '';
+			if ($this->session->flashdata('false_message')){
+				$flashMessage = $this->session->flashdata('false_message');
+				$this->session->unset_userdata('false_message');
+			}
+			$data['flashMessage'] = $flashMessage;
 			$data['my_orders'] = $this->common_model->getAllOrder('service_order',$this->session->userdata('user_id'),$status,0);
 			$data['totalStatusOrder'] = $this->common_model->getTotalStatusOrder($this->session->userdata('user_id'));
 			$data['statusArr'] = ['placed', 'active', 'delivered', 'completed', 'cancelled', 'disputed', 'all'];

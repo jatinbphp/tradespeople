@@ -4017,7 +4017,7 @@ class Common_model extends CI_Model
 	}
 
 	public function getTotalMilestone($post_id){
-		$query = $this->db->query("SELECT SUM(total_amount) as mAmount, SUM(delivery) as totalDays  FROM tbl_milestones where post_id=$post_id AND milestone_type = 'service' order by id desc");
+		$query = $this->db->query("SELECT SUM(total_amount) as mAmount, SUM(quantity) as qty, SUM(delivery) as totalDays  FROM tbl_milestones where post_id=$post_id AND milestone_type = 'service' order by id desc");
 		return $query->result_array();
 	}
 
