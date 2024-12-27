@@ -74,12 +74,14 @@
 
 <div class="modal fade" id="customOfferPopUp" role="dialog">
     <div class="modal-dialog modal-lg">
+        <input type="hidden" id="latestOid">
+        <input type="hidden" id="allMilestones">
         <div class="modal-content single-payment-offer" id="customOfferModalBody"></div>
     </div>
 </div>
 
 <div class="modal fade" id="customOfferPreview" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Offer Summary</h4>
@@ -93,14 +95,12 @@
                       <a href="javascript:void(0)">
                         <span id="imgVidPreview"></span>
                         <span>
+                          <h4 class="mb-0" style="margin-top:0px;"><b id="serviceNamePreview"></b></h4>
                           <p id="serviceDescriptionPreview"></p>
                         </span>
                       </a>
                     </div>
-                    <ul>
-                      <li>
-                        <p id="previewDescription"></p>
-                      </li>
+                    <ul class="hidden" id="singleOffer">
                       <li>
                         <p id="previewPriceLabel"></p> 
                         <b id="previewPrice"></b>
@@ -109,6 +109,10 @@
                         <p id="previewQtyLabel"></p> 
                         <b id="previewQty"></b>
                       </li>
+                    </ul>
+                    <ul class="hidden" id="milestoneOffer">                      
+                    </ul>
+                    <ul>
                       <li>
                         <p>Total</p>
                         <b id="previewTotalPrice"></b>  
@@ -2804,6 +2808,9 @@ $(document).ready(function () {
           $('#customOfferModalBody #milestoneList').html(data.viewData);
           $('#customOfferModalBody #customOrderId').val(data.oId);
           $('#customOfferModalBody #milestoneNumber').text(data.nextMilestone);
+
+          $('#customOfferPopUp #latestOid').val(data.oId);
+          $('#customOfferPopUp #allMilestones').val(data.allMilestones);
           $(this).prop('disabled', false);
           $(this).html('Save');
         }
@@ -2829,6 +2836,7 @@ $('#customOfferModalBody').on('click', '.previewBtn', function (event) {
     var orderType = $('#customOfferModalBody #orderType').val();
     const mDescription = $('#customOfferModalBody #serviceDescription').text();
     const serviceName = $('#customOfferModalBody #serviceName').text();
+    var description = $('#customOfferModalBody #main_description').val();
 
     const imgTextareaDiv = document.querySelector('#customOfferModalBody #imgVidTag');
     const imgTag = imgTextareaDiv.querySelector('img');
@@ -2845,39 +2853,71 @@ $('#customOfferModalBody').on('click', '.previewBtn', function (event) {
 
     let descriptionResult;
 
-    if (mDescription.length > 95) {
-        descriptionResult = mDescription.slice(0, 95) + '...';
+    if (mDescription.length > 80) {
+        descriptionResult = mDescription.slice(0, 80) + '...';
     } else {
         descriptionResult = mDescription; // Keep the original text
     }
 
+    $('#customOfferPreviewModalBody #serviceNamePreview').text(serviceName);
+    $('#customOfferPreviewModalBody #serviceDescriptionPreview').text(description);
+    $('#customOfferPreviewModalBody #imgVidPreview').html(imgVidPreview);
+
     if(orderType == 'milestone'){
+      const allMilestones = $('#customOfferPopUp #allMilestones').val();
+      const milestones = JSON.parse(allMilestones);
+      var mData = '';
+
+      milestones.forEach(milestone => {
+        var mNumber = ordinalLevel(milestone.milestone_level);
+
+        mData += '<li>'+
+                  '<h4 class="m-0">Milestone '+mNumber+'</h4>'+
+                  '<b>'+milestone.milestone_name+'</b>'+
+                '</li>'+
+                '<li>'+
+                  '<p>Price per '+milestone.price_per_type+'</p>'+
+                  '<b>£'+parseFloat(milestone.milestone_amount).toFixed(2)+'</b>'+
+                '</li>'+
+                '<li class="milestoneData">'+
+                  '<p>No. of '+milestone.price_per_type+'</p>'+
+                  '<b>'+milestone.quantity+'</b>'+
+                '</li>';
+
+      });
+
+      $('#customOfferPreviewModalBody #milestoneOffer').html(mData);
+
       var totalQty = $('#customOfferModalBody #totalQty').val();
       var totalDays = $('#customOfferModalBody #totalDaysData').val();
       var totalPrice = $('#customOfferModalBody #totalAmountsData').val();
       var totalAmount = totalPrice / totalQty;
       var priceType = $('#customOfferModalBody #customPriceType').text();
       var mainPrice = totalPrice;
+      $('#customOfferPreviewModalBody #singleOffer').addClass('hidden');
+      $('#customOfferPreviewModalBody #milestoneOffer').removeClass('hidden');
+
     }else{
       var totalDays = $('#customOfferModalBody #regularDelivery').val();
       var totalAmount = $('#customOfferModalBody #regularPrice').val();
       var totalQty = $('#customOfferModalBody #quantity').val();
       var priceType = $('#customOfferModalBody #price_per_type').val();      
-      var mainPrice = totalAmount * totalQty;
+      var mainPrice = totalAmount * totalQty;      
+
+      $('#customOfferPreviewModalBody #previewPriceLabel').text('Price per '+priceType);
+      $('#customOfferPreviewModalBody #previewPrice').text('£'+parseFloat(totalAmount).toFixed(2));
+      $('#customOfferPreviewModalBody #previewQtyLabel').text('No. of '+priceType);
+      $('#customOfferPreviewModalBody #previewQty').text(totalQty);
+
+      $('#customOfferPreviewModalBody #milestoneOffer').addClass('hidden');
+      $('#customOfferPreviewModalBody #singleOffer').removeClass('hidden');
     }
 
-    var description = $('#customOfferModalBody #main_description').val();
-    var deliveryDate = addDaysToDate(totalDays);
+    
+    var deliveryDate = addDaysToDate(totalDays);    
 
-    $('#customOfferPreviewModalBody #serviceNamePreview').text(serviceName);
-    $('#customOfferPreviewModalBody #serviceDescriptionPreview').text(descriptionResult);
-    $('#customOfferPreviewModalBody #imgVidPreview').html(imgVidPreview);
-    $('#customOfferPreviewModalBody #previewDescription').text(description).css({
-        'border': '1px solid #dfdfdf','padding': '1rem'});
-    $('#customOfferPreviewModalBody #previewPriceLabel').text('Price per '+priceType);
-    $('#customOfferPreviewModalBody #previewPrice').text('£'+parseFloat(totalAmount).toFixed(2));
-    $('#customOfferPreviewModalBody #previewQtyLabel').text('No. of '+priceType);
-    $('#customOfferPreviewModalBody #previewQty').text(totalQty);
+    //$('#customOfferPreviewModalBody #previewDescription').text(description).css({'border': '1px solid #dfdfdf','padding': '1rem'});
+    
     $('#customOfferPreviewModalBody #previewTotalPrice').text('£'+parseFloat(mainPrice).toFixed(2));
     $('#customOfferPreviewModalBody #previewDelivery').text(deliveryDate);
 
@@ -2887,6 +2927,17 @@ $('#customOfferModalBody').on('click', '.previewBtn', function (event) {
     initializeValidation();
   }
 }); 
+
+function ordinalLevel(number) {
+    const suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+
+    // Check if the number ends in 11, 12, or 13 (special case for 'th')
+    if ((number % 100) >= 11 && (number % 100) <= 13) {
+        return number + 'th';
+    } else {
+        return number + suffixes[number % 10];
+    }
+}
 
 function addDaysToDate(totalDays) {
   const currentDate = new Date();

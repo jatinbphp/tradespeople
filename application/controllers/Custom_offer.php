@@ -237,6 +237,7 @@ class Custom_offer extends CI_Controller
 			$json['success'] = "Milestone added successfully.";
 			$json['viewData'] = $this->load->view('site/milestoneList',$data, true);
 			$json['nextMilestone'] = $this->ordinal(count($data['milestones']) + 1).' Milestone Name';
+			$json['allMilestones'] = json_encode($data['milestones'], true);
 			echo json_encode($json);
 		}else{
 			echo "Something went wrong, try again later.";

@@ -7005,6 +7005,7 @@ span.output p{
     width: 100%;
     position: relative;
     right: -45px;
+    padding-top: 5px;
 }
 .user_stext5 p, .about_dmodal p {
     text-indent: 0 !important;
@@ -11539,9 +11540,9 @@ input:checked + .switch-slider:before {
 .message-order-description {
     padding: 0 0 3px 0;
     font-size: 13px;
-    display: flex;
-    font-weight: 600;
-    gap: 10px;
+    /*display: flex;
+    gap: 10px;*/
+    font-weight: 600;    
     border-bottom: 1px solid #eee;
 }
 .message .description {
@@ -11600,6 +11601,7 @@ input:checked + .switch-slider:before {
     border: 1px solid #eee;
     border-radius: 3px;
     margin-top: 5px;
+    min-width: calc(100% + 40px);
 }
 
 .offer-btn {
@@ -11685,4 +11687,38 @@ input:checked + .switch-slider:before {
 
 .milestoneTable h4, .milestoneTable h5, .milestoneTable span{
     font-size: 13px;
+}
+li.my-message .message-order-box2 {
+    margin-left: -40px;
+    text-align: left;
+
+}
+li.my-message .message-data {
+    padding-left: 55px;
+}
+
+.other-message .offer-time .time{
+    text-align: end;
+    left: auto !important;
+    font-size: 11px;
+    padding-top: 5px;
+}
+.my-message .offer-time .time{
+    text-align: end;
+    right: auto !important;
+    font-size: 11px;
+    padding-top: 5px;
+}
+
+#customOfferPreviewModalBody .summary-box ul li:last-child {
+    border-top: none;
+    padding-top: 5px;
+    margin-top: 0;
+    font-size: inherit;
+    margin-bottom: 10px;
+}
+
+#customOfferPreviewModalBody .milestoneData{
+    border-bottom: 1px solid #dfdfdf;
+    padding-bottom: 10px;
 }
