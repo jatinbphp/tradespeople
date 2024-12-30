@@ -200,7 +200,7 @@
               <a href="#">
                 <div class="box">
                 <div class="img">
-                  <img src="http://localhost/tradespeople/img/cash-on-delivery.png" alt="" />
+                  <img src="<?php echo base_url(); ?>img/cash-on-delivery.png" alt="" />
                 </div>
                 <div class="des">
                 <h3>Single Payment</h3>
@@ -213,7 +213,7 @@
               <a href="#">
                 <div class="box">
                 <div class="img">
-                  <img src="http://localhost/tradespeople/img/milestone.png" alt="" />
+                  <img src="<?php echo base_url(); ?>img/milestone.png" alt="" />
                 </div>
                 <div class="des">
                 <h3>Milestone</h3>
