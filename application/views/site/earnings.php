@@ -263,7 +263,7 @@
 			<td>
 				<?php echo date('d F Y',strtotime($list['cdate']));  ?>
 			</td>			
-			<td><?php echo $list['job_title']; ?></td>
+			<td><?php echo !empty($list['job_title']) ? $list['job_title'] : $list['service_title']; ?></td>
 			<td><?php echo $list['milestone_name']; ?></td>
 								
 			<td>
@@ -274,8 +274,13 @@
 				?>
 			
 			<i class="fa fa-gbp"></i><?php echo round($total,2); ?> GBP</td>
-			
-			<td><a class="btn btn-anil_btn" href="<?= site_url().'payments?post_id='.$list['post_id']; ?>">View Job Detail</a></td>
+			<?php if($list['milestone_type'] == 'service'):?>
+				<td><a class="btn btn-anil_btn" href="<?= site_url().'order-tracking/'.$list['post_id']; ?>">View Order Detail
+				</a></td>
+			<?php else:?>	
+				<td><a class="btn btn-anil_btn" href="<?= site_url().'payments?post_id='.$list['post_id']; ?>">View Job Detail
+				</a></td>
+			<?php endif;?>	
 			
 		</tr>
 

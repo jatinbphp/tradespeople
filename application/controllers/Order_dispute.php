@@ -36,6 +36,8 @@ class Order_dispute extends CI_Controller
 			if ($run) {
 				$job = $this->common_model->GetSingleData('service_order',['id'=>$post_id]);
 
+				$this->common_model->update_data('tbl_milestones', array('dispute_id' => $id), array('status' => 0,'dispute_id'=>NULL));
+
 				if ($user_id == $data['ds_buser_id']) {
 					$disput_user = $this->common_model->GetColumnName('users', array('id' => $data['ds_buser_id']), array('email', 'f_name', 'l_name', 'type', 'id', 'trading_name'));
 
@@ -236,6 +238,8 @@ class Order_dispute extends CI_Controller
 
 		//$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$id."'","tbl_milestones.*",true);
 
+		$milestones = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$job_id]);
+
 		if ($user_id == $tradesman) {
 			$accname = $trades['trading_name'];
 			$dispute_finel_user = $home['id'];
@@ -257,13 +261,12 @@ class Order_dispute extends CI_Controller
 
 		if ($run) {
 
-			/*foreach($milestones as $milestone){
+			foreach($milestones as $milestone){
 				$bid_update = [];
 				$bid_update['status'] = 6;
-				$where = "id = '" . $milestone['id'] . "'";
-	
+				$where = "id = '" . $milestone['id'] . "'";	
 				$this->common_model->update('tbl_milestones', $where, $bid_update);
-			}*/			
+			}			
 
 			$disput_update['ds_status'] = 1;
 			$disput_update['ds_favour'] = $dispute_finel_user;
@@ -316,9 +319,9 @@ class Order_dispute extends CI_Controller
 				);
 				$this->common_model->insert('transactions', $data1);
 
-				/*foreach($milestones as $milestone){
+				foreach($milestones as $milestone){
 					$this->common_model->update('tbl_milestones', array('id' => $milestone['id']), array('is_dispute_to_traders' => 1, 'admin_commission' => $commision));
-				}*/
+				}
 				
 				if ($row['total_amount'] > $amount) {
 					$remainingAmount = $row['total_amount'] - $amount;

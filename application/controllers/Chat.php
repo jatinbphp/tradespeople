@@ -1412,7 +1412,7 @@ class Chat extends CI_Controller
 			$order = $this->common_model->GetSingleData('service_order',['id'=>$row['offer_id']]);
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
 
-			if(!empty($order) && $order['status'] == 'offer_created' && $order['is_accepted'] == 0){
+			if(!empty($order) && $order['is_custom'] == 1){
 				$description = substr($order['description'], 0, 50);
 				$serviceName = $service['service_name'];
 				$price = '£'.number_format($order['price'],2);
@@ -1420,11 +1420,15 @@ class Chat extends CI_Controller
 				$route1 = site_url().'order-tracking/'.$order['id'];
 				$route2 = site_url().'serviceCheckout?offer='.$oIds;
 
-				$btn = '<a href="javascript:void(0)" data-url="'.$route2.'" class="btn btn-warning accept-offer-chat-btn" onclick="acceptCustomOffer(this)">Accept Offer</a>';
+				$btn = '';
 
-				if($isTrades == 1){
-					$btn = '<a href="javascript:void(0)" data-oid="'.$order['id'].'" class="btn btn-warning accept-offer-chat-btn" onclick="withdrawCustomOffer(this)">Withdraw Offer</a>';
-				}
+				if($order['status'] == 'offer_created'){
+					$btn = '<a href="javascript:void(0)" data-url="'.$route2.'" class="btn btn-warning accept-offer-chat-btn" onclick="acceptCustomOffer(this)">Accept Offer</a>';
+
+					if($isTrades == 1){
+						$btn = '<a href="javascript:void(0)" data-oid="'.$order['id'].'" class="btn btn-warning accept-offer-chat-btn" onclick="withdrawCustomOffer(this)">Withdraw Offer</a>';
+					}	
+				}				
 
 				$attributesArray = [];
 				if(!empty($order['offer_includes_ids'])){

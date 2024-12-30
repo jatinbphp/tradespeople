@@ -3113,13 +3113,80 @@ class Common_model extends CI_Model
 	}
 	function get_all_milestone_invoice($userid, $type)
 	{
-		if ($type == 1) {
+		/*if ($type == 1) {
 			$query = $this->db->query("select tbl_milestones.*, tbl_jobs.title as job_title, tbl_jobs.project_id, tbl_jobs.userid as puserid from tbl_milestones inner join tbl_jobs on tbl_milestones.post_id = tbl_jobs.job_id where tbl_milestones.userid = $userid and (tbl_milestones.status = 2 or (tbl_milestones.status = 6 and tbl_milestones.is_dispute_to_traders = 1)) order by tbl_milestones.updated_at desc, tbl_milestones.id desc");
 			//$query=$this->db->query("SELECT * from tbl_milestones where userid = $userid and (status = 2 or (status = 6 and is_dispute_to_traders = 1)) order by id desc");
 		} else {
 			$query = $this->db->query("select tbl_milestones.*, tbl_jobs.title as job_title, tbl_jobs.project_id, tbl_jobs.userid as puserid from tbl_milestones inner join tbl_jobs on tbl_milestones.post_id = tbl_jobs.job_id where tbl_milestones.posted_user = $userid and (tbl_milestones.status = 2 or (tbl_milestones.status = 6 and tbl_milestones.is_dispute_to_traders = 1)) order by tbl_milestones.updated_at desc, tbl_milestones.id desc");
 			//$query=$this->db->query("SELECT * from tbl_milestones where posted_user = $userid and (status = 2 or (status = 6 and is_dispute_to_traders = 1)) order by id desc");
-		}
+		}*/
+
+		if ($type == 1) {
+        $query = $this->db->query("
+            SELECT 
+                tbl_milestones.*, 
+                tbl_jobs.title AS job_title, 
+                tbl_jobs.project_id, 
+                tbl_jobs.userid AS puserid, 
+                service_order.user_id AS p_userid, 
+                my_services.service_name,
+                my_services.slug,
+                service_order.order_id 
+            FROM 
+                tbl_milestones
+            LEFT JOIN 
+                tbl_jobs 
+                ON tbl_milestones.post_id = tbl_jobs.job_id
+            LEFT JOIN 
+                service_order 
+                ON tbl_milestones.post_id = service_order.id
+            LEFT JOIN 
+                my_services 
+                ON service_order.service_id = my_services.id
+            WHERE 
+                tbl_milestones.userid = $userid 
+                AND (
+                    tbl_milestones.status = 2 OR 
+                    (tbl_milestones.status = 6 AND tbl_milestones.is_dispute_to_traders = 1)
+                )
+            ORDER BY 
+                tbl_milestones.updated_at DESC, 
+                tbl_milestones.id DESC
+        ");
+    } else {
+        $query = $this->db->query("
+            SELECT 
+                tbl_milestones.*, 
+                tbl_jobs.title AS job_title, 
+                tbl_jobs.project_id, 
+                tbl_jobs.userid AS puserid, 
+                service_order.user_id AS p_userid,
+                my_services.service_name, 
+                my_services.slug,
+                service_order.order_id 
+            FROM 
+                tbl_milestones
+            LEFT JOIN 
+                tbl_jobs 
+                ON tbl_milestones.post_id = tbl_jobs.job_id
+            LEFT JOIN 
+                service_order 
+                ON tbl_milestones.post_id = service_order.id
+            LEFT JOIN 
+                my_services 
+                ON service_order.service_id = my_services.id
+            WHERE 
+                tbl_milestones.posted_user = $userid 
+                AND (
+                    tbl_milestones.status = 2 OR 
+                    (tbl_milestones.status = 6 AND tbl_milestones.is_dispute_to_traders = 1)
+                )
+            ORDER BY 
+                tbl_milestones.updated_at DESC, 
+                tbl_milestones.id DESC
+        ");
+    }
+
 		return $query->result_array();
 	}
 

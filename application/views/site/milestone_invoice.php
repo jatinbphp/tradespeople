@@ -86,27 +86,33 @@
 										<?php foreach($invoices as $key=>$list) { ?>
 										<tr>
 											<td style="display: none;"><?php  echo $key+1; ?></td>
-											<td><?php echo $list['project_id']; ?></td>
-											<td><a href="<?php echo base_url('details/?post_id='.$list['post_id']); ?>"><?php echo $list['job_title']; ?></a></td>
-											<td><?php echo $list['milestone_name']; ?></td>
 											<td>
-									 
+												<?php echo !empty($list['project_id']) ? $list['project_id'] : $list['order_id']; ?>
+											</td>
+											<?php if($list['milestone_type'] == 'service'):?>
+												<td><a href="<?php echo base_url('service/'.$list['slug']); ?>"><?php echo $list['service_name']; ?></a></td>
+											<?php else: ?>
+												<td><a href="<?php echo base_url('details/?post_id='.$list['post_id']); ?>"><?php echo $list['job_title']; ?></a></td>
+											<?php endif; ?>											
+											<td><?php echo $list['milestone_name']; ?></td>
+											<td>									 
 												<?php
-												if($this->session->userdata('type')==1){ 
-													$admin_commission = ($list['milestone_amount']*$list['admin_commission'])/100;
-													$total = $list['milestone_amount'] - $admin_commission;
-												} else {
-													$total = $list['milestone_amount'];
-												}
-			
-												?>
-									 
+													if($this->session->userdata('type')==1){ 
+														$admin_commission = ($list['milestone_amount']*$list['admin_commission'])/100;
+														$total = $list['milestone_amount'] - $admin_commission;
+													} else {
+														$total = $list['milestone_amount'];
+													}
+												?>									 
 												<i class="fa fa-gbp"></i><?php echo $total; ?>
 											</td>
 											<td>
 												<?php 
+
+												$puserId = $list['milestone_type'] == 'service' ? $list['p_userid'] : $list['puserid'];
+
 												if($this->session->userdata('type')==1){
-													$get_users=$this->common_model->get_single_data('users',array('id'=>$list['puserid']));
+													$get_users=$this->common_model->get_single_data('users',array('id'=>$puserId));
 													echo $get_users['f_name'].' '.$get_users['l_name'];
 												}else{
 													$get_users=$this->common_model->get_single_data('users',array('id'=>$list['userid']));

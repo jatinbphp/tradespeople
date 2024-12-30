@@ -480,6 +480,21 @@ class Checkout extends CI_Controller
 					$this->common_model->insert('transactions',$data1);
 				}
 
+				$data1 = [
+					'milestone_level' => 0,
+					'milestone_type' => 'service',
+					'milestone_name' => $service_details['service_name'],
+					'milestone_amount' => $mainPrice,
+					'userid' => $service_details['user_id'],
+					'post_id' => $newOrder,
+					'cdate' => date('Y-m-d H:i:s'),
+					'posted_user' => $uId,
+					'created_by' => $uId,
+					'bid_id' => $service_details['id']
+				];
+
+				$run = $this->common_model->insert('tbl_milestones',$data1);
+
 				/*Homeowner Email Code*/
 				$homeOwner = $this->common_model->check_email_notification($users['id']);
 				if($homeOwner){

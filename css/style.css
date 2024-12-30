@@ -11368,6 +11368,7 @@ input:checked + .switch-slider:before {
 }
 .single-payment-offer form .form-group label {
     font-weight: bold;
+    font-size: 13px;
 }
 .single-payment-offer form .img-textarea {
     display: flex;

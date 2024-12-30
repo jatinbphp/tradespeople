@@ -201,6 +201,7 @@
 				
 				<?php if($service_category['price_type'] == 1):?>
 					<div class="col-sm-3">
+						<div class="form-group">
 		          <label>Charge Per</label>
 		          <select class="form-control input-md" name="price_per_type" id="price_per_type">
 		              <option value="">Please Select</option>
@@ -215,6 +216,7 @@
 		                  <?php endforeach;?>
 		              <?php endif;?>    
 		          </select>
+		        </div>
 		      </div>
 		 		<?php endif; ?>
 

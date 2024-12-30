@@ -1181,15 +1181,25 @@
   });
 
   $('#contactBtn').on('click', function(){
-  	$('#contactServiceName').val('<?php echo $service_details['slug']?>');
-  	$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
-  	$('#post_id-footer').val(<?php echo $service_details['id']?>)
-  	$('#rid-footer').val(<?php echo $service_user['id']?>)
-  	$('#chat_type').val('service');
-  	$('#ch_msg').val('Contact for <?php echo $service_details['service_name']?>');
-  	send_msg();
-  	get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
-  	showdiv();
+  	<?php if($this->session->userdata('user_id')): ?>
+	  	$('#contactServiceName').val('<?php echo $service_details['slug']?>');
+	  	$('#contactServiceOrder').val('<?php echo !empty($lastOrder) ? $lastOrder['order_id'] : ''; ?>');
+	  	$('#post_id-footer').val(<?php echo $service_details['id']?>)
+	  	$('#rid-footer').val(<?php echo $service_user['id']?>)
+	  	$('#chat_type').val('service');
+	  	$('#ch_msg').val('Contact for <?php echo $service_details['service_name']?>');
+	  	send_msg();
+	  	get_chat_onclick(<?php echo $service_details['user_id'];?>, <?php echo $service_details['id'];?>);
+	  	showdiv();
+	  <?php else: ?>
+	  	swal({
+  					title: "Login Required!",
+  					text: "If you want to con with service provider then please login first!",
+  					type: "warning"
+  				}, function() {
+  					window.location.href = '<?php echo base_url().'login'; ?>';
+  				});	
+	  <?php endif; ?>	
   });
 
   $(document).ready(function() {

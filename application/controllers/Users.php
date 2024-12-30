@@ -720,7 +720,6 @@ class Users extends CI_Controller
 	}
 	
 	public function find_rating_ajax($x=null) {
-		
 		$this->load->library('Ajax_pagination');
 		$this->load->model('search_model');
 		
@@ -835,14 +834,10 @@ class Users extends CI_Controller
 		}else{
 			$json['data'] .= '<p class="alert alert-danger">No data found.</p>';
 		}
-		
-		
 		echo json_encode($json);
-
 	}	
 	
-	public function find_rating_ajax_project_detail($x=null) {
-		
+	public function find_rating_ajax_project_detail($x=null) {		
 		$this->load->library('Ajax_pagination');
 		$this->load->model('search_model');
 		
@@ -885,84 +880,82 @@ class Users extends CI_Controller
 		$json['data'] = '';
 		
 		if(count($get_reviews)>0){ 
-		$json['data'] .= '<div class=" dashboard-profile ">
-						<h2>Recent reviews</h2>
-							<div class="min_h3">';
-		
-		foreach ($get_reviews as $r) {
+			$json['data'] .= '<div class=" dashboard-profile ">
+							<h2>Recent reviews</h2>
+								<div class="min_h3">';
 			
-		$job_title = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$r['rt_jobid']),array('title','direct_hired'));
-		
-		$get_users = $this->common_model->get_single_data('users',array('id'=>$r['rt_rateBy']));
-		
-		$trading_name = ($get_users['type']==1) ? $get_users['trading_name'] : $user_profile['trading_name'] ;
-                      
+			foreach ($get_reviews as $r) {
+				
+			$job_title = $this->common_model->GetColumnName('tbl_jobs',array('job_id'=>$r['rt_jobid']),array('title','direct_hired'));
+			
+			$get_users = $this->common_model->get_single_data('users',array('id'=>$r['rt_rateBy']));
+			
+			$trading_name = ($get_users['type']==1) ? $get_users['trading_name'] : $user_profile['trading_name'] ;
+	                      
+							
+				$json['data'] .= '<div class="tradesman-feedback">
+				  <div class="set-gray-box">
+					 <div class="from-group revie">
+						<span class="btn btn-warning btn-xs">';
 						
-			$json['data'] .= '<div class="tradesman-feedback">
-			  <div class="set-gray-box">
-				 <div class="from-group revie">
-					<span class="btn btn-warning btn-xs">';
-					
-					if($r['rt_rate']!=''){ 
-					$json['data'] .= $r['rt_rate']; 
-					} 
-					$json['data'] .= '</span>
-					<span class="star_r">';
-					 
-					   for($i=1;$i<=5;$i++){
-								   if($r['rt_rate']) {
-					   if($i<=$r['rt_rate']) {  
-					$json['data'] .= '<i class="fa fa-star active"></i>';
-					  } else{ 
-					$json['data'] .= '<i class="fa fa-star"></i>';
-				 } } else  {  
-					$json['data'] .= '<i class="fa fa-star"></i>';
-				 } 
+						if($r['rt_rate']!=''){ 
+						$json['data'] .= $r['rt_rate']; 
+						} 
+						$json['data'] .= '</span>
+						<span class="star_r">';
+						 
+						   for($i=1;$i<=5;$i++){
+									   if($r['rt_rate']) {
+						   if($i<=$r['rt_rate']) {  
+						$json['data'] .= '<i class="fa fa-star active"></i>';
+						  } else{ 
+						$json['data'] .= '<i class="fa fa-star"></i>';
+					 } } else  {  
+						$json['data'] .= '<i class="fa fa-star"></i>';
 					 } 
-					$json['data'] .= '</span>
-				 </div>
-                <div cite="/job/view/5059288" class="summary">';
-                 
-                        if(strlen(strip_tags($r['rt_comment'])) > 100){
-                    
-						$json['data'] .= '<p class="short_review_'.$serialNumber.'">'.substr(strip_tags($r['rt_comment']),0,100).'... 
-                            <a onclick="$(\'.short_review_'.$serialNumber.'\').hide(); $(\'.long_review_'.$serialNumber.'\').show();" href="javascript:void(0);">read more</a>
-                          </p>
-                          <p class="long_review_'.$serialNumber.'" style="display:none;">'.$r['rt_comment'].'</p>';
-											
-                        } else {
-                      
-                          $json['data'] .= '<p class="long_review_'.$serialNumber.'">'.$r['rt_comment'].'</p>';
-											}
-                $json['data'] .= '</div>
-                <p class="tradesman-feedback__meta">By <strong class="job-author">'.$get_users['f_name'].' '.$get_users['l_name'].'</strong>&nbsp;on
-                 
-                  <em class="job-date">';
-				
-                     $time_ago = $this->common_model->time_ago($r['rt_create']); 
-                 
-                    $json['data'] .= $time_ago;
-					$json['data'] .= '</em>
-                </p>
-              </div>
-              </div>';
-				}	
-				
-		
-			$json['data'] .= '</div>
-					</div>
-        </div>';
-			$json['ajax_link'] = $this->ajax_pagination->create_links();
+						 } 
+						$json['data'] .= '</span>
+					 </div>
+	                <div cite="/job/view/5059288" class="summary">';
+	                 
+	                        if(strlen(strip_tags($r['rt_comment'])) > 100){
+	                    
+							$json['data'] .= '<p class="short_review_'.$serialNumber.'">'.substr(strip_tags($r['rt_comment']),0,100).'... 
+	                            <a onclick="$(\'.short_review_'.$serialNumber.'\').hide(); $(\'.long_review_'.$serialNumber.'\').show();" href="javascript:void(0);">read more</a>
+	                          </p>
+	                          <p class="long_review_'.$serialNumber.'" style="display:none;">'.$r['rt_comment'].'</p>';
+												
+	                        } else {
+	                      
+	                          $json['data'] .= '<p class="long_review_'.$serialNumber.'">'.$r['rt_comment'].'</p>';
+												}
+	                $json['data'] .= '</div>
+	                <p class="tradesman-feedback__meta">By <strong class="job-author">'.$get_users['f_name'].' '.$get_users['l_name'].'</strong>&nbsp;on
+	                 
+	                  <em class="job-date">';
+					
+	                     $time_ago = $this->common_model->time_ago($r['rt_create']); 
+	                 
+	                    $json['data'] .= $time_ago;
+						$json['data'] .= '</em>
+	                </p>
+	              </div>
+	              </div>';
+					}	
+					
 			
-	}else{
+				$json['data'] .= '</div>
+						</div>
+	        </div>';
+				$json['ajax_link'] = $this->ajax_pagination->create_links();			
+		}else{
 			
 		$json['ajax_link'] = '';
 		$json['data'] .= '<p class="alert alert-danger">No data found.</p>';
-	}
+		}
 		
 		
 		echo json_encode($json);
-
 	}
 
 	public function success(){
@@ -1603,6 +1596,7 @@ class Users extends CI_Controller
 			redirect('dashboard');
 		}
 	}
+
 	public function upload_bill($userid) {
 		if($_FILES['u_bill']['name']) {
 			$ext=end(explode(".",$_FILES['u_bill']['name']));
@@ -1631,6 +1625,7 @@ class Users extends CI_Controller
 		}
 		redirect('verify');
 	}
+
 	public function upload_photo($userid) {
 		if($_FILES['u_photo_id']['name']) {
 			$ext=end(explode(".",$_FILES['u_photo_id']['name']));
@@ -1659,6 +1654,7 @@ class Users extends CI_Controller
 		}
 		redirect('verify');
 	}
+
 	public function update_password() {
 		$this->form_validation->set_rules('old_pass', 'Password','required');
 		$this->form_validation->set_rules('new_pass', 'New Password','required|min_length[6]');
@@ -1691,9 +1687,8 @@ class Users extends CI_Controller
 				$json['status'] = 0;	
 			}				
 		}
-		echo json_encode($json);
-	
-	  }
+		echo json_encode($json);	
+	}
 	
 	public function update_image($id) {
 		if($_FILES['u_profile']['name']){ 
@@ -2103,8 +2098,36 @@ class Users extends CI_Controller
 			
 			$data['user_profile']=$this->common_model->get_single_data('users',array('id'=>$user_id));
 			
-			$sql = "select tbl_milestones.*, tbl_jobs.title as job_title from tbl_milestones inner join tbl_jobs on tbl_milestones.post_id = tbl_jobs.job_id where tbl_milestones.userid = $user_id and (tbl_milestones.status = 2 or (tbl_milestones.status = 6 and tbl_milestones.is_dispute_to_traders = 1)) order by tbl_milestones.updated_at desc, tbl_milestones.id desc";
+			//$sql = "select tbl_milestones.*, tbl_jobs.title as job_title from tbl_milestones inner join tbl_jobs on tbl_milestones.post_id = tbl_jobs.job_id where tbl_milestones.userid = $user_id and (tbl_milestones.status = 2 or (tbl_milestones.status = 6 and tbl_milestones.is_dispute_to_traders = 1)) order by tbl_milestones.updated_at desc, tbl_milestones.id desc";
+
+			$sql = "
+		    SELECT 
+		        tbl_milestones.*, 
+		        tbl_jobs.title AS job_title, 
+		        my_services.service_name AS service_title
+		    FROM 
+		        tbl_milestones
+		    LEFT JOIN 
+		        tbl_jobs 
+		        ON tbl_milestones.post_id = tbl_jobs.job_id
+		    LEFT JOIN 
+		        service_order 
+		        ON tbl_milestones.post_id = service_order.id
+		    LEFT JOIN 
+		        my_services 
+		        ON service_order.service_id = my_services.id
+		    WHERE 
+		        tbl_milestones.userid = $user_id 
+		        AND (
+		            tbl_milestones.status = 2 OR 
+		            (tbl_milestones.status = 6 AND tbl_milestones.is_dispute_to_traders = 1)
+		        )
+		    ORDER BY 
+		        tbl_milestones.updated_at DESC, 
+		        tbl_milestones.id DESC";
+
 			$run = $this->db->query($sql);
+
 			
 			$lists = array();
 			if($run->num_rows() > 0){
@@ -2124,7 +2147,13 @@ class Users extends CI_Controller
 	public function invoices() {
 		if($this->session->userdata('user_id')) {
 			$type=$this->session->userdata('type');
+
 			$data['invoices'] = $this->common_model->get_all_milestone_invoice($this->session->userdata('user_id'),$type);
+
+			// echo '<pre>';
+			// print_r($data['invoices']);
+			// exit;
+
 			$this->load->view('site/milestone_invoice',$data);
 		} else {
 			redirect('login');
@@ -4745,6 +4774,11 @@ class Users extends CI_Controller
 				$flashErrMsg = 'Order Not Approved';
 				$is_review = $mId == 0 ? 1 : 0;
 				$this->session->set_userdata('completedFlashMessage',1);
+
+				if($serviceOrder['is_custom'] == 0){
+					$in['status'] = 2;
+					$this->common_model->update('tbl_milestones',array('post_id'=>$serviceOrder['id']),$in);
+				}
 			}
 
 			$input['status'] = $status;
@@ -4752,8 +4786,10 @@ class Users extends CI_Controller
 			$input['status_update_time'] = date('Y-m-d H:i:s');
 			$this->common_model->update('service_order',array('id'=>$oId),$input);
 
-			if($mId > 0){
-				// $mInput['status'] = $status;
+			if($mId > 0 && $serviceOrder['is_custom'] == 1){
+				if($status == 'completed'){
+					$mInput['status'] = 2;
+				}
 				$mInput['service_status'] = $status;
 				$mInput['service_previous_status'] = $serviceOrder['status'];
 				$mInput['status_update_time'] = $input['status_update_time'];
@@ -5027,8 +5063,12 @@ class Users extends CI_Controller
 				$insert['homeowner_offer'] = $this->input->post('offer_amount');
 			}
 
-			if($userid == $service['user_id']) {				
+			if($userid == $service['user_id']) {
 				$run = $this->common_model->insert('tbl_dispute',$insert);
+
+				$in['status'] = 5;
+				$in['dispute_id'] = $run;
+				$this->common_model->update('tbl_milestones',array('post_id'=>$serviceOrder['id']),$in);
 
 				$login_user = $this->common_model->get_userDataByid($homeOwner['id']);
 
@@ -5222,6 +5262,10 @@ class Users extends CI_Controller
 			$insert['status'] = 'cancelled';
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
+
+			$in['status'] = 4;
+			$in['dispute_id'] = null;
+			$this->common_model->update('tbl_milestones',array('post_id'=>$oId),$in);
 
 			/*Tradesman Email Code*/
       if($tradesman){
