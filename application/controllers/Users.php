@@ -3785,7 +3785,6 @@ class Users extends CI_Controller
 		if(!empty($serviceOrder)){
 			$milestone = $this->common_model->GetSingleData('tbl_milestones',['id'=>$mId]);
 
-
 			$input['status'] = 'delivered';
 			$input['previous_status'] = 'delivered';
 			$input['status_update_time'] = date('Y-m-d H:i:s');
@@ -4428,10 +4427,6 @@ class Users extends CI_Controller
 		$user_id = $this->session->userdata('user_id');
 		$order = $this->common_model->GetSingleData('service_order',['id'=>$id]);
 		$data['user'] = $this->common_model->GetSingleData('users',['id'=>$user_id]);
-
-		// echo '<pre>';
-		// print_r($order);
-		// exit;
 		
 		if(!empty($order)){
 			$data['service'] = $this->common_model->GetSingleData('my_services',['id'=>$order['service_id']]);
@@ -4453,11 +4448,26 @@ class Users extends CI_Controller
 
 			$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$order['id'],'status'=>'active']);
 
+			$today = date('Y-m-d');
 			$delivery_date = '';
 			$rDays = '';
 			$rHours = '';
 			$rMinutes = '';
 			$days = 0;
+			$data['is_extended'] = 0;
+			$exten_delivery_date = '';
+			
+			if(!empty($statusHistory)){
+				$days = $package_data[$order['package_type']]['days'];
+				$currentDate = new DateTime($statusHistory['created_at']);			
+				$currentDate->modify("+$days days");
+				$exten_delivery_date = $currentDate->format('Y-m-d');
+			}
+
+			if($today > $exten_delivery_date && $order['is_exten_delivery_accepted'] == 0){
+				$data['is_extended'] = 1;
+			}			
+
 			$data['requirements'] = $order['is_custom'] == 1 && $order['is_requirements'] == 0 ? [0=>''] : [];
 
 			if($order['is_custom'] == 1){
@@ -4476,7 +4486,7 @@ class Users extends CI_Controller
 
 			if($order['is_custom'] == 0 && !empty($statusHistory)){
 				$days = $package_data[$order['package_type']]['days'];
-				$currentDate = new DateTime($statusHistory['created_at']);			
+				$currentDate = new DateTime($statusHistory['created_at']);
 				$currentDate->modify("+$days days");
 				$delivery_date = $currentDate->format('D jS F, Y H:i');	
 
@@ -4484,6 +4494,22 @@ class Users extends CI_Controller
 				$interval = $currentDate1->diff($currentDate);
 
 				$rDays = $interval->days; 
+				$rHours = $interval->h;
+				$rMinutes = $interval->i;
+			}
+
+			if(!empty($order['extended_date']) && !empty($order['extended_time']) || $order['is_exten_delivery_accepted'] == 1){
+				$passedDate = $order['extended_date'];
+				$passedTime = $order['extended_time'];
+
+				$passedDateTime = $passedDate . ' ' . $passedTime;
+				$targetDateTime = new DateTime($passedDateTime);
+				$currentDateTime = new DateTime();
+				$interval = $currentDateTime->diff($targetDateTime);
+
+				$expected_delivery_date = $targetDateTime->format('D jS F, Y H:i');	
+
+				$rDays = $interval->days;
 				$rHours = $interval->h;
 				$rMinutes = $interval->i;
 			}
@@ -4500,6 +4526,7 @@ class Users extends CI_Controller
 			$data['rDays'] = $rDays;
 			$data['rHours'] = $rHours;
 			$data['rMinutes'] = $rMinutes;
+			$data['expected_delivery_date'] = $expected_delivery_date;
 
 			$ocDate = new DateTime($order['created_at']);
 			$data['created_date'] = $ocDate->format('D jS F, Y H:i');
@@ -4573,7 +4600,7 @@ class Users extends CI_Controller
 			$data['milestones'] = $milestones;
 
 			// echo '<pre>';
-			// print_r($data['milestones']);
+			// print_r($data);
 			// exit;
 			
 			$this->load->view('site/order_tracking',$data);
@@ -5335,7 +5362,7 @@ class Users extends CI_Controller
         $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
         $this->common_model->send_mail($tradesman['email'],$subject,$html);
       }
-      echo json_encode(['status' => 'error', 'message' => 'Offer cancelled successfully.']);
+      echo json_encode(['status' => 'success', 'message' => 'Offer cancelled successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Offer is not cancelled.']);
 		}
@@ -5708,6 +5735,99 @@ class Users extends CI_Controller
 		}else{
 			echo json_encode(['status' => 0]);
 			exit;
+		}
+	}
+
+	public function extenedTime(){
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+    	echo json_encode($json);
+    	exit;
+  	}
+
+		$oId = $this->input->post('oId');
+		$extended_date = date('Y-m-d', strtotime($this->input->post('ex_date')));
+		$extended_time = $this->input->post('ex_time');
+
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);		
+
+		if(!empty($serviceOrder)){
+			$input['extended_date'] = $extended_date;
+			$input['extended_time'] = $extended_time;
+			$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
+			if($run){
+				echo json_encode(['status' => 1, 'message' => 'Delivery time exteneded successfully.']);
+			}else{
+				echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
+			}
+		}else{
+			echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
+		}
+	}
+
+	public function acceptExtenedTime(){
+		if(!$this->session->userdata('user_id')){
+			$json['status'] = 2;
+    	echo json_encode($json);
+    	exit;
+  	}
+
+		$oId = $this->input->post('oId');
+		$is_accepted = $this->input->post('type');
+		
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);		
+
+		if(!empty($serviceOrder)){
+			$input['is_exten_delivery_accepted'] = $is_accepted;
+
+			if($is_accepted == 2){
+				$reason = 'Exteneded delivery time is not accepted';
+
+				$input['status'] = 'cancelled';
+				$input['is_cancel'] = 1;
+				$input['reason'] = $reason;
+				$input['status_update_time'] = date('Y-m-d H:i:s');
+
+				$hId = $this->session->userdata('user_id');
+				$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+	      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+	      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
+	      if($hId == $homeOwner['id']){
+	      	$senderId = $hId;
+	      	$receiverId = $tradesman['id'];
+	      }
+	      if($hId == $tradesman['id']){
+	      	$senderId = $hId;
+	      	$receiverId = $homeOwner['id'];
+	      }
+
+				/*Manage Order History*/
+	      $insert1 = [
+	        'user_id' => $senderId,
+	        'service_id' => $serviceOrder['service_id'],
+	        'order_id' => $oId,
+	        'status' => 'cancelled'
+	      ];
+	      $this->common_model->insert('service_order_status_history', $insert1);
+
+	      $insert['sender'] = $senderId;
+				$insert['receiver'] = $receiverId;
+				$insert['order_id'] = $oId;
+				$insert['is_cancel'] = 1;
+				$insert['status'] = 'cancelled';
+				$insert['description'] = $reason;
+				$run = $this->common_model->insert('order_submit_conversation', $insert);
+			}
+			
+			$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
+			if($run){
+				echo json_encode(['status' => 1, 'message' => 'Delivery time exteneded successfully.']);
+			}else{
+				echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
+			}
+		}else{
+			echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
 		}
 	}
 }

@@ -11723,3 +11723,11 @@ li.my-message .message-data {
     border-bottom: 1px solid #dfdfdf;
     padding-bottom: 10px;
 }
+
+#extendedDeliveryModal button.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 30px;
+    z-index: 1;
+}

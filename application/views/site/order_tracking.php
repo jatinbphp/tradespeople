@@ -520,7 +520,12 @@
 																		<h4 style="color: #000;">Your order is now in the works</h4>
 																		<span class="text-muted">
 																			We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
-																			You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+
+																			<?php if($order['is_exten_delivery_accepted'] == 1):?>
+					                              You should receive your delivery by <b class="text-b"><?php echo $expected_delivery_date; ?></b>
+					                            <?php else:?>
+					                              You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+					                            <?php endif;?>																			
 																		</span>
 																	</span>
 																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 1):?>	
@@ -576,7 +581,7 @@
 																<?php endif; ?>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'active'):?>	
+															<?php if($order['status'] == 'active' && $is_extended == 0):?>	
 																<?php if($order['is_custom'] == 1):?>
 																	<?php if($order['order_type'] == 'single'):?>
 																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
@@ -601,6 +606,14 @@
 															<?php endif; ?>
 
 															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat(<?php echo $order['user_id']?>)">Chat</button>
+
+															<?php if($is_extended == 1):?>
+																<?php if(empty($order['extended_date']) && empty($order['extended_time'])):?>
+																	<button type="button" class="btn btn-warning" id="extendedDelivery">
+																		Extend Delivery Time
+																	</button>
+																<?php endif; ?>
+															<?php endif; ?>															
 														<?php else: ?>
 															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
 																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
@@ -642,7 +655,15 @@
 														<i class="fa fa-clock-o faicon"></i>
 													</span>
 													<div class="timeline-item-description">
-														<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $delivery_date; ?></h5>						
+														<?php if(!empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
+															<h5>Delivery time extension requested</h5>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $expected_delivery_date; ?></h5>
+														<?php elseif($order['is_exten_delivery_accepted'] == 1):?>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $expected_delivery_date; ?></h5>
+														<?php else:?>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $delivery_date; ?></h5>
+														<?php endif;?>
+														
 														<ul class="delivery-time">
 															<li><b><?php echo $rDays; ?></b><br/>Days</li>
 															<li><b><?php echo $rHours; ?></b><br/>Hours</li>
@@ -664,7 +685,16 @@
 																		Reject
 																	</button>
 																</div>
-															<?php endif; ?>	
+															<?php endif; ?>
+														<?php elseif($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
+																<div id="approved-btn-div">
+																	<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
+																		Accept
+																	</button>
+																	<button type="button" id="reject-extended-btn" class="btn btn-default">
+																		Decline
+																	</button>
+																</div>
 														<?php endif; ?>	
 													</div>
 												</li>
@@ -773,7 +803,11 @@
 															<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
 														</span>
 														<div class="timeline-item-description">
-															<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
+															<?php if($order['is_exten_delivery_accepted'] == 1):?>
+																<h5>Your delivery data was updated to <?php echo $expected_delivery_date; ?></h5>
+															<?php else:?>
+																<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
+															<?php endif;?>
 														</div>
 													</li>
 												<?php endif;?>
@@ -1603,6 +1637,39 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="extendedDeliveryModal" tabindex="-1" role="dialog" aria-labelledby="sellerAvailabilityTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<div class="modal-body">
+					<h3 class="sharing-title" style="margin-top:0!important">Extened Delivery Time</h3>
+					<div class="sharing-description">
+						<p>Choose your date & time</p>
+					</div>
+
+					<div class="order-hourlie-addons-sidebar p-0" id="sellerAvailability">
+						<div id="datepickerAvailability"></div>
+						<input type="hidden" name="selected_dates" id="selectedDates">
+						<div class="mt-4">					
+							<select class="form-control input-md" name="time_slot" id="timeSlot">
+								<option value="">Select time slot from</option>
+								<?php for ($hour = 0; $hour <= 23; $hour++) {
+					        $hour_padded = sprintf("%02d", $hour);  // Pad the hour to two digits
+					        echo "<option value=\"{$hour_padded}:00\">{$hour_padded}:00</option>\n";  // Display in 24-hour format
+					      }?>
+						  </select>
+						</div>
+					</div>
+					<input type="hidden" id="packageType">
+					<input class="btn btn-warning btn-lg col-md-12 mt-4" type="button" id="extenedBtn" value="Submit">
+				</div>
+			</div>											
+		</div>
+	</div>
+</div>
 
 	<?php include 'include/footer.php'; ?>
 
@@ -2551,6 +2618,110 @@
    	$('#milestoneId').val(mId);
    	$('#order_submit_modal').modal('show');
   });
+
+  $('#extendedDelivery').on('click', function(){
+  	$('#extendedDeliveryModal').modal('show');  		
+  });
+
+  $('#extenedBtn').on('click', function(){
+  	var selectedDates = $('#selectedDates').val();
+  	var timeSlot = $('#timeSlot').val();
+  	var isOpen = 1;
+  	if(selectedDates == "" || timeSlot == ""){
+  		isOpen = 0;
+  	}
+
+  	if(isOpen == 0){
+  		swal({
+  			title: "Error",
+  			text: 'Please select date & time',
+  			type: "error"
+  		});	
+  	}else{
+  		var date = $('#selectedDates').val();
+  		var time = $('#timeSlot').val();
+  		var oId = <?php echo $order['id'];?>;
+
+  		$.ajax({
+  			url: "<?= site_url().'users/extenedTime'; ?>", 
+  			data: {ex_date:date,ex_time:time,oId:oId}, 
+  			type: "POST", 
+  			dataType: 'json',
+  			success: function (data) {
+  				if (data.status == 1) {
+  					window.location.reload();
+  				} else if (data.status == 2) {
+  					swal({
+  						title: "Login Required!",
+  						text: "If you want to order the please login first!",
+  						type: "warning"
+  					}, function() {
+  						window.location.href = '<?php echo base_url().'login'; ?>';
+  					});        
+  				} else {
+  					alert('Something is wrong. Please try again!!!');
+  				}            
+  			},
+  			error: function(e) {
+  				console.log(JSON.stringify(e));
+  			}
+  		});
+  	}
+  });
+
+  $('#accept-extended-btn').on('click', function(){
+  	acceptExtenedTime(1);
+	});
+
+	$('#reject-extended-btn').on('click', function(){
+  	acceptExtenedTime(2);
+	});
+
+	function acceptExtenedTime(exType){
+		if(exType == 1){
+			var exTitle = 'Accept';
+			var exTitle1 = 'accept';
+		}else{
+			var exTitle = 'Decline';
+			var exTitle1 = 'decline';
+		}		
+
+		swal({
+			title: "Confirm?",
+			text: "Are you sure you want to "+exTitle1+" this extended time?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes, '+exTitle,
+			cancelButtonText: 'Cancel'
+		}, function() {				
+			var oId = <?php echo $order['id'];?>;
+  		$.ajax({
+  			url: "<?= site_url().'users/acceptExtenedTime'; ?>", 
+  			data: {type:exType,oId:oId}, 
+  			type: "POST", 
+  			dataType: 'json',
+  			success: function (data) {
+  				if (data.status == 1) {
+  					window.location.reload();
+  				} else if (data.status == 2) {
+  					swal({
+  						title: "Login Required!",
+  						text: "If you want to "+exTitle1+" this extended time then please login first!",
+  						type: "warning"
+  					}, function() {
+  						window.location.href = '<?php echo base_url().'login'; ?>';
+  					});        
+  				} else {
+  					alert('Something is wrong. Please try again!!!');
+  				}            
+  			},
+  			error: function(e) {
+  				console.log(JSON.stringify(e));
+  			}
+  		});
+		});  		
+	}
+
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
 	
