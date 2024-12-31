@@ -607,12 +607,10 @@
 
 															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat(<?php echo $order['user_id']?>)">Chat</button>
 
-															<?php if($is_extended == 1):?>
-																<?php if(empty($order['extended_date']) && empty($order['extended_time'])):?>
-																	<button type="button" class="btn btn-warning" id="extendedDelivery">
-																		Extend Delivery Time
-																	</button>
-																<?php endif; ?>
+															<?php if($is_extended == 1 && in_array($order['status'], ['active','extened_decline'])):?>
+																<button type="button" class="btn btn-warning" id="extendedDelivery">
+																	Extend Delivery Time
+																</button>
 															<?php endif; ?>															
 														<?php else: ?>
 															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
@@ -649,7 +647,7 @@
 									</div>
 									<div class="timeline-div bg-white p-4">
 										<ol class="timeline">
-											<?php if($order['status'] == 'active' || ($order['status'] == 'offer_created')):?>
+											<?php if(in_array($order['status'], ['active','offer_created','extened_request'])):?>
 												<li class="timeline-item">
 													<span class="timeline-item-icon | faded-icon">
 														<i class="fa fa-clock-o faicon"></i>

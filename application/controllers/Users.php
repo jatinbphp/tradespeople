@@ -4464,7 +4464,7 @@ class Users extends CI_Controller
 				$exten_delivery_date = $currentDate->format('Y-m-d');
 			}
 
-			if($today > $exten_delivery_date && $order['is_exten_delivery_accepted'] == 0){
+			if($today > $exten_delivery_date && $order['is_exten_delivery_accepted'] == 0 || $order['status'] == 'extened_decline'){
 				$data['is_extended'] = 1;
 			}			
 
@@ -4844,7 +4844,7 @@ class Users extends CI_Controller
 				$runss1 = $this->common_model->update('users',array('id'=>$tradesman['id']),$update1);
 
 				$transactionid = md5(rand(1000,999).time());
-			  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
+			  $tr_message='£'.$serviceOrder['price'].' has been credited to your wallet for order number '.$serviceOrder['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
 			  $data1 = array(
 					'tr_userid'=>$tradesman['id'],
 			  	'tr_amount'=>$serviceOrder['price'],
@@ -5752,8 +5752,14 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);		
 
 		if(!empty($serviceOrder)){
+			$reason = 'Exteneded delivery time requested';
+
 			$input['extended_date'] = $extended_date;
 			$input['extended_time'] = $extended_time;
+			$input['status'] = 'extened_request';
+			$input['is_cancel'] = 10;
+			$input['reason'] = $reason;
+			$input['is_exten_delivery_accepted'] = 0;
 			$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 			if($run){
 				echo json_encode(['status' => 1, 'message' => 'Delivery time exteneded successfully.']);
@@ -5779,12 +5785,13 @@ class Users extends CI_Controller
 
 		if(!empty($serviceOrder)){
 			$input['is_exten_delivery_accepted'] = $is_accepted;
+			$input['status'] = 'active';
 
 			if($is_accepted == 2){
 				$reason = 'Exteneded delivery time is not accepted';
 
-				$input['status'] = 'cancelled';
-				$input['is_cancel'] = 1;
+				$input['status'] = 'extened_decline';
+				$input['is_cancel'] = 9;
 				$input['reason'] = $reason;
 				$input['status_update_time'] = date('Y-m-d H:i:s');
 
@@ -5807,15 +5814,15 @@ class Users extends CI_Controller
 	        'user_id' => $senderId,
 	        'service_id' => $serviceOrder['service_id'],
 	        'order_id' => $oId,
-	        'status' => 'cancelled'
+	        'status' => 'extened_decline'
 	      ];
 	      $this->common_model->insert('service_order_status_history', $insert1);
 
 	      $insert['sender'] = $senderId;
 				$insert['receiver'] = $receiverId;
 				$insert['order_id'] = $oId;
-				$insert['is_cancel'] = 1;
-				$insert['status'] = 'cancelled';
+				$insert['is_cancel'] = 9;
+				$insert['status'] = 'extened_decline';
 				$insert['description'] = $reason;
 				$run = $this->common_model->insert('order_submit_conversation', $insert);
 			}

@@ -151,6 +151,15 @@
 									</span>
 								</h5>
 							<?php endif;?>
+
+							<?php if($list['status'] == 'extened_request' && $list['is_cancel'] == 10):?>
+								<h5>
+									You requested for exteneded delivery time
+									<span class="text-muted" style="font-size: 12px;">
+										<i><?php echo $conversation_date ?></i>
+									</span>
+								</h5>
+							<?php endif;?>
 						<?php else:?>
 							<?php if($list['status'] == 'delivered'):?>
 									<h4 class="mt-1 mb-0"><b>Delivery <?php echo '#'.$total_deliveries1--; ?></b></h4>
@@ -241,6 +250,18 @@
 									</span>
 								</h5>
 							<?php endif;?>
+
+							<?php if($list['status'] == 'extened_request' && $list['is_cancel'] == 10):?>
+								<h5>
+									<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>" style="color: #3d78cb;">
+										<?php echo $tradesman['trading_name']; ?>
+									</a> is requested for exteneded delivery time
+									<span class="text-muted" style="font-size: 12px;">
+										<i><?php echo $conversation_date ?></i>
+									</span>
+								</h5>
+							<?php endif;?>
+
 						<?php endif; ?>
 					<?php endif; ?>
 					<?php if($list['sender'] == $homeowner['id']): ?>
@@ -262,6 +283,8 @@
 									<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> has been withdraw order cancellation request
 								<?php elseif($list['status'] == 'declined' && $list['is_cancel'] == 3):?>
 									<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> declined order cancellation request
+								<?php elseif($list['status'] == 'extened_decline' && $list['is_cancel'] == 9):?>
+									<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> declined exteneded delivery time request
 								<?php else:?>
 									<?php echo $homeowner['f_name'].' '.$homeowner['l_name']; ?> requested a modification
 								<?php endif;?>		
@@ -287,6 +310,8 @@
 									You have been withdraw order cancellation request
 								<?php elseif($list['status'] == 'declined' && $list['is_cancel'] == 3):?>
 									You declined order cancellation request
+								<?php elseif($list['status'] == 'extened_decline' && $list['is_cancel'] == 9):?>
+									You declined exteneded delivery time request
 								<?php else:?>
 									You requested a modification 
 								<?php endif;?>		
@@ -342,7 +367,7 @@
 					<?php endif; ?>
 				</span>
 				<?php //if($list['status'] == 'cancelled' && !in_array($order['is_cancel'], [1,3,4]) && $order['status'] != 'declined'):?>
-				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4,6,7,8])):?>
+				<?php if($ckey == 0 && !in_array($order['is_cancel'], [0,1,3,4,6,7,8,9,10])):?>
 					<p class="alert alert-danger mb-0">
 						<?php 
 							if($list['sender'] == $tradesman['id']){
@@ -362,10 +387,10 @@
 							<?php else: ?>
 								<i class="fa fa-info-circle"></i> 
 								Not responding before <?php echo $newTime; ?> will result in closing this case and deciding in the <?php echo $oppoName; ?> favour. Any decision reached is final and irrevocable. Once a case has been closed, it can't be reopened.
-							<?php endif; ?>	
+							<?php endif; ?>
 						<?php else:?>
 							<i class="fa fa-info-circle"></i> 
-							<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+								<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
 						<?php endif;?>	
 					</p>
 						<div class="text-right width-100">
