@@ -132,9 +132,11 @@ class Custom_offer extends CI_Controller
 			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$this->input->post('service_id')));
 			$homeOwner = $this->common_model->check_email_notification($users['id']);
 
+			$pageUrl = site_url().'order-tracking/'.$newOrder;
+
 			/*Notification Code Start*/
 			$insertn['nt_userId'] = $this->input->post('receiver_id');
-    	$insertn['nt_message'] = $tradesman['trading_name'] .' has been created custom offer for you. <a href="' .site_url('order-tracking/'.$newOrder) .'" >View Offer</a>';
+    	$insertn['nt_message'] = 'Your have received a custom offer. <a href="'.$pageUrl.'">Review now!</a>';
 	    $insertn['nt_satus'] = 0;
 	    $insertn['nt_create'] = date('Y-m-d H:i:s');
 	    $insertn['nt_update'] = date('Y-m-d H:i:s');
@@ -144,14 +146,38 @@ class Custom_offer extends CI_Controller
 	    /*Notification Code End*/				
 
 			if($homeOwner){
-				$subject = $tradesman['trading_name']." has been created custom offer for “".$service_details['service_name']."”";				
-				$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">'.$tradesman['trading_name'].'has been created custom offer for '.$service_details['service_name'].'</p>';
-				$html .= '<p style="margin:0;padding:10px 0px">Hi '.$homeOwner['f_name'].'!</p>';
-				$html .= '<p style="margin:0;padding:10px 0px">Service payment amount: £'.$tPrice.'</p>';
-				$html .= '<p style="margin:0;padding:10px 0px"><a href="'.site_url().'order-tracking/'.$newOrder.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Offer</a></p>';
-				$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
+				$cOrder=$this->common_model->get_single_data('service_order',array('id'=>$newOrder));
+
+				$deDays = $this->common_model->get_date_format($cOrder['delivery']);
+				$exDays = $this->common_model->get_date_format($cOrder['offer_expires_days']);
+
+				$subject = "Great news: You've received a custom offer – “".$service_details['service_name']."”";				
 				
-				$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
+				$content = '<p style="margin:0;padding:10px 0px">Dear '.$users['f_name'].', </p>';
+						
+				$content .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].' has crafted a custom offer tailored specifically to your needs. This allows you to receive a service uniquely designed to meet your requirements.</p>';
+				
+				$content .= '<p style="margin:0;padding:10px 0px">Here are the details of the custom offer:</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px">Service Name: '.$service_details['service_name'].'</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px">Price: '.$service_details['service_name'].'</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px">Delivery Time: '.$deDays.'</p>';
+				
+				$content .= "<p style='margin:0;padding:10px 0px'>Please take a moment to review the offer. If everything looks good proceed with the purchase and payment. Click below to view offer:</p>";
+				
+				$content.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Offer</a></div>';
+
+				$content.='<p style="margin:0;padding:10px 0px">Should you have any questions or need adjustments to the offer, feel free to reach out to the seller directly.</p>';
+
+				if($cOrder['is_offer_expires'] != 0){
+					$content.='<p style="margin:0;padding:10px 0px">Please note that the offer is valid till '.$exDays.'.</p>';	
+				}				
+
+				$content.='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
+				
+				$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$content);
 			}
 			$this->session->unset_userdata('latest_custom_order');
 			$this->session->set_flashdata('success',"Order has been added successfully.");

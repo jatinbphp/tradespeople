@@ -737,10 +737,7 @@ class Order_dispute extends CI_Controller
 					$contant .= "Visit our Milestone Payment system on the homeowner help page or contact our customer services if you have any specific questions using our service.<br>";
 					$this->common_model->send_mail($posted_users['email'], $subject, $contant);
 				} else {
-
-
 					$by_name = $bid_users['f_name'] . ' ' . $bid_users['l_name'];
-
 
 					$subject = "Action required: Your Milestone Payment is being Disputed: “" . $order['title'] . "”";
 					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $posted_users['f_name'] . ',</p>';
@@ -841,14 +838,15 @@ class Order_dispute extends CI_Controller
 
 		$userdata = $this->common_model->GetColumnName('users', ['id' => $user_id],['f_name','l_name','trading_name']);
 
-		$job_data = $this->common_model->GetColumnName('tbl_jobs', ['job_id' => $dispute['ds_job_id']],['title']);
+		$job_data = $this->common_model->GetSingleData('service_order',['id'=>$dispute['ds_job_id']]);
+
+		$pageUrl = base_url().'order-dispute/'.$dispute['ds_job_id'];
 
 		if($user_type == 1){
+			//send to homeowner
 			$insertn = [];
-			$insertn['nt_userId'] = $dispute['ds_puser_id'];
-			
-			$insertn['nt_message'] = $userdata['trading_name'].' has made a new offer to settle the milestone dispute. <a href="'.site_url().'order-dispute/'.$job_id.'">View & Respond</a>';
-
+			$insertn['nt_userId'] = $dispute['ds_puser_id'];			
+			$insertn['nt_message'] = 'You got a new payment offer. <a href="'.$pageUrl.'">View now!</a>';
 			$insertn['nt_satus'] = 0;
 			$insertn['nt_apstatus'] = 2;
 			$insertn['nt_create'] = date('Y-m-d H:i:s');
@@ -858,28 +856,31 @@ class Order_dispute extends CI_Controller
 			$this->common_model->insert('notification', $insertn);
 
 			$reciever = $this->common_model->GetColumnName('users', ['id' => $dispute['ds_puser_id']],['f_name','l_name','trading_name','email']);
-			$subject = $userdata['trading_name']." made an offer regarding the milestone dispute for ".$job_data['title'];
 
-			$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $reciever['f_name'] . '</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">'.$userdata['trading_name'].' has made a new offer to settle the milestone dispute.</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">They are willing to settle for payment of:  £'.$offer_amount.'</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">As your next step, you can accept or reject the offer by clicking the respond button below.</p>';
+			$subject = $userdata['trading_name']." has made a payment offer to settle dispute dispute.";
 
-			$contant .= '<br><div style="text-align:center"><a href="' . site_url('order-dispute/' . $job_id) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Respond Now</a></div><br>';
+			$content = '<p style="margin:0;padding:10px 0px">Dear '.$reciever['f_name'].',</p>';
 
-			$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
+			$content .= '<p style="margin:0;padding:10px 0px">'.$userdata['trading_name'].' has made a new payment offer to settle the order dispute.</p>';
 
-			$this->common_model->send_mail($reciever['email'], $subject, $contant);
+			$content .= '<p style="margin:0;padding:10px 0px">They are willing to settle for the payment of: £'.number_format($offer_amount,2).'</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">As your next step, you can accept or reject the offer by clicking the respond button below.</p>';
+
+			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+			$content .= "<p style='margin:0;padding:10px 0px'>Note: You can ask us to step in, if you cannot reach an agreement.</p>";
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$this->common_model->send_mail($reciever['email'], $subject, $content);
 
 		} else {
-
 			//send to trademen
 
 			$insertn = [];
-			$insertn['nt_userId'] = $dispute['ds_buser_id'];
-			
-			$insertn['nt_message'] = $userdata['f_name'].' '.$userdata['l_name'].' has made a new offer to settle the milestone dispute. <a href="'.site_url().'order-dispute/'.$job_id.'">View & Respond</a>';
-
+			$insertn['nt_userId'] = $dispute['ds_buser_id'];			
+			$insertn['nt_message'] = 'You got a new payment offer. <a href="'.$pageUrl.'">View now!</a>';
 			$insertn['nt_satus'] = 0;
 			$insertn['nt_apstatus'] = 2;
 			$insertn['nt_create'] = date('Y-m-d H:i:s');
@@ -889,18 +890,24 @@ class Order_dispute extends CI_Controller
 			$this->common_model->insert('notification', $insertn);
 
 			$reciever = $this->common_model->GetColumnName('users', ['id' => $dispute['ds_buser_id']],['f_name','l_name','trading_name','email']);
-			$subject = $userdata['f_name'].' '.$userdata['l_name']." made an offer regarding the milestone dispute for ".$job_data['title'];
+			
+			$subject = $userdata['f_name']." has made a payment offer to settle dispute dispute.";
 
-			$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $reciever['f_name'] . '</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">'.$userdata['f_name'].' '.$userdata['l_name'].' has made a new offer to settle the milestone dispute.</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">They are willing to settle for payment of:  £'.$offer_amount.'</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">As your next step, you can accept or reject the offer by clicking the respond button below.</p>';
+			$content = '<p style="margin:0;padding:10px 0px">Dear '.$reciever['trading_name'].',</p>';
 
-			$contant .= '<br><div style="text-align:center"><a href="' . site_url('order-dispute/' . $job_id) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Respond Now</a></div><br>';
+			$content .= '<p style="margin:0;padding:10px 0px">'.$userdata['f_name'].' has made a new payment offer to settle the order dispute.</p>';
 
-			$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
+			$content .= '<p style="margin:0;padding:10px 0px">They are willing to settle for the payment of: £'.number_format($offer_amount,2).'</p>';
 
-			$this->common_model->send_mail($reciever['email'], $subject, $contant);
+			$content .= '<p style="margin:0;padding:10px 0px">As your next step, you can accept or reject the offer by clicking the respond button below.</p>';
+
+			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+			$content .= "<p style='margin:0;padding:10px 0px'>Note: You can ask us to step in, if you cannot reach an agreement.</p>";
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$this->common_model->send_mail($reciever['email'], $subject, $content);
 		}
 
 		$this->session->set_flashdata('msg', '<div class="alert alert-success">Your offer has been submitted successfully.</div>');
@@ -1348,7 +1355,7 @@ class Order_dispute extends CI_Controller
 
 			$page['home_stepin'] = $home_stepin;
 			$page['trades_stepin'] = $trades_stepin;
-			
+
 			$page['disput_comment'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dct_userid >='=>'0'), 'dct_id', 'ASC');
 
 			$page['disput_comment_arbitration'] = $this->common_model->get_all_data('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'],'dct_userid <'=>'0'), 'dct_id', 'ASC');
@@ -1356,7 +1363,9 @@ class Order_dispute extends CI_Controller
 			$page['checkOtherUserReply'] = $this->common_model->GetColumnName('disput_conversation_tbl', array('dct_disputid' => $dispute['ds_id'], 'dct_userid' => $dispute['dispute_to']), ['dct_created'], false, 'dct_id', 'asc');
 			
 			$page['files'] = $this->common_model->get_all_data('dispute_file',"dispute_id = '".$dispute['ds_id']."' and conversation_id is null", 'id', 'DESC');
+
 			$page['post_id'] = $dispute['ds_job_id'];
+
 			$page['bid_amont'] = $this->common_model->get_single_data('tbl_jobpost_bids', array('job_id' => $dispute['ds_job_id'], 'bid_by' => $dispute['ds_buser_id']));
 
 			$this->load->view('site/order_dispute', $page);
@@ -1428,15 +1437,56 @@ class Order_dispute extends CI_Controller
 		$job_id = $this->input->post('job_id');
 		
 		$jobDetails = $this->common_model->get_single_data('service_order', array('id' => $job_id));
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$jobDetails['service_id']]);
+		$homeOwner = $this->common_model->GetSingleData('users',['id'=>$puser]);
+    $tradesman = $this->common_model->GetSingleData('users',['id'=>$buser]);
+    $pageUrl = base_url().'order-dispute/'.$job_id;
 
 		if ($buser != $userid) {
 			$user = $this->common_model->get_userDataByid($buser);
 			$to_mail = $user['email'];
 			$type = $user['type'];
+
+			/*Send To Tradesman*/
+			$subject = $homeOwner['f_name'].' has replied to your order dispute: “'.$jobDetails['order_id'].'” ';
+
+			$content = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].',</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">You\'ve received a new reply from '.$homeOwner['f_name'].' on your order dispute.</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">We encourage you to respond as soon as possible or make a payment offer to settle the dispute. If you can´t resolve the issue, you can  ask us to step-in.</p>';
+
+			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View and Reply Now</a></div>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $tradesman['email'];
+			$nt_message = $homeOwner['f_name'].' responded to your order dispute. <a href="'.$pageUrl.'">View now!</a>';
+			$nt_user = $tradesman['id'];
+			$nt_puser = $homeOwner['id'];
+
 		} else if ($puser != $userid) {
 			$user = $this->common_model->get_userDataByid($puser);
 			$to_mail = $user['email'];
 			$type = $user['type'];
+
+			/*Send To Homeowner*/
+			$subject = $tradesman['trading_name'].' has replied to your order dispute: “'.$jobDetails['order_id'].'” ';
+
+			$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].',</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">You\'ve received a new reply from '.$tradesman['trading_name'].' on your order dispute.</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">We encourage you to respond as soon as possible or make a payment offer to settle the dispute. If you can´t resolve the issue, you can  ask us to step-in.</p>';
+
+			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View and Reply Now</a></div>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $homeOwner['email'];
+			$nt_message = $tradesman['trading_name'].' responded to your order dispute. <a href="'.$pageUrl.'">View now!</a>';
+			$nt_user = $homeOwner['id'];
+			$nt_puser = $tradesman['id'];
 		}
 		
 		$admin = $this->common_model->get_single_data('admin', ['id' => 1]);
@@ -1462,8 +1512,7 @@ class Order_dispute extends CI_Controller
 			if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
 				foreach ($_POST['file_name'] as $key => $file) {
 					$file_name = $_POST['file_name'][$key];
-					$file_original_name = $_POST['file_original_name'][$key];
-					
+					$file_original_name = $_POST['file_original_name'][$key];					
 					$insertDoc = [];
 					$insertDoc['uploaded_by'] = $userid;
 					$insertDoc['dispute_id'] = $ds;
@@ -1472,8 +1521,7 @@ class Order_dispute extends CI_Controller
 					$insertDoc['original_name'] = $file_original_name;
 					$insertDoc['created_at'] = date('Y-m-d H:i:s');
 					$insertDoc['updated_at'] = date('Y-m-d H:i:s');
-					$this->common_model->insert('dispute_file', $insertDoc);
-					
+					$this->common_model->insert('dispute_file', $insertDoc);					
 				}
 			}
 
@@ -1481,48 +1529,18 @@ class Order_dispute extends CI_Controller
 
 			$this->common_model->update_data('disput_conversation_tbl', array('dct_disputid' => $ds, 'message_to' => $userid, 'dct_userid >= ' => 0), array('is_reply_pending' => 0));
 
-			$insertn['nt_userId'] = $user['id'];
-			if ($login_user['trading_name']) {
-				$insertn['nt_message'] = $login_user['trading_name'] . ' responded to the milestone payment dispute. <a href="' . site_url('dispute/' . $ds) . '">View & reply!</a>';
-			} else {
-				$insertn['nt_message'] = '' . $login_user['f_name'] . ' ' . $login_user['l_name'] . ' responded to the order payment dispute. <a href="' . site_url('order-dispute/' . $job_id) . '">View & reply!</a>';
-			}
+			$insertn['nt_userId'] = $nt_user;
+			$insertn['nt_message'] = $nt_message;
 			$insertn['nt_satus'] = 0;
 			$insertn['nt_apstatus'] = 0;
 			$insertn['nt_create'] = date('Y-m-d H:i:s');
 			$insertn['nt_update'] = date('Y-m-d H:i:s');
 			$insertn['job_id'] = $job_id;
-			$insertn['posted_by'] = $puser;
+			$insertn['posted_by'] = $nt_puser;
 			$run2 = $this->common_model->insert('notification', $insertn);
 
-			if ($type == 1) {
-				$subject = $login_user['f_name'] . " has replied to the order payment dispute “" . $jobDetails['order_id'] . "”";
+			$sent = $this->common_model->send_mail($uMail,$subject,$content);
 
-				$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
-				$contant .= '<br><p style="margin:0;padding:10px 0px">You´ve received a new reply from ' . $login_user['f_name'] . ' on the order payment dispute for prder “' . $jobDetails['order_id'] . '”. We encourage you to respond as soon as possible to resolve your issue.</p>';
-
-				$contant .= '<br><div style="text-align:center"><a href="' . site_url('order-dispute/' . $job_id) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Reply Now</a></div><br>';
-
-				$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' . date('d M Y h:i:s A', strtotime($end_time)) . ' will result in closing this case and deciding in the client favour.  Any decision reached is final and irrevocable. Once a case has been closed, it can\'t be reopened.</p>';
-
-				$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-				$this->common_model->send_mail($to_mail, $subject, $contant);
-			} else {
-
-				$subject = $login_user['trading_name'] . " has replied to the order payment dispute: “" . $jobDetails['order_id'] . "”";
-
-				$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
-				$contant .= '<br><p style="margin:0;padding:10px 0px">You\'ve received a new reply from ' . $login_user['trading_name'] . ' on the order payment dispute for order “' . $jobDetails['order_id'] . '”. We encourage you to respond as soon as possible to resolve the issue.</p>';
-
-				$contant .= '<br><div style="text-align:center"><a href="' . site_url('order-dispute/' . $job_id) . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View and reply now</a></div><br>';
-
-				$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' . date('d M Y h:i:s A', strtotime($end_time)) . ' will result in closing this case and deciding in favour of ' . $login_user['trading_name'] . '. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
-
-				$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
-
-				$this->common_model->send_mail($to_mail, $subject, $contant);
-			}
 			$_SESSION['succ'] = 'Your comment has been submitted successfully.';
 
 			//$db->redirect('dispute.php?tsr_id='.$tsr_id);

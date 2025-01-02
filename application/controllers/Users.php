@@ -440,8 +440,7 @@ class Users extends CI_Controller
 		echo json_encode(1);
 	}
 
-	public function delete_request()
-	{
+	public function delete_request(){
 		$this->db->where('id', $this->input->post('row_id'))->delete('contact_request');
 		echo json_encode(1);
 	}
@@ -3825,6 +3824,42 @@ class Users extends CI_Controller
 					}
 				}		        
 			}
+
+			$homeOwner = $this->common_model->check_email_notification($serviceOrder['user_id']);
+			$tradesman = $this->common_model->GetSingleData('users',['id'=>$tuser_id]);
+			$homeUser = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
+
+			$pageUrl = site_url().'order-tracking/' . $serviceOrder['id'];
+
+			if($homeOwner){
+				$subject = "Great news: Your order is ready!";
+				$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Order Payment Made Successfully!</p>';
+				$html .= '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].'!</p>';
+				$html .= '<p style="margin:0;padding:10px 0px">We’re excited to let you know that your order with '.$tradesman['trading_name'].' has been delivered!</p>';
+				$html .= '<p style="margin:0;padding:10px 0px">You can now:</p>';
+
+				$html .= '<p style="margin:0;padding:0px 0px"><img src="' . site_url() . 'img/check.png" style="padding-top:0;display:inline-block;vertical-align:middle;margin-right:0px;height:20px" class="CToWUd"> Review the delivery to ensure it meets your expectations.</p>';
+				$html .= '<p style="margin:0;padding:0px 0px"><img src="' . site_url() . 'img/check.png" style="padding-top:0;display:inline-block;vertical-align:middle;margin-right:0px;height:20px" class="CToWUd"> Approve it if everything looks perfect.</p>';
+				$html .= '<p style="margin:0;padding:0px 0px"><img src="' . site_url() . 'img/check.png" style="padding-top:0;display:inline-block;vertical-align:middle;margin-right:0px;height:20px" class="CToWUd"> Provide feedback to help the pro improve and guide others.</p>';
+
+				$html .= '<p style="margin:0;padding:10px 0px">If you have any questions, need revisions, request one, or reach out to the Pro through the chat if you need an assistant. They’re here to make sure you’re 100% satisfied with the results!</p>';				
+
+				$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Order Now</a></div>';
+				$html .= '<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
+				
+				$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
+
+				$insertn['nt_userId'] = $homeUser['id'];
+				$insertn['nt_message'] = "Great news! Your order has been delivered. <a href='".$pageUrl."'>Review Now!</a>";
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_apstatus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $serviceOrder['id'];
+				$insertn['posted_by'] = $tradesMan['id'];
+				$run2 = $this->common_model->insert('notification',$insertn);				
+			}
+
 			echo json_encode(['status' => 1, 'message' => 'Order Submited']);
 		}else{
 			echo json_encode(['status' => 0, 'message' => 'Order Not Submitted']);
@@ -4455,11 +4490,11 @@ class Users extends CI_Controller
 			$rMinutes = '';
 			$days = 0;
 			$data['is_extended'] = 0;
-			$exten_delivery_date = '';
-			
+			$exten_delivery_date = '';			
+
 			if(!empty($statusHistory)){
-				$days = $package_data[$order['package_type']]['days'];
-				$currentDate = new DateTime($statusHistory['created_at']);			
+				$days = $order['is_custom'] == 0 ? $package_data[$order['package_type']]['days'] : $order['delivery'];
+				$currentDate = new DateTime($statusHistory['created_at']);
 				$currentDate->modify("+$days days");
 				$exten_delivery_date = $currentDate->format('Y-m-d');
 			}
@@ -4472,13 +4507,11 @@ class Users extends CI_Controller
 
 			if($order['is_custom'] == 1){
 				$days = $order['delivery'];
-				$currentDate = new DateTime($order['created_at']);			
+				$currentDate = new DateTime($statusHistory['created_at']);
 				$currentDate->modify("+$days days");
 				$delivery_date = $currentDate->format('D jS F, Y H:i');	
-
 				$currentDate1 = new DateTime();
 				$interval = $currentDate1->diff($currentDate);
-
 				$rDays = $interval->days; 
 				$rHours = $interval->h;
 				$rMinutes = $interval->i;
@@ -4489,7 +4522,6 @@ class Users extends CI_Controller
 				$currentDate = new DateTime($statusHistory['created_at']);
 				$currentDate->modify("+$days days");
 				$delivery_date = $currentDate->format('D jS F, Y H:i');	
-
 				$currentDate1 = new DateTime();
 				$interval = $currentDate1->diff($currentDate);
 
@@ -4791,12 +4823,13 @@ class Users extends CI_Controller
 		if(!empty($serviceOrder)){
 			if($status == 'request_modification'){
 				$description = $this->input->post('modification_decription');
-				$subject = "You received request of modification for order number: “".$serviceOrder['order_id']."”";
+				$subject = $homeOwner['f_name']." has Requested a Revision of your Delivered Work: ".$serviceOrder['order_id'];
 				$flashMsg = 'Modification Request Submited';
 				$flashErrMsg = 'Modification Request Not Submitted';				
 			}else{
 				$description = $this->input->post('approve_decription');
-				$subject = "Order approved for order number: “".$serviceOrder['order_id']."”"; 
+				$subject = "Your Order Is Complete – Great Work!"; 
+				$subject2 = "Your Order was Approved and Completed!"; 
 				$flashMsg = 'Order Approved';
 				$flashErrMsg = 'Order Not Approved';
 				$is_review = $mId == 0 ? 1 : 0;
@@ -4889,13 +4922,83 @@ class Users extends CI_Controller
 
 				/*Tradesman Email Code*/
         
-        $newStatus = ucwords(str_replace('_',' ',$status));                
+        $newStatus = ucwords(str_replace('_',' ',$status));  
+        $pageUrl = site_url().'order-tracking/' . $serviceOrder['id'];              
 
-        if($tradesman){                   
-          $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';     
-          $html .= '<p style="margin:0;padding:10px 0px"><b>Description:</b></p>';
-          $html .= '<p style="margin:0;padding:10px 0px">'. $this->input->post('modification_decription').'</p>';                    
-          $this->common_model->send_mail($tradesman['email'],$subject,$html);
+        if($tradesman){
+        	if($status == 'completed'){
+	          $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['trading_name'] .',</p>';     
+	          $html .= '<p style="margin:0;padding:10px 0px">Congratulations! The order [Order ID: '.$serviceOrder['order_id'].'] with '.$homeOwner['f_name'].' has been successfully completed. The customer has reviewed and accepted your delivery. Amazing job!</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Your hard work and professionalism keep our platform thriving, and your efforts are truly appreciated.</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">What happens next?</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Payment Processing: Your earnings from this order are now being processed and will be added to your account balance shortly.</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Customer Feedback: Leave a review for the customer and keep an eye out for the their review to see what they loved about your work.</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Feel free to showcase this completed work as part of your portfolio to attract more clients. Don’t forget to update your profile with any new skills or achievements!</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Thank you for being an outstanding Pro on our platform. Keep up the fantastic work!</p>';
+	          $html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Leave Review Now</a></div>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+	                              
+	          $this->common_model->send_mail($tradesman['email'],$subject,$html);
+
+	          $insertn['nt_userId'] = $tradesman['id'];
+						$insertn['nt_message'] = "Your work was approved and completed. <a href='".$pageUrl."'>Leave Review Now!</a>";
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_apstatus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $serviceOrder['id'];
+						$insertn['posted_by'] = $homeOwner['id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+	        }else{
+	        	$html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['trading_name'] .',</p>';     
+	          $html .= "<p style='margin:0;padding:10px 0px'>Your client, ".$homeOwner['f_name'].", has requested a revision for the work you recently delivered. Here's what you need to know to ensure a smooth process:";
+
+	          $html .= "<p style='margin:0;padding:0px 0px'>1. Review the client's comments carefully to understand their expectations.</p>";
+	          $html .= "<p style='margin:0;padding:0px 0px'>2. Reach out to the client via our messaging system if you need clarification.</p>";
+						$html .= "<p style='margin:0;padding:0px 0px; padding-bottom:10px'>3. Submit the revised work as soon as possible within the agreed timeline.</p>";
+
+						$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Request Now</a></div>';
+
+	          $html .= '<p style="margin:0;padding:10px 0px">Revisions are a great opportunity to strengthen your professional relationship with the client and deliver outstanding results.</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Thank you for your dedication to providing high-quality service! </p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+	                              
+	          $this->common_model->send_mail($tradesman['email'],$subject,$html);
+
+	          $insertn['nt_userId'] = $tradesman['id'];
+						$insertn['nt_message'] = $homeOwner['f_name']." has requested a revision. <a href='".$pageUrl."'>View Request Now!</a>";
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_apstatus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $serviceOrder['id'];
+						$insertn['posted_by'] = $homeOwner['id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+	        }
+        }
+
+        if($homeOwner){   
+        	if($status == 'completed'){
+	          $html = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].',</p>';     
+	          $html .= '<p style="margin:0;padding:10px 0px">We’re excited to inform you that your order has been successfully completed.</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">We’re thrilled to see that the final delivery met your expectations and was approved by you. We hope this experience has been smooth and rewarding!</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">If you’d like to Leave a review, it only takes few minutes and helps other customers find top-notch services.</p>';
+	          $html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Leave Review Now</a></div>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Thank you for being part of our community. We look forward to helping you achieve even more in the future.</p>';
+	          $html .= '<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
+	                              
+	          $this->common_model->send_mail($homeOwner['email'],$subject2,$html);
+
+	          $insertn['nt_userId'] = $homeOwner['id'];
+						$insertn['nt_message'] = "Great news! You order has been approved and completed. <a href='".$pageUrl."'>Leave Review Now!</a>";
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_apstatus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $serviceOrder['id'];
+						$insertn['posted_by'] = $homeOwner['id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+	        }
         }		        
 			}
 			echo json_encode(['status' => 'success', 'message' => $flashMsg, 'is_review' => $is_review]);
@@ -5032,16 +5135,65 @@ class Users extends CI_Controller
 			$userid = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
       $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
-      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);            
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+      $pageUrl = base_url().'order-dispute/'.$oId;
+
+      $setting = $this->common_model->GetColumnName('admin', array('id' => 1));
+      $newTime = '';			
+			$newTime = date('jS F Y', strtotime($input['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
 
 			/*Manage Order History*/
       if($userid == $homeOwner['id']){
       	$senderId = $userid;
       	$receiverId = $tradesman['id'];
+
+      	$content = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].',</p>';
+
+				$content .= '<p style="margin:0;padding:10px 0px">Your order is been disputed by '.$homeOwner['f_name'].' and awaits your response.</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$serviceOrder['order_id'].'</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £'.number_format($serviceOrder['total_price'],2).'</p>';
+
+				$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+				$content .= "<p style='margin:0;padding:10px 0px'>We encourage to respond and resolve this issue you amicably. If you can't solve it, you or ".$homeOwner['f_name']." can ask us to step in.</p>";
+
+				$content .= '<p style="margin:0;padding:10px 0px">Note: You not responding before '.$newTime.' (i.e. '.$setting['waiting_time'].' days) will result in closing this case and deciding in the favour of '.$homeOwner['f_name'].'.</p>';
+
+				$content .= '<p style="margin:0;padding:10px 0px">If you receive a reply from '.$homeOwner['f_name'].', please respond as soon as you can as not responding within the given time closes the case automatically and decided in favour of '.$homeOwner['f_name'].'.</p>';
+
+				$content .= "<p style='margin:0;padding:10px 0px'>Any decision reached is final and irrevocable. Once a case is close, it can't reopen.</p>";
+
+				$content .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $tradesman['email'];
       }
       if($userid == $tradesman['id']){
       	$senderId = $userid;
       	$receiverId = $homeOwner['id'];
+
+      	$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].',</p>';
+
+				$content .= '<p style="margin:0;padding:10px 0px">Your order is been disputed by '.$tradesman['trading_name'].' and awaits your response.</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$serviceOrder['order_id'].'</p>';
+
+				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £'.number_format($serviceOrder['total_price'],2).'</p>';
+
+				$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+				$content .= "<p style='margin:0;padding:10px 0px'>We encourage to respond and resolve this issue you amicably. If you can't solve it, you or ".$tradesman['trading_name']." can ask us to step in.</p>";
+
+				$content .= '<p style="margin:0;padding:10px 0px">Note: You not responding before '.$newTime.' (i.e. '.$setting['waiting_time'].' days) will result in closing this case and deciding in the favour of '.$tradesman['trading_name'].'.</p>';
+
+				$content .= '<p style="margin:0;padding:10px 0px">If you receive a reply from '.$tradesman['trading_name'].', please respond as soon as you can as not responding within the given time closes the case automatically and decided in favour of '.$tradesman['trading_name'].'.</p>';
+
+				$content .= "<p style='margin:0;padding:10px 0px'>Any decision reached is final and irrevocable. Once a case is close, it can't reopen.</p>";
+
+				$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $homeOwner['email'];
       }
 
 			/*Manage Order History*/
@@ -5058,7 +5210,7 @@ class Users extends CI_Controller
 			$insert2['order_id'] = $oId;
 			$insert2['status'] = 'disputed';
 			$insert2['description'] = $reason;
-			$run = $this->common_model->insert('order_submit_conversation', $insert2);
+			$this->common_model->insert('order_submit_conversation', $insert2);
 
       /*Entry in Dispute Table*/
 
@@ -5068,9 +5220,7 @@ class Users extends CI_Controller
 
       if($userid == $tradesman['id']){
       	$dispute_to	= $homeOwner['id'];
-      }
-
-      // $dispute_to = ($userid == $serviceOrder['user_id']) ? $tradesman['id'] : $userid;
+      }      
 
 	    $insert['ds_in_id'] = $userid;
 	    $insert['dispute_type'] = 2;
@@ -5091,140 +5241,52 @@ class Users extends CI_Controller
 			}
 
 			if($userid == $service['user_id']) {
-				$run = $this->common_model->insert('tbl_dispute',$insert);
-
-				$in['status'] = 5;
-				$in['dispute_id'] = $run;
-				$this->common_model->update('tbl_milestones',array('post_id'=>$serviceOrder['id']),$in);
-
+				$run1 = $this->common_model->insert('tbl_dispute',$insert);
 				$login_user = $this->common_model->get_userDataByid($homeOwner['id']);
-
-				$insertn['nt_userId'] = $serviceOrder['user_id'];
-				$insertn['nt_message'] = ''.$login_user['f_name'].' '.$login_user['l_name'].' has opened an order dispute. <a href="'.site_url('order-dispute/'.$serviceOrder['id']).'">View & respond!</a>';
-				$insertn['nt_satus'] = 0;
-				$insertn['nt_apstatus'] = 0;
-				$insertn['nt_create'] = date('Y-m-d H:i:s');
-				$insertn['nt_update'] = date('Y-m-d H:i:s');
-				$insertn['job_id'] = $serviceOrder['id'];
-				$insertn['posted_by'] = $userid;
-				$run2 = $this->common_model->insert('notification',$insertn);
 			} else {
-				$run = $this->common_model->insert('tbl_dispute',$insert);
-
-				$login_user = $this->common_model->get_userDataByid($tradesman['id']);
-
-				$insertn['nt_userId'] = $service['user_id'];
-				$insertn['nt_message'] = ''.$login_user['trading_name'] .' opened a order dispute. <a href="'.site_url('order-dispute/'.$serviceOrder['id']).'">View & respond!</a>';
-				$insertn['nt_satus'] = 0;
-				$insertn['nt_apstatus'] = 0;
-				$insertn['nt_create'] = date('Y-m-d H:i:s');
-				$insertn['nt_update'] = date('Y-m-d H:i:s');
-				$insertn['job_id'] = $serviceOrder['id'];
-				$insertn['posted_by'] = $userid;
-				$run2 = $this->common_model->insert('notification',$insertn);
+				$run1 = $this->common_model->insert('tbl_dispute',$insert);
+				$login_user = $this->common_model->get_userDataByid($tradesman['id']);				
 			}
 
-			if($run){
-				if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
-					foreach ($_POST['file_name'] as $key => $file) {
-						$file_name = $_POST['file_name'][$key];
-						$file_original_name = $_POST['file_original_name'][$key];
-						
-						$insertDoc = [];
-						$insertDoc['uploaded_by'] = $userid;
-						$insertDoc['dispute_id'] = $run;
-						$insertDoc['file'] = $file_name;
-						$insertDoc['original_name'] = $file_original_name;
-						$insertDoc['created_at'] = date('Y-m-d H:i:s');
-						$insertDoc['updated_at'] = date('Y-m-d H:i:s');
-						$this->common_model->insert('dispute_file', $insertDoc);
-						
-					}
+			$in['status'] = 5;
+			$in['dispute_id'] = $run;
+			$this->common_model->update('tbl_milestones',array('post_id'=>$serviceOrder['id']),$in);
+
+			if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
+				foreach ($_POST['file_name'] as $key => $file) {
+					$file_name = $_POST['file_name'][$key];
+					$file_original_name = $_POST['file_original_name'][$key];
+					
+					$insertDoc = [];
+					$insertDoc['uploaded_by'] = $userid;
+					$insertDoc['dispute_id'] = $run;
+					$insertDoc['file'] = $file_name;
+					$insertDoc['original_name'] = $file_original_name;
+					$insertDoc['created_at'] = date('Y-m-d H:i:s');
+					$insertDoc['updated_at'] = date('Y-m-d H:i:s');
+					$this->common_model->insert('dispute_file', $insertDoc);						
 				}
-
-				$login_users=$this->common_model->get_single_data('users',array('id'=>$userid));					
-				$bid_users=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
-				$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time'));					
-				$today = date('Y-m-d H:i:s');		
-				$newTime = date('Y-m-d H:i:s',strtotime($today.' +'.$setting['waiting_time'].' days'));
-				
-				if($serviceOrder['user_id'] == $userid){ // open by home owner
-					$by_name= $homeOwner['f_name'].' '.$homeOwner['l_name'];				
-					
-					$subject = "Action required: Order Payment is being Disputed, Order “" .$serviceOrder['order_id']."”"; 
-					$contant = '<p style="margin:0;padding:10px 0px">Your Order Payment is being Disputed and required your response!</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">Hi ' .$tradesman['f_name'] .',</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px"> ' .$by_name .' is disputing their payment for order “' .$serviceOrder['order_id'].'”</p>';
-					$contant .= '<p style="margin:0;padding:10px 0px">Order Dispute Amount: £' .$serviceOrder['total_price'] .'</p>';
-					
-					$contant .= '<p style="margin:0;padding:10px 0px">We encourage you to respond and resolve this issue with the ' .$by_name .'. If you can\'t solve this problem, you or  ' .$by_name .' can ask us to step in.</p>';
-					
-					$contant .= '<br><div style="text-align:center"><a href="' .site_url('order-dispute/' .$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason and Respond</a></div><br>';
-					
-					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' .date("d-M-Y H:i:s", strtotime($newTime)) .' will result in closing this case and deciding in the client favour.  Any decision reached is final and irrevocable. Once a case has been closed, it can\'t be reopened.</p>';
-					
-					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-					
-					$this->common_model->send_mail($homeOwner['email'],$subject,$contant);
-					
-
-					$subject = "Your order payment dispute has been opened: “" .$job['title']."”.";
-					$contant = 'Hi '.$tradesman['f_name'].',<br><br>';
-					$contant.= 'Your order payment dispute against '.$tradesman['trading_name'].' has been opened successfully and awaits their response.<br><br>';
-					$contant.= 'Order number: '.$serviceOrder['order_id'].'<br>';
-					$contant.= 'Order Dispute Amount: £'.$serviceOrder['total_price'].'<br><br>';
-					$contant.= "We encourage to respond and resolve this issue you amicably. If you can't solve it, you or ".$tradesman['trading_name']." can ask us to step in.<br>";
-					$contant .= '<br><div style="text-align:center"><a href="' .site_url('order-dispute/' .$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View  dispute</a></div><br>';
-					$contant.= $tradesman['trading_name'].' not responding within '.date("d-M-Y H:i:s", strtotime($newTime)).' (i.e. '.$setting['waiting_time'].' days) will result in closing this case and deciding in your favour.<br><br>';
-					$contant.= 'If you receive a reply from  '.$tradesman['trading_name'].', please respond as soon as you can as not responding within 2 days closes the case automatically and decided in favour of '.$tradesman['trading_name'].'.<br><br>';
-					$contant.= "Any decision reached is final and irrevocable. Once a case is close, it can't reopen.<br><br>";
-					
-					$contant.= "Visit our Order Payment system on the homeowner help page or contact our customer services if you have any specific questions using our service.<br>";
-					$this->common_model->send_mail($tradesman['email'],$subject,$contant);
-					
-				} else {
-
-					$to_mail= $tradesman['email'];	
-					$to_name= $tradesman['f_name'];
-					$type= $tradesman['type'];
-					$to_first_name= $tradesman['f_name'];
-					
-					$by_name= $bid_users['f_name'].' '.$bid_users['l_name'];
-					
-					$by_mail= $bid_users['email'];
-					
-					$subject = "Action required: Your Milestone Payment is being Disputed: “" .$serviceOrder['order_id']."”"; 
-					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' .$tradesman['f_name'] .',</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px"> ' .$tradesman['trading_name'] .' is disputing your order payment to them & need your response.</p>';
-					
-					$contant .= '<p style="margin:0;padding:0px 0px">Order number: ' .$serviceOrder['order_id'].'</p>';
-					$contant .= '<p style="margin:0;padding:0px 0px">Order Dispute Amount: £' .$serviceOrder['total_price'] .'</p>';
-					
-					$contant .= '<p style="margin:0;padding:10px 0px">We encourage you to respond and resolve this issue with ' .$tradesman['trading_name'] .'. If you can\'t solve it, you or  '.$tradesman['trading_name'].' can ask us to step in.</p>';
-					
-					$contant .= '<br><div style="text-align:center"><a href="' .site_url('order-dispute/'.$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason and Respond</a></div><br>';
-					
-					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Not responding within ' .date("d-M-Y H:i:s", strtotime($newTime)) .' will result in closing this case and deciding in '.$tradesman['trading_name'].' favour.  Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
-					
-					$contant .= '<br><p style="margin:0;padding:10px 0px">Visit our Milestone Payment system on homeowner help page or contact our customer services if you have any specific questions using our service.</p>';
-					$this->common_model->send_mail($tradesman['email'],$subject,$contant);
-					
-					
-					$subject = "Your order payment dispute has been opened: “" .$serviceOrder['order_id']."”.";
-					$contant = 'Hi '.$homeOwner['f_name'].',<br><br>';
-					$contant.= 'Your order payment dispute against '.$tradesman['trading_name'].' has been opened successfully and awaits their response.<br><br>';
-					$contant.= 'Order number: '.$serviceOrder['order_id'].'<br>';
-					$contant.= 'Order Dispute Amount: £'.$serviceOrder['total_price'].'<br><br>';
-					$contant.= "We encourage ".$tradesman['trading_name']." to respond and resolve this issue with you amicably. If you can't solve it, you or '".$tradesman['trading_name']."' can ask us to step in.<br><br>";
-					$contant .= '<div style="text-align:center"><a href="' .site_url('order-dispute/'.$serviceOrder['id']) .'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View dispute</a></div><br>';
-					$contant.= 'Please note: '.$tradesman['trading_name'].' not responding within '.date("d-M-Y H:i:s", strtotime($newTime)).' (i.e. '.$setting['waiting_time'].' days) will result in closing this case and deciding in your favour. <br><br>';
-					$contant.= 'If you receive a reply from '.$tradesman['trading_name'].', please respond as soon as you can as not responding within 2 days closes the case automatically and decides in favour of '.$tradesman['trading_name'].'. <br><br>';
-					$contant.= "Any decision reached is final and irrevocable. Once a case is closed, it can't reopen.<br><br>";
-					$contant.= "Visit our Order Payment system on the tradespeople  help page or contact our customer services if you have any specific questions using our service.<br>";
-
-					$this->common_model->send_mail($homeOwner['email'],$subject,$contant);
-				}				
 			}
+
+			$login_users=$this->common_model->get_single_data('users',array('id'=>$userid));					
+			$bid_users=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+			$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time'));					
+			$today = date('Y-m-d H:i:s');		
+			$newTime = date('Y-m-d H:i:s',strtotime($today.' +'.$setting['waiting_time'].' days'));
+
+			$insertn['nt_userId'] = $receiverId;
+			$insertn['nt_message'] = "Your order has been disputed. <a href='".$pageUrl."'>Act Now!..</a>";
+			$insertn['nt_satus'] = 0;
+			$insertn['nt_apstatus'] = 0;
+			$insertn['nt_create'] = date('Y-m-d H:i:s');
+			$insertn['nt_update'] = date('Y-m-d H:i:s');
+			$insertn['job_id'] = $serviceOrder['id'];
+			$insertn['posted_by'] = $senderId;
+			$run2 = $this->common_model->insert('notification',$insertn);
+
+			$subject = "Urgent Action needed: Your order is been disputed - ".$service['service_name'].".";				
+			$sent = $this->common_model->send_mail($uMail,$subject,$content);
+
       echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not disputed.']);
@@ -5260,14 +5322,47 @@ class Users extends CI_Controller
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
       $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
       $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+      $pageUrl = site_url().'order-tracking/'.$serviceOrder['id'];
 
       if($hId == $homeOwner['id']){
       	$senderId = $hId;
       	$receiverId = $tradesman['id'];
+
+      	$subject = $homeOwner['f_name'].', Request to Cancel '.$serviceOrder['order_id'].'!';
+
+      	$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
+						
+				$content1 .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].', has requested your consent to cancel order '.$serviceOrder['order_id'].' for the service titled "'.$service['service_name'].'"</p>';
+				
+				$content1 .= "<p style='margin:0;padding:10px 0px'>To review the reason for this cancellation, please click below.</p>";
+				
+				$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
+
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $tradesman['email'];
+
+				$nMessage = $homeOwner['f_name'].' sent you an order cancellation request. <a href="'.$pageUrl.'">Review Now!</a>';				
       }
       if($hId == $tradesman['id']){
       	$senderId = $hId;
       	$receiverId = $homeOwner['id'];
+
+      	$subject = $tradesman['trading_name'].', Request to Cancel '.$serviceOrder['order_id'].'!';
+
+      	$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
+						
+				$content1 .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].', has requested your consent to cancel order '.$serviceOrder['order_id'].' for the service titled "'.$service['service_name'].'"</p>';
+				
+				$content1 .= "<p style='margin:0;padding:10px 0px'>To review the reason for this cancellation, please click below.</p>";
+				
+				$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
+
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $homeOwner['email'];
+
+				$nMessage = $tradesman['trading_name'].' sent you an order cancellation request. <a href="'.$pageUrl.'">Review Now!</a>';
       }
 
 			/*Manage Order History*/
@@ -5278,10 +5373,7 @@ class Users extends CI_Controller
         'status' => 'cancelled'
       ];
       $this->common_model->insert('service_order_status_history', $insert1);
-
-      // $updateData['is_cancel'] = 3;
-      // $this->common_model->update('order_submit_conversation',array('order_id'=>$oId),$updateData);
-
+ 
       $insert['sender'] = $senderId;
 			$insert['receiver'] = $receiverId;
 			$insert['order_id'] = $oId;
@@ -5294,16 +5386,17 @@ class Users extends CI_Controller
 			$in['dispute_id'] = null;
 			$this->common_model->update('tbl_milestones',array('post_id'=>$oId),$in);
 
-			/*Tradesman Email Code*/
-      if($tradesman){
-      	$subject = "Order cancelled for order number: “".$serviceOrder['order_id']."”"; 
+			$this->common_model->send_mail($uMail,$subject,$content1);
 
-        $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
-        $html .= '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is cancelled</p>';                
-        $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Cancel:</b></p>';
-        $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
-        $this->common_model->send_mail($tradesman['email'],$subject,$html);
-      }
+			$insertn['nt_userId'] = $receiverId;
+			$insertn['nt_message'] = $nMessage;
+			$insertn['nt_satus'] = 0;
+			$insertn['nt_create'] = date('Y-m-d H:i:s');
+			$insertn['nt_update'] = date('Y-m-d H:i:s');
+			$insertn['job_id'] = $oId;
+			$insertn['posted_by'] = $senderId;
+			$run2 = $this->common_model->insert('notification',$insertn);
+
       echo json_encode(['status' => 'error', 'message' => 'Order cancelled successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
@@ -5352,16 +5445,27 @@ class Users extends CI_Controller
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
-			/*Tradesman Email Code*/
-      if($tradesman){
-      	$subject = "Order cancelled for order number: “".$serviceOrder['order_id']."”"; 
+			/*Homeowner Email Code*/
+			if($hId == $tradesman['id']){
+	      $subject = "Your custom offer was withdrawn!";
+							
+				$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
+				
+				$content .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].' has withdrawn their custom offer.</p>';
+				
+				$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+				
+				$this->common_model->send_mail($homeOwner['email'],$subject,$content);
 
-        $html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesman['f_name'] .',</p>';
-        $html .= '<p style="margin:0;padding:10px 0px">Order No. ' . $serviceOrder['order_id'] .', is cancelled</p>';                
-        $html .= '<p style="margin:0;padding:10px 0px"><b>Reason For Cancel:</b></p>';
-        $html .= '<p style="margin:0;padding:10px 0px">'. $reason.'</p>';                    
-        $this->common_model->send_mail($tradesman['email'],$subject,$html);
-      }
+				$insertn1['nt_userId'] = $homeOwner['id'];
+				$insertn1['nt_message'] = 'Your custom offer was withdrawn.';
+				$insertn1['nt_satus'] = 0;
+				$insertn1['nt_create'] = date('Y-m-d H:i:s');
+				$insertn1['nt_update'] = date('Y-m-d H:i:s');
+				$insertn1['job_id'] = $oId;
+				$insertn1['posted_by'] = $tradesman['id'];
+				$run2 = $this->common_model->insert('notification',$insertn1);
+			}
       echo json_encode(['status' => 'success', 'message' => 'Offer cancelled successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Offer is not cancelled.']);
@@ -5374,29 +5478,68 @@ class Users extends CI_Controller
 
 		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
 		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+		$pageUrl = site_url().'order-tracking/'.$serviceOrder['id'];
 
 		$user_id = $this->session->userdata('user_id');
 
 		if($user_id == $get_users['id']){
     	$senderId = $user_id;
     	$receiverId = $get_users1['id'];
+
+    	$subject = 'Your order has been cancelled';
+
+    	$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users1['trading_name'].', </p>';
+						
+			$content1 .= '<p style="margin:0;padding:10px 0px">Your order was cancelled by '.$get_users['f_name'].'.</p>';
+			
+			$content1 .= '<p style="margin:0;padding:0px 0px">Order ID: '.$serviceOrder['order_id'].'</p>';
+			$content1 .= '<p style="margin:0;padding:0px 0px">Service name: '.$service['service_name'].'</p>';
+			
+			$content1 .= "<p style='margin:0;padding:10px 0px'>Review the reason for this cancellation by clicking below.</p>";
+			
+			$content1 .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
+
+			$content1 .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $get_users1['email'];
+
+			$nMessage = 'Your order was cancelled. <a href="'.$pageUrl.'" >View Now!</a>';
     }
     if($user_id == $get_users1['id']){
     	$senderId = $user_id;
     	$receiverId = $get_users['id'];
+
+    	$subject = 'Your order has been cancelled';
+
+    	$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
+						
+			$content1 .= '<p style="margin:0;padding:10px 0px">Your order was cancelled by '.$get_users1['trading_name'].' and payment refunded to your wallet.</p>';
+			
+			$content1 .= '<p style="margin:0;padding:0px 0px">Order ID: '.$serviceOrder['order_id'].'</p>';
+			$content1 .= '<p style="margin:0;padding:0px 0px">Service name: '.$service['service_name'].'</p>';
+			
+			$content1 .= "<p style='margin:0;padding:10px 0px'>Review the reason for this cancellation by clicking below.</p>";
+			
+			$content1 .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
+
+			$content1 .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $get_users1['email'];
+
+			$nMessage = 'Your order was cancelled. <a href="'.$pageUrl.'" >View Now!</a>';
     }		
 
 		$update2['u_wallet']=$get_users['u_wallet']+$serviceOrder['price'];
 	
 		$runss1 = $this->common_model->update('users',array('id'=>$serviceOrder['user_id']),$update2);
 
-		$insertn['nt_userId'] = $serviceOrder['user_id'];
-		$insertn['nt_message'] = $get_users1['trading_name'] .' accepted your <a href="'.site_url().'order-tracking/'.$id.'">order cancellation request!</a>';
+		$insertn['nt_userId'] = $receiverId;
+		$insertn['nt_message'] = $nMessage;
 		$insertn['nt_satus'] = 0;
 		$insertn['nt_create'] = date('Y-m-d H:i:s');
 		$insertn['nt_update'] = date('Y-m-d H:i:s');
 		$insertn['job_id'] = $id;
-		$insertn['posted_by'] = $serviceOrder['user_id'];
+		$insertn['posted_by'] = $senderId;
 		$run2 = $this->common_model->insert('notification',$insertn);
 
 	  $transactionid = md5(rand(1000,999).time());
@@ -5429,9 +5572,6 @@ class Users extends CI_Controller
     ];
     $this->common_model->insert('service_order_status_history', $insert1);
 
-    // $updateData['is_cancel'] = 3;
-    // $this->common_model->update('order_submit_conversation',array('order_id'=>$id),$updateData);
-
     $insert2['sender'] = $senderId;
 		$insert2['receiver'] = $receiverId;
 		$insert2['order_id'] = $id;
@@ -5440,27 +5580,7 @@ class Users extends CI_Controller
 		$insert2['description'] = $get_users1['trading_name'].' has been approved your order cancellation request';
 		$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-		$subject1 = "Your order cancellation request has been approved!"; 
-		$content1= 'Hi '.$get_users['f_name'].', <br><br>';
-		$content1.='Your request to cancel your order payment has been approved by '.$get_users1['trading_name'].'<br><br>';
-		$content1.='Order number: '.$serviceOrder['order_id'].'<br>';
-		$content1.='Order amount: £'.$serviceOrder['price'].'<br>';
-		$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
-
-		$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
-		$this->common_model->send_mail($get_users['email'],$subject1,$content1);
-	
-		$subject = "Order Payment cancellation request for order “".$serviceOrder['order_id']."” accepted"; 
-		$content= 'Hi '.$get_users1['f_name'].', <br><br>';
-		$content.= 'Your order payment cancellation request was successfully.<br><br>';
-		$content.= 'Order number:'.$serviceOrder['order_id'].'.<br>';
-		$content.= 'Order amount: £'.$serviceOrder['price'].'.<br><br>';
-
-		//$content.='<div style="text-align:center"><a href="'.site_url().'order-tracking/='.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Request new milestone</a></div><br>';
-
-		$content.='View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.<br><br>';
-
-		$runMail = $this->common_model->send_mail($get_users1['email'],$subject,$content);
+		$runMail = $this->common_model->send_mail($uMail,$subject,$content1);
 
 		if($runMail){
 			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of order has been approved successfully.']);
@@ -5492,6 +5612,13 @@ class Users extends CI_Controller
       	$uname = $tradesman['trading_name'];
       	$wuname = $homeOwner['f_name'].' '.$homeOwner['l_name'];
 
+      	$content = '<p style="margin:0;padding:10px 0px">Dear '.$uname.', </p>';
+						
+				$content .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
+				
+				$content .='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $tradesman['email'];
       }
       if($hId == $tradesman['id']){
       	$senderId = $hId;
@@ -5499,6 +5626,14 @@ class Users extends CI_Controller
       	$reason = $tradesman['trading_name'].' has been withdraw order cancellation request';
       	$uname = $homeOwner['f_name'].' '.$homeOwner['l_name'];
       	$wuname = $tradesman['trading_name'];
+
+      	$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
+						
+				$content .= '<p style="margin:0;padding:10px 0px">'.$wuname.' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
+				
+				$content .='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $tradesman['email'];
       }
 
 			/*Manage Order History*/
@@ -5510,9 +5645,6 @@ class Users extends CI_Controller
       ];
       $this->common_model->insert('service_order_status_history', $insert1);
 
-      // $updateData['is_cancel'] = 3;
-    	// $this->common_model->update('order_submit_conversation',array('order_id'=>$oId),$updateData);
-
       $insert['sender'] = $senderId;
 			$insert['receiver'] = $receiverId;
 			$insert['order_id'] = $oId;
@@ -5521,14 +5653,19 @@ class Users extends CI_Controller
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
-			/*Tradesman Email Code*/
-      if($tradesman){
-      	$subject = "Withdraw order cancellation request for order number: “".$serviceOrder['order_id']."”"; 
+			/*Email Code*/
+			$subject = "Order Cancellation Request Withdrawn!"; 
+			$this->common_model->send_mail($uMail,$subject,$content);			
 
-        $html = '<p style="margin:0;padding:10px 0px">Hi ' . $uname .',</p>';
-        $html .= '<p style="margin:0;padding:10px 0px">'.$wuname.' has been withdraw order cancellation request for order number: ' . $serviceOrder['order_id'] .'</p>';
-        $this->common_model->send_mail($tradesman['email'],$subject,$html);
-      }
+			$insertn1['nt_userId'] = $receiverId;
+			$insertn1['nt_message'] = 'Your order cancellation request was withdrawn.';
+			$insertn1['nt_satus'] = 0;
+			$insertn1['nt_create'] = date('Y-m-d H:i:s');
+			$insertn1['nt_update'] = date('Y-m-d H:i:s');
+			$insertn1['job_id'] = $oId;
+			$insertn1['posted_by'] = $senderId;
+			$run2 = $this->common_model->insert('notification',$insertn1);
+      
       echo json_encode(['status' => 'error', 'message' => 'Withdraw order cancellation request successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order cancellation request is not withdraw.']);
@@ -5540,6 +5677,7 @@ class Users extends CI_Controller
 
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$id]);
 		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+		$pageUrl = site_url().'order-tracking/'.$serviceOrder['id'];
 
 		$updatem['status'] = $serviceOrder['previous_status'];
 		$updatem['is_cancel'] = 3;
@@ -5547,16 +5685,45 @@ class Users extends CI_Controller
 		$runs = $this->common_model->update('service_order',array('id'=>$id),$updatem);
 
 		$user_id = $this->session->userdata('user_id');
-		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
-		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+		$get_users = $this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
+		$get_users1 = $this->common_model->get_single_data('users',array('id'=>$service['user_id']));
 
 		if($user_id == $get_users['id']){
     	$senderId = $user_id;
     	$receiverId = $get_users1['id'];
+
+    	$content = '<p style="margin:0;padding:10px 0px">Dear '.$get_users1['trading_name'].', </p>';
+									
+			$content .= '<p style="margin:0;padding:10px 0px">Your request to cancel the order has been reviewed but was unfortunately rejected by '.$get_users['f_name'].'. I understand that you may have concerns on reasons for the rejection. </p>';
+
+			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason</a></div>';
+			
+			$content .= "<p style='margin:0;padding:10px 0px'>We´re committed to working together to reach a resolution.If you are unable to come to a mutual agreement, please be aware that you have the option to deliver the work completed so far and proceed with opening a formal dispute on the order. This will allow both parties to present their perspectives and seek a fair resolution through the platform.</p>";
+
+			$content .= "<p style='margin:0;padding:10px 0px'>If you would like to discuss this matter further, please don't hesitate to reach out. We´re happy to assist in resolving this in a way that benefits both of you.</p>";
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $get_users1['email'];
+
     }
     if($user_id == $get_users1['id']){
     	$senderId = $user_id;
     	$receiverId = $get_users['id'];
+
+    	$content = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
+									
+			$content .= '<p style="margin:0;padding:10px 0px">Your request to cancel the order has been reviewed but was unfortunately rejected by '.$get_users1['trading_name'].'. I understand that you may have concerns on reasons for the rejection.</p>';
+
+			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason</a></div>';
+			
+			$content .= "<p style='margin:0;padding:10px 0px'>We´re committed to working together to reach a resolution.If you are unable to come to a mutual agreement, please be aware that you have the option to get [Trading_ name] to deliver the work completed so far and proceed with opening a formal dispute on the order. This will allow both parties to present their perspectives and seek a fair resolution through the platform.</p>";
+
+			$content .= "<p style='margin:0;padding:10px 0px'>If you would like to discuss this matter further, please don't hesitate to reach out. We´re happy to assist in resolving this in a way that benefits both of you.</p>";
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $get_users['email'];
     }
 
 		/*Manage Order History*/
@@ -5569,9 +5736,6 @@ class Users extends CI_Controller
 
     $this->common_model->insert('service_order_status_history', $insert1);
 
-    // $updateData['is_cancel'] = 3;
-    // $this->common_model->update('order_submit_conversation',array('order_id'=>$id),$updateData);
-
     $insert2['sender'] = $senderId;
 		$insert2['receiver'] = $receiverId;
 		$insert2['order_id'] = $id;
@@ -5580,31 +5744,18 @@ class Users extends CI_Controller
 		$insert2['description'] = $this->input->post('decline_reason');
 		$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-		$get_users=$this->common_model->get_single_data('users',array('id'=>$serviceOrder['user_id']));
-		$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['userid']));
-
-    	$insertn['nt_userId'] = $serviceOrder['user_id'];
-    	$insertn['nt_message'] = $get_users1['trading_name'] .' rejected your order cancellation request. <a href="' .site_url('order-tracking/'.$id) .'" >View reason</a>';
-	    $insertn['nt_satus'] = 0;
-	    $insertn['nt_create'] = date('Y-m-d H:i:s');
-	    $insertn['nt_update'] = date('Y-m-d H:i:s');
-	    $insertn['job_id'] = $id;
-	    $insertn['posted_by'] = $serviceOrder['user_id'];
-	    $run2 = $this->common_model->insert('notification',$insertn);
-
-		$u_name=$get_users['f_name'].' '.$get_users['l_name'];
+  	$insertn['nt_userId'] = $receiverId;
+  	$insertn['nt_message'] = 'Your order cancellation request was declined automatically. <a href="'.$pageUrl.'">View Reason!</a>';
+    $insertn['nt_satus'] = 0;
+    $insertn['nt_create'] = date('Y-m-d H:i:s');
+    $insertn['nt_update'] = date('Y-m-d H:i:s');
+    $insertn['job_id'] = $id;
+    $insertn['posted_by'] = $senderId;
+    $run2 = $this->common_model->insert('notification',$insertn);
 	
-		$subject = "Your order cancellation request has been declined"; 
-		$content.='Your request to cancel your order has been declined by '.$get_users1['trading_name'].'<br><br>';
-		$content.='Order number: '.$serviceOrder['order_id'].'<br>';
-		$content.='Order amount: £'.$serviceOrder['price'].'<br>';
+		$subject = "Order Cancellation Request Rejected - Next Steps"; 
+		$run = $this->common_model->send_mail($uMail,$subject,$content);
 
-		$content.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$id.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View reason</a></div><br>';
-		
-		$content.='We encourage you to discuss with '.$get_users1['trading_name'].' and resolve the issue amicably. If however you  believe you can´t come to a resolution, you can open a order dispute.<br><br>';
-
-		$content.='View our <a href="'.site_url().'homeowner-help-centre#Dispute-Resolution-1">Order Dispute</a> section on the homeowner help page or contact our customer services if you have any specific questions using our service.';
-		$run = $this->common_model->send_mail($get_users['email'],$subject,$content);
 		if($run){
 			echo json_encode(['status' => 1, 'message' => 'Success! Request cancellation of order has been declined successfully.']);
 		}

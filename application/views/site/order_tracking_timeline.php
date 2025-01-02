@@ -449,7 +449,7 @@
 							<div class="row">
 								<div id="loader2" class="loader_ajax_small"></div>
 								<div class="col-md-6 col-xs-12 imgAdd" id="imageContainer1">
-									<div class="file-upload-btn addWorkImage1 imgUp">
+									<div class="file-upload-btn addWorkImage1">
 										<div class="btn-text main-label">Attachments</div>
 										<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
 										<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
@@ -460,7 +460,7 @@
 							<input type="hidden" name="multiModificationImgIds" id="multiModificationImgIds">	
 							<div class="row" id="previousModificationImg">
 							</div>
-							<div class="text-center">
+							<div class="text-center mt-4">
 								<button type="button" onclick="submitModification('request_modification_form_<?php echo $list['id']; ?>')" class="btn btn-warning mr-3">
 									Submit request
 								</button>

@@ -322,7 +322,12 @@ class Checkout extends CI_Controller
 		$service_details = $this->common_model->get_single_data('my_services', array('id'=>$service_id));
 
 		$exsId = !empty($cartData['ex_service_ids']) ? $cartData['ex_service_ids'] : '';
-		$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;
+
+		if(!empty($order)){
+			$serviceQty = $order['service_qty'];
+		}else{
+			$serviceQty = !empty($cartData['service_qty']) ? $cartData['service_qty'] : 1;	
+		}
 		$extraService = '';
 		$total_amount = 0;
 		$totalPrice = 0;
@@ -404,6 +409,7 @@ class Checkout extends CI_Controller
 				$insert['time'] = $cartData['time'];
 				$insert['task_address_id'] = $task_address_id;
 				$newOrder = $this->common_model->insert('service_order', $insert);
+				$orderType = 'single';
 			}else{
 				$days = $order['delivery'];
 				$curDate = new DateTime();
@@ -427,9 +433,10 @@ class Checkout extends CI_Controller
 				$insert['task_address_id'] = $task_address_id;
 				$insert['is_accepted'] = 1;
 
-				$this->common_model->update('service_order',array('id'=>$order['id']),$insert);
+				$this->common_model->update('service_order',array('id'=>$order['id']),$insert);			
 
 				$newOrder = $order['id'];
+				$orderType = $order['order_type'];
 			}			
 
 			if($newOrder){
@@ -480,30 +487,62 @@ class Checkout extends CI_Controller
 					$this->common_model->insert('transactions',$data1);
 				}
 
-				$data1 = [
-					'milestone_level' => 0,
-					'milestone_type' => 'service',
-					'milestone_name' => $service_details['service_name'],
-					'milestone_amount' => $mainPrice,
-					'userid' => $service_details['user_id'],
-					'post_id' => $newOrder,
-					'cdate' => date('Y-m-d H:i:s'),
-					'posted_user' => $uId,
-					'created_by' => $uId,
-					'bid_id' => $service_details['id']
-				];
+				if($orderType == 'single'){
+					$data1 = [
+						'milestone_level' => 0,
+						'milestone_type' => 'service',
+						'milestone_name' => $service_details['service_name'],
+						'milestone_amount' => $mainPrice,
+						'userid' => $service_details['user_id'],
+						'post_id' => $newOrder,
+						'cdate' => date('Y-m-d H:i:s'),
+						'posted_user' => $uId,
+						'created_by' => $uId,
+						'bid_id' => $service_details['id']
+					];
 
-				$run = $this->common_model->insert('tbl_milestones',$data1);
+					$run = $this->common_model->insert('tbl_milestones',$data1);
+
+					if($order['is_requirements'] == 0 && $order['order_type'] == 'single'){
+						$insert1 = [
+			        'user_id' => $order['user_id'],
+			        'service_id' => $order['service_id'],
+			        'order_id' => $order['id'],
+			        'milestone_id' => $run,
+			        'milestone_level' => 0,
+			        'status' => 'active'
+			      ];
+			      $this->common_model->insert('service_order_status_history', $insert1);
+					}
+				}				
 
 				/*Homeowner Email Code*/
+
+				$pageUrl = site_url().'order-tracking/' . $newOrder;
+				$nOrder = $this->common_model->get_single_data('service_order', array('id'=>$newOrder));
+
+				if($nOrder['is_custom'] == 1){
+					$days = $nOrder['delivery'];
+					$currentDate = new DateTime($nOrder['created_at']);			
+					$currentDate->modify("+$days days");
+					$delivery_date = $currentDate->format('D jS F, Y H:i');	
+				}
+
+				if($nOrder['is_custom'] == 0){
+					$days = $package_data[$nOrder['package_type']]['days'];
+					$currentDate = new DateTime($nOrder['created_at']);
+					$currentDate->modify("+$days days");
+					$delivery_date = $currentDate->format('D jS F, Y H:i');	
+				}
+
 				$homeOwner = $this->common_model->check_email_notification($users['id']);
 				if($homeOwner){
-					$subject = "Order Payment Made for “".$service_details['service_name']."”";				
+					$subject = "Thanks for Your Order!";
 					$html = '<p style="margin:0;font-size:20px;padding-bottom:5px;color:#2875d7">Order Payment Made Successfully!</p>';
 					$html .= '<p style="margin:0;padding:10px 0px">Hi '.$homeOwner['f_name'].'!</p>';
-					$html .= '<p style="margin:0;padding:10px 0px">'.$get_users['f_name'].' '.$get_users['l_name'].' has made a milestone payment for the job “'.$post_title.'.” </p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Service payment amount:  £'.$mainPrice.'</p>';					
-					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople help page or contact our customer services if you have any specific questions using our service.</p>';
+					$html .= '<p style="margin:0;padding:10px 0px">Thanks for your order. If you have any instruction or requirements that the Pro needs to know, please submit it now and get the order started. You can view the status of your order including delivery date by visiting Your Orders page.</p>';
+					$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order Now</a></div>';
+					$html .= '<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
 					
 					$sent = $this->common_model->send_mail($homeOwner['email'],$subject,$html);
 				}
@@ -511,13 +550,34 @@ class Checkout extends CI_Controller
 				/*Tradesman Email Code*/
 				$tradesMan = $this->common_model->check_email_notification($service_details['user_id']);
 				if($tradesMan){
-					$subject = "Your Service Payment created successfully: “".$service_details['service_name']."”"; 
-					$html = '<p style="margin:0;padding:10px 0px">Service Payment Made Successfully!</p>';
+					$subject = "You have a new Order: “".$service_details['service_name']."”"; 
 					$html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesMan['f_name'] .',</p>';		
-					$html .= '<p style="margin:0;padding:10px 0px">Your service payment to '.$tradesMan1['trading_name'].' created successfully.</p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Service title: '.$service_details['service_name'].'</p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Service Amount: £'.$discounted_amount.'</p>';
+					$html .= '<p style="margin:0;padding:10px 0px">Great news! A customer just placed an order for your service on Tradespeople Hub.</p>';		
+					$html .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$nOrder['order_id'].'</p>';		
+					$html .= '<p style="margin:0;padding:0px 0px"><b>Total order amount:</b> £'.number_format($nOrder['total_price'],2).'</p>';
+					$html .= '<p style="margin:0;padding:0px 0px"><b>Delivery Date/Time:</b> '.$delivery_date.'</p>';		
+					$html .= '<p style="margin:0;padding:10px 0px"><b>Next Steps:</b></p>';		
+					$html .= '<p style="margin:0;padding:0px 0px">1. Review the order details carefully.</p>';		
+					$html .= "<p style='margin:0;padding:0px 0px'>2. Reach out to the customer if you need any clarifications via the platform's messaging system.</p>";
+					$html .= "<p style='margin:0;padding:0px 0px'>3. Start working on the order and deliver your service on time.";
+					$html .= "<p style='margin:0;padding:10px 0px'>You can view the full order details and get started by clicking the button below:";
+
+					$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order Now</a></div>';
+
+					$html .= '<p style="margin:0;padding:10px 0px">Pro Tip: Communication is key! Keep the customer updated on progress or any potential delays to ensure a smooth experience.</p>';
+					$html .= '<p style="margin:0;padding:10px 0px">Good luck, and thank you for providing exceptional service to our customers!  </p>';
+					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($tradesMan['email'],$subject,$html);
+
+					$insertn['nt_userId'] = $service_details['user_id'];
+					$insertn['nt_message'] = "You have received a new order. <a href='".$pageUrl."'>View now!</a>";
+					$insertn['nt_satus'] = 0;
+					$insertn['nt_apstatus'] = 0;
+					$insertn['nt_create'] = date('Y-m-d H:i:s');
+					$insertn['nt_update'] = date('Y-m-d H:i:s');
+					$insertn['job_id'] = $nOrder['id'];
+					$insertn['posted_by'] = $homeOwner['id'];
+					$run2 = $this->common_model->insert('notification',$insertn);
 				}
 				
 				$this->common_model->delete(['id'=>$latestCartId],'cart');

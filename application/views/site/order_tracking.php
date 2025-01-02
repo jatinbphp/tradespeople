@@ -1711,15 +1711,15 @@
 				},
 				errorPlacement: function (error, element) {
 					if (element.attr("id") == "multiImgIds3") {
-		                error.insertAfter("#attachmentRow"); // Adjust error placement
-		            } else {
-		            	error.insertAfter(element);
-		            }
-		        },
-		        submitHandler: function (form) {
-		            orderSubmit(); // Ensure this function is defined
-		        }
-		    });
+            error.insertAfter("#attachmentRow"); // Adjust error placement
+          } else {
+          	error.insertAfter(element);
+          }
+        },
+        submitHandler: function (form) {
+          orderSubmit(); // Ensure this function is defined
+        }
+		  });
 		});
 
 		const el = document.getElementById('imageContainer1');
@@ -2049,7 +2049,7 @@
 				});
 			});
 
-			function submitModification(frmId){
+			/*function submitModification(frmId){
 				$('#loader').removeClass('hide');
 				formData = $("#"+frmId).serialize();
 
@@ -2101,7 +2101,93 @@
 						});
 					}
 				});
-			}	
+			}*/
+
+			function submitModification(frmId) {
+			    // Show the loader
+			    $('#loader').removeClass('hide');
+
+			    // Get the form element
+			    var form = $("#" + frmId);
+			    
+			    if (frmId.startsWith('request_modification_form_')) {
+			    	form.find(".error-message").remove();
+		        // Validation for Request Modification Form
+		        var isValid = true;
+
+		        var description = form.find("textarea[name='modification_decription']");
+		        if (description.val().trim() === "") {
+		            isValid = false;
+		            description.after("<span class='error-message' style='color: red;'>Modification description is required.</span>");
+		        }
+
+		        var fileInput = form.find("input[name='modification_attachments']");
+		        if (fileInput.length && fileInput[0].files.length === 0) {
+		            isValid = false;
+		            var fileInputDiv = form.find(".addWorkImage1");
+		            fileInputDiv.after("<span class='error-message' style='color: red;'>Please upload at least one image.</span>");
+		        }
+
+		        if (!isValid) {
+		            $('#loader').addClass('hide');
+		            return;
+		        }
+			    }
+
+			    // If validation passed, proceed with AJAX submission
+			    var formData = new FormData(form[0]); // Use FormData for file uploads
+
+			    $.ajax({
+		        url: '<?= site_url().'users/submitModification'; ?>',
+		        type: 'POST',
+		        data: formData,
+		        processData: false, // Required for file uploads
+		        contentType: false, // Required for file uploads
+		        dataType: 'json',
+		        success: function (result) {
+		            $('#loader').addClass('hide');
+		            if (result.status == 0) {
+		                swal({
+		                    title: "Error",
+		                    text: result.message,
+		                    icon: "error"
+		                }, function () {
+		                    window.location.reload();
+		                });
+		            } else if (result.status == 2) {
+		                swal({
+		                    title: "Login Required!",
+		                    text: "If you want to order, please login first!",
+		                    icon: "warning"
+		                }, function () {
+		                    window.location.href = '<?php echo base_url().'login'; ?>';
+		                });
+		            } else {
+		                if (result.is_review == 1) {
+		                    window.location.href = '<?php echo base_url().'orderCompleted/'.$order['id']; ?>';
+		                } else {
+		                    swal({
+		                        title: "Success",
+		                        text: result.message,
+		                        icon: "success"
+		                    }, function () {
+		                        window.location.reload();
+		                    });
+		                }
+		            }
+		        },
+		        error: function (xhr, status, error) {
+		            $('#loader').addClass('hide');
+		            swal({
+		                title: "Error",
+		                text: "Something went wrong.",
+		                icon: "error"
+		            }, function () {
+		                window.location.reload();
+		            });
+		        }
+		    });
+			}
 		}	
 
 		$('#reject-offer-btn').on('click', function(){
