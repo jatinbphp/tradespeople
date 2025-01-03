@@ -460,8 +460,8 @@ if ($checkOtherUserReply) {
 		    width: 60%;
 		}
 		.m-1 {
-    margin: 2px;
-}
+		    margin: 2px;
+		}
 	}
 
 	/*----------LOADER CSS START----------*/
@@ -824,7 +824,10 @@ if ($checkOtherUserReply) {
 											} ?>
 										</ul>
 										<p style="text-align:center; margin-bottom: 0;">Project will be closed upon resolution</p>
-									</div>									
+									</div>
+									<a class="pull-right btn_show_milestone pt-2" onclick="$('.ShowMilestones').toggleClass('hide')">
+										Show Milestones
+									</a>					
 								</div>
 							</div>
 							<div class="row pt-3 border-top treadman_50">

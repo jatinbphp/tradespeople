@@ -4499,9 +4499,9 @@ class Users extends CI_Controller
 				$exten_delivery_date = $currentDate->format('Y-m-d');
 			}
 
-			if($today > $exten_delivery_date && $order['is_exten_delivery_accepted'] == 0 || $order['status'] == 'extened_decline'){
+			if(!empty($exten_delivery_date) && $today > $exten_delivery_date && $order['is_exten_delivery_accepted'] == 0 || $order['status'] == 'extened_decline'){
 				$data['is_extended'] = 1;
-			}			
+			}	
 
 			$data['requirements'] = $order['is_custom'] == 1 && $order['is_requirements'] == 0 ? [0=>''] : [];
 
@@ -5125,7 +5125,7 @@ class Users extends CI_Controller
 		$oId = $this->input->post('order_id');
 		$reason = $this->input->post('reason');
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
-
+		
 		$input['status'] = 'disputed';
 		$input['is_cancel'] = 5;
 		$input['reason'] = $reason;
@@ -5141,6 +5141,7 @@ class Users extends CI_Controller
       $setting = $this->common_model->GetColumnName('admin', array('id' => 1));
       $newTime = '';			
 			$newTime = date('jS F Y', strtotime($input['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
+			$oPrice = $serviceOrder['total_price'] - $serviceOrder['service_fees'];
 
 			/*Manage Order History*/
       if($userid == $homeOwner['id']){
@@ -5153,7 +5154,7 @@ class Users extends CI_Controller
 
 				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$serviceOrder['order_id'].'</p>';
 
-				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £'.number_format($serviceOrder['total_price'],2).'</p>';
+				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £'.number_format($oPrice,2).'</p>';
 
 				$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
 
@@ -5171,7 +5172,7 @@ class Users extends CI_Controller
       }
       if($userid == $tradesman['id']){
       	$senderId = $userid;
-      	$receiverId = $homeOwner['id'];
+      	$receiverId = $homeOwner['id'];      	
 
       	$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].',</p>';
 
@@ -5179,7 +5180,7 @@ class Users extends CI_Controller
 
 				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$serviceOrder['order_id'].'</p>';
 
-				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £'.number_format($serviceOrder['total_price'],2).'</p>';
+				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £'.number_format($oPrice,2).'</p>';
 
 				$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
 
@@ -5229,7 +5230,7 @@ class Users extends CI_Controller
 			$insert['ds_puser_id'] = $serviceOrder['user_id'];		
 			$insert['caseid'] = time();
 			$insert['ds_status'] = 0;
-			$insert['total_amount'] = $serviceOrder['price'];
+			$insert['total_amount'] = $serviceOrder['price']*$serviceOrder['service_qty'];
 			$insert['disputed_by'] = $userid;
 			$insert['dispute_to'] = $dispute_to;
 			$insert['ds_comment'] = $reason;
@@ -5248,9 +5249,22 @@ class Users extends CI_Controller
 				$login_user = $this->common_model->get_userDataByid($tradesman['id']);				
 			}
 
+			$today = date('Y-m-d H:i:s');
+
 			$in['status'] = 5;
-			$in['dispute_id'] = $run;
+			$in['dispute_id'] = $run1;
 			$this->common_model->update('tbl_milestones',array('post_id'=>$serviceOrder['id']),$in);
+
+			$milestones = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$serviceOrder['id']]);
+
+			foreach ($milestones as $miles) {
+				$insert0 = [];
+				$insert0['dispute_id'] = $run1;
+				$insert0['milestone_id'] = $miles['id'];
+				$insert0['created_at'] = $today;
+				$insert0['updated_at'] = $today;
+				$this->common_model->insert('dispute_milestones',$insert0);
+			}			
 
 			if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
 				foreach ($_POST['file_name'] as $key => $file) {
@@ -5259,7 +5273,7 @@ class Users extends CI_Controller
 					
 					$insertDoc = [];
 					$insertDoc['uploaded_by'] = $userid;
-					$insertDoc['dispute_id'] = $run;
+					$insertDoc['dispute_id'] = $run1;
 					$insertDoc['file'] = $file_name;
 					$insertDoc['original_name'] = $file_original_name;
 					$insertDoc['created_at'] = date('Y-m-d H:i:s');
@@ -5271,7 +5285,7 @@ class Users extends CI_Controller
 			$login_users=$this->common_model->get_single_data('users',array('id'=>$userid));					
 			$bid_users=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
 			$setting = $this->common_model->get_coloum_value('admin',array('id'=>1),array('waiting_time'));					
-			$today = date('Y-m-d H:i:s');		
+					
 			$newTime = date('Y-m-d H:i:s',strtotime($today.' +'.$setting['waiting_time'].' days'));
 
 			$insertn['nt_userId'] = $receiverId;

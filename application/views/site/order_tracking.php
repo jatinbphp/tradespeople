@@ -1420,16 +1420,16 @@
                  </tbody>
               </table>
 
-							<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']; ?></span></b></label>
+							<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span></b></label>
 
 							<label class="control-label" for="textinput"><b>Offer the amount you are prepared to pay:</b></label>
 
 							<div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-gbp"></i></span>
-                <input type="number" id="offer_amount<?php echo $order['id']; ?>" required="" min="0" name="offer_amount" max="<?php echo $order['price']; ?>" class="form-control" placeholder="Amount">
+                <input type="number" id="offer_amount<?php echo $order['id']; ?>" required="" min="0" name="offer_amount" max="<?php echo $order['price']*$order['service_qty']; ?>" class="form-control" placeholder="Amount">
              	</div>
 
-             	<p>Please enter an amount between <i class="fa fa-gbp"></i>0 to <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']; ?></span>.</p>
+             	<p>Please enter an amount between <i class="fa fa-gbp"></i>0 to <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span>.</p>
 
              	<div class="caution-txt">
                 <b class="text-danger">Caution!</b> You are entering the amount of the order that you are happy for the other

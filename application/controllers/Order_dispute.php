@@ -236,9 +236,9 @@ class Order_dispute extends CI_Controller
 		$home = $this->common_model->get_userDataByid($homeowner);
 		$trades = $this->common_model->get_userDataByid($tradesman);
 
-		//$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$id."'","tbl_milestones.*",true);
+		$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$id."'","tbl_milestones.*",true);
 
-		$milestones = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$job_id]);
+		//$milestones = $this->common_model->get_all_data('tbl_milestones',['post_id'=>$job_id]);
 
 		if ($user_id == $tradesman) {
 			$accname = $trades['trading_name'];
@@ -383,23 +383,12 @@ class Order_dispute extends CI_Controller
 				$insert2['receiver'] = $receiverId;
 				$insert2['order_id'] = $post_id;
 				$insert2['status'] = 'disputed_accepted';
-				$insert2['description'] = 'Congratulation this project has been completed successfully.';
+				$insert2['description'] = 'Congratulation this order has been completed successfully.';
 				$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
 				if ($final_amount >= $serviceOrder['price']) {
 					$post_title = $serviceOrder['order_id'];
-					$insertn['nt_userId'] = $serviceOrder['user_id'];
-
-					$insertn['nt_message'] = 'Congratulation this project has been completed successfully.<a href="' . site_url() . 'profile/' . $home['id'] . '">' . $home['f_name'] . ' ' . $home['l_name'] . '</a> has released all the order amount of <a href="' . site_url() . 'order-tracking/'.$serviceOrder['id'] . '"> ' . $post_title . '</a> project and this project has been completed.';
-
-					$insertn['nt_satus'] = 0;
-					$insertn['nt_apstatus'] = 2;
-					$insertn['nt_create'] = date('Y-m-d H:i:s');
-					$insertn['nt_update'] = date('Y-m-d H:i:s');
-					$insertn['job_id'] = $serviceOrder['id'];
-					$insertn['posted_by'] = $serviceOrder['user_id'];
-					$run2 = $this->common_model->insert('notification', $insertn);
-
+					
 					/*mail to homeOwner*/
 					$subject = "Congratulations on Order Completion: “" . $post_title . "”";
 
@@ -433,29 +422,14 @@ class Order_dispute extends CI_Controller
 
 					$runs1 = $this->common_model->send_mail($trades['email'], $subject, $html);
 
-					$insertn1['nt_userId'] = $serviceOrder['user_id'];
-					
-					$insertn1['nt_message'] = 'Congratulations! Your order has been completed.';
-
-					$insertn1['nt_satus'] = 0;
-					$insertn1['nt_apstatus'] = 2;
-					$insertn1['nt_create'] = date('Y-m-d H:i:s');
-					$insertn1['nt_update'] = date('Y-m-d H:i:s');
-					$insertn1['job_id'] = $serviceOrder['id'];
-					$insertn1['posted_by'] = $serviceOrder['user_id'];
-
-					$this->common_model->insert('notification', $insertn1);
-
 					$insertn2['nt_userId'] = $serviceOrder['user_id'];
-					$insertn2['nt_message'] = 'Congratulation this order has been completed successfully. Homeowner has released all the order amount of <a href="' . site_url() . 'order-tracking/'.$serviceOrder['id'].'">'.$post_title.'</a> project and this order has been completed.';
-
+					$insertn2['nt_message'] = 'Congratulation this order has been completed successfully.';
 					$insertn2['nt_satus'] = 0;
 					$insertn2['nt_apstatus'] = 2;
 					$insertn2['nt_create'] = date('Y-m-d H:i:s');
 					$insertn2['nt_update'] = date('Y-m-d H:i:s');
 					$insertn2['job_id'] = $serviceOrder['id'];
 					$insertn2['posted_by'] = $serviceOrder['user_id'];
-
 					$this->common_model->insert('notification', $insertn2);
 				}
 			} else {
@@ -983,10 +957,10 @@ class Order_dispute extends CI_Controller
 
 			$job_data = $this->common_model->GetColumnName('tbl_jobs', ['job_id' => $dispute['ds_job_id']],['title']);
 			$reciever = $this->common_model->GetColumnName('users', ['id' => $dispute['ds_puser_id']],['f_name','l_name','trading_name','email']);
-			$subject = $userdata['trading_name']." rejected a new offer on the milestone dispute for the ".$job_data['title'];
+			$subject = $userdata['trading_name']." rejected a new offer";
 
 			$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $reciever['f_name'] . '</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">'.$userdata['trading_name'].' has rejected your new offer to settle the milestone dispute.</p>';
+			$contant .= '<br><p style="margin:0;padding:10px 0px">'.$userdata['trading_name'].' has rejected your new offer to settle the dispute.</p>';
 			$contant .= '<br><p style="margin:0;padding:10px 0px">They are not willing to settle for payment of:  £'.$dispute['homeowner_offer'].'</p>';
 			$contant .= '<br><p style="margin:0;padding:10px 0px">As your next step, you can adjust your offer by clicking on the adjust offer button below.</p>';
 
@@ -1013,10 +987,10 @@ class Order_dispute extends CI_Controller
 
 			$job_data = $this->common_model->GetColumnName('tbl_jobs', ['job_id' => $dispute['ds_job_id']],['title']);
 			$reciever = $this->common_model->GetColumnName('users', ['id' => $dispute['ds_buser_id']],['f_name','l_name','trading_name','email']);
-			$subject = $userdata['f_name'].' '.$userdata['l_name']." rejected an offer on the milestone dispute for the ".$job_data['title'];
+			$subject = $userdata['f_name'].' '.$userdata['l_name']." rejected your offer";
 
 			$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $reciever['f_name'] . '</p>';
-			$contant .= '<br><p style="margin:0;padding:10px 0px">'.$userdata['f_name'].' '.$userdata['l_name'].' has rejected your new offer to settle the milestone dispute.</p>';
+			$contant .= '<br><p style="margin:0;padding:10px 0px">'.$userdata['f_name'].' '.$userdata['l_name'].' has rejected your new offer to settle the dispute.</p>';
 			$contant .= '<br><p style="margin:0;padding:10px 0px">They are not willing to settle for payment of:  £'.$dispute['tradesmen_offer'].'</p>';
 			$contant .= '<br><p style="margin:0;padding:10px 0px">As your next step, you can adjust your offer by clicking on the adjust button below.</p>';
 
@@ -1339,6 +1313,8 @@ class Order_dispute extends CI_Controller
 			}
 			
 			$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$dispute_id."'","tbl_milestones.*",true);
+
+			$page['milestones'] = $milestones;
 
 			$page['owner'] = $owner = $this->common_model->get_single_data('users', array('id' => $dispute['ds_puser_id']));
 			$page['tradmen'] = $tradmen = $this->common_model->get_single_data('users', array('id' => $dispute['ds_buser_id']));
