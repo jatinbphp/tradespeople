@@ -2572,8 +2572,8 @@ class Cron extends CI_Controller
 					$newTime = date('Y-m-d',strtotime($list['created_at'].' +'.$list['offer_expires_days'].' days'));
 				}else{
 					$newTime = date('Y-m-d',strtotime($list['status_update_time'].' +'.$setting['waiting_time'].' days'));	
-				}				
-
+				}
+				
 				/*------------Order Cancel Itself------------*/
 				if($list['status'] == 'cancelled' && $list['is_cancel'] == 2){
 					if($today >= $newTime){
@@ -2642,7 +2642,7 @@ class Cron extends CI_Controller
 
 			    	$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users1['trading_name'].', </p>';
 									
-						$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$serviceOrder['order_id'].', has been automatically cancelled. This action was taken due to a lack of response to the cancellation request sent to you. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
+						$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', has been automatically cancelled. This action was taken due to a lack of response to the cancellation request sent to you. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
 						
 						$content1 .= "<p style='margin:0;padding:10px 0px'>If you believe this cancellation was made in error, or if you would like to discuss further options, please feel free to reach out. We are here to assist you and ensure a positive </p>";
 
@@ -2654,7 +2654,7 @@ class Cron extends CI_Controller
 
 			    	$content2 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
 									
-						$content2 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$serviceOrder['order_id'].', has been automatically cancelled. This action was taken due to a lack of response to the cancellation request sent to you. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
+						$content2 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', has been automatically cancelled. This action was taken due to a lack of response to the cancellation request sent to you. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
 						
 						$content2 .= "<p style='margin:0;padding:10px 0px'>If you believe this cancellation was made in error, or if you would like to discuss further options, please feel free to reach out. We are here to assist you and ensure a positive</p>";
 
@@ -2810,8 +2810,8 @@ class Cron extends CI_Controller
 				}*/
 
 				/*------------Order Complete Itself------------*/
-				$completeTime = '';				
-
+				$completeTime = '';	
+				
 				if($list['status'] == 'delivered'){
 					if($today >= $newTime){
 						$insertn['nt_userId'] = $list['user_id'];
@@ -2878,7 +2878,7 @@ class Cron extends CI_Controller
 						
 						$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users['f_name'].', </p>';
 						
-						$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to let you know that your order with '.$get_users['trading_name'].' for “'.$service['service_name'].'” has been automatically marked as completed.</p>';
+						$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to let you know that your order with '.$get_users1['trading_name'].' for “'.$service['service_name'].'” has been automatically marked as completed.</p>';
 						
 						$content1 .= '<p style="margin:0;padding:10px 0px">This happens when no response or approval is received from you within 3 days of the delivery. By now, you should have received all the files or results for your order as provided by the Pro.</p>';
 						
@@ -2907,33 +2907,39 @@ class Cron extends CI_Controller
 						
 						$this->common_model->send_mail($get_users1['email'],$subject2,$content2);						
 					}else{
-						$insertn['nt_userId'] = $list['user_id'];
-						$insertn['nt_message'] = 'Order will be completed automatically if you don´t take action now. <a href="'.$pageUrl.'">Review Now!</a>';
-						$insertn['nt_satus'] = 0;
-						$insertn['nt_create'] = date('Y-m-d H:i:s');
-						$insertn['nt_update'] = date('Y-m-d H:i:s');
-						$insertn['job_id'] = $id;
-						$insertn['posted_by'] = $list['user_id'];
-						$run2 = $this->common_model->insert('notification',$insertn);
+						$currentTime = time();
+						$targetTime = strtotime($newTime);
+						$hoursLeft = ($targetTime - $currentTime) / 3600;
 
-						//---------Homeowner Mail Code---------
-						$subject1 = "Reminder: Action Required for Your Order Completion!"; 
-						
-						$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
-						
-						$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to kindly remind you that the order delivered by '.$get_users['trading_name'].' is awaiting your review. You have 3 days from the delivery date to take action.</p>';
-						
-						$content1 .= "<p style='margin:0;padding:10px 0px'>To ensure the best experience, please review the work, and if you're satisfied, kindly accept the order. If any revisions are needed, feel free to request them directly through the platform.</p>";
-						
-						$content1 .= "<p style='margin:0;padding:10px 0px'>If no action is taken before the 3 days elapsed, your order will be automatically marked as completed.</p>";
+						if($hoursLeft <= 24){
+							$insertn['nt_userId'] = $list['user_id'];
+							$insertn['nt_message'] = 'Order will be completed automatically if you don´t take action now. <a href="'.$pageUrl.'">Review Now!</a>';
+							$insertn['nt_satus'] = 0;
+							$insertn['nt_create'] = date('Y-m-d H:i:s');
+							$insertn['nt_update'] = date('Y-m-d H:i:s');
+							$insertn['job_id'] = $id;
+							$insertn['posted_by'] = $list['user_id'];
+							$run2 = $this->common_model->insert('notification',$insertn);
 
-						$content1 .= "<p style='margin:0;padding:10px 0px'>We look forward to your feedback and are happy to assist if you need any help during this process.</p>";
-						
-						$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Order Now</a></div>';
+							//---------Homeowner Mail Code---------
+							$subject1 = "Reminder: Action Required for Your Order Completion!"; 
+							
+							$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
+							
+							$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to kindly remind you that the order delivered by '.$get_users['trading_name'].' is awaiting your review. You have 3 days from the delivery date to take action.</p>';
+							
+							$content1 .= "<p style='margin:0;padding:10px 0px'>To ensure the best experience, please review the work, and if you're satisfied, kindly accept the order. If any revisions are needed, feel free to request them directly through the platform.</p>";
+							
+							$content1 .= "<p style='margin:0;padding:10px 0px'>If no action is taken before the 3 days elapsed, your order will be automatically marked as completed.</p>";
 
-						$content1.='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
-						
-						$this->common_model->send_mail($get_users['email'],$subject1,$content1);	
+							$content1 .= "<p style='margin:0;padding:10px 0px'>We look forward to your feedback and are happy to assist if you need any help during this process.</p>";
+							
+							$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Order Now</a></div>';
+
+							$content1.='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
+							
+							$this->common_model->send_mail($get_users['email'],$subject1,$content1);	
+						}						
 					}
 				}
 

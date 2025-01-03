@@ -5334,7 +5334,7 @@ class Users extends CI_Controller
 		if($run){
 			$hId = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
       $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
       $pageUrl = site_url().'order-tracking/'.$serviceOrder['id'];
 
@@ -5430,7 +5430,7 @@ class Users extends CI_Controller
 		if($run){
 			$hId = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
       $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
       if($hId == $homeOwner['id']){
@@ -5538,7 +5538,7 @@ class Users extends CI_Controller
 
 			$content1 .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
 
-			$uMail = $get_users1['email'];
+			$uMail = $get_users['email'];
 
 			$nMessage = 'Your order was cancelled. <a href="'.$pageUrl.'" >View Now!</a>';
     }		
@@ -5616,7 +5616,7 @@ class Users extends CI_Controller
 		if($run){
 			$hId = $this->session->userdata('user_id');
 			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
       $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
       if($hId == $homeOwner['id']){
@@ -5731,7 +5731,7 @@ class Users extends CI_Controller
 
 			$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Reason</a></div>';
 			
-			$content .= "<p style='margin:0;padding:10px 0px'>We´re committed to working together to reach a resolution.If you are unable to come to a mutual agreement, please be aware that you have the option to get [Trading_ name] to deliver the work completed so far and proceed with opening a formal dispute on the order. This will allow both parties to present their perspectives and seek a fair resolution through the platform.</p>";
+			$content .= "<p style='margin:0;padding:10px 0px'>We´re committed to working together to reach a resolution.If you are unable to come to a mutual agreement, please be aware that you have the option to get ".$get_users1['trading_name']." to deliver the work completed so far and proceed with opening a formal dispute on the order. This will allow both parties to present their perspectives and seek a fair resolution through the platform.</p>";
 
 			$content .= "<p style='margin:0;padding:10px 0px'>If you would like to discuss this matter further, please don't hesitate to reach out. We´re happy to assist in resolving this in a way that benefits both of you.</p>";
 
@@ -5759,7 +5759,7 @@ class Users extends CI_Controller
 		$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
   	$insertn['nt_userId'] = $receiverId;
-  	$insertn['nt_message'] = 'Your order cancellation request was declined automatically. <a href="'.$pageUrl.'">View Reason!</a>';
+  	$insertn['nt_message'] = 'Your order cancellation request was declined. <a href="'.$pageUrl.'">View Reason!</a>';
     $insertn['nt_satus'] = 0;
     $insertn['nt_create'] = date('Y-m-d H:i:s');
     $insertn['nt_update'] = date('Y-m-d H:i:s');
@@ -5962,7 +5962,7 @@ class Users extends CI_Controller
 
 				$hId = $this->session->userdata('user_id');
 				$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-	      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$hId]);
+	      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
 	      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
 
 	      if($hId == $homeOwner['id']){
