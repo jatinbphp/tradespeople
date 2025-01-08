@@ -831,7 +831,7 @@ class Order_dispute extends CI_Controller
 
 			$reciever = $this->common_model->GetColumnName('users', ['id' => $dispute['ds_puser_id']],['f_name','l_name','trading_name','email']);
 
-			$subject = $userdata['trading_name']." has made a payment offer to settle dispute dispute.";
+			$subject = $userdata['trading_name']." has made a payment offer to settle dispute.";
 
 			$content = '<p style="margin:0;padding:10px 0px">Dear '.$reciever['f_name'].',</p>';
 
@@ -865,7 +865,7 @@ class Order_dispute extends CI_Controller
 
 			$reciever = $this->common_model->GetColumnName('users', ['id' => $dispute['ds_buser_id']],['f_name','l_name','trading_name','email']);
 			
-			$subject = $userdata['f_name']." has made a payment offer to settle dispute dispute.";
+			$subject = $userdata['f_name']." has made a payment offer to settle dispute.";
 
 			$content = '<p style="margin:0;padding:10px 0px">Dear '.$reciever['trading_name'].',</p>';
 

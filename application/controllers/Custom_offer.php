@@ -130,6 +130,7 @@ class Custom_offer extends CI_Controller
 
 			$users=$this->common_model->get_single_data('users',array('id'=>$this->input->post('receiver_id')));
 			$service_details = $this->common_model->get_single_data('my_services', array('id'=>$this->input->post('service_id')));
+			$service_orders = $this->common_model->get_single_data('service_order', array('id'=>$newOrder));
 			$homeOwner = $this->common_model->check_email_notification($users['id']);
 
 			$pageUrl = site_url().'order-tracking/'.$newOrder;
@@ -161,7 +162,7 @@ class Custom_offer extends CI_Controller
 
 				$content .= '<p style="margin:0;padding:0px 0px">Service Name: '.$service_details['service_name'].'</p>';
 
-				$content .= '<p style="margin:0;padding:0px 0px">Price: '.$service_details['service_name'].'</p>';
+				$content .= '<p style="margin:0;padding:0px 0px">Price: £'.number_format($service_orders['total_price'],2).'</p>';
 
 				$content .= '<p style="margin:0;padding:0px 0px">Delivery Time: '.$deDays.'</p>';
 				

@@ -514,6 +514,12 @@ class Checkout extends CI_Controller
 			      ];
 			      $this->common_model->insert('service_order_status_history', $insert1);
 					}
+				}else{
+					if($order['is_requirements'] == 0){
+						$updateMilestone['service_status'] = 'active';
+						$updateMilestone['service_previous_status'] = 'active';
+						$this->common_model->update('tbl_milestones',array('milestone_type'=>'service','post_id'=>$order['id']),$updateMilestone);
+					}
 				}				
 
 				/*Homeowner Email Code*/
@@ -550,34 +556,60 @@ class Checkout extends CI_Controller
 				/*Tradesman Email Code*/
 				$tradesMan = $this->common_model->check_email_notification($service_details['user_id']);
 				if($tradesMan){
-					$subject = "You have a new Order: “".$service_details['service_name']."”"; 
-					$html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesMan['f_name'] .',</p>';		
-					$html .= '<p style="margin:0;padding:10px 0px">Great news! A customer just placed an order for your service on Tradespeople Hub.</p>';		
-					$html .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$nOrder['order_id'].'</p>';		
-					$html .= '<p style="margin:0;padding:0px 0px"><b>Total order amount:</b> £'.number_format($nOrder['total_price'],2).'</p>';
-					$html .= '<p style="margin:0;padding:0px 0px"><b>Delivery Date/Time:</b> '.$delivery_date.'</p>';		
-					$html .= '<p style="margin:0;padding:10px 0px"><b>Next Steps:</b></p>';		
-					$html .= '<p style="margin:0;padding:0px 0px">1. Review the order details carefully.</p>';		
-					$html .= "<p style='margin:0;padding:0px 0px'>2. Reach out to the customer if you need any clarifications via the platform's messaging system.</p>";
-					$html .= "<p style='margin:0;padding:0px 0px'>3. Start working on the order and deliver your service on time.";
-					$html .= "<p style='margin:0;padding:10px 0px'>You can view the full order details and get started by clicking the button below:";
+					if($nOrder['is_custom'] == 1 && $nOrder['is_accepted'] == 1){
+						$subject = "Congratulations! Your Custom Offer to ".$homeOwner['f_name']." Has Been Accepted!"; 
+						$html = '<p style="margin:0;padding:10px 0px">Dear ' . $tradesMan['trading_name'] .',</p>';		
+						$html .= '<p style="margin:0;padding:10px 0px">Your offer to '.$homeOwner["f_name"].' has been accepted! Congratulations on securing this opportunity to showcase your expertise.</p>';
 
-					$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order Now</a></div>';
+						$html .= '<p style="margin:0;padding:10px 0px">Please ensure you review the project requirements thoroughly and communicate promptly with the customer to confirm any outstanding details. Delivering high-quality work on time will help build a strong relationship and enhance your reputation on the platform.</p>';		
+						
+						$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order Now</a></div>';
 
-					$html .= '<p style="margin:0;padding:10px 0px">Pro Tip: Communication is key! Keep the customer updated on progress or any potential delays to ensure a smooth experience.</p>';
-					$html .= '<p style="margin:0;padding:10px 0px">Good luck, and thank you for providing exceptional service to our customers!  </p>';
-					$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
-					$this->common_model->send_mail($tradesMan['email'],$subject,$html);
+						$html .= '<p style="margin:0;padding:10px 0px">Wishing you success on this project. We look forward to seeing your great work.</p>';
 
-					$insertn['nt_userId'] = $service_details['user_id'];
-					$insertn['nt_message'] = "You have received a new order. <a href='".$pageUrl."'>View now!</a>";
-					$insertn['nt_satus'] = 0;
-					$insertn['nt_apstatus'] = 0;
-					$insertn['nt_create'] = date('Y-m-d H:i:s');
-					$insertn['nt_update'] = date('Y-m-d H:i:s');
-					$insertn['job_id'] = $nOrder['id'];
-					$insertn['posted_by'] = $homeOwner['id'];
-					$run2 = $this->common_model->insert('notification',$insertn);
+						$html .= '<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+
+						$this->common_model->send_mail($tradesMan['email'],$subject,$html);
+
+						$insertn['nt_userId'] = $service_details['user_id'];
+						$insertn['nt_message'] = "Your custom offer has been accepted. <a href='".$pageUrl."'>View now!</a>";
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_apstatus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $nOrder['id'];
+						$insertn['posted_by'] = $homeOwner['id'];
+						$run2 = $this->common_model->insert('notification',$insertn);	
+					}else{
+						$subject = "You have a new Order: “".$service_details['service_name']."”"; 
+						$html = '<p style="margin:0;padding:10px 0px">Hi ' . $tradesMan['trading_name'] .',</p>';		
+						$html .= '<p style="margin:0;padding:10px 0px">Great news! A customer just placed an order for your service on Tradespeople Hub.</p>';		
+						$html .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> '.$nOrder['order_id'].'</p>';		
+						$html .= '<p style="margin:0;padding:0px 0px"><b>Total order amount:</b> £'.number_format($nOrder['total_price'],2).'</p>';
+						$html .= '<p style="margin:0;padding:0px 0px"><b>Delivery Date/Time:</b> '.$delivery_date.'</p>';		
+						$html .= '<p style="margin:0;padding:10px 0px"><b>Next Steps:</b></p>';		
+						$html .= '<p style="margin:0;padding:0px 0px">1. Review the order details carefully.</p>';		
+						$html .= "<p style='margin:0;padding:0px 0px'>2. Reach out to the customer if you need any clarifications via the platform's messaging system.</p>";
+						$html .= "<p style='margin:0;padding:0px 0px'>3. Start working on the order and deliver your service on time.";
+						$html .= "<p style='margin:0;padding:10px 0px'>You can view the full order details and get started by clicking the button below:";
+
+						$html .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order Now</a></div>';
+
+						$html .= '<p style="margin:0;padding:10px 0px">Pro Tip: Communication is key! Keep the customer updated on progress or any potential delays to ensure a smooth experience.</p>';
+						$html .= '<p style="margin:0;padding:10px 0px">Good luck, and thank you for providing exceptional service to our customers!  </p>';
+						$html .= '<p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
+						$this->common_model->send_mail($tradesMan['email'],$subject,$html);
+
+						$insertn['nt_userId'] = $service_details['user_id'];
+						$insertn['nt_message'] = "You have received a new order. <a href='".$pageUrl."'>View now!</a>";
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_apstatus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $nOrder['id'];
+						$insertn['posted_by'] = $homeOwner['id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+					}
 				}
 				
 				$this->common_model->delete(['id'=>$latestCartId],'cart');

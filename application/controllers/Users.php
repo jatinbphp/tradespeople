@@ -4386,6 +4386,12 @@ class Users extends CI_Controller
       $where_array = ['id' => $oId];
       $result = $this->common_model->update('service_order',array('id'=>$oId),$update_array);
 
+      if($order['is_custom'] == 1 && $order['order_type'] == 'milestone'){
+      	$updateMilestone['service_status'] = 'active';
+				$updateMilestone['service_previous_status'] = 'active';
+				$this->common_model->update('tbl_milestones',array('milestone_type'=>'service','post_id'=>$order['id']),$updateMilestone);
+      }
+
       /*Manage Order History*/
       $insert1 = [
         'user_id' => $uId,
@@ -5141,7 +5147,7 @@ class Users extends CI_Controller
       $setting = $this->common_model->GetColumnName('admin', array('id' => 1));
       $newTime = '';			
 			$newTime = date('jS F Y', strtotime($input['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));	
-			$oPrice = $serviceOrder['total_price'] - $serviceOrder['service_fees'];
+			$oPrice = $serviceOrder['total_price'] - $serviceOrder['service_fee'];
 
 			/*Manage Order History*/
       if($userid == $homeOwner['id']){
@@ -5426,6 +5432,8 @@ class Users extends CI_Controller
 		$input['is_accepted'] = 2;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 
+		$pageUrl = site_url().'order-tracking/'.$serviceOrder['id'];
+
 		$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 		if($run){
 			$hId = $this->session->userdata('user_id');
@@ -5436,10 +5444,44 @@ class Users extends CI_Controller
       if($hId == $homeOwner['id']){
       	$senderId = $hId;
       	$receiverId = $tradesman['id'];
+
+      	$subject = "Your Custom Offer to ".$homeOwner['f_name']." Has Been Rejected!";
+							
+				$content = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
+
+				$content .= '<p style="margin:0;padding:10px 0px">Your custom offer to '.$homeOwner['f_name'].' has been rejected. While this is not the outcome you had hoped for, it provides an opportunity to revisit and refine your proposal to better align with the buyer\'s needs.</p>';
+				
+				$content .= '<ul style="margin:0;padding:10px 0px; list-style-type: decimal;">
+					<li><b>Review the Offer:</b> Take another look at the details of your custom offer. Consider whether the budget, scope, or timelines could be adjusted to better suit the customer´s expectations.</li>
+					<li><b>Engage in a Discussion:</b> Reach out to David directly through the platform\'s messaging system to clarify any specific concerns or requirements they may have had regarding your initial proposal. Open communication can help ensure the next offer is a perfect fit.</li>
+					<li><b>Create a Revised Offer:</b> After gathering feedback, prepare a revised custom offer that addresses any points of concern and demonstrates your commitment to delivering exceptional results.</li>
+					</ul>';
+
+				$content .= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Reach Out Now</a></div>';
+
+				$content .= '<p style="margin:0;padding:10px 0px">We’re confident that with these adjustments, you’ll have a better chance of securing the project.</p>';
+				
+				$content .= '<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $tradesman['email'];
+
+				$ntMessgae = 'Your custom offer has been rejected. <a href="'.$pageUrl.'">View offer!</a>';
       }
       if($hId == $tradesman['id']){
       	$senderId = $hId;
       	$receiverId = $homeOwner['id'];
+
+      	$subject = "Your custom offer was withdrawn!";
+							
+				$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
+				
+				$content .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].' has withdrawn their custom offer.</p>';
+				
+				$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+				$uMail = $homeOwner['email'];
+
+				$ntMessgae = 'Your custom offer was withdrawn.';
       }
 
 			/*Manage Order History*/
@@ -5459,27 +5501,17 @@ class Users extends CI_Controller
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
-			/*Homeowner Email Code*/
-			if($hId == $tradesman['id']){
-	      $subject = "Your custom offer was withdrawn!";
-							
-				$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
-				
-				$content .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].' has withdrawn their custom offer.</p>';
-				
-				$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
-				
-				$this->common_model->send_mail($homeOwner['email'],$subject,$content);
+			$this->common_model->send_mail($uMail,$subject,$content);
 
-				$insertn1['nt_userId'] = $homeOwner['id'];
-				$insertn1['nt_message'] = 'Your custom offer was withdrawn.';
-				$insertn1['nt_satus'] = 0;
-				$insertn1['nt_create'] = date('Y-m-d H:i:s');
-				$insertn1['nt_update'] = date('Y-m-d H:i:s');
-				$insertn1['job_id'] = $oId;
-				$insertn1['posted_by'] = $tradesman['id'];
-				$run2 = $this->common_model->insert('notification',$insertn1);
-			}
+			$insertn1['nt_userId'] = $receiverId;
+			$insertn1['nt_message'] = $ntMessgae;
+			$insertn1['nt_satus'] = 0;
+			$insertn1['nt_create'] = date('Y-m-d H:i:s');
+			$insertn1['nt_update'] = date('Y-m-d H:i:s');
+			$insertn1['job_id'] = $oId;
+			$insertn1['posted_by'] = $senderId;
+			$run2 = $this->common_model->insert('notification',$insertn1);
+
       echo json_encode(['status' => 'success', 'message' => 'Offer cancelled successfully.']);
 		}else{
 			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Offer is not cancelled.']);
@@ -5626,7 +5658,7 @@ class Users extends CI_Controller
       	$uname = $tradesman['trading_name'];
       	$wuname = $homeOwner['f_name'].' '.$homeOwner['l_name'];
 
-      	$content = '<p style="margin:0;padding:10px 0px">Dear '.$uname.', </p>';
+      	$content = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
 						
 				$content .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
 				
@@ -5643,7 +5675,7 @@ class Users extends CI_Controller
 
       	$content = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
 						
-				$content .= '<p style="margin:0;padding:10px 0px">'.$wuname.' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
+				$content .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
 				
 				$content .='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
 

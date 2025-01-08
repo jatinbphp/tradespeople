@@ -745,7 +745,7 @@
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
 																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>
-																						<?php if(!in_array($list['service_status'],['delivered','request_modification','completed'])):?>
+																						<?php if(!in_array($list['service_status'],['delivered','request_modification','completed','offer_created'])):?>
 																							<button type="button" class="btn btn-warning btn-sm milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>">
 																								Deliver Work
 																							</button>
@@ -753,6 +753,8 @@
 																							<button type="button" class="btn btn-warning milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>" >Re-deliver Work</button>
 																						<?php elseif($list['service_status'] == 'completed'):?>	
 																							<span class="text-info">Completed</span>
+																						<?php elseif($list['service_status'] == 'offer_created'):?>	
+																							<span class="text-info">Awaiting Response</span>
 																						<?php else:?>
 																							<span class="text-info">Delivered</span>
 																						<?php endif;?>
@@ -1419,6 +1421,15 @@
                  <tbody class="disputeUploadFilesHtml<?php echo $order['id']; ?>">
                  </tbody>
               </table>
+
+              <div class="from-group">
+                <label class="control-label" for="textinput"><b>Select the milestone you want to dispute</b></label><br>
+                <?php
+                	$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
+                 	foreach($milestones as $m){ ?>
+                 		<input data-amount="<?php echo $m['total_amount']; ?>" class="dispute_milestones" type="checkbox" onchange="selectMilesForDispute(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
+                <?php } ?>
+              </div>
 
 							<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span></b></label>
 
@@ -2805,6 +2816,19 @@
   		});
 		});  		
 	}
+
+	function selectMilesForDispute(e,id) {
+		var mId = e.value;
+		var total = 0;
+    $('.dispute_milestones').each((index,item)=>{
+			if($(item).is(':checked')){
+      	let amount = $(item).data('amount');
+        total += amount;
+      }
+    })
+    $('.totalDispute'+id).html(total);
+    $('#offer_amount'+id).attr('max',total);
+  }
 
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
