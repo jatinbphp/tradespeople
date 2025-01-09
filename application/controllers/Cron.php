@@ -2573,6 +2573,10 @@ class Cron extends CI_Controller
 				}else{
 					$newTime = date('Y-m-d',strtotime($list['status_update_time'].' +'.$setting['waiting_time'].' days'));	
 				}
+
+				$currentTime = time();
+				$targetTime = strtotime($newTime);
+				$hoursLeft = ($targetTime - $currentTime) / 3600;
 				
 				/*------------Order Cancel Itself------------*/
 				if($list['status'] == 'cancelled' && $list['is_cancel'] == 2){
@@ -2661,6 +2665,45 @@ class Cron extends CI_Controller
 						$content2 .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
 
 						$this->common_model->send_mail($get_users['email'],$subject,$content2);
+					}else{
+						if($hoursLeft <= 24){
+							for($i=1; $i<=2; $i++){
+								/*-----For Homeowener-----*/
+								if($i == 1){
+									$uId = $get_users['id'];
+									$uName = $get_users['f_name'];
+									$uEmail = $get_users['email'];
+								}
+
+								/*-----For Tradesman-----*/
+								if($i == 1){
+									$uId = $get_users1['id'];
+									$uName = $get_users1['trading_name'];
+									$uEmail = $get_users1['email'];
+								}
+
+								$insertn['nt_userId'] = $uId;
+								$insertn['nt_message'] = 'Your order will be cancelled in less than 24 hours. <a href="'.$pageUrl.'">Respond Now!</a>';
+								$insertn['nt_satus'] = 0;
+								$insertn['nt_create'] = date('Y-m-d H:i:s');
+								$insertn['nt_update'] = date('Y-m-d H:i:s');
+								$insertn['job_id'] = $list['id'];
+								$insertn['posted_by'] = $uId;
+								$run2 = $this->common_model->insert('notification',$insertn);
+								
+								$subject1 = "Order Cancels in 24 hours. Act Now!"; 
+								
+								$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$uName.', </p>';
+								
+								$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', will be cancelled automatically in less than 24 hours . This action will taken if fail to respond to this reminder. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
+								
+								$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Accept / Reject Now</a></div>';
+
+								$content1.='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+								
+								$this->common_model->send_mail($uEmail['email'],$subject1,$content1);	
+							}
+						}
 					}
 				}
 
@@ -2715,99 +2758,6 @@ class Cron extends CI_Controller
 						$run2 = $this->common_model->insert('notification',$insertn1);
 					}
 				}
-
-				/*------------Order Cancel Itself If Order Is Not Delivered Before Delivery Date------------*/
-				/*if($list['status'] == 'active'){
-					$statusHistory = $this->common_model->GetSingleData('service_order_status_history',['order_id'=>$list['id'],'status'=>'active']);
-
-					$delivery_date = '';
-					$delivery_date1 = '';
-					
-					if(!empty($statusHistory)){
-						$days = $package_data[$order['package_type']]['days'];
-						$currentDate = new DateTime($statusHistory['created_at']);			
-						$currentDate->modify("+$days days");
-						$delivery_date = $currentDate->format('Y-m-d');
-						$delivery_date1 = $currentDate->format('D jS F');
-					}
-
-					if($today > $delivery_date){
-						$update2['u_wallet']=$get_users['u_wallet']+$list['price'];	
-						$runss1 = $this->common_model->update('users',array('id'=>$list['user_id']),$update2);
-
-						$insertn['nt_userId'] = $list['user_id'];
-						$insertn['nt_message'] = 'Your order has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
-						$insertn['nt_satus'] = 0;
-						$insertn['nt_create'] = date('Y-m-d H:i:s');
-						$insertn['nt_update'] = date('Y-m-d H:i:s');
-						$insertn['job_id'] = $id;
-						$insertn['posted_by'] = $list['user_id'];
-						$run2 = $this->common_model->insert('notification',$insertn);
-
-						$insertn1['nt_userId'] = $get_users1['id'];
-						$insertn1['nt_message'] = 'Your order has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
-						$insertn1['nt_satus'] = 0;
-						$insertn1['nt_create'] = date('Y-m-d H:i:s');
-						$insertn1['nt_update'] = date('Y-m-d H:i:s');
-						$insertn1['job_id'] = $id;
-						$insertn1['posted_by'] = $list['user_id'];
-						$run2 = $this->common_model->insert('notification',$insertn1);
-
-						$transactionid = md5(rand(1000,999).time());
-					  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
-					  $data1 = array(
-							'tr_userid'=>$list['user_id'], 
-					  	'tr_amount'=>$list['price'],
-						  'tr_type'=>1,
-					  	'tr_transactionId'=>$transactionid,
-					  	'tr_message'=>$tr_message,
-					  	'tr_status'=>1,
-					  	'tr_created'=>date('Y-m-d H:i:s'),
-					  	'tr_update' =>date('Y-m-d H:i:s')
-						);
-						$run1 = $this->common_model->insert('transactions',$data1);	
-
-						$od['is_cancel'] = 1;
-						$od['status'] = 'cancelled';		
-						$od['reason'] = '';
-						$od['status_update_time'] = date('Y-m-d H:i:s');
-						$run = $this->common_model->update('service_order',array('id'=>$list['id']),$od);
-
-						//Manage Order History
-					  $insert1 = [
-				      'user_id' => $list['user_id'],
-				      'is_cancel' => 1,
-				      'service_id' => $list['service_id'],
-				      'order_id' => $list['id'],
-				      'status' => 'cancelled'
-				    ];
-				    $this->common_model->insert('service_order_status_history', $insert1);
-
-				    $insert2['sender'] = 0;
-						$insert2['receiver'] = 0;
-						$insert2['order_id'] = $list['id'];
-						$insert2['status'] = 'cancelled';
-						$insert2['is_cancel'] = 1;
-						$insert2['description'] = 'Your order has been cancelled itself due to not delivered before '.$delivery_date1;
-						$run = $this->common_model->insert('order_submit_conversation', $insert2);
-
-						//---------Mail Code---------
-						for($i=1; $i<=2;$i++){
-							$uesrName = $i ==1 ? $get_users['f_name'].' '.$get_users['l_name'] : $get_users1['trading_name'];
-							$uesrEmail = $i ==1 ? $get_users['email'] : $get_users1['email'];
-
-							$subject1 = "Your order has been cancelled itself!"; 
-							$content1= 'Hi '.$uesrName.', <br><br>';
-							$content1.='Your order has been cancelled itself due to not delivered before '.$delivery_date1.'<br><br>';
-							$content1.='Order number: '.$list['order_id'].'<br>';
-							$content1.='Order amount: £'.$list['price'].'<br>';
-							$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$list['id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
-
-							$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
-							$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
-						}
-					}
-				}*/
 
 				/*------------Order Complete Itself------------*/
 				$completeTime = '';	
@@ -2907,17 +2857,13 @@ class Cron extends CI_Controller
 						
 						$this->common_model->send_mail($get_users1['email'],$subject2,$content2);						
 					}else{
-						$currentTime = time();
-						$targetTime = strtotime($newTime);
-						$hoursLeft = ($targetTime - $currentTime) / 3600;
-
 						if($hoursLeft <= 24){
 							$insertn['nt_userId'] = $list['user_id'];
 							$insertn['nt_message'] = 'Order will be completed automatically if you don´t take action now. <a href="'.$pageUrl.'">Review Now!</a>';
 							$insertn['nt_satus'] = 0;
 							$insertn['nt_create'] = date('Y-m-d H:i:s');
 							$insertn['nt_update'] = date('Y-m-d H:i:s');
-							$insertn['job_id'] = $id;
+							$insertn['job_id'] = $list['id'];
 							$insertn['posted_by'] = $list['user_id'];
 							$run2 = $this->common_model->insert('notification',$insertn);
 
@@ -2926,7 +2872,7 @@ class Cron extends CI_Controller
 							
 							$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
 							
-							$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to kindly remind you that the order delivered by '.$get_users['trading_name'].' is awaiting your review. You have 3 days from the delivery date to take action.</p>';
+							$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to kindly remind you that the order delivered by '.$get_users1['trading_name'].' is awaiting your review. You have 3 days from the delivery date to take action.</p>';
 							
 							$content1 .= "<p style='margin:0;padding:10px 0px'>To ensure the best experience, please review the work, and if you're satisfied, kindly accept the order. If any revisions are needed, feel free to request them directly through the platform.</p>";
 							
@@ -2940,6 +2886,39 @@ class Cron extends CI_Controller
 							
 							$this->common_model->send_mail($get_users['email'],$subject1,$content1);	
 						}						
+					}
+				}
+
+				/*------------Send Reminder To Homeowner For Give Feedback------------*/
+				if($list['status'] == 'completed'){
+					$date1 = new DateTime($list['status_update_time']);
+					$date2 = new DateTime();
+					$diff = $date1->diff($date2);
+					$reviewPageUrl = site_url().'orderCompleted/'.$list['id'];
+
+					if($diff->days >= 5 && $list['is_review'] == 0){
+						$insertn['nt_userId'] = $list['user_id'];
+						$insertn['nt_message'] = 'You forgot to leave a review.  <a href="'.$reviewPageUrl.'">Review now!</a>';
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $id;
+						$insertn['posted_by'] = $list['user_id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+
+						//---------Homeowner Mail Code---------
+						$subject1 = "Action Required: We'd Love to Hear About Your Experience!"; 
+						
+						$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
+
+						$content1 .= '<p style="margin:0;padding:10px 0px">Thank you for your recent order. We hope the service provided by '.$get_users1['trading_name'].' met or even exceeded your expectations. Your feedback is incredibly valuable, both to us and to the seller, as it helps improve and grow the community of talented professionals on our platform.</p>';
+						
+						$content1 .= '<p style="margin:0;padding:10px 0px">If you have a moment, we’d greatly appreciate it if you could leave a review about your experience. Reviews not only support our sellers but also help future buyers like you make informed decisions.</p>';
+						$content1.= '<div style="text-align:center"><a href="'.$reviewPageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Leave Review</a></div>';
+
+						$content1.='<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+						
+						$this->common_model->send_mail($get_users['email'],$subject1,$content1);
 					}
 				}
 

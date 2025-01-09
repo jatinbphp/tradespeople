@@ -2966,7 +2966,28 @@ class Users extends CI_Controller
 			$this->session->unset_userdata('store_service2');
 			$this->session->unset_userdata('store_service3');
 			$this->session->unset_userdata('latest_service');
-			$this->reserServiceTabData();							
+			$this->reserServiceTabData();
+
+			$insertn['nt_userId'] = $user_id;
+			$insertn['nt_message'] = 'Your listing has been submitted. View now!';
+			$insertn['nt_satus'] = 0;
+			$insertn['nt_create'] = date('Y-m-d H:i:s');
+			$insertn['nt_update'] = date('Y-m-d H:i:s');
+			$insertn['job_id'] = $list['id'];
+			$insertn['posted_by'] = $uId;
+			$run2 = $this->common_model->insert('notification',$insertn);
+			
+			$subject1 = "Confirmation of Your Service Gig Listing Submission."; 
+			
+			$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$userData['trading_name'].', </p>';
+			
+			$content1 .= '<p style="margin:0;padding:10px 0px">Thank you for submitting your service gig on our platform. We have received your listing, and it is currently under review by our team. Once your submission has been approved, your gig will go live and be visible to potential clients to order.</p>';
+
+			$content1 .= '<p style="margin:0;padding:10px 0px">Please note that the review process typically takes one business days. We will notify you once your gig has been approved or if we require any further information.</p>';
+			
+			$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+			
+			$this->common_model->send_mail($userData['email'],$subject1,$content1);
 
 			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');			
 			redirect('my-services');
@@ -5070,6 +5091,34 @@ class Users extends CI_Controller
 
 			$this->common_model->update('users',array('id'=>$tId),$update2);
 
+			$reviewPageUrl = site_url().'orderCompleted/'.$oId;
+			$tradesman = $this->common_model->get_single_data('users',array('id'=>$tId));
+			$homeOwner = $this->common_model->get_single_data('users',array('id'=>$hId));
+
+			$insertn['nt_userId'] = $tId;
+			$insertn['nt_message'] = 'You´ve received customer feedback. <a href="'.$reviewPageUrl.'">View now!</a>';
+			$insertn['nt_satus'] = 0;
+			$insertn['nt_create'] = date('Y-m-d H:i:s');
+			$insertn['nt_update'] = date('Y-m-d H:i:s');
+			$insertn['job_id'] = $oId;
+			$insertn['posted_by'] = $hId;
+			$run2 = $this->common_model->insert('notification',$insertn);
+
+			//---------Homeowner Mail Code---------
+			$subject1 = "You Got a Feedback on your Recent Completed Order!"; 
+			
+			$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
+			
+			$content1 .= '<p style="margin:0;padding:10px 0px">Your recently completed order with '.$homeOwner['f_name'].' has received a feedback.</p>';
+			
+			$content1.= '<div style="text-align:center"><a href="'.$reviewPageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Now</a></div>';
+
+			$content1.='<p style="margin:0;padding:10px 0px">If you’d like, you can respond to the review directly. Engaging with your buyers is a great way to build trust and strengthen relationships.</p>';
+
+			$content1.='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+			
+			$this->common_model->send_mail($tradesman['email'],$subject1,$content1);
+
 			echo json_encode(['status' => 'success', 'message' => 'Review & Rating submitted successfully']);
     }else{
 			echo json_encode(['status' => 'error', 'message' => 'Review & Rating not submitted']);
@@ -5864,6 +5913,8 @@ class Users extends CI_Controller
 		$getRating = $this->common_model->get_single_data('service_rating',array('rate_to'=>$tId,'order_id'=>$oId));
 
 		$order = $this->common_model->get_single_data('service_order',array('id'=>$oId));
+		$homwowner = $this->common_model->get_single_data('users',array('id'=>$order['user_id']));
+		$tradesman = $this->common_model->get_single_data('users',array('id'=>$tId));
 
 		if(!empty($getRating)){
 			if($is_respond == 1){
@@ -5876,7 +5927,31 @@ class Users extends CI_Controller
 			
     	$run = $this->common_model->update('service_rating',array('id'=>$getRating['id']),$input);
 
+    	$reviewPageUrl = site_url().'orderCompleted/'.$order['id'];
+
     	if($run){
+    		$insertn['nt_userId'] = $order['user_id'];
+				$insertn['nt_message'] = 'You´ve received a feedback.  <a href="'.$reviewPageUrl.'">Review now!</a>';
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $id;
+				$insertn['posted_by'] = $tId;
+				$run2 = $this->common_model->insert('notification',$insertn);
+
+				//---------Homeowner Mail Code---------
+				$subject1 = "You Got a Feedback on your Recent Completed Order!"; 
+				
+				$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$homwowner['f_name'].', </p>';
+
+				$content1 .= '<p style="margin:0;padding:10px 0px">Your recently completed order with '.$tradesman['trading_name'].' has received a feedback.</p>';
+			
+				$content1.= '<div style="text-align:center"><a href="'.$reviewPageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Now</a></div>';
+
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+				
+				$this->common_model->send_mail($homwowner['email'],$subject1,$content1);
+
     		echo json_encode(['status' => 'success', 'message' => 'Your respond submitted successfully']);	
     	}else{
     		echo json_encode(['status' => 'error', 'message' => 'Your respond not submitted']);	
@@ -5946,7 +6021,11 @@ class Users extends CI_Controller
 		$extended_date = date('Y-m-d', strtotime($this->input->post('ex_date')));
 		$extended_time = $this->input->post('ex_time');
 
-		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);		
+		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);
+		$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+		$homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
+		$tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+		$pageUrl = site_url().'order-tracking/'.$oId;		
 
 		if(!empty($serviceOrder)){
 			$reason = 'Exteneded delivery time requested';
@@ -5959,6 +6038,29 @@ class Users extends CI_Controller
 			$input['is_exten_delivery_accepted'] = 0;
 			$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 			if($run){
+				$insertn['nt_userId'] = $serviceOrder['user_id'];
+				$insertn['nt_message'] = 'You´ve received an extension request. <a href="'.$pageUrl.'">View now!</a>';
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $oId;
+				$insertn['posted_by'] = $serviceOrder['user_id'];
+				$run2 = $this->common_model->insert('notification',$insertn);
+				
+				$subject1 = "Request for Order Delivery Extension: ".$serviceOrder['order_id'];
+				
+				$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$homeOwner['f_name'].', </p>';
+				
+				$content1 .= '<p style="margin:0;padding:10px 0px">The '.$tradesman['trading_name'].' has requested an extension as they are unable to deliver the order by the originally agreed deadline. They have proposed extending the delivery date.</p>';
+
+				$content1 .= '<p style="margin:0;padding:10px 0px">We kindly ask you to review this request and and respond as soon as possible.</p>';
+				
+				$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Respond Now</a></div>';
+
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+				
+				$this->common_model->send_mail($homeOwner['email'],$subject1,$content1);
+
 				echo json_encode(['status' => 1, 'message' => 'Delivery time exteneded successfully.']);
 			}else{
 				echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
@@ -5981,8 +6083,14 @@ class Users extends CI_Controller
 		$serviceOrder = $this->common_model->GetSingleData('service_order',['id'=>$oId]);		
 
 		if(!empty($serviceOrder)){
+			$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
+      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
+      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+
 			$input['is_exten_delivery_accepted'] = $is_accepted;
 			$input['status'] = 'active';
+
+			$pageUrl = site_url().'order-tracking/'.$serviceOrder['id'];
 
 			if($is_accepted == 2){
 				$reason = 'Exteneded delivery time is not accepted';
@@ -5992,10 +6100,7 @@ class Users extends CI_Controller
 				$input['reason'] = $reason;
 				$input['status_update_time'] = date('Y-m-d H:i:s');
 
-				$hId = $this->session->userdata('user_id');
-				$service = $this->common_model->GetSingleData('my_services',['id'=>$serviceOrder['service_id']]);
-	      $homeOwner = $this->common_model->GetSingleData('users',['id'=>$serviceOrder['user_id']]);
-	      $tradesman = $this->common_model->GetSingleData('users',['id'=>$service['user_id']]);
+				$hId = $this->session->userdata('user_id');			
 
 	      if($hId == $homeOwner['id']){
 	      	$senderId = $hId;
@@ -6022,10 +6127,42 @@ class Users extends CI_Controller
 				$insert['status'] = 'extened_decline';
 				$insert['description'] = $reason;
 				$run = $this->common_model->insert('order_submit_conversation', $insert);
+
+				$ntMessage = 'Your extension request was rejected. <a href="'.$pageUrl.'">View now!</a>';
+
+				$subject1 = "Order Delivery Extension Rejected."; 
+								
+				$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
+				
+				$content1 .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has rejected your order delivery time extension.</p>';
+				
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			}else{
+				$ntMessage = 'Your extension request was accepted. <a href="'.$pageUrl.'">View now!</a>';
+
+				$subject1 = "Order Delivery Extension Accepted."; 
+								
+				$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
+				
+				$content1 .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has accepted your order delivery time extension.</p>';
+				
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
 			}
 			
 			$run = $this->common_model->update('service_order',array('id'=>$oId),$input);
 			if($run){
+				$insertn['nt_userId'] = $tradesman['id'];
+				$insertn['nt_message'] = $ntMessage;
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $list['id'];
+				$insertn['posted_by'] = $homeOwner['id'];
+				$run2 = $this->common_model->insert('notification',$insertn);
+
+				$this->common_model->send_mail($tradesman['email'],$subject1,$content1);
+
 				echo json_encode(['status' => 1, 'message' => 'Delivery time exteneded successfully.']);
 			}else{
 				echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
