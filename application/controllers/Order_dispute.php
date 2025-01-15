@@ -1110,8 +1110,7 @@ class Order_dispute extends CI_Controller
 			$insert2['message_to'] = (!$checkOtherPay) ? $other_user['id'] : 0;	
 			$insert2['is_reply_pending'] = (!$checkOtherPay) ? 1 : 0;	
 			$insert2['dct_update'] = $now;	
-			$insert2['end_time'] = (!$checkOtherPay) ? $expire_time : NULL;	
-			
+			$insert2['end_time'] = (!$checkOtherPay) ? $expire_time : NULL;
 						
 			$this->common_model->insert('disput_conversation_tbl',$insert2);
 
@@ -1198,12 +1197,30 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($user['email'], $subject, $contant); //send to trademen
 
-					$subject = "Reminder:Arbitration payment for dispute team to step-in not received";
-					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received '.$user['trading_name'].' arbitration fee payment and awaits yours. Once you have made a payment, our arbitration team will step in and decides on the case.</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">You have until the '. date('d-m-y h:i A',strtotime($expire_time)) .' to make a payment. If your payment is not received before this time, the case will automtiaclly close and decided in '.$user['trading_name'].' favour. </p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
+					/*--------------------------------------------------------------------------*/
+
+					$payInsert['nt_message'] = 'Arbitration fee not received. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">Pay Now!</a>';
+					$payInsert['nt_userId'] = $other_user['id'];
+					$payInsert['nt_satus'] = 0;
+					$payInsert['nt_apstatus'] = 2;
+					$payInsert['nt_create'] = date('Y-m-d H:i:s');
+					$payInsert['nt_update'] = date('Y-m-d H:i:s');
+					$payInsert['job_id'] = $dispute['ds_job_id'];
+					$payInsert['posted_by'] = $dispute['ds_puser_id'];
+					$this->common_model->insert('notification', $payInsert);
+
+					$subject = "Reminder: Dispute Arbitration payment not received!";
+
+					$contant = '<p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">We have received '.$user['trading_name'].' order dispute arbitration fee payment and awaits yours. Once you have made a payment, our arbitration team will step in and decide on the case.</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">You have until the '. date('d-m-y h:i A',strtotime($expire_time)) .' to make a payment. If your payment is not received before this time, the case will automtiaclly close and decided in '.$user['trading_name'].' favour. </p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">View our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
 					$this->common_model->send_mail($other_user['email'], $subject, $contant);  // send to homeowner
 				}
 			} else {
@@ -1260,19 +1277,37 @@ class Order_dispute extends CI_Controller
 					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($other_user['email'], $subject, $contant);  //send to trademen
 				} else {
-					$subject = "Reminder:Arbitration fee payment for dispute team to step-in not received!";
-					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received '.$user['f_name'].' '.$user['l_name'].' arbitration payment and awaits yours. Once you make your payment, our arbitration team will step in and decides on the case.</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">You have until the '. date('d-m-y h:i A',strtotime($expire_time)) .' to make payment. If your payment is not received before this time, the case will automtiaclly closed and decided in '.$user['f_name'].' '.$user['l_name'].' favour. </p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Tradespeople Help page or contact our customer services if you have any specific questions using our service.</p>';
+					$payInsert['nt_message'] = 'Arbitration fee not received. <a href="'.site_url().'order-dispute/'.$dispute['ds_job_id'].'">Pay Now!</a>';
+					$payInsert['nt_userId'] = $other_user['id'];
+					$payInsert['nt_satus'] = 0;
+					$payInsert['nt_apstatus'] = 2;
+					$payInsert['nt_create'] = date('Y-m-d H:i:s');
+					$payInsert['nt_update'] = date('Y-m-d H:i:s');
+					$payInsert['job_id'] = $dispute['ds_job_id'];
+					$payInsert['posted_by'] = $user['id'];
+					$this->common_model->insert('notification', $payInsert);
+
+					$subject = "Reminder: Dispute Arbitration payment not received!";
+
+					$contant = '<p style="margin:0;padding:10px 0px">Hi ' . $other_user['f_name'] . '</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">We have received '.$user['f_name'].' order dispute arbitration fee payment and awaits yours. Once you have made a payment, our arbitration team will step in and decide on the case.</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">You have until the '.date('d-m-y h:i A',strtotime($expire_time)).' to make a payment. If your payment is not received before this time, the case will automtiaclly close and decided in '.$user['f_name'].' favour.</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+
+					$contant .= '<p style="margin:0;padding:10px 0px">View our PRO Help page or contact our customer services if you have any specific questions using our service.</p>';
+
 					$this->common_model->send_mail($other_user['email'], $subject, $contant); //send to trademen
 
+					/*--------------------------------------------------------------------------*/					
+
 					$subject = "Arbitration payment for dispute team to step in received";
-					$contant = '<br><p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">We have received your arbitration payment and awaits for ' . $other_user['f_name'] . ' payment. Once they´ve made a payment, our arbitration team will step in and decides on the case.</p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">' . $other_user['f_name'] . ' has until the '. date('d-m-y h:i A',strtotime($expire_time)) .' to make a payment. If their payment is not received before this time, the case will automtiaclly closed and decided in your favour. </p>';
-					$contant .= '<br><p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
+					$contant = '<p style="margin:0;padding:10px 0px">Hi ' . $user['f_name'] . '</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">We have received your arbitration payment and awaits for ' . $other_user['f_name'] . ' payment. Once they´ve made a payment, our arbitration team will step in and decides on the case.</p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">' . $other_user['f_name'] . ' has until the '. date('d-m-y h:i A',strtotime($expire_time)) .' to make a payment. If their payment is not received before this time, the case will automtiaclly closed and decided in your favour. </p>';
+					$contant .= '<p style="margin:0;padding:10px 0px">View our Homeowner Help page or contact our customer services if you have any specific questions using our service.</p>';
 					$this->common_model->send_mail($user['email'], $subject, $contant); // send to home
 				}
 			}

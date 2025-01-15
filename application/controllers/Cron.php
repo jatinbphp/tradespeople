@@ -2555,13 +2555,18 @@ class Cron extends CI_Controller
   }
 
   public function autoWithdrawOrderCancellation(){
-  	$allServiceOrder = $this->common_model->get_all_data('service_order');
+  	$allServiceOrder = $this->common_model->get_all_data('service_order',['id'=>12]);
   	$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
   	$today = date('Y-m-d');
-  	
+
+  	// echo '<pre>';
+  	// print_r($allServiceOrder);
+  	// exit;
+
   	if(!empty($allServiceOrder)){
   		foreach($allServiceOrder as $list){
   			$pageUrl = site_url().'order-tracking/'.$list['id'];
+  			$disputeUrl = site_url().'order-dispute/'.$list['id'];
   			$newTime = '';
   			$readableTime = date('jS F Y', strtotime($list['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));
 				$service = $this->common_model->GetSingleData('my_services',['id'=>$list['service_id']]);
@@ -2577,7 +2582,7 @@ class Cron extends CI_Controller
 				$currentTime = time();
 				$targetTime = strtotime($newTime);
 				$hoursLeft = ($targetTime - $currentTime) / 3600;
-				
+
 				/*------------Order Cancel Itself------------*/
 				if($list['status'] == 'cancelled' && $list['is_cancel'] == 2){
 					if($today >= $newTime){
@@ -2665,45 +2670,6 @@ class Cron extends CI_Controller
 						$content2 .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
 
 						$this->common_model->send_mail($get_users['email'],$subject,$content2);
-					}else{
-						if($hoursLeft <= 24){
-							for($i=1; $i<=2; $i++){
-								/*-----For Homeowener-----*/
-								if($i == 1){
-									$uId = $get_users['id'];
-									$uName = $get_users['f_name'];
-									$uEmail = $get_users['email'];
-								}
-
-								/*-----For Tradesman-----*/
-								if($i == 1){
-									$uId = $get_users1['id'];
-									$uName = $get_users1['trading_name'];
-									$uEmail = $get_users1['email'];
-								}
-
-								$insertn['nt_userId'] = $uId;
-								$insertn['nt_message'] = 'Your order will be cancelled in less than 24 hours. <a href="'.$pageUrl.'">Respond Now!</a>';
-								$insertn['nt_satus'] = 0;
-								$insertn['nt_create'] = date('Y-m-d H:i:s');
-								$insertn['nt_update'] = date('Y-m-d H:i:s');
-								$insertn['job_id'] = $list['id'];
-								$insertn['posted_by'] = $uId;
-								$run2 = $this->common_model->insert('notification',$insertn);
-								
-								$subject1 = "Order Cancels in 24 hours. Act Now!"; 
-								
-								$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$uName.', </p>';
-								
-								$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', will be cancelled automatically in less than 24 hours . This action will taken if fail to respond to this reminder. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
-								
-								$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Accept / Reject Now</a></div>';
-
-								$content1.='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
-								
-								$this->common_model->send_mail($uEmail['email'],$subject1,$content1);	
-							}
-						}
 					}
 				}
 
@@ -2856,36 +2822,6 @@ class Cron extends CI_Controller
 						$content2.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
 						
 						$this->common_model->send_mail($get_users1['email'],$subject2,$content2);						
-					}else{
-						if($hoursLeft <= 24){
-							$insertn['nt_userId'] = $list['user_id'];
-							$insertn['nt_message'] = 'Order will be completed automatically if you don´t take action now. <a href="'.$pageUrl.'">Review Now!</a>';
-							$insertn['nt_satus'] = 0;
-							$insertn['nt_create'] = date('Y-m-d H:i:s');
-							$insertn['nt_update'] = date('Y-m-d H:i:s');
-							$insertn['job_id'] = $list['id'];
-							$insertn['posted_by'] = $list['user_id'];
-							$run2 = $this->common_model->insert('notification',$insertn);
-
-							//---------Homeowner Mail Code---------
-							$subject1 = "Reminder: Action Required for Your Order Completion!"; 
-							
-							$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
-							
-							$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to kindly remind you that the order delivered by '.$get_users1['trading_name'].' is awaiting your review. You have 3 days from the delivery date to take action.</p>';
-							
-							$content1 .= "<p style='margin:0;padding:10px 0px'>To ensure the best experience, please review the work, and if you're satisfied, kindly accept the order. If any revisions are needed, feel free to request them directly through the platform.</p>";
-							
-							$content1 .= "<p style='margin:0;padding:10px 0px'>If no action is taken before the 3 days elapsed, your order will be automatically marked as completed.</p>";
-
-							$content1 .= "<p style='margin:0;padding:10px 0px'>We look forward to your feedback and are happy to assist if you need any help during this process.</p>";
-							
-							$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Order Now</a></div>';
-
-							$content1.='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
-							
-							$this->common_model->send_mail($get_users['email'],$subject1,$content1);	
-						}						
 					}
 				}
 
@@ -2896,7 +2832,7 @@ class Cron extends CI_Controller
 					$diff = $date1->diff($date2);
 					$reviewPageUrl = site_url().'orderCompleted/'.$list['id'];
 
-					if($diff->days >= 5 && $list['is_review'] == 0){
+					if($diff->days == 5 && $list['is_review'] == 0){
 						$insertn['nt_userId'] = $list['user_id'];
 						$insertn['nt_message'] = 'You forgot to leave a review.  <a href="'.$reviewPageUrl.'">Review now!</a>';
 						$insertn['nt_satus'] = 0;
@@ -2970,29 +2906,37 @@ class Cron extends CI_Controller
 										$withdrawable_balance=$trades['withdrawable_balance'];
 										$update1['withdrawable_balance']=$withdrawable_balance+$amounts;
 										$runss1 = $this->common_model->update('users',array('id'=>$get_users1['id']),$update1);
+
+										$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users['f_name'].', </p>';
+										
+										$content1 .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$get_users1['trading_name'].' has opened a dispute against you and have not yet got your reply on their viewpoint.</p>';
+
+										$content1 .= '<p style="margin:0;padding:10px 0px">The order dispute opened against you by '.$get_users1['trading_name'].' has been closed automatically and decided in their favour as you didn\'t respond before '.$newTime.'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
+										
+										$content1.= '<div style="text-align:center"><a href="'.$disputeUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+										$content1.='<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+
+										$content1.='<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+										$uEmail = $get_users['email'];
+										$nUid = $get_users['id'];
 									}else{
 										$u_wallet=$home['u_wallet'];
 										$update1['u_wallet']=$u_wallet+$amount;
 										$runss1 = $this->common_model->update('users',array('id'=>$get_users['id']),$update1);
+
+										$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users1['trading_name'].', </p>';
+										
+										$content1 .= '<p style="margin:0;padding:10px 0px">The order payment dispute between you and '.$get_users['f_name'].' has automatically closed because we did not receive your arbitration fees before '.$newTime.'. Any funds associated with this payment that were previously made available, are now unavailable.</p>';
+
+										$content1 .= '<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+										
+										$content1.='<p style="margin:0;padding:10px 0px">View our PRO Help page or contact our customer services if you have any specific questions using our service.</p>';
+
+										$uEmail = $get_users1['email'];
+										$nUid = $get_users1['id'];
 									}
-
-									$insertn['nt_userId'] = $list['user_id'];
-									$insertn['nt_message'] = $arbitrationMessage.' <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
-									$insertn['nt_satus'] = 0;
-									$insertn['nt_create'] = date('Y-m-d H:i:s');
-									$insertn['nt_update'] = date('Y-m-d H:i:s');
-									$insertn['job_id'] = $id;
-									$insertn['posted_by'] = $list['user_id'];
-									$run2 = $this->common_model->insert('notification',$insertn);
-
-									$insertn1['nt_userId'] = $get_users1['id'];
-									$insertn1['nt_message'] = $arbitrationMessage.' <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
-									$insertn1['nt_satus'] = 0;
-									$insertn1['nt_create'] = date('Y-m-d H:i:s');
-									$insertn1['nt_update'] = date('Y-m-d H:i:s');
-									$insertn1['job_id'] = $id;
-									$insertn1['posted_by'] = $list['user_id'];
-									$run2 = $this->common_model->insert('notification',$insertn1);
 
 									$transactionid = md5(rand(1000,999).time());
 								  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
@@ -3032,22 +2976,20 @@ class Cron extends CI_Controller
 									$insert2['description'] = $arbitrationMessage;
 									$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-									//---------Mail Code---------
+									/*--------------------------------Mail Code----------------------------------*/
 
-									for($i=1; $i<=2;$i++){
-										$uesrName = $i ==1 ? $get_users['f_name'].' '.$get_users['l_name'] : $get_users1['trading_name'];
-										$uesrEmail = $i ==1 ? $get_users['email'] : $get_users1['email'];
+									$abbInsertn['nt_userId'] = $nUid;
+									$abbInsertn['nt_message'] = 'Order dispute was decided and closed automatically! <a href="'.$disputeUrl.'">View Now</a>';
+									$abbInsertn['nt_satus'] = 0;
+									$abbInsertn['nt_create'] = date('Y-m-d H:i:s');
+									$abbInsertn['nt_update'] = date('Y-m-d H:i:s');
+									$abbInsertn['job_id'] = $list['id'];
+									$abbInsertn['posted_by'] = $get_users['id'];
+									$run2 = $this->common_model->insert('notification',$abbInsertn);
 
-										$subject1 = "Your order has been cancelled itself!"; 
-										$content1= 'Hi '.$uesrName.', <br><br>';
-										$content1.= $arbitrationMessage.'<br><br>';
-										$content1.='Order number: '.$list['order_id'].'<br>';
-										$content1.='Order amount: £'.$list['price'].'<br>';
-										$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$list['id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
+									$subject1 = "Order dispute was decided and closed automatically";
 
-										$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
-										$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
-									}
+									$this->common_model->send_mail($uEmail,$subject1,$content1);
 								}
 							}
 						}else{
@@ -3090,25 +3032,7 @@ class Cron extends CI_Controller
 										$u_wallet=$home['u_wallet'];
 										$update1['u_wallet']=$u_wallet+$amount;
 										$runss1 = $this->common_model->update('users',array('id'=>$get_users['id']),$update1);
-									}
-
-									$insertn['nt_userId'] = $favId;
-									$insertn['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
-									$insertn['nt_satus'] = 0;
-									$insertn['nt_create'] = date('Y-m-d H:i:s');
-									$insertn['nt_update'] = date('Y-m-d H:i:s');
-									$insertn['job_id'] = $id;
-									$insertn['posted_by'] = $list['user_id'];
-									$run2 = $this->common_model->insert('notification',$insertn);
-
-									$insertn1['nt_userId'] = $get_users1['id'];
-									$insertn1['nt_message'] = 'Your order dispute has been cancelled itself <a href="'.site_url().'order-tracking/'.$list['id'].'">View Order!</a>';
-									$insertn1['nt_satus'] = 0;
-									$insertn1['nt_create'] = date('Y-m-d H:i:s');
-									$insertn1['nt_update'] = date('Y-m-d H:i:s');
-									$insertn1['job_id'] = $id;
-									$insertn1['posted_by'] = $list['user_id'];
-									$run2 = $this->common_model->insert('notification',$insertn1);
+									}									
 
 									$transactionid = md5(rand(1000,999).time());
 								  $tr_message='£'.$list['price'].' has been credited to your wallet for order number '.$list['order_id'].' on date '.date('d-m-Y h:i:s A').'.';
@@ -3148,22 +3072,241 @@ class Cron extends CI_Controller
 									$insert2['description'] = 'Your order dispute has been cancelled itself due to not respond before '.$newTime;
 									$run = $this->common_model->insert('order_submit_conversation', $insert2);
 
-									//---------Mail Code---------
+									/*-------------Send Email To Tradesman-------------*/
+									if($disputeData['disputed_by'] == $get_users['id']){
+										$uName = $get_users1['trading_name'];
+										$uEmail = $get_users1['email'];
+										$uId = $get_users1['id'];
 
-									for($i=1; $i<=2;$i++){
-										$uesrName = $i ==1 ? $get_users['f_name'].' '.$get_users['l_name'] : $get_users1['trading_name'];
-										$uesrEmail = $i ==1 ? $get_users['email'] : $get_users1['email'];
+										$insertn['nt_userId'] = $get_users1['id'];
+										$insertn['nt_message'] = 'Order dispute was decided and closed automatically! <a href="'.$disputeUrl.'">View Now!</a>';
+										$insertn['nt_satus'] = 0;
+										$insertn['nt_create'] = date('Y-m-d H:i:s');
+										$insertn['nt_update'] = date('Y-m-d H:i:s');
+										$insertn['job_id'] = $list['id'];
+										$insertn['posted_by'] = $get_users['id'];
+										$run2 = $this->common_model->insert('notification',$insertn);
 
-										$subject1 = "Your order has been cancelled itself!"; 
-										$content1= 'Hi '.$uesrName.', <br><br>';
-										$content1.='Your order dipsute has been cancelled itself due to not delivered before '.$newTime.'<br><br>';
-										$content1.='Order number: '.$list['order_id'].'<br>';
-										$content1.='Order amount: £'.$list['price'].'<br>';
-										$content1.='<div style="text-align:center"><a href="'.site_url().'order-tracking/'.$list['id'].'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Order</a></div><br>';
+										$subject1 = "Order dispute was decided and closed automatically";
+									
+										$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users1['trading_name'].', </p>';
+										
+										$content1 .= '<p style="margin:0;padding:10px 0px">The order dispute opened against you by '.$get_users['f_name'].' has been closed automatically and decided in their favour as you didn\'t respond before '.$newTime.'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
+										
+										$content1.= '<div style="text-align:center"><a href="'.$disputeUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
 
-										$content1.='Visit our Homeowner help page or contact our customer services if you have any specific questions using our services';
-										$this->common_model->send_mail($uesrEmail,$subject1,$content1);	
+										$content1.='<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+
+										$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+										$this->common_model->send_mail($get_users1['email'],$subject1,$content1);
 									}
+
+									/*-------------Send Email To Homeowner-------------*/
+									if($disputeData['disputed_by'] == $get_users1['id']){
+										$insertn['nt_userId'] = $get_users['id'];
+										$insertn['nt_message'] = 'Order dispute was decided and closed automatically!.<a href="'.$disputeUrl.'">View Now!</a>';
+										$insertn['nt_satus'] = 0;
+										$insertn['nt_create'] = date('Y-m-d H:i:s');
+										$insertn['nt_update'] = date('Y-m-d H:i:s');
+										$insertn['job_id'] = $list['id'];
+										$insertn['posted_by'] = $get_users1['id'];
+										$run2 = $this->common_model->insert('notification',$insertn);
+
+										$subject1 = "Order dispute was decided and  closed automatically";
+									
+										$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users['f_name'].', </p>';
+										
+										$content1 .= '<p style="margin:0;padding:10px 0px">The order dispute opened against you by '.$get_users1['trading_name'].' has been closed automatically and decided in their favour as you didn\'t respond before '.$newTime.'. Any funds associated with this payment, that were previously made available, are now unavailable.</p>';
+										
+										$content1.= '<div style="text-align:center"><a href="'.$disputeUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+										$content1.='<p style="margin:0;padding:10px 0px">Please be advised: Any decision reached is final, irrevocable and can\'t reopen.</p>';
+
+										$content1.='<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+										$this->common_model->send_mail($get_users['email'],$subject1,$content1);
+									}
+								}
+							}
+						}
+					}
+				}
+  		}
+  	}
+  }
+
+  public function perTwentyFourHours(){
+  	$allServiceOrder = $this->common_model->get_all_data('service_order');
+  	$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
+  	$today = date('Y-m-d');
+
+  	if(!empty($allServiceOrder)){
+  		foreach($allServiceOrder as $list){
+  			$pageUrl = site_url().'order-tracking/'.$list['id'];
+  			$disputeUrl = site_url().'order-dispute/'.$list['id'];
+  			$newTime = '';
+  			$readableTime = date('jS F Y', strtotime($list['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));
+				$service = $this->common_model->GetSingleData('my_services',['id'=>$list['service_id']]);
+				$get_users=$this->common_model->get_single_data('users',array('id'=>$list['user_id']));
+				$get_users1=$this->common_model->get_single_data('users',array('id'=>$service['user_id']));
+
+				if($list['status'] == 'offer_created' && $list['is_accepted'] == 0){
+					$newTime = date('Y-m-d',strtotime($list['created_at'].' +'.$list['offer_expires_days'].' days'));
+				}else{
+					$newTime = date('Y-m-d',strtotime($list['status_update_time'].' +'.$setting['waiting_time'].' days'));	
+				}
+
+				$currentTime = time();
+				$targetTime = strtotime($newTime);
+				$hoursLeft = ($targetTime - $currentTime) / 3600;
+
+				// if($list['id'] == 264){
+				// 	echo $newTime; 
+				// 	echo '---------------------';
+				// 	echo $currentTime; 
+				// 	echo '---------------------';
+				// 	echo $hoursLeft; exit;
+				// }
+
+				/*------------Order Cancel Itself------------*/
+				if($list['status'] == 'cancelled' && $list['is_cancel'] == 2){
+					if($hoursLeft == 24){
+						for($i=1; $i<=2; $i++){
+							/*-----For Homeowener-----*/
+							if($i == 1){
+								$uId = $get_users['id'];
+								$uName = $get_users['f_name'];
+								$uEmail = $get_users['email'];
+							}
+
+							/*-----For Tradesman-----*/
+							if($i == 2){
+								$uId = $get_users1['id'];
+								$uName = $get_users1['trading_name'];
+								$uEmail = $get_users1['email'];
+							}
+
+							$insertn['nt_userId'] = $uId;
+							$insertn['nt_message'] = 'Your order will be cancelled in less than 24 hours. <a href="'.$pageUrl.'">Respond Now!</a>';
+							$insertn['nt_satus'] = 0;
+							$insertn['nt_create'] = date('Y-m-d H:i:s');
+							$insertn['nt_update'] = date('Y-m-d H:i:s');
+							$insertn['job_id'] = $list['id'];
+							$insertn['posted_by'] = $uId;
+							$run2 = $this->common_model->insert('notification',$insertn);
+							
+							$subject1 = "Order Cancels in 24 hours. Act Now!"; 
+							
+							$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$uName.', </p>';
+							
+							$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', will be cancelled automatically in less than 24 hours . This action will taken if fail to respond to this reminder. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
+							
+							$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Accept / Reject Now</a></div>';
+
+							$content1.='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+							
+							$this->common_model->send_mail($uEmail,$subject1,$content1);	
+						}
+					}
+				}
+
+				/*------------Order Complete Itself------------*/
+				$completeTime = '';	
+				
+				if($list['status'] == 'delivered'){
+					if($hoursLeft == 24){
+						$insertn['nt_userId'] = $list['user_id'];
+						$insertn['nt_message'] = 'Order will be completed automatically if you don´t take action now. <a href="'.$pageUrl.'">Review Now!</a>';
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $list['id'];
+						$insertn['posted_by'] = $list['user_id'];
+						$run2 = $this->common_model->insert('notification',$insertn);
+
+						//---------Homeowner Mail Code---------
+						$subject1 = "Reminder: Action Required for Your Order Completion!"; 
+						
+						$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$get_users['f_name'].', </p>';
+						
+						$content1 .= '<p style="margin:0;padding:10px 0px">We wanted to kindly remind you that the order delivered by '.$get_users1['trading_name'].' is awaiting your review. You have 3 days from the delivery date to take action.</p>';
+						
+						$content1 .= "<p style='margin:0;padding:10px 0px'>To ensure the best experience, please review the work, and if you're satisfied, kindly accept the order. If any revisions are needed, feel free to request them directly through the platform.</p>";
+						
+						$content1 .= "<p style='margin:0;padding:10px 0px'>If no action is taken before the 3 days elapsed, your order will be automatically marked as completed.</p>";
+
+						$content1 .= "<p style='margin:0;padding:10px 0px'>We look forward to your feedback and are happy to assist if you need any help during this process.</p>";
+						
+						$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Order Now</a></div>';
+
+						$content1.='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
+						
+						$this->common_model->send_mail($get_users['email'],$subject1,$content1);	
+					}
+				}
+
+				/*------------Dispute Cancel Itself------------*/
+				if($list['status'] == 'disputed' && $list['is_cancel'] == 5){
+					$disputeData = $this->common_model->GetSingleData('tbl_dispute',['dispute_type'=>2,'ds_job_id'=>$list['id']]);
+
+					if(!empty($disputeData)){
+						$arbitrationData = $this->common_model->GetAllData('disput_conversation_tbl',['dispute_type'=>2,'dct_disputid'=>$disputeData['ds_id'], 'dct_userid'=>-1,]);
+
+						if(empty($arbitrationData)){
+							if($hoursLeft == 24){
+								if($disputeData['disputed_by'] == $get_users['id']){
+									$uName = $get_users1['trading_name'];
+									$uEmail = $get_users1['email'];
+									$uId = $get_users1['id'];
+
+									$insertn['nt_userId'] = $get_users1['id'];
+									$insertn['nt_message'] = 'Order dispute closes in 24 hours.<a href="'.$disputeUrl.'">Respond Now!</a>';
+									$insertn['nt_satus'] = 0;
+									$insertn['nt_create'] = date('Y-m-d H:i:s');
+									$insertn['nt_update'] = date('Y-m-d H:i:s');
+									$insertn['job_id'] = $list['id'];
+									$insertn['posted_by'] = $get_users['id'];
+									$run2 = $this->common_model->insert('notification',$insertn);
+
+									$subject1 = "Reminder: Order dispute closes in 24 hours. Respond Now!";
+								
+									$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users1['trading_name'].', </p>';
+									
+									$content1 .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$get_users['f_name'].' has opened a dispute against you and have not yet got your reply on their viewpoint.</p>';
+
+									$content1 .= '<p style="margin:0;padding:10px 0px">Your participation is essential to the claims process. If we don\'t receive a response from you before '.$newTime.'  this case will be closed and decided in the '.$get_users['f_name'].' favour. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
+									
+									$content1.= '<div style="text-align:center"><a href="'.$disputeUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View & Respond Now</a></div>';
+
+									$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+									$this->common_model->send_mail($get_users1['email'],$subject1,$content1);
+								}
+
+								if($disputeData['disputed_by'] == $get_users1['id']){
+									$insertn['nt_userId'] = $get_users['id'];
+									$insertn['nt_message'] = 'Order dispute closes in 24 hours.<a href="'.$disputeUrl.'">Respond Now!</a>';
+									$insertn['nt_satus'] = 0;
+									$insertn['nt_create'] = date('Y-m-d H:i:s');
+									$insertn['nt_update'] = date('Y-m-d H:i:s');
+									$insertn['job_id'] = $list['id'];
+									$insertn['posted_by'] = $get_users1['id'];
+									$run2 = $this->common_model->insert('notification',$insertn);
+
+									$subject1 = "Reminder: Order dispute closes in 24 hours. Respond Now!";
+								
+									$content1 = '<p style="margin:0;padding:10px 0px">Hi '.$get_users['f_name'].', </p>';
+									
+									$content1 .= '<p style="margin:0;padding:10px 0px">We previously notified you that '.$get_users1['trading_name'].' has opened a dispute against you, but have not yet got your reply on their viewpoint. </p>';
+
+									$content1 .= '<p style="margin:0;padding:10px 0px">Your participation is essential to the claims process. If we don\'t receive a response from you before '.$newTime.'  this case will be closed and decided in the '.$get_users1['trading_name'].' favour. Any decision reached is final and irrevocable. Once a case is close, it can\'t reopen.</p>';
+									
+									$content1.= '<div style="text-align:center"><a href="'.$disputeUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View & Respond Now</a></div>';
+
+									$content1.='<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+									$this->common_model->send_mail($get_users['email'],$subject1,$content1);
 								}
 							}
 						}

@@ -2931,7 +2931,7 @@ class Users extends CI_Controller
 		$user_id = $this->session->userdata('user_id');
 		$userData = $this->common_model->GetSingleData('users',['id'=>$user_id]);
 
-		if(empty($$userData['profile']) && empty($_FILES['profile']['name'])){
+		if(empty($userData['profile']) && empty($_FILES['profile']['name'])){
 			$this->form_validation->set_rules('profile','Profile','required');
 		}
 
@@ -2968,8 +2968,10 @@ class Users extends CI_Controller
 			$this->session->unset_userdata('latest_service');
 			$this->reserServiceTabData();
 
+			$pageUrl = site_url().'my-services';
+
 			$insertn['nt_userId'] = $user_id;
-			$insertn['nt_message'] = 'Your listing has been submitted. View now!';
+			$insertn['nt_message'] = 'Your listing has been submitted. <a href="'.$pageUrl.'">View now!</a>';
 			$insertn['nt_satus'] = 0;
 			$insertn['nt_create'] = date('Y-m-d H:i:s');
 			$insertn['nt_update'] = date('Y-m-d H:i:s');
@@ -2989,7 +2991,8 @@ class Users extends CI_Controller
 			
 			$this->common_model->send_mail($userData['email'],$subject1,$content1);
 
-			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');			
+			$this->session->set_flashdata('success','Your listing has been submitted to approval and will go live shortly if approved.');
+						
 			redirect('my-services');
 		}
 	}
@@ -4517,7 +4520,11 @@ class Users extends CI_Controller
 			$rMinutes = '';
 			$days = 0;
 			$data['is_extended'] = 0;
-			$exten_delivery_date = '';			
+			$exten_delivery_date = '';
+
+			// echo '<pre>';
+			// print_r($statusHistory);
+			// exit;
 
 			if(!empty($statusHistory)){
 				$days = $order['is_custom'] == 0 ? $package_data[$order['package_type']]['days'] : $order['delivery'];
@@ -5711,7 +5718,7 @@ class Users extends CI_Controller
 						
 				$content .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
 				
-				$content .='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+				$content .='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
 
 				$uMail = $tradesman['email'];
       }
@@ -5726,9 +5733,9 @@ class Users extends CI_Controller
 						
 				$content .= '<p style="margin:0;padding:10px 0px">'.$tradesman['trading_name'].' has withdrawn the cancellation request for your order '.$serviceOrder['order_id'].'. This means the cancellation will no longer be processed. As a result, the order will continue as originally planned.</p>';
 				
-				$content .='<p style="margin:0;padding:10px 0px">Visit our Pro help page or contact our customer services if you have any specific questions using our service.</p>';
+				$content .='<p style="margin:0;padding:10px 0px">Visit our Customer help page or contact our customer services if you have any specific questions using our service.</p>';
 
-				$uMail = $tradesman['email'];
+				$uMail = $homeOwner['email'];
       }
 
 			/*Manage Order History*/
@@ -5750,7 +5757,7 @@ class Users extends CI_Controller
 
 			/*Email Code*/
 			$subject = "Order Cancellation Request Withdrawn!"; 
-			$this->common_model->send_mail($uMail,$subject,$content);			
+			$this->common_model->send_mail($uMail,$subject,$content);
 
 			$insertn1['nt_userId'] = $receiverId;
 			$insertn1['nt_message'] = 'Your order cancellation request was withdrawn.';
@@ -6053,7 +6060,7 @@ class Users extends CI_Controller
 				
 				$content1 .= '<p style="margin:0;padding:10px 0px">The '.$tradesman['trading_name'].' has requested an extension as they are unable to deliver the order by the originally agreed deadline. They have proposed extending the delivery date.</p>';
 
-				$content1 .= '<p style="margin:0;padding:10px 0px">We kindly ask you to review this request and and respond as soon as possible.</p>';
+				$content1 .= '<p style="margin:0;padding:10px 0px">We kindly ask you to review this request and respond as soon as possible.</p>';
 				
 				$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Respond Now</a></div>';
 
@@ -6095,8 +6102,8 @@ class Users extends CI_Controller
 			if($is_accepted == 2){
 				$reason = 'Exteneded delivery time is not accepted';
 
-				$input['status'] = 'extened_decline';
-				$input['is_cancel'] = 9;
+				$input['status'] = 'active';
+				$input['is_cancel'] = 0;
 				$input['reason'] = $reason;
 				$input['status_update_time'] = date('Y-m-d H:i:s');
 
@@ -6128,16 +6135,21 @@ class Users extends CI_Controller
 				$insert['description'] = $reason;
 				$run = $this->common_model->insert('order_submit_conversation', $insert);
 
-				$ntMessage = 'Your extension request was rejected. <a href="'.$pageUrl.'">View now!</a>';
+				$ntMessage = 'Delivery Extension request Rejected. <a href="'.$pageUrl.'">View now!</a>';
 
-				$subject1 = "Order Delivery Extension Rejected."; 
+				$subject1 = "Your Order Delivery Extension request was rejected."; 
 								
 				$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$tradesman['trading_name'].', </p>';
 				
-				$content1 .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has rejected your order delivery time extension.</p>';
-				
-				$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+				$content1 .= '<p style="margin:0;padding:10px 0px">'.$homeOwner['f_name'].' has rejected your request to extend the order delivery time.</p>';
 
+				$content1 .= '<p style="margin:0;padding:10px 0px">To ensure the smooth completion of this order and maintain a positive experience for both you and the customer, we recommend reaching out to the customer directly to discuss and agree upon a new delivery timeline.</p>';
+
+				$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Reach out Now</a></div>';
+				
+				$content1.='<p style="margin:0;padding:10px 0px">Once an updated timeline is agreed upon, please navigate to the order details page and submit a new request for the extension. This will help keep everything documented and ensure the customer’s approval for the updated schedule.</p>';
+
+				$content1.='<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
 			}else{
 				$ntMessage = 'Your extension request was accepted. <a href="'.$pageUrl.'">View now!</a>';
 
