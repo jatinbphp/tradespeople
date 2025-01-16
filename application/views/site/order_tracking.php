@@ -713,6 +713,7 @@
 																	<th><?php echo $milestones[0]['price_per_type']; ?></th>
 																	<th>Description</th>
 																	<th>Amount</th>
+																	<th>Status</th>
 																	<?php if($this->session->userdata('type')==1):?>
 																		<th>Action</th>
 																	<?php endif; ?>	
@@ -742,6 +743,7 @@
 																				?>
 																			</td>
 																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
+																			<td><?php echo $list['service_status']; ?></td>
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
 																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>

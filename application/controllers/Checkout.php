@@ -122,7 +122,7 @@ class Checkout extends CI_Controller
 		$data['package_type'] = $package_type;
 		$data['package_price'] = empty($order) ? $package_data[$cartData['package_type']]['price'] : $order['price'];
 		$data['package_description'] = empty($order) ? $package_data[$cartData['package_type']]['description'] : $order['description'];
-		$data['delivery_date'] = empty($order) ? $this->common_model->get_date_format($package_data[$cartData['package_type']]['days']) : $this->common_model->get_date_format($order['delivery']);
+		$data['delivery_date'] = empty($order) ? $this->common_model->get_cart_date_format($cartData['date']) : $this->common_model->get_date_format($order['delivery']);
 		$data['task_addresses'] = $this->common_model->getTaskAddresses($uId);
 		$data['setting'] = $setting;
 		$data['loginUser'] = $this->common_model->GetSingleData('users',['id'=>$uId]);

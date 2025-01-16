@@ -5314,6 +5314,7 @@ class Users extends CI_Controller
 			$today = date('Y-m-d H:i:s');
 
 			$in['status'] = 5;
+			$in['service_status'] = "disputed";
 			$in['dispute_id'] = $run1;
 			$this->common_model->update('tbl_milestones',array('post_id'=>$serviceOrder['id']),$in);
 

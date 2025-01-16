@@ -3990,6 +3990,12 @@ class Common_model extends CI_Model
 
 		return $formattedDate;
 	}
+
+	public function get_cart_date_format($date){
+		$currentDate = new DateTime($date);
+		$formattedDate = $currentDate->format('D jS F, Y');
+		return $formattedDate;
+	}
 	
 	public function get_keyword_suggestions($keyword) {
 		$this->db->select('positive_keywords');

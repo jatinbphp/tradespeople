@@ -1325,8 +1325,10 @@ class Order_dispute extends CI_Controller
 	}
 
 	function dispute($dispute_id){
+
 		if ($this->session->userdata('user_id')) {
 			$dispute = $this->common_model->get_single_data('tbl_dispute', array('dispute_type'=>2,'ds_job_id' => $dispute_id));
+
 			
 			if (!$dispute) {
 				return redirect('/' );
@@ -1347,7 +1349,7 @@ class Order_dispute extends CI_Controller
 				return;
 			}
 			
-			$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$dispute_id."'","tbl_milestones.*",true);
+			$milestones = $this->common_model->CustomQuery('tbl_milestones', "inner join dispute_milestones on dispute_milestones.milestone_id = tbl_milestones.id where dispute_milestones.dispute_id = '".$dispute['ds_id']."'","tbl_milestones.*",true);
 
 			$page['milestones'] = $milestones;
 

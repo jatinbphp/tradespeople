@@ -821,7 +821,7 @@ if ($checkOtherUserReply) {
 										<ul style="text-align: center;">
 											<?php foreach ($milestones as $milestone) {
 												echo '<li style="list-style: none;" ><p class="p_left">£' . $milestone['milestone_amount'] . ':</p><p class="p_right" >' . $milestone['milestone_name'] . '</p></li>';
-											} ?>
+											} ?> 
 										</ul>
 										<p style="text-align:center; margin-bottom: 0;">Project will be closed upon resolution</p>
 									</div>
