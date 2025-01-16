@@ -3200,7 +3200,7 @@ class Cron extends CI_Controller
 							
 							$content1 = '<p style="margin:0;padding:10px 0px">Dear '.$uName.', </p>';
 							
-							$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', will be cancelled automatically in less than 24 hours . This action will taken if fail to respond to this reminder. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
+							$content1 .= '<p style="margin:0;padding:10px 0px">Your recent order, '.$list['order_id'].', will be cancelled automatically in less than 24 hours . This action will be taken if you fail to respond to this reminder. As per our platform’s policy, orders are automatically cancelled if the respondent does not respond within 3 days of the request being sent.</p>';
 							
 							$content1.= '<div style="text-align:center"><a href="'.$pageUrl.'" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Accept / Reject Now</a></div>';
 

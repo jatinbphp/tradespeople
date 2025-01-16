@@ -46,7 +46,7 @@ if ($checkOtherUserReply) {
 	}
 }
 
-$showStepIn = false;
+//$showStepIn = false;
 ?>
 <style>
 	.tox-toolbar__primary,
