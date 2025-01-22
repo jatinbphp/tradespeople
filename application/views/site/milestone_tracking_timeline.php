@@ -395,6 +395,7 @@
             <!-- <textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea> -->
           </form>
 
+          <?php if($order['status'] != 'disputed'){ ?>
           <p class="alert alert-info mb-0">
             <i class="fa fa-info-circle"></i> 
             Keep in mind that you have untill <?php echo $newTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
@@ -408,6 +409,8 @@
               Request Modification
             </button>
           </div>
+          <?php } ?>
+
           <div id="modification-div" style="display:none; width: 100%;">
             <form id="request_modification_form_<?php echo $mList['id']; ?>">
               <input type="hidden" name="order_id" value="<?php echo $order['id']?>">

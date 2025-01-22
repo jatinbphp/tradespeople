@@ -1476,18 +1476,33 @@
 								In order to cancel a order, you nee to send a cancellation request to your tradesmen. Once they accept the request, the order will be cancelled and the funds will be returned to you. If the request is denied, you can initiate a dispute. 
 							</p>
 
-							<hr>
+							<hr> 
 
 							<div class="Milestone2">
-                <div class="row">
-                   <div class="col-sm-8">
-                      <p><b>Order Id</b><span style="float: right;"><?php echo $order['order_id']; ?></span></p>
-                      <p><b>Tradesmen Name</b><span style="float: right;"><?php echo $tradesman['trading_name']; ?></span></p>
-                      <p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo $order['price']; ?></span></p>
-                      <p><b>Date Created</b><span style="float: right;"><?php echo $created_date; ?></span></p>
-                   </div>
-                </div>
-             </div>
+								<div class="row">
+									<div class="col-sm-8">
+										<p><b>Order Id</b><span style="float: right;"><?php echo $order['order_id']; ?></span></p>
+										<p><b>Tradesmen Name</b><span style="float: right;"><?php echo $tradesman['trading_name']; ?></span></p>
+										<p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo $order['price']; ?></span></p>
+										<p><b>Date Created</b><span style="float: right;"><?php echo $created_date; ?></span></p>
+
+									</div>
+								</div>
+							</div>
+
+							
+							<div class="from-group">
+								<label class="control-label" for="textinput"><b>Select the milestone you want to dispute</b></label><br>
+								<?php
+									$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
+									foreach($milestones as $m){ ?>
+										<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
+								<?php } ?>
+
+								<br>
+								<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i> 0</span></p>
+							</div>
+						
 
 							<div class="form-group mt-4">
 								<label for="reason"> <b>Why do you want to cancel this order?</b></label>
@@ -2822,15 +2837,31 @@
 	function selectMilesForDispute(e,id) {
 		var mId = e.value;
 		var total = 0;
-    $('.dispute_milestones').each((index,item)=>{
+		$('.dispute_milestones').each((index,item)=>{
 			if($(item).is(':checked')){
-      	let amount = $(item).data('amount');
-        total += amount;
-      }
-    })
-    $('.totalDispute'+id).html(total);
-    $('#offer_amount'+id).attr('max',total);
-  }
+				let amount = $(item).data('amount');
+				total += amount;
+			}
+		})
+		$('.totalDispute'+id).html(total);
+		$('#offer_amount'+id).attr('max',total);
+	}
+
+  	function selectMilesForCancel(e,id){
+		var mId = e.value;
+		var total = 0;
+		
+		$('.cancellation_milestones').each((index,item)=>{
+			if($(item).is(':checked')){
+				let amount = $(item).data('amount');
+				total += amount;
+			}
+		});
+
+		console.log(total);
+
+		$('.totalCancellation'+id).html('<i class="fa fa-gbp"></i>'+total);
+	}
 
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
