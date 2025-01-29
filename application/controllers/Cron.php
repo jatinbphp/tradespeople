@@ -2555,7 +2555,7 @@ class Cron extends CI_Controller
   }
 
   public function autoWithdrawOrderCancellation(){
-  	$allServiceOrder = $this->common_model->get_all_data('service_order',['id'=>12]);
+  	$allServiceOrder = $this->common_model->get_all_data('service_order');
   	$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
   	$today = date('Y-m-d');
 
