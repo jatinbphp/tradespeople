@@ -2650,13 +2650,14 @@
 		function orderSubmit(){
 			formData = $("#order_submit_form").serialize();
 			var orderId = $('#orderId').val();
+			$('#loader').removeClass('hide');
 			$.ajax({
 				url: '<?= site_url().'users/submitProject'; ?>',
 				type: 'POST',
 				data: formData,
 				dataType: 'json',		                
 				success: function(result) {
-					$('#loader3').addClass('hide');
+					$('#loader').addClass('hide');
 					if(result.status == 0){
 						swal({
 							title: "Error",
@@ -2757,13 +2758,14 @@
   		var date = $('#selectedDates').val();
   		var time = $('#timeSlot').val();
   		var oId = <?php echo $order['id'];?>;
-
+  		$('#loader').removeClass('hide');
   		$.ajax({
   			url: "<?= site_url().'users/extenedTime'; ?>", 
   			data: {ex_date:date,ex_time:time,oId:oId}, 
   			type: "POST", 
   			dataType: 'json',
   			success: function (data) {
+  				$('#loader').addClass('hide');
   				if (data.status == 1) {
   					window.location.reload();
   				} else if (data.status == 2) {
@@ -2811,12 +2813,14 @@
 			cancelButtonText: 'Cancel'
 		}, function() {				
 			var oId = <?php echo $order['id'];?>;
+			$('#loader').removeClass('hide');
   		$.ajax({
   			url: "<?= site_url().'users/acceptExtenedTime'; ?>", 
   			data: {type:exType,oId:oId}, 
   			type: "POST", 
   			dataType: 'json',
   			success: function (data) {
+  				$('#loader').addClass('hide');
   				if (data.status == 1) {
   					window.location.reload();
   				} else if (data.status == 2) {
