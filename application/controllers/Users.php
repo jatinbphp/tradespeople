@@ -5353,6 +5353,7 @@ class Users extends CI_Controller
 	{
 		$oId = $this->input->post('order_id');
 		$reason = $this->input->post('reason');
+		$dispute_milestones = $this->input->post('milestones');
 		$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $oId]);
 
 		$input['status'] = 'disputed';
@@ -5459,15 +5460,18 @@ class Users extends CI_Controller
 			$insert['ds_puser_id'] = $serviceOrder['user_id'];
 			$insert['caseid'] = time();
 			$insert['ds_status'] = 0;
-			$insert['total_amount'] = $serviceOrder['price'] * $serviceOrder['service_qty'];
+			// $insert['total_amount'] = $serviceOrder['price'] * $serviceOrder['service_qty'];
 			$insert['disputed_by'] = $userid;
 			$insert['dispute_to'] = $dispute_to;
 			$insert['ds_comment'] = $reason;
 			$insert['ds_create_date'] = date('Y-m-d H:i:s');
 			if ($this->session->userdata('type') == 1) {
 				$insert['tradesmen_offer'] = $this->input->post('offer_amount');
+				$insert['total_amount'] = $this->input->post('offer_amount');
+				
 			} else {
 				$insert['homeowner_offer'] = $this->input->post('offer_amount');
+				$insert['total_amount'] = $this->input->post('offer_amount');
 			}
 
 			if ($userid == $service['user_id']) {
@@ -5480,21 +5484,34 @@ class Users extends CI_Controller
 
 			$today = date('Y-m-d H:i:s');
 
-			$in['status'] = 5;
-			$in['service_status'] = "disputed";
-			$in['dispute_id'] = $run1;
-			$this->common_model->update('tbl_milestones', array('post_id' => $serviceOrder['id']), $in);
+			if(!empty($dispute_milestones)){
+				/* DISPUTE SELECTED MILESTONE */
+				foreach ($dispute_milestones as $key => $value) {
+					$in['status'] = 5;
+					$in['service_status'] = "disputed";
+					$in['dispute_id'] = $run1;
+					$this->common_model->update('tbl_milestones', array('id' => $value), $in);
 
-			$milestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $serviceOrder['id']]);
-
-			foreach ($milestones as $miles) {
-				$insert0 = [];
-				$insert0['dispute_id'] = $run1;
-				$insert0['milestone_id'] = $miles['id'];
-				$insert0['created_at'] = $today;
-				$insert0['updated_at'] = $today;
-				$this->common_model->insert('dispute_milestones', $insert0);
+					$insert0 = [];
+					$insert0['dispute_id'] = $run1;
+					$insert0['milestone_id'] = $value;
+					$insert0['created_at'] = $today;
+					$insert0['updated_at'] = $today;
+					$this->common_model->insert('dispute_milestones', $insert0);
+				}				
 			}
+			
+
+			// $milestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $serviceOrder['id']]);
+
+			// foreach ($milestones as $miles) {
+			// 	$insert0 = [];
+			// 	$insert0['dispute_id'] = $run1;
+			// 	$insert0['milestone_id'] = $miles['id'];
+			// 	$insert0['created_at'] = $today;
+			// 	$insert0['updated_at'] = $today;
+			// 	$this->common_model->insert('dispute_milestones', $insert0);
+			// }
 
 			if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
 				foreach ($_POST['file_name'] as $key => $file) {
@@ -5541,6 +5558,7 @@ class Users extends CI_Controller
 	{
 		$oId = $this->input->post('order_id');
 		$reason = $this->input->post('reason');
+		$cancel_milestones = $this->input->post('milestones');
 		$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $oId]);
 
 		$input['status'] = 'cancelled';
@@ -5627,10 +5645,15 @@ class Users extends CI_Controller
 			$insert['description'] = $reason;
 			$run = $this->common_model->insert('order_submit_conversation', $insert);
 
-			$in['status'] = 4;
-			$in['service_status'] = 'cancelled';
-			$in['dispute_id'] = null;
-			$this->common_model->update('tbl_milestones', array('post_id' => $oId), $in);
+			if(!empty($cancel_milestones)){
+				/* CANCEL SELECTED MILESTONE */
+				foreach ($cancel_milestones as $key => $value) {
+					$in['status'] = 4;
+					$in['service_status'] = 'cancelled';
+					$in['dispute_id'] = null;
+					$this->common_model->update('tbl_milestones', array('id' => $value), $in);
+				}
+			}
 
 			$this->common_model->send_mail($uMail, $subject, $content1);
 

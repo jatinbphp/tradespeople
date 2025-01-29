@@ -667,33 +667,7 @@
 															<li><b><?php echo $rHours; ?></b><br/>Hours</li>
 															<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
 														</ul>
-														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
-															<?php if($this->session->userdata('type')==1):?>
-																<div id="approved-btn-div">
-																	<button type="button" id="withdraw-offer-btn" class="btn btn-default">
-																		Withdraw Offer
-																	</button>
-																</div>
-															<?php else: ?>
-																<div id="approved-btn-div">
-																	<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
-																		Accept
-																	</button>
-																	<button type="button" id="reject-offer-btn" class="btn btn-default">
-																		Reject
-																	</button>
-																</div>
-															<?php endif; ?>
-														<?php elseif($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
-																<div id="approved-btn-div">
-																	<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
-																		Accept
-																	</button>
-																	<button type="button" id="reject-extended-btn" class="btn btn-default">
-																		Decline
-																	</button>
-																</div>
-														<?php endif; ?>	
+														
 													</div>
 												</li>
 											<?php endif;?>
@@ -788,7 +762,38 @@
 																</tbody>
 															</table>
 														</div>
-													</div>													
+
+														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
+															<?php if($this->session->userdata('type')==1):?>
+																<div id="approved-btn-div">
+																	<button type="button" id="withdraw-offer-btn" class="btn btn-default">
+																		Withdraw Offer
+																	</button>
+																</div>
+															<?php else: ?>
+																<div id="approved-btn-div">
+																	<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
+																		Accept
+																	</button>
+																	<button type="button" id="reject-offer-btn" class="btn btn-default">
+																		Reject
+																	</button>
+																</div>
+															<?php endif; ?>
+														<?php elseif($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
+																<div id="approved-btn-div">
+																	<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
+																		Accept
+																	</button>
+																	<button type="button" id="reject-extended-btn" class="btn btn-default">
+																		Decline
+																	</button>
+																</div>
+														<?php endif; ?>	
+
+													</div>
+													
+													
 												</li>
 											<?php endif; ?>
 
@@ -1492,7 +1497,7 @@
 
 							
 							<div class="from-group">
-								<label class="control-label" for="textinput"><b>Select the milestone you want to dispute</b></label><br>
+								<label class="control-label" for="textinput"><b>Select the milestone you want to cancel</b></label><br>
 								<?php
 									$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
 									foreach($milestones as $m){ ?>
@@ -2310,7 +2315,6 @@
 		function disputeOrder(){
 			$('#loader').removeClass('hide');
 			formData = $("#order_dispute_form").serialize();
-
 			$.ajax({
 				url: '<?= site_url().'users/orderDispute'; ?>',
 				type: 'POST',

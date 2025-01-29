@@ -1334,7 +1334,7 @@ class Order_dispute extends CI_Controller
 				return redirect('/' );
 			}
 
-			$user_id = $this->session->userdata('user_id');
+			$user_id = $this->session->userdata('user_id'); 
 			$page['dispute'] = $dispute;
 			$page['setting'] = $this->common_model->GetColumnName('admin', array('id' => 1));
 
