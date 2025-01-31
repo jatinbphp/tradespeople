@@ -4674,7 +4674,8 @@ class Users extends CI_Controller
 			$rHours = '';
 			$rMinutes = '';
 			$days = 0;
-			$data['is_extended'] = 0;
+			$data['is_extended'] = 1;
+			$data['is_delivery'] = 1;
 			$exten_delivery_date = '';
 
 			// echo '<pre>';
@@ -4688,8 +4689,19 @@ class Users extends CI_Controller
 				$exten_delivery_date = $currentDate->format('Y-m-d');
 			}
 
-			if (!empty($exten_delivery_date) && $today > $exten_delivery_date && $order['is_exten_delivery_accepted'] == 0 || $order['status'] == 'extened_decline') {
-				$data['is_extended'] = 1;
+			if(!empty($exten_delivery_date) && (in_array($order['is_exten_delivery_accepted'], [0,2]) || $order['status'] == 'extened_decline')){
+				if($today > $exten_delivery_date ){
+					$data['is_extended'] = 1;
+					$data['is_delivery'] = 0;
+				}else{
+					$exten_delivery_date_obj = new DateTime($exten_delivery_date);
+	        $today_obj = new DateTime($today);
+	        
+	        $diff = $exten_delivery_date_obj->diff($today_obj);
+	        $totalHours = $diff->days * 24;
+
+	        $data['is_extended'] = $totalHours <= 24 ? 1 : 0;
+				}
 			}
 
 			$data['requirements'] = $order['is_custom'] == 1 && $order['is_requirements'] == 0 ? [0 => ''] : [];

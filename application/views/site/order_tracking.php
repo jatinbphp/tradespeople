@@ -485,6 +485,7 @@
 								</div>
 							</div>
 						</div>
+
 						<div class="col-md-8">
 							<div class="tab-content">
 								<div id="Timeline" class="tab-pane fade active in">
@@ -581,7 +582,7 @@
 																<?php endif; ?>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'active' && $is_extended == 0):?>	
+															<?php if($order['status'] == 'active' && $is_delivery == 1):?>	
 																<?php if($order['is_custom'] == 1):?>
 																	<?php if($order['order_type'] == 'single'):?>
 																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
@@ -667,6 +668,34 @@
 															<li><b><?php echo $rHours; ?></b><br/>Hours</li>
 															<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
 														</ul>
+
+														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
+															<?php if($this->session->userdata('type')==1):?>
+																<div id="approved-btn-div">
+																	<button type="button" id="withdraw-offer-btn" class="btn btn-default">
+																		Withdraw Offer
+																	</button>
+																</div>
+															<?php else: ?>
+																<div id="approved-btn-div">
+																	<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
+																		Accept
+																	</button>
+																	<button type="button" id="reject-offer-btn" class="btn btn-default">
+																		Reject
+																	</button>
+																</div>
+															<?php endif; ?>
+														<?php elseif($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
+																<div id="approved-btn-div">
+																	<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
+																		Accept
+																	</button>
+																	<button type="button" id="reject-extended-btn" class="btn btn-default">
+																		Decline
+																	</button>
+																</div>
+														<?php endif; ?>	
 														
 													</div>
 												</li>
@@ -717,7 +746,7 @@
 																				?>
 																			</td>
 																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
-																			<td><?php echo $list['service_status']; ?></td>
+																			<td><?php echo ucfirst(str_replace('_', ' ', $list['service_status']));?></td>
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
 																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>
@@ -762,38 +791,7 @@
 																</tbody>
 															</table>
 														</div>
-
-														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
-															<?php if($this->session->userdata('type')==1):?>
-																<div id="approved-btn-div">
-																	<button type="button" id="withdraw-offer-btn" class="btn btn-default">
-																		Withdraw Offer
-																	</button>
-																</div>
-															<?php else: ?>
-																<div id="approved-btn-div">
-																	<button type="button" id="accept-offer-btn" class="btn btn-warning mr-3">
-																		Accept
-																	</button>
-																	<button type="button" id="reject-offer-btn" class="btn btn-default">
-																		Reject
-																	</button>
-																</div>
-															<?php endif; ?>
-														<?php elseif($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
-																<div id="approved-btn-div">
-																	<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
-																		Accept
-																	</button>
-																	<button type="button" id="reject-extended-btn" class="btn btn-default">
-																		Decline
-																	</button>
-																</div>
-														<?php endif; ?>	
-
 													</div>
-													
-													
 												</li>
 											<?php endif; ?>
 
@@ -1488,7 +1486,7 @@
 									<div class="col-sm-8">
 										<p><b>Order Id</b><span style="float: right;"><?php echo $order['order_id']; ?></span></p>
 										<p><b>Tradesmen Name</b><span style="float: right;"><?php echo $tradesman['trading_name']; ?></span></p>
-										<p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo $order['price']; ?></span></p>
+										<p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo number_format($order['price'],2); ?></span></p>
 										<p><b>Date Created</b><span style="float: right;"><?php echo $created_date; ?></span></p>
 
 									</div>
@@ -1505,7 +1503,7 @@
 								<?php } ?>
 
 								<br>
-								<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i> 0</span></p>
+								<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i><?php echo number_format($order['price'],2); ?></span></p>
 							</div>
 						
 
@@ -2650,13 +2648,14 @@
 		function orderSubmit(){
 			formData = $("#order_submit_form").serialize();
 			var orderId = $('#orderId').val();
+			$('#loader').removeClass('hide');
 			$.ajax({
 				url: '<?= site_url().'users/submitProject'; ?>',
 				type: 'POST',
 				data: formData,
 				dataType: 'json',		                
 				success: function(result) {
-					$('#loader3').addClass('hide');
+					$('#loader').addClass('hide');
 					if(result.status == 0){
 						swal({
 							title: "Error",
@@ -2757,13 +2756,14 @@
   		var date = $('#selectedDates').val();
   		var time = $('#timeSlot').val();
   		var oId = <?php echo $order['id'];?>;
-
+  		$('#loader').removeClass('hide');
   		$.ajax({
   			url: "<?= site_url().'users/extenedTime'; ?>", 
   			data: {ex_date:date,ex_time:time,oId:oId}, 
   			type: "POST", 
   			dataType: 'json',
   			success: function (data) {
+  				$('#loader').addClass('hide');
   				if (data.status == 1) {
   					window.location.reload();
   				} else if (data.status == 2) {
@@ -2811,12 +2811,14 @@
 			cancelButtonText: 'Cancel'
 		}, function() {				
 			var oId = <?php echo $order['id'];?>;
+			$('#loader').removeClass('hide');
   		$.ajax({
   			url: "<?= site_url().'users/acceptExtenedTime'; ?>", 
   			data: {type:exType,oId:oId}, 
   			type: "POST", 
   			dataType: 'json',
   			success: function (data) {
+  				$('#loader').addClass('hide');
   				if (data.status == 1) {
   					window.location.reload();
   				} else if (data.status == 2) {
