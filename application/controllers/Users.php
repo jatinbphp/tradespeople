@@ -4682,6 +4682,10 @@ class Users extends CI_Controller
 			// print_r($statusHistory);
 			// exit;
 
+			if($order['is_custom'] == 1 && $order['order_type'] == "milestone"){
+				$data['is_extended'] = 0;
+			}
+
 			if (!empty($statusHistory)) {
 				$days = $order['is_custom'] == 0 ? $package_data[$order['package_type']]['days'] : $order['delivery'];
 				$currentDate = new DateTime($statusHistory['created_at']);
@@ -4824,15 +4828,22 @@ class Users extends CI_Controller
 			$data['newTime'] = $newTime;
 
 			$milestones = [];
+			$cancelMilestoneExist = [];
 			if ($order['is_custom'] == 1 && $order['order_type'] == 'milestone') {
 				$milestones = $this->common_model->get_all_data('tbl_milestones', ['milestone_type' => 'service', 'post_id' => $order['id']]);
 
 				foreach ($milestones as &$milestone) {
+
+					if($milestone['status'] == '9'){
+						$cancelMilestoneExist[] = $milestone['id'];
+					}
+
 					$milestone['order_submit_conversation'] = $this->common_model->get_all_data('order_submit_conversation', ['milestone_id' => $milestone['id']], 'id');
 				}
 			}
 
 			$data['milestones'] = $milestones;
+			$data['cancelMilestoneExist'] = $cancelMilestoneExist;
 
 			// echo '<pre>';
 			// print_r($data);
@@ -5573,114 +5584,151 @@ class Users extends CI_Controller
 		$cancel_milestones = $this->input->post('milestones');
 		$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $oId]);
 
-		$input['status'] = 'cancelled';
-		$input['is_cancel'] = 2;
-		$input['reason'] = $reason;
-		$input['status_update_time'] = date('Y-m-d H:i:s');
+		if(!empty($cancel_milestones)){
 
-		if ($_FILES['dct_image']['name'] != '') {
-			$config['upload_path']   = 'img/request_cancel/';
-			$config['allowed_types'] = 'gif|jpg|png|jpeg';
-			$config['remove_spaces'] = TRUE;
-			$config['encrypt_name'] = TRUE;
-			$this->load->library('upload', $config);
-
-			if ($this->upload->do_upload('dct_image')) {
-				$data = $this->upload->data();
-				$input['order_cancel_file'] = $data['file_name']; // Set the filename here
-			}
-		}
-
-		$run = $this->common_model->update('service_order', array('id' => $oId), $input);
-		if ($run) {
-			$hId = $this->session->userdata('user_id');
-			$service = $this->common_model->GetSingleData('my_services', ['id' => $serviceOrder['service_id']]);
-			$homeOwner = $this->common_model->GetSingleData('users', ['id' => $serviceOrder['user_id']]);
-			$tradesman = $this->common_model->GetSingleData('users', ['id' => $service['user_id']]);
-			$pageUrl = site_url() . 'order-tracking/' . $serviceOrder['id'];
-
-			if ($hId == $homeOwner['id']) {
-				$senderId = $hId;
-				$receiverId = $tradesman['id'];
-
-				$subject = $homeOwner['f_name'] . ', Request to Cancel ' . $serviceOrder['order_id'] . '!';
-
-				$content1 = '<p style="margin:0;padding:10px 0px">Dear ' . $tradesman['trading_name'] . ', </p>';
-
-				$content1 .= '<p style="margin:0;padding:10px 0px">' . $homeOwner['f_name'] . ', has requested your consent to cancel order ' . $serviceOrder['order_id'] . ' for the service titled "' . $service['service_name'] . '"</p>';
-
-				$content1 .= "<p style='margin:0;padding:10px 0px'>To review the reason for this cancellation, please click below.</p>";
-
-				$content1 .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
-
-				$content1 .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
-
-				$uMail = $tradesman['email'];
-
-				$nMessage = $homeOwner['f_name'] . ' sent you an order cancellation request. <a href="' . $pageUrl . '">Review Now!</a>';
-			}
-			if ($hId == $tradesman['id']) {
-				$senderId = $hId;
-				$receiverId = $homeOwner['id'];
-
-				$subject = $tradesman['trading_name'] . ', Request to Cancel ' . $serviceOrder['order_id'] . '!';
-
-				$content1 = '<p style="margin:0;padding:10px 0px">Dear ' . $homeOwner['f_name'] . ', </p>';
-
-				$content1 .= '<p style="margin:0;padding:10px 0px">' . $tradesman['trading_name'] . ', has requested your consent to cancel order ' . $serviceOrder['order_id'] . ' for the service titled "' . $service['service_name'] . '"</p>';
-
-				$content1 .= "<p style='margin:0;padding:10px 0px'>To review the reason for this cancellation, please click below.</p>";
-
-				$content1 .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
-
-				$content1 .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
-
-				$uMail = $homeOwner['email'];
-
-				$nMessage = $tradesman['trading_name'] . ' sent you an order cancellation request. <a href="' . $pageUrl . '">Review Now!</a>';
-			}
-
-			/*Manage Order History*/
-			$insert1 = [
-				'user_id' => $senderId,
-				'service_id' => $serviceOrder['service_id'],
-				'order_id' => $oId,
-				'status' => 'cancelled'
-			];
-			$this->common_model->insert('service_order_status_history', $insert1);
-
-			$insert['sender'] = $senderId;
-			$insert['receiver'] = $receiverId;
-			$insert['order_id'] = $oId;
-			$insert['is_cancel'] = 2;
-			$insert['status'] = 'cancelled';
-			$insert['description'] = $reason;
-			$run = $this->common_model->insert('order_submit_conversation', $insert);
-
+			/* IF ANY SELECTED MILESTONE THEN CANCELLED ONLY SELECTED.. */
 			if(!empty($cancel_milestones)){
+
 				/* CANCEL SELECTED MILESTONE */
+				$dct_image = "";
+				if ($_FILES['dct_image']['name'] != '') {
+					$config['upload_path']   = 'img/request_cancel/';
+					$config['allowed_types'] = 'gif|jpg|png|jpeg';
+					$config['remove_spaces'] = TRUE;
+					$config['encrypt_name'] = TRUE;
+					$this->load->library('upload', $config);
+	
+					if ($this->upload->do_upload('dct_image')) {
+						$data = $this->upload->data();
+						$dct_image = $data['file_name']; // Set the filename here
+					}
+				}
+
 				foreach ($cancel_milestones as $key => $value) {
-					$in['status'] = 4;
-					$in['service_status'] = 'cancelled';
+					
+					$in['status'] = 9;
+					$in['service_status'] = 'cancel';
 					$in['dispute_id'] = null;
+					$in['reason_cancel'] = $reason;
+					$in['dct_image'] = $dct_image;
+					$in['status_update_time'] = date('Y-m-d H:i:s');
 					$this->common_model->update('tbl_milestones', array('id' => $value), $in);
+				}
+
+				echo json_encode(['status' => 'error', 'message' => 'Milestone cancelled successfully.']);
+			}
+
+		}else{
+		
+			$input['status'] = 'cancelled';
+			$input['is_cancel'] = 2;
+			$input['reason'] = $reason;
+			$input['status_update_time'] = date('Y-m-d H:i:s');
+
+			if ($_FILES['dct_image']['name'] != '') {
+				$config['upload_path']   = 'img/request_cancel/';
+				$config['allowed_types'] = 'gif|jpg|png|jpeg';
+				$config['remove_spaces'] = TRUE;
+				$config['encrypt_name'] = TRUE;
+				$this->load->library('upload', $config);
+
+				if ($this->upload->do_upload('dct_image')) {
+					$data = $this->upload->data();
+					$input['order_cancel_file'] = $data['file_name']; // Set the filename here
 				}
 			}
 
-			$this->common_model->send_mail($uMail, $subject, $content1);
+			$run = $this->common_model->update('service_order', array('id' => $oId), $input);
+			if ($run) {
+				$hId = $this->session->userdata('user_id');
+				$service = $this->common_model->GetSingleData('my_services', ['id' => $serviceOrder['service_id']]);
+				$homeOwner = $this->common_model->GetSingleData('users', ['id' => $serviceOrder['user_id']]);
+				$tradesman = $this->common_model->GetSingleData('users', ['id' => $service['user_id']]);
+				$pageUrl = site_url() . 'order-tracking/' . $serviceOrder['id'];
 
-			$insertn['nt_userId'] = $receiverId;
-			$insertn['nt_message'] = $nMessage;
-			$insertn['nt_satus'] = 0;
-			$insertn['nt_create'] = date('Y-m-d H:i:s');
-			$insertn['nt_update'] = date('Y-m-d H:i:s');
-			$insertn['job_id'] = $oId;
-			$insertn['posted_by'] = $senderId;
-			$run2 = $this->common_model->insert('notification', $insertn);
+				if ($hId == $homeOwner['id']) {
+					$senderId = $hId;
+					$receiverId = $tradesman['id'];
 
-			echo json_encode(['status' => 'error', 'message' => 'Order cancelled successfully.']);
-		} else {
-			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
+					$subject = $homeOwner['f_name'] . ', Request to Cancel ' . $serviceOrder['order_id'] . '!';
+
+					$content1 = '<p style="margin:0;padding:10px 0px">Dear ' . $tradesman['trading_name'] . ', </p>';
+
+					$content1 .= '<p style="margin:0;padding:10px 0px">' . $homeOwner['f_name'] . ', has requested your consent to cancel order ' . $serviceOrder['order_id'] . ' for the service titled "' . $service['service_name'] . '"</p>';
+
+					$content1 .= "<p style='margin:0;padding:10px 0px'>To review the reason for this cancellation, please click below.</p>";
+
+					$content1 .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
+
+					$content1 .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+					$uMail = $tradesman['email'];
+
+					$nMessage = $homeOwner['f_name'] . ' sent you an order cancellation request. <a href="' . $pageUrl . '">Review Now!</a>';
+				}
+				if ($hId == $tradesman['id']) {
+					$senderId = $hId;
+					$receiverId = $homeOwner['id'];
+
+					$subject = $tradesman['trading_name'] . ', Request to Cancel ' . $serviceOrder['order_id'] . '!';
+
+					$content1 = '<p style="margin:0;padding:10px 0px">Dear ' . $homeOwner['f_name'] . ', </p>';
+
+					$content1 .= '<p style="margin:0;padding:10px 0px">' . $tradesman['trading_name'] . ', has requested your consent to cancel order ' . $serviceOrder['order_id'] . ' for the service titled "' . $service['service_name'] . '"</p>';
+
+					$content1 .= "<p style='margin:0;padding:10px 0px'>To review the reason for this cancellation, please click below.</p>";
+
+					$content1 .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">Review Reason</a></div>';
+
+					$content1 .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+
+					$uMail = $homeOwner['email'];
+
+					$nMessage = $tradesman['trading_name'] . ' sent you an order cancellation request. <a href="' . $pageUrl . '">Review Now!</a>';
+				}
+
+				/*Manage Order History*/
+				$insert1 = [
+					'user_id' => $senderId,
+					'service_id' => $serviceOrder['service_id'],
+					'order_id' => $oId,
+					'status' => 'cancelled'
+				];
+				$this->common_model->insert('service_order_status_history', $insert1);
+
+				$insert['sender'] = $senderId;
+				$insert['receiver'] = $receiverId;
+				$insert['order_id'] = $oId;
+				$insert['is_cancel'] = 2;
+				$insert['status'] = 'cancelled';
+				$insert['description'] = $reason;
+				$run = $this->common_model->insert('order_submit_conversation', $insert);
+
+				if(!empty($cancel_milestones)){
+					/* CANCEL SELECTED MILESTONE */
+					foreach ($cancel_milestones as $key => $value) {
+						$in['status'] = 4;
+						$in['service_status'] = 'cancelled';
+						$in['dispute_id'] = null;
+						$this->common_model->update('tbl_milestones', array('id' => $value), $in);
+					}
+				}
+
+				$this->common_model->send_mail($uMail, $subject, $content1);
+
+				$insertn['nt_userId'] = $receiverId;
+				$insertn['nt_message'] = $nMessage;
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $oId;
+				$insertn['posted_by'] = $senderId;
+				$run2 = $this->common_model->insert('notification', $insertn);
+
+				echo json_encode(['status' => 'error', 'message' => 'Order cancelled successfully.']);
+			} else {
+				echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
+			}
 		}
 	}
 
@@ -6393,5 +6441,57 @@ class Users extends CI_Controller
 		} else {
 			echo json_encode(['status' => 3, 'message' => 'Something is wrong. Delivery time is not exteneded.']);
 		}
+	}
+
+	public function acceptCancellationMigration(){
+		
+		if($_POST){
+		
+			$orderId = $_POST['order_id'];
+
+			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 9]);
+
+			if(!empty($getMilestones)){
+				foreach ($getMilestones as $key => $value) {
+					
+					$in['status'] = 4;
+					$in['service_status'] = 'cancelled';					
+					$in['status_update_time'] = date('Y-m-d H:i:s');
+					$this->common_model->update('tbl_milestones', array('id' => $value['id']), $in);
+
+				}
+
+				echo json_encode(['status' => '1', 'message' => 'Milestone cancelled successfully.']);
+				exit;
+			}
+			echo json_encode(['status' => '0', 'message' => 'Somthing went wrong.']);
+			exit;
+		}	
+	}
+
+	public function rejectCancellationMigration(){
+		
+		if($_POST){
+		
+			$orderId = $_POST['order_id'];
+
+			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 9]);
+
+			if(!empty($getMilestones)){
+				foreach ($getMilestones as $key => $value) {
+					
+					$in['status'] = 8;
+					$in['service_status'] = 'declined';					
+					$in['status_update_time'] = date('Y-m-d H:i:s');
+					$this->common_model->update('tbl_milestones', array('id' => $value['id']), $in);
+
+				}
+
+				echo json_encode(['status' => '1', 'message' => 'Milestone rejected successfully.']);
+				exit;
+			}
+			echo json_encode(['status' => '0', 'message' => 'Somthing went wrong.']);
+			exit;
+		}	
 	}
 }

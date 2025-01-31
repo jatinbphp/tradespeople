@@ -746,11 +746,17 @@
 																				?>
 																			</td>
 																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
-																			<td><?php echo ucfirst(str_replace('_', ' ', $list['service_status']));?></td>
+																			<td>
+																				<?php if($list['service_status'] == 'cancel'){ ?>
+																					<?php echo ucfirst('Cancellation Requested');?>
+																				<?php }else{ ?>
+																					<?php echo ucfirst(str_replace('_', ' ', $list['service_status']));?>
+																				<?php } ?>
+																			</td>
 																			<td>
 																				<?php if($this->session->userdata('type')==1):?>
 																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>
-																						<?php if(!in_array($list['service_status'],['delivered','request_modification','completed','offer_created'])):?>
+																						<?php if(!in_array($list['service_status'],['delivered','request_modification','completed','offer_created','cancelled','cancel'])):?>
 																							<button type="button" class="btn btn-warning btn-sm milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>">
 																								Deliver Work
 																							</button>
@@ -760,6 +766,10 @@
 																							<span class="text-info">Completed</span>
 																						<?php elseif($list['service_status'] == 'offer_created'):?>	
 																							<span class="text-info">Awaiting Response</span>
+																						<?php elseif($list['service_status'] == 'cancelled'):?>	
+																							<span class="text-info"></span>
+																						<?php elseif($list['service_status'] == 'cancel'):?>	
+																							<span class="text-info"></span>
 																						<?php else:?>
 																							<span class="text-info">Delivered</span>
 																						<?php endif;?>
@@ -790,6 +800,54 @@
 																	<?php endforeach;?>
 																</tbody>
 															</table>
+															<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 1 && !empty($cancelMilestoneExist) ):?>
+
+																<p class="alert alert-danger mb-3">
+																	<?php 
+																		if($this->session->userdata('user_id') == $tradesman['id']){
+																			$ocruName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'].' has' : 'You have';
+																			$oppoName = $this->session->userdata('type')==1 ? 'your' : $tradesman['trading_name'];
+																		}
+
+																		if($this->session->userdata('type') == $homeowner['id']){
+																			$ocruName = $this->session->userdata('type')==1 ? 'You have' : $tradesman['trading_name'].' has';
+																			$oppoName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'your';
+																		}
+																	?>
+																	<?php if($order['is_cancel'] == 5):?>
+																		<?php if($this->session->userdata('type') == $homeowner['id']): ?>
+																			<i class="fa fa-info-circle"></i> 
+																			<?php echo $ocruName; ?> until <?php echo $newTime; ?> to respond. Not responding within the time frame will result in closing the case and deciding in <?php echo $oppoName; ?> favour.
+																		<?php else: ?>
+																			<i class="fa fa-info-circle"></i> 
+																			Not responding before <?php echo $newTime; ?> will result in closing this case and deciding in the <?php echo $oppoName; ?> favour. Any decision reached is final and irrevocable. Once a case has been closed, it can't be reopened.
+																		<?php endif; ?>
+																	<?php else:?>
+																		<i class="fa fa-info-circle"></i> 
+																			<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the milestone will be cancelled. Cancelled milestone will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+																	<?php endif;?>	
+																</p>
+
+																<?php if($this->session->userdata('type')==1):?>
+																	
+																	<div id="approved-btn-div">																	
+																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMigration()" class="btn btn-default">
+																			Withdraw Offer
+																		</button>
+																	</div>
+
+																<?php else: ?>
+																	
+																	<div id="approved-btn-div">																	
+																		<button type="button" id="accept-migration-offer-btn" onclick="acceptCancellationMigration()" class="btn btn-warning mr-3">
+																			Accept
+																		</button>
+																		<button type="button" id="reject-migration-offer-btn" onclick="rejectCancellationMigration()" class="btn btn-default">
+																			Reject
+																		</button>
+																	</div>
+																<?php endif; ?>															
+															<?php endif; ?>	
 														</div>
 													</div>
 												</li>
@@ -1493,18 +1551,22 @@
 								</div>
 							</div>
 
-							
+							<?php if(!empty($milestones)){ ?>
 							<div class="from-group">
 								<label class="control-label" for="textinput"><b>Select the milestone you want to cancel</b></label><br>
 								<?php
 									$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
-									foreach($milestones as $m){ ?>
+									foreach($milestones as $m){ 
+										if(!in_array($m['status'], ['9', '4'])){ 	
+									?>
 										<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
-								<?php } ?>
+								<?php } 
+									} ?>
 
 								<br>
 								<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i><?php echo number_format($order['price'],2); ?></span></p>
 							</div>
+							<?php } ?>
 						
 
 							<div class="form-group mt-4">
@@ -2727,6 +2789,70 @@
       });
       return false;
    }
+	
+	/* ACCEPT CANCELLATION MIGRATION REQUEST */
+	function acceptCancellationMigration(){
+		var order_id = $('#order_id').val();
+
+		swal({
+			title: "Accept Request",
+			text: "Are you sure you want to accept cancellation request for this migration?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes, Accept',
+			cancelButtonText: 'Cancel'
+		}, function() {
+
+			$.ajax({
+				url: '<?= base_url() ?>users/acceptCancellationMigration',
+				type: 'POST',			
+				data: {'order_id':order_id},
+				dataType: 'json',
+				success: function(res) {     
+					if (res.status == 1){     
+						window.location.reload();
+					} else {
+						window.location.reload();
+					}
+
+				}
+			});
+		});
+	}
+
+	/* REJECT CANCELLATION MIGRTION REQUEST */
+	function rejectCancellationMigration(){
+		var order_id = $('#order_id').val();
+
+		swal({
+			title: "Reject Request",
+			text: "Are you sure you want to reject cancellation request for this migration?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes, Reject',
+			cancelButtonText: 'Cancel'
+		}, function() {
+
+			$.ajax({
+				url: '<?= base_url() ?>users/rejectCancellationMigration',
+				type: 'POST',			
+				data: {'order_id':order_id},
+				dataType: 'json',
+				success: function(res) {     
+					if (res.status == 1){     
+						window.location.reload();
+					} else {
+						window.location.reload();
+					}
+
+				}
+			});
+		});
+	}
+
+	function withdrawCancellationMigration(){
+		
+	}
 
 	$('.milestoneBtn').on('click', function(){
    	var mId = $(this).data('mid');
