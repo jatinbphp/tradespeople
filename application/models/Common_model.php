@@ -3591,6 +3591,8 @@ class Common_model extends CI_Model
 			if(!empty($status) && $status != 'all'){
 				if($status == 'placed'){
 					$statusWhere = 'AND so.status = "'.$status.'" OR so.status = "offer_created"';
+				}else	if($status == 'active'){
+					$statusWhere = 'AND so.status = "active" OR so.status = "extened_request"';
 				}else{
 					$statusWhere = 'AND so.status = "'.$status.'"';	
 				}				
@@ -3618,6 +3620,8 @@ class Common_model extends CI_Model
 				$statusWhere = 'WHERE so.status IN ("placed")';	
 			}elseif($status == 'offer_created'){
 				$statusWhere = 'WHERE so.is_custom = 1 AND so.is_accepted ='.$is_accepted;	
+			}elseif($status == 'active'){
+				$statusWhere = 'WHERE so.status = "active" OR so.status = "extened_request"';	
 			}else{
 				$statusWhere = 'WHERE so.status = "'.$status.'"';	
 			}			
@@ -3640,7 +3644,7 @@ class Common_model extends CI_Model
 			    SELECT
 			    	COUNT(*) AS total_all,
 			        SUM(CASE WHEN so.status IN ('placed', 'pending', 'offer_created') THEN 1 ELSE 0 END) AS total_placed,
-			        SUM(CASE WHEN so.status = 'active' THEN 1 ELSE 0 END) AS total_active,
+			        SUM(CASE WHEN so.status IN ('active', 'extened_request') THEN 1 ELSE 0 END) AS total_active,
 			        SUM(CASE WHEN so.status = 'completed' THEN 1 ELSE 0 END) AS total_completed,
 			        SUM(CASE WHEN so.status = 'cancelled' THEN 1 ELSE 0 END) AS total_cancelled,
 			        SUM(CASE WHEN so.status = 'delivered' THEN 1 ELSE 0 END) AS total_delivered,
@@ -3664,7 +3668,8 @@ class Common_model extends CI_Model
 			        SUM(CASE WHEN ms.status = 'draft' THEN 1 ELSE 0 END) AS total_draft,
 			        SUM(CASE WHEN ms.status = 'denied' THEN 1 ELSE 0 END) AS total_denied,
 			        SUM(CASE WHEN ms.status = 'paused' THEN 1 ELSE 0 END) AS total_paused,
-			        SUM(CASE WHEN ms.status = 'active' THEN 1 ELSE 0 END) AS total_active
+			        SUM(CASE WHEN so.status IN ('active', 'extened_request') THEN 1 ELSE 0 END) AS total_active,
+			        /*SUM(CASE WHEN ms.status = 'active' THEN 1 ELSE 0 END) AS total_active*/
 			    FROM
 			        my_services ms
 			    WHERE

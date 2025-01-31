@@ -406,7 +406,7 @@
 									</button>
 									<?php endif;?>
 							<?php endif;?>
-						</div>																
+						</div>
 				<?php endif;?>
 
 				<?php 
