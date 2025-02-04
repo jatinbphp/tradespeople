@@ -828,12 +828,7 @@
 																	<?php endif;?>	
 																</p>
 
-																<?php 
-																
-																echo "<pre>";
-																print_r($cancelMilestoneExist);
-																
-																if($this->session->userdata('type')==1):?>
+																<?php if($this->session->userdata('type')==1):?>
 																	
 																	<div id="approved-btn-div">																	
 																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMilestone()" class="btn btn-default">
