@@ -828,10 +828,15 @@
 																	<?php endif;?>	
 																</p>
 
-																<?php if($this->session->userdata('type')==1):?>
+																<?php 
+																
+																echo "<pre>";
+																print_r($cancelMilestoneExist);
+																
+																if($this->session->userdata('type')==1):?>
 																	
 																	<div id="approved-btn-div">																	
-																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMigration()" class="btn btn-default">
+																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMilestone()" class="btn btn-default">
 																			Withdraw Offer
 																		</button>
 																	</div>
@@ -839,10 +844,10 @@
 																<?php else: ?>
 																	
 																	<div id="approved-btn-div">																	
-																		<button type="button" id="accept-migration-offer-btn" onclick="acceptCancellationMigration()" class="btn btn-warning mr-3">
+																		<button type="button" id="accept-migration-offer-btn" onclick="acceptCancellationMilestone()" class="btn btn-warning mr-3">
 																			Accept
 																		</button>
-																		<button type="button" id="reject-migration-offer-btn" onclick="rejectCancellationMigration()" class="btn btn-default">
+																		<button type="button" id="reject-migration-offer-btn" onclick="rejectCancellationMilestone()" class="btn btn-default">
 																			Reject
 																		</button>
 																	</div>
@@ -2791,7 +2796,7 @@
    }
 	
 	/* ACCEPT CANCELLATION MIGRATION REQUEST */
-	function acceptCancellationMigration(){
+	function acceptCancellationMilestone(){
 		var order_id = $('#order_id').val();
 
 		swal({
@@ -2804,7 +2809,7 @@
 		}, function() {
 
 			$.ajax({
-				url: '<?= base_url() ?>users/acceptCancellationMigration',
+				url: '<?= base_url() ?>users/acceptCancellationMilestone',
 				type: 'POST',			
 				data: {'order_id':order_id},
 				dataType: 'json',
@@ -2821,7 +2826,7 @@
 	}
 
 	/* REJECT CANCELLATION MIGRTION REQUEST */
-	function rejectCancellationMigration(){
+	function rejectCancellationMilestone(){
 		var order_id = $('#order_id').val();
 
 		swal({
@@ -2834,7 +2839,7 @@
 		}, function() {
 
 			$.ajax({
-				url: '<?= base_url() ?>users/rejectCancellationMigration',
+				url: '<?= base_url() ?>users/rejectCancellationMilestone',
 				type: 'POST',			
 				data: {'order_id':order_id},
 				dataType: 'json',
@@ -2849,9 +2854,35 @@
 			});
 		});
 	}
+	
+	/* WITHDRAW CANCELLATION MILESTONE REQUEST */
+	function withdrawCancellationMilestone(){
+		var order_id = $('#order_id').val();
 
-	function withdrawCancellationMigration(){
-		
+		swal({
+			title: "Withdraw Request",
+			text: "Are you sure you want to reject cancellation request for this migration?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonText: 'Yes, Reject',
+			cancelButtonText: 'Cancel'
+		}, function() {
+
+			$.ajax({
+				url: '<?= base_url() ?>users/withdrawCancellationMilestone',
+				type: 'POST',			
+				data: {'order_id':order_id},
+				dataType: 'json',
+				success: function(res) {     
+					if (res.status == 1){     
+						window.location.reload();
+					} else {
+						window.location.reload();
+					}
+
+				}
+			});
+		});
 	}
 
 	$('.milestoneBtn').on('click', function(){

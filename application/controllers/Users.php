@@ -4696,7 +4696,7 @@ class Users extends CI_Controller
 			if(!empty($exten_delivery_date) && (in_array($order['is_exten_delivery_accepted'], [0,2]) || $order['status'] == 'extened_decline')){
 				if($today > $exten_delivery_date ){
 					$data['is_extended'] = 1;
-					$data['is_delivery'] = 0;
+					// $data['is_delivery'] = 0;
 				}else{
 					$exten_delivery_date_obj = new DateTime($exten_delivery_date);
 	        $today_obj = new DateTime($today);
@@ -4834,7 +4834,7 @@ class Users extends CI_Controller
 
 				foreach ($milestones as &$milestone) {
 
-					if($milestone['status'] == '9'){
+					if($milestone['status'] == '3'){
 						$cancelMilestoneExist[] = $milestone['id'];
 					}
 
@@ -5606,7 +5606,7 @@ class Users extends CI_Controller
 
 				foreach ($cancel_milestones as $key => $value) {
 					
-					$in['status'] = 9;
+					$in['status'] = 3;
 					$in['service_status'] = 'cancel';
 					$in['dispute_id'] = null;
 					$in['reason_cancel'] = $reason;
@@ -6443,13 +6443,13 @@ class Users extends CI_Controller
 		}
 	}
 
-	public function acceptCancellationMigration(){
+	public function acceptCancellationMilestone(){
 		
 		if($_POST){
 		
 			$orderId = $_POST['order_id'];
 
-			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 9]);
+			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 3]);
 
 			if(!empty($getMilestones)){
 				foreach ($getMilestones as $key => $value) {
@@ -6469,13 +6469,13 @@ class Users extends CI_Controller
 		}	
 	}
 
-	public function rejectCancellationMigration(){
+	public function rejectCancellationMilestone(){
 		
 		if($_POST){
 		
 			$orderId = $_POST['order_id'];
 
-			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 9]);
+			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 3]);
 
 			if(!empty($getMilestones)){
 				foreach ($getMilestones as $key => $value) {
@@ -6488,6 +6488,32 @@ class Users extends CI_Controller
 				}
 
 				echo json_encode(['status' => '1', 'message' => 'Milestone rejected successfully.']);
+				exit;
+			}
+			echo json_encode(['status' => '0', 'message' => 'Somthing went wrong.']);
+			exit;
+		}	
+	}
+
+	public function withdrawCancellationMilestone(){
+		
+		if($_POST){
+		
+			$orderId = $_POST['order_id'];
+
+			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'status' => 3]);
+
+			if(!empty($getMilestones)){
+				foreach ($getMilestones as $key => $value) {
+					
+					$in['status'] = 9;
+					$in['service_status'] = 'withdraw';					
+					$in['status_update_time'] = date('Y-m-d H:i:s');
+					$this->common_model->update('tbl_milestones', array('id' => $value['id']), $in);
+
+				}
+
+				echo json_encode(['status' => '1', 'message' => 'Cancel request withdraw successfully.']);
 				exit;
 			}
 			echo json_encode(['status' => '0', 'message' => 'Somthing went wrong.']);
