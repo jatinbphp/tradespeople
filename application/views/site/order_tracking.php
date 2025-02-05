@@ -722,7 +722,15 @@
 																	<?php endif; ?>	
 																</thead>
 																<tbody>
+																	<?php $is_mCancel = 0; ?>
 																	<?php foreach($milestones as $list):?>
+																		<?php
+																			if($list['status'] == 3){
+																				$is_mCancel = 1;
+																				$sender_id = $list['sender_id'];
+																				$receiver_id = $list['receiver_id'];
+																			}
+																		?>
 																		<tr>
 																			<td><?php echo $list['milestone_name']; ?></td>
 																			<td>
@@ -747,7 +755,9 @@
 																			</td>
 																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
 																			<td>
-																				<?php if($list['service_status'] == 'cancel'){ ?>
+																				<?php if($list['service_status'] == 'withdraw'){ ?>
+																					<?php echo ucfirst('active');?>
+																				<?php }elseif($list['service_status'] == 'cancel'){ ?>
 																					<?php echo ucfirst('Cancellation Requested');?>
 																				<?php }else{ ?>
 																					<?php echo ucfirst(str_replace('_', ' ', $list['service_status']));?>
@@ -814,21 +824,19 @@
 																			$oppoName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'your';
 																		}
 																	?>
-																	<?php if($order['is_cancel'] == 5):?>
-																		<?php if($this->session->userdata('type') == $homeowner['id']): ?>
+																	<?php if($is_mCancel == 1):?>
+																		<?php if($this->session->userdata('user_id') == $homeowner['id']): ?>
 																			<i class="fa fa-info-circle"></i> 
 																			<?php echo $ocruName; ?> until <?php echo $newTime; ?> to respond. Not responding within the time frame will result in closing the case and deciding in <?php echo $oppoName; ?> favour.
 																		<?php else: ?>
 																			<i class="fa fa-info-circle"></i> 
 																			Not responding before <?php echo $newTime; ?> will result in closing this case and deciding in the <?php echo $oppoName; ?> favour. Any decision reached is final and irrevocable. Once a case has been closed, it can't be reopened.
 																		<?php endif; ?>
-																	<?php else:?>
-																		<i class="fa fa-info-circle"></i> 
-																			<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the milestone will be cancelled. Cancelled milestone will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
 																	<?php endif;?>	
 																</p>
 
-																<?php if($this->session->userdata('type')==1):?>
+																<?php if($is_mCancel == 1):?>
+																<?php if($this->session->userdata('user_id') == $sender_id):?>
 																	
 																	<div id="approved-btn-div">																	
 																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMilestone()" class="btn btn-default">
@@ -846,6 +854,7 @@
 																			Reject
 																		</button>
 																	</div>
+																<?php endif; ?>															
 																<?php endif; ?>															
 															<?php endif; ?>	
 														</div>
@@ -1557,7 +1566,7 @@
 								<?php
 									$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
 									foreach($milestones as $m){ 
-										if(!in_array($m['status'], ['9', '4'])){ 	
+										if(!in_array($m['status'], ['4'])){ 	
 									?>
 										<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
 								<?php } 
@@ -2796,7 +2805,7 @@
 
 		swal({
 			title: "Accept Request",
-			text: "Are you sure you want to accept cancellation request for this migration?",
+			text: "Are you sure you want to accept cancellation request for this milestone?",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonText: 'Yes, Accept',
@@ -2826,7 +2835,7 @@
 
 		swal({
 			title: "Reject Request",
-			text: "Are you sure you want to reject cancellation request for this migration?",
+			text: "Are you sure you want to reject cancellation request for this milestone?",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonText: 'Yes, Reject',
@@ -2856,10 +2865,10 @@
 
 		swal({
 			title: "Withdraw Request",
-			text: "Are you sure you want to reject cancellation request for this migration?",
+			text: "Are you sure you want to withdraw cancellation request for this milestone?",
 			type: "warning",
 			showCancelButton: true,
-			confirmButtonText: 'Yes, Reject',
+			confirmButtonText: 'Yes, Withdraw',
 			cancelButtonText: 'Cancel'
 		}, function() {
 
