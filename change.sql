@@ -1,0 +1,1 @@
+ALTER TABLE `tbl_milestones` ADD `sender_id` INT NOT NULL DEFAULT '0' AFTER `dispute_id`, ADD `receiver_id` INT NOT NULL DEFAULT '0' AFTER `sender_id`, ADD `process_by` INT NOT NULL DEFAULT '0' AFTER `receiver_id`;
