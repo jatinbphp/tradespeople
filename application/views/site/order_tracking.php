@@ -722,13 +722,18 @@
 																	<?php endif; ?>	
 																</thead>
 																<tbody>
-																	<?php $is_mCancel = 0; ?>
+																	<?php 
+																	$is_mCancel = 0; 
+																	$lastMilestoneCancelReason = "";
+																	?>
 																	<?php foreach($milestones as $list):?>
 																		<?php
 																			if($list['status'] == 3){
 																				$is_mCancel = 1;
 																				$sender_id = $list['sender_id'];
 																				$receiver_id = $list['receiver_id'];
+
+																				$lastMilestoneCancelReason = $list['reason_cancel'];
 																			}
 																		?>
 																		<tr>
@@ -812,6 +817,12 @@
 															</table>
 															<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 1 && !empty($cancelMilestoneExist) ):?>
 
+																<?php if(!empty($lastMilestoneCancelReason)){ ?>
+																<div class="timeline-item-description mb-3">
+																	<span class="delivery-conversation text-left" style="display:block;"><p><?php echo $lastMilestoneCancelReason; ?></p></span>
+																</div>
+																<?php } ?>
+
 																<p class="alert alert-danger mb-3">
 																	<?php 
 																		if($this->session->userdata('user_id') == $tradesman['id']){
@@ -825,12 +836,11 @@
 																		}
 																	?>
 																	<?php if($is_mCancel == 1):?>
-																		<?php if($this->session->userdata('user_id') == $homeowner['id']): ?>
+																		<?php if($this->session->userdata('user_id') == $sender_id): ?>
 																			<i class="fa fa-info-circle"></i> 
 																			<?php echo $ocruName; ?> until <?php echo $newTime; ?> to respond. Not responding within the time frame will result in closing the case and deciding in <?php echo $oppoName; ?> favour.
 																		<?php else: ?>
-																			<i class="fa fa-info-circle"></i> 
-																			Not responding before <?php echo $newTime; ?> will result in closing this case and deciding in the <?php echo $oppoName; ?> favour. Any decision reached is final and irrevocable. Once a case has been closed, it can't be reopened.
+																			<i class="fa fa-info-circle"></i> You have until <?php echo $newTime; ?> to respond to the request or the order will be cancelled automatically.
 																		<?php endif; ?>
 																	<?php endif;?>	
 																</p>
@@ -840,7 +850,7 @@
 																	
 																	<div id="approved-btn-div">																	
 																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMilestone()" class="btn btn-default">
-																			Withdraw Offer
+																			Withdraw Request
 																		</button>
 																	</div>
 
@@ -1100,11 +1110,12 @@
 														<tr>
 															<th>Total</th>                     
 															<th class="text-right">
-																<?php if($this->session->userdata('type')==2):?>
+																<?php echo '£'.number_format($order['total_price'],2); ?>
+																<?php /* if($this->session->userdata('type')==2):?>
 																	<?php echo '£'.number_format($order['total_price'],2); ?>
 																<?php else:?>	
 																	<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
-																<?php endif;?>
+																<?php endif; */ ?>
 															</th>
 														</tr>
 													</thead>
@@ -1255,6 +1266,7 @@
 										<?php endif; ?>
 									</div>
 
+									
 									<div class="summary-feature-article">
 										<a href="<?php echo base_url().'service/'.$service['slug']?>">
 											<?php 
@@ -1275,11 +1287,11 @@
 											<span>
 												<p>
 													<?php
-													$totalChr = strlen($service['description']);
+													$totalChr = strlen($service['service_name']);
 													if($totalChr > 15){
-														echo substr($service['description'], 0, 15).'...';
+														echo substr($service['service_name'], 0, 15).'...';
 													}else{
-														echo $service['description'];
+														echo $service['service_name'];
 													}
 													?>
 												</p>
@@ -1350,11 +1362,12 @@
 											<p>Total Price</p>
 											<p>
 												<b>
-													<?php if($this->session->userdata('type')==2):?>
+												<?php echo '£'.number_format($order['total_price'],2); ?>
+													<?php /* if($this->session->userdata('type')==2):?>
 														<?php echo '£'.number_format($order['total_price'],2); ?>
 													<?php else:?>	
 														<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
-													<?php endif;?>	
+													<?php endif; */ ?>	
 												</b>
 											</p>
 										</li>
@@ -1568,11 +1581,12 @@
 									foreach($milestones as $m){ 
 										if(!in_array($m['status'], ['4'])){ 	
 									?>
-										<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
+										<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> <?php if($m['status'] == '3'){ ?> disabled <?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
 								<?php } 
 									} ?>
 
-								<br>
+								
+								<p><spna class="error" id="milestoneSelectionError"></spna></p>
 								<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i><?php echo number_format($order['price'],2); ?></span></p>
 							</div>
 							<?php } ?>
@@ -2428,7 +2442,18 @@
 		/* Start Code For Cancel Order */
 		function cancelOrder(){
 			$('#loader').removeClass('hide');
-			formData = $("#order_cancel_form").serialize();
+
+			if ($('input[name="milestones[]"]').length > 0) {
+				if ($('input[name="milestones[]"]:checked').length === 0) {
+					$('#milestoneSelectionError').html('Kindly select the milestone you wish to cancel.').show();
+					$('#loader').addClass('hide');					
+					return false;
+				} else {
+					$('#milestoneSelectionError').hide(); // Hide error if at least one checkbox is selected
+				}
+			}
+
+			formData = $("#order_cancel_form").serialize();		
 
 			$.ajax({
 				url: '<?= site_url().'users/orderCancel'; ?>',

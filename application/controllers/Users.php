@@ -5587,14 +5587,20 @@ class Users extends CI_Controller
 		$homeOwner = $this->common_model->GetSingleData('users', ['id' => $serviceOrder['user_id']]);
 		$tradesman = $this->common_model->GetSingleData('users', ['id' => $service['user_id']]);
 		$hId = $this->session->userdata('user_id');
+
+		$pageUrl = site_url() . 'order-tracking/' . $serviceOrder['id'];
 		if ($hId == $homeOwner['id']) {
 			$senderId = $hId;
 			$receiverId = $tradesman['id'];
+			$nMessage = $homeOwner['f_name'] . ' sent you an milestone cancellation request. <a href="' . $pageUrl . '">Review Now!</a>';
 		}
 		if ($hId == $tradesman['id']) {
 			$senderId = $hId;
 			$receiverId = $homeOwner['id'];
+			$nMessage = $tradesman['trading_name'] . ' sent you an milestone cancellation request. <a href="' . $pageUrl . '">Review Now!</a>';
 		}
+
+		
 		if(!empty($cancel_milestones)){
 
 			/* IF ANY SELECTED MILESTONE THEN CANCELLED ONLY SELECTED.. */
@@ -5627,6 +5633,15 @@ class Users extends CI_Controller
 					$in['status_update_time'] = date('Y-m-d H:i:s');
 					$this->common_model->update('tbl_milestones', array('id' => $value), $in);
 				}
+
+				$insertn['nt_userId'] = $receiverId;
+				$insertn['nt_message'] = $nMessage;
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $oId;
+				$insertn['posted_by'] = $senderId;
+				$run2 = $this->common_model->insert('notification', $insertn);
 
 				echo json_encode(['status' => 'error', 'message' => 'Milestone cancelled successfully.']);
 			}
@@ -6460,7 +6475,12 @@ class Users extends CI_Controller
 		
 			$orderId = $_POST['order_id'];
 
+			
+			
+			/* CANCELLED SELECTED MILESTONE AFTER APPROVE REQUEST */
 			$getMilestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'milestone_type' => 'service', 'status' => 3]);
+
+			$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $orderId]);
 
 			if(!empty($getMilestones)){
 				foreach ($getMilestones as $key => $value) {
@@ -6473,11 +6493,104 @@ class Users extends CI_Controller
 					$in['status_update_time'] = date('Y-m-d H:i:s');
 					$this->common_model->update('tbl_milestones', array('id' => $value['id']), $in);
 
+					/* ADD TRANSACTION HISTORY FOR CANCELLED MILSTONE */
+					$transactionid = md5(rand(1000,999).time());
+				    $tr_message='£'.$value['total_amount'].' has been credited to your wallet for '.$value['milestone_name'].' milestone on date '.date('d-m-Y h:i:s A').'.';
+				   	$data1 = array(
+						'tr_userid'=>$serviceOrder['user_id'], 
+						'tr_amount'=>$value['total_amount'],
+						'tr_type'=>1,
+						'tr_transactionId'=>$transactionid,
+						'tr_message'=>$tr_message,
+						'tr_status'=>1,
+						'tr_created'=>date('Y-m-d H:i:s'),
+						'tr_update' =>date('Y-m-d H:i:s')
+					);
+					$run1 = $this->common_model->insert('transactions',$data1);
+
+				}
+
+				$getAllMilestonesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'milestone_type' => 'service']);
+				
+				$getAllCancelledMilestonesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'milestone_type' => 'service', 'status' => 4]);
+
+			
+				/* CHECK IF ORDER ALL MILSTONE CANCELLED THEN ORDER WILL BE CANCELLED */
+				if(count($getAllMilestonesCount) == count($getAllCancelledMilestonesCount)){
+
+					$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $orderId]);
+					$service = $this->common_model->GetSingleData('my_services', ['id' => $serviceOrder['service_id']]);
+					$homeOwner = $this->common_model->GetSingleData('users', ['id' => $serviceOrder['user_id']]);
+					$tradesman = $this->common_model->GetSingleData('users', ['id' => $service['user_id']]);
+
+					$hId = $this->session->userdata('user_id');
+					if ($hId == $homeOwner['id']) {
+						$senderId = $hId;
+						$receiverId = $tradesman['id'];
+					}
+					if ($hId == $tradesman['id']) {
+						$senderId = $hId;
+						$receiverId = $homeOwner['id'];
+					}
+
+					$input['status'] = 'cancelled';
+					$input['is_cancel'] = 1;
+					$input['reason'] = '';
+					$input['status_update_time'] = date('Y-m-d H:i:s');
+
+					$run = $this->common_model->update('service_order', array('id' => $orderId), $input);
+					if ($run) {
+
+						$pageUrl = site_url() . 'order-tracking/' . $serviceOrder['id'];
+
+						if ($hId == $homeOwner['id']) {
+							$nMessage = 'Your order was cancelled. <a href="' . $pageUrl . '" >View Now!</a>';
+						}
+
+						if ($hId == $tradesman['id']) {
+							$nMessage = 'Your order was cancelled. <a href="' . $pageUrl . '" >View Now!</a>';
+						}
+
+						/*Manage Order History*/
+						$insert1 = [
+							'user_id' => $senderId,
+							'is_cancel' => 1,
+							'service_id' => $serviceOrder['service_id'],
+							'order_id' => $orderId,
+							'status' => 'cancelled'
+						];
+						$this->common_model->insert('service_order_status_history', $insert1);
+
+
+						$insert2['sender'] = $senderId;
+						$insert2['receiver'] = $receiverId;
+						$insert2['order_id'] = $orderId;
+						$insert2['status'] = 'cancelled';
+						$insert2['is_cancel'] = 1;
+						$insert2['description'] = '';
+						$run = $this->common_model->insert('order_submit_conversation', $insert2);
+
+
+						$insertn['nt_userId'] = $receiverId;
+						$insertn['nt_message'] = $nMessage;
+						$insertn['nt_satus'] = 0;
+						$insertn['nt_create'] = date('Y-m-d H:i:s');
+						$insertn['nt_update'] = date('Y-m-d H:i:s');
+						$insertn['job_id'] = $orderId;
+						$insertn['posted_by'] = $senderId;
+						$run2 = $this->common_model->insert('notification', $insertn);			
+
+
+					} else {
+						echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not cancelled.']);
+					}
+
 				}
 
 				echo json_encode(['status' => '1', 'message' => 'Milestone cancelled successfully.']);
 				exit;
 			}
+
 			echo json_encode(['status' => '0', 'message' => 'Somthing went wrong.']);
 			exit;
 		}	
@@ -6494,8 +6607,8 @@ class Users extends CI_Controller
 			if(!empty($getMilestones)){
 				foreach ($getMilestones as $key => $value) {
 					
-					$in['status'] = 8;
-					$in['service_status'] = 'declined';
+					$in['status'] = 0;
+					$in['service_status'] = 'active';
 					$in['sender_id'] = 0;
 					$in['receiver_id'] = 0;
 					$in['process_by'] = $this->session->userdata('user_id');
