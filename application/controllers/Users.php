@@ -6483,6 +6483,18 @@ class Users extends CI_Controller
 			$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $orderId]);
 
 			if(!empty($getMilestones)){
+
+				$this->db->select_sum('total_amount');
+				$this->db->where(['post_id' => $orderId, 'milestone_type' => 'service', 'status' => 3, 'service_status' => 'cancel']);
+				$query = $this->db->get('tbl_milestones');
+				$result = $query->row();
+				$totalAmountOfActiveMilestone = $result->total_amount ?? 0; 				
+
+				/* CANCELLED MILESTONE PRICE UPDATE IN SERVICE ORDERS */				
+				$input['total_price'] = (($serviceOrder['price'] + $serviceOrder['service_fee']) - $totalAmountOfActiveMilestone);
+				$input['status_update_time'] = date('Y-m-d H:i:s');
+				$run = $this->common_model->update('service_order', array('id' => $orderId), $input);
+
 				foreach ($getMilestones as $key => $value) {
 					
 					$in['status'] = 4;
@@ -6492,6 +6504,7 @@ class Users extends CI_Controller
 					$in['process_by'] = $this->session->userdata('user_id');
 					$in['status_update_time'] = date('Y-m-d H:i:s');
 					$this->common_model->update('tbl_milestones', array('id' => $value['id']), $in);
+
 
 					/* ADD TRANSACTION HISTORY FOR CANCELLED MILSTONE */
 					$transactionid = md5(rand(1000,999).time());
@@ -6514,6 +6527,7 @@ class Users extends CI_Controller
 				
 				$getAllCancelledMilestonesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $orderId, 'milestone_type' => 'service', 'status' => 4]);
 
+						
 			
 				/* CHECK IF ORDER ALL MILSTONE CANCELLED THEN ORDER WILL BE CANCELLED */
 				if(count($getAllMilestonesCount) == count($getAllCancelledMilestonesCount)){

@@ -453,6 +453,10 @@
 		.rating .star:hover {
 			transform: scale(1.1);
 		}
+
+		.strike {
+			text-decoration: line-through;
+		}
 	</style>
 	<div class="loader-bg hide" id='loader'>
 		<span class="loader"></span>
@@ -830,7 +834,7 @@
 																			$oppoName = $this->session->userdata('type')==1 ? 'your' : $tradesman['trading_name'];
 																		}
 
-																		if($this->session->userdata('type') == $homeowner['id']){
+																		if($this->session->userdata('user_id') == $homeowner['id']){
 																			$ocruName = $this->session->userdata('type')==1 ? 'You have' : $tradesman['trading_name'].' has';
 																			$oppoName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'your';
 																		}
@@ -1054,7 +1058,12 @@
 																		<?php echo $list['quantity']; ?>
 																	</th>
 																</tr>
-																<tr>
+																<?php 
+																$isCancelledMilestone = ($list['status'] == 4)?'YES':'NO';
+																$cancelledMilestoneStrike = ($isCancelledMilestone == 'YES')?"strike":"";
+																?>
+																<tr class="<?php echo $cancelledMilestoneStrike; ?>">
+																	
 																	<th class="font-12">Sub Total</th>                     
 																	<th class="text-right font-12">
 																		<?php echo '£'.number_format($list['total_amount'],2); ?>
@@ -1110,12 +1119,11 @@
 														<tr>
 															<th>Total</th>                     
 															<th class="text-right">
-																<?php echo '£'.number_format($order['total_price'],2); ?>
-																<?php /* if($this->session->userdata('type')==2):?>
+																<?php if($this->session->userdata('type')==2):?>
 																	<?php echo '£'.number_format($order['total_price'],2); ?>
 																<?php else:?>	
 																	<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
-																<?php endif; */ ?>
+																<?php endif; ?>
 															</th>
 														</tr>
 													</thead>
@@ -1362,12 +1370,12 @@
 											<p>Total Price</p>
 											<p>
 												<b>
-												<?php echo '£'.number_format($order['total_price'],2); ?>
-													<?php /* if($this->session->userdata('type')==2):?>
+												
+													<?php if($this->session->userdata('type')==2):?>
 														<?php echo '£'.number_format($order['total_price'],2); ?>
 													<?php else:?>	
 														<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
-													<?php endif; */ ?>	
+													<?php endif; ?>	
 												</b>
 											</p>
 										</li>

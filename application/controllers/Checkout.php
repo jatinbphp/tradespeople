@@ -283,9 +283,9 @@ class Checkout extends CI_Controller
 
 		if(!$this->session->userdata('user_id')){
 			$json['status'] = 2;
-      echo json_encode($json);
-      exit;
-    }
+			echo json_encode($json);
+			exit;
+		}
 
 		$this->form_validation->set_rules('payment_method','Payment Method','required');	
 
@@ -347,10 +347,17 @@ class Checkout extends CI_Controller
 		}
 
 		$package_data = json_decode($service_details['package_data'],true);
-		$price = !empty($order) ? $order['price'] : $package_data[$cartData['package_type']]['price'];
-		$servicePrice = $price * $serviceQty;
+		// $price = !empty($order) ? $order['price'] : $package_data[$cartData['package_type']]['price'];
+		$price = !empty($order) && isset($order['price']) ? $order['price'] : ($package_data[$cartData['package_type']]['price'] ?? 0);
 
+		/* CHECK CUSTOM ORDER OR NOT */
+		$servicePrice = $price; 
+		if($order['price'] == 0){
+			$servicePrice = $price * $serviceQty;
+		}		
+	
 		$total_amount = $totalPrice + $servicePrice;
+		
 		$discounted_amount = $total_amount;
 		$is_allowed = 0;
 
@@ -367,6 +374,8 @@ class Checkout extends CI_Controller
 		}
 
 		$mainPrice = $discounted_amount + $setting['service_fees'];
+
+	
 
 		if($payment_method == 'wallet'){
 			if($mainPrice > $users['u_wallet']) {

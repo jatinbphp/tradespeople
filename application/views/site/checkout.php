@@ -1044,6 +1044,7 @@ require_once('application/libraries/stripe-php-7.49.0/init.php');
 				dataType: 'json',		                
 				success: function(result) {
 					$('#loader').addClass('hide');
+					// return false;
 					if(result.status == 0){
 						swal({
 							title: "Error",
