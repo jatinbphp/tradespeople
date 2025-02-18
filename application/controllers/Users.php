@@ -5379,8 +5379,8 @@ class Users extends CI_Controller
 		$dispute_milestones = $this->input->post('milestones');
 		$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $oId]);
 
-		$input['status'] = 'disputed';
-		$input['is_cancel'] = 5;
+		//~ $input['status'] = 'disputed';
+		//~ $input['is_cancel'] = 5;
 		$input['reason'] = $reason;
 		$input['status_update_time'] = date('Y-m-d H:i:s');
 		$run = $this->common_model->update('service_order', array('id' => $oId), $input);
@@ -5523,6 +5523,20 @@ class Users extends CI_Controller
 					$this->common_model->insert('dispute_milestones', $insert0);
 				}				
 			}
+			
+			
+		
+			$getAllDisputesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $oId, 'milestone_type' => 'service']);
+					
+			$getAllDisputedMilestonesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $oId, 'milestone_type' => 'service', 'status' => 5]);
+
+			/* CHECK IF ORDER ALL MILSTONE CANCELLED THEN ORDER WILL BE CANCELLED */
+			if(count($getAllDisputesCount) == count($getAllDisputedMilestonesCount)){
+				$input['status'] = 'disputed';
+				$input['is_cancel'] = 5;
+				$runfull = $this->common_model->update('service_order', array('id' => $oId), $input);
+			}
+			
 			
 
 			// $milestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $serviceOrder['id']]);
