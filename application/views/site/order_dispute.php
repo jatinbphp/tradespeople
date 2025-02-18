@@ -236,7 +236,7 @@ if ($checkOtherUserReply) {
 
 	.step-main {
 		background: #fff;
-		margin-top: 48px;
+		margin-top: 30px;
 		border: 1px solid #e1e1e1;
 	}
 
@@ -746,7 +746,8 @@ if ($checkOtherUserReply) {
 					</div>
 				</div>
 				<div class="col-sm-4 p-sm-0">
-					<h1 class="heading-inner d_sm_block">Order payment dispute</h1>
+					<a href="<?php echo base_url().'order-tracking/'.$dispute['ds_job_id']?>">Go Back to Order Details</a>
+					<!-- <h1 class="heading-inner d_sm_block">Order payment dispute</h1> -->
 					<div class="dispute d_sm_block">
 						<div class="lislll_ideaa">
 							<div class="listr_uuusdisp2">

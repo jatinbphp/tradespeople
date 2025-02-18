@@ -1522,10 +1522,12 @@
                  	foreach($milestones as $m){ ?>
                  		<input data-amount="<?php echo $m['total_amount']; ?>" class="dispute_milestones" type="checkbox" onchange="selectMilesForDispute(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
                 <?php } ?>
+
+				<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span></b></label>
+
               </div>
 
-							<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span></b></label>
-
+							
 							<label class="control-label" for="textinput"><b>Offer the amount you are prepared to pay:</b></label>
 
 							<div class="input-group">
