@@ -5378,96 +5378,218 @@ class Users extends CI_Controller
 		$reason = $this->input->post('reason');
 		$dispute_milestones = $this->input->post('milestones');
 		$serviceOrder = $this->common_model->GetSingleData('service_order', ['id' => $oId]);
+		
+		
+		$userid = $this->session->userdata('user_id');
+		$service = $this->common_model->GetSingleData('my_services', ['id' => $serviceOrder['service_id']]);
+		$homeOwner = $this->common_model->GetSingleData('users', ['id' => $serviceOrder['user_id']]);
+		$tradesman = $this->common_model->GetSingleData('users', ['id' => $service['user_id']]);
+		$pageUrl = base_url() . 'order-dispute/' . $oId;
 
-		//~ $input['status'] = 'disputed';
-		//~ $input['is_cancel'] = 5;
-		$input['reason'] = $reason;
-		$input['status_update_time'] = date('Y-m-d H:i:s');
-		$run = $this->common_model->update('service_order', array('id' => $oId), $input);
-		if ($run) {
-			$userid = $this->session->userdata('user_id');
-			$service = $this->common_model->GetSingleData('my_services', ['id' => $serviceOrder['service_id']]);
-			$homeOwner = $this->common_model->GetSingleData('users', ['id' => $serviceOrder['user_id']]);
-			$tradesman = $this->common_model->GetSingleData('users', ['id' => $service['user_id']]);
-			$pageUrl = base_url() . 'order-dispute/' . $oId;
+		$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
+		$newTime = '';
+		$newTime = date('jS F Y', strtotime($input['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));
+		$oPrice = $serviceOrder['total_price'] - $serviceOrder['service_fee'];
 
-			$setting = $this->common_model->GetColumnName('admin', array('id' => 1));
-			$newTime = '';
-			$newTime = date('jS F Y', strtotime($input['status_update_time'] . ' +' . $setting['waiting_time'] . ' days'));
-			$oPrice = $serviceOrder['total_price'] - $serviceOrder['service_fee'];
+		/*Manage Order History*/
+		if ($userid == $homeOwner['id']) {
+			$senderId = $userid;
+			$receiverId = $tradesman['id'];
 
-			/*Manage Order History*/
-			if ($userid == $homeOwner['id']) {
-				$senderId = $userid;
-				$receiverId = $tradesman['id'];
+			$content = '<p style="margin:0;padding:10px 0px">Dear ' . $tradesman['trading_name'] . ',</p>';
 
-				$content = '<p style="margin:0;padding:10px 0px">Dear ' . $tradesman['trading_name'] . ',</p>';
+			$content .= '<p style="margin:0;padding:10px 0px">Your order is been disputed by ' . $homeOwner['f_name'] . ' and awaits your response.</p>';
 
-				$content .= '<p style="margin:0;padding:10px 0px">Your order is been disputed by ' . $homeOwner['f_name'] . ' and awaits your response.</p>';
+			$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> ' . $serviceOrder['order_id'] . '</p>';
 
-				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> ' . $serviceOrder['order_id'] . '</p>';
+			$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £' . number_format($oPrice, 2) . '</p>';
 
-				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £' . number_format($oPrice, 2) . '</p>';
+			$content .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
 
-				$content .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+			$content .= "<p style='margin:0;padding:10px 0px'>We encourage to respond and resolve this issue you amicably. If you can't solve it, you or " . $homeOwner['f_name'] . " can ask us to step in.</p>";
 
-				$content .= "<p style='margin:0;padding:10px 0px'>We encourage to respond and resolve this issue you amicably. If you can't solve it, you or " . $homeOwner['f_name'] . " can ask us to step in.</p>";
+			$content .= '<p style="margin:0;padding:10px 0px">Note: You not responding before ' . $newTime . ' (i.e. ' . $setting['waiting_time'] . ' days) will result in closing this case and deciding in the favour of ' . $homeOwner['f_name'] . '.</p>';
 
-				$content .= '<p style="margin:0;padding:10px 0px">Note: You not responding before ' . $newTime . ' (i.e. ' . $setting['waiting_time'] . ' days) will result in closing this case and deciding in the favour of ' . $homeOwner['f_name'] . '.</p>';
+			$content .= '<p style="margin:0;padding:10px 0px">If you receive a reply from ' . $homeOwner['f_name'] . ', please respond as soon as you can as not responding within the given time closes the case automatically and decided in favour of ' . $homeOwner['f_name'] . '.</p>';
 
-				$content .= '<p style="margin:0;padding:10px 0px">If you receive a reply from ' . $homeOwner['f_name'] . ', please respond as soon as you can as not responding within the given time closes the case automatically and decided in favour of ' . $homeOwner['f_name'] . '.</p>';
+			$content .= "<p style='margin:0;padding:10px 0px'>Any decision reached is final and irrevocable. Once a case is close, it can't reopen.</p>";
 
-				$content .= "<p style='margin:0;padding:10px 0px'>Any decision reached is final and irrevocable. Once a case is close, it can't reopen.</p>";
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
 
-				$content .= '<p style="margin:0;padding:10px 0px">Visit our PRO help page or contact our customer services if you have any specific questions using our service.</p>';
+			$uMail = $tradesman['email'];
+		}
+		if ($userid == $tradesman['id']) {
+			$senderId = $userid;
+			$receiverId = $homeOwner['id'];
 
-				$uMail = $tradesman['email'];
+			$content = '<p style="margin:0;padding:10px 0px">Dear ' . $homeOwner['f_name'] . ',</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">Your order is been disputed by ' . $tradesman['trading_name'] . ' and awaits your response.</p>';
+
+			$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> ' . $serviceOrder['order_id'] . '</p>';
+
+			$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £' . number_format($oPrice, 2) . '</p>';
+
+			$content .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
+
+			$content .= "<p style='margin:0;padding:10px 0px'>We encourage to respond and resolve this issue you amicably. If you can't solve it, you or " . $tradesman['trading_name'] . " can ask us to step in.</p>";
+
+			$content .= '<p style="margin:0;padding:10px 0px">Note: You not responding before ' . $newTime . ' (i.e. ' . $setting['waiting_time'] . ' days) will result in closing this case and deciding in the favour of ' . $tradesman['trading_name'] . '.</p>';
+
+			$content .= '<p style="margin:0;padding:10px 0px">If you receive a reply from ' . $tradesman['trading_name'] . ', please respond as soon as you can as not responding within the given time closes the case automatically and decided in favour of ' . $tradesman['trading_name'] . '.</p>';
+
+			$content .= "<p style='margin:0;padding:10px 0px'>Any decision reached is final and irrevocable. Once a case is close, it can't reopen.</p>";
+
+			$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
+
+			$uMail = $homeOwner['email'];
+		}
+		
+		$getAllDisputesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $oId, 'milestone_type' => 'service']);
+					
+		$getAllDisputedMilestonesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $oId, 'milestone_type' => 'service', 'status' => 5]);
+
+		/* CHECK IF ORDER ALL MILSTONE CANCELLED THEN ORDER WILL BE CANCELLED */
+		if(count($getAllDisputesCount) == count($getAllDisputedMilestonesCount)){
+			$input['status'] = 'disputed';
+			$input['is_cancel'] = 5;
+			$input['status_update_time'] = date('Y-m-d H:i:s');
+			$input['reason'] = $reason;
+			$run = $this->common_model->update('service_order', array('id' => $oId), $input);
+			if ($run) {
+				
+
+				/*Manage Order History*/
+				$insert1 = [
+					'user_id' => $senderId,
+					'service_id' => $serviceOrder['service_id'],
+					'order_id' => $oId,
+					'status' => 'disputed'
+				];
+				$this->common_model->insert('service_order_status_history', $insert1);
+
+				$insert2['sender'] = $senderId;
+				$insert2['receiver'] = $receiverId;
+				$insert2['order_id'] = $oId;
+				$insert2['status'] = 'disputed';
+				$insert2['description'] = $reason;
+				$this->common_model->insert('order_submit_conversation', $insert2);
+
+				/*Entry in Dispute Table*/
+
+				if ($userid == $homeOwner['id']) {
+					$dispute_to	= $tradesman['id'];
+				}
+
+				if ($userid == $tradesman['id']) {
+					$dispute_to	= $homeOwner['id'];
+				}
+
+				$insert['ds_in_id'] = $userid;
+				$insert['dispute_type'] = 2;
+				$insert['ds_job_id'] = $serviceOrder['id'];
+				$insert['ds_buser_id'] = $service['user_id'];
+				$insert['ds_puser_id'] = $serviceOrder['user_id'];
+				$insert['caseid'] = time();
+				$insert['ds_status'] = 0;
+				// $insert['total_amount'] = $serviceOrder['price'] * $serviceOrder['service_qty'];
+				$insert['disputed_by'] = $userid;
+				$insert['dispute_to'] = $dispute_to;
+				$insert['ds_comment'] = $reason;
+				$insert['ds_create_date'] = date('Y-m-d H:i:s');
+				if ($this->session->userdata('type') == 1) {
+					$insert['tradesmen_offer'] = $this->input->post('offer_amount');
+					$insert['total_amount'] = $this->input->post('offer_amount');
+					
+				} else {
+					$insert['homeowner_offer'] = $this->input->post('offer_amount');
+					$insert['total_amount'] = $this->input->post('offer_amount');
+				}
+
+				if ($userid == $service['user_id']) {
+					$run1 = $this->common_model->insert('tbl_dispute', $insert);
+					$login_user = $this->common_model->get_userDataByid($homeOwner['id']);
+				} else {
+					$run1 = $this->common_model->insert('tbl_dispute', $insert);
+					$login_user = $this->common_model->get_userDataByid($tradesman['id']);
+				}
+
+				$today = date('Y-m-d H:i:s');
+
+				if(!empty($dispute_milestones)){
+					/* DISPUTE SELECTED MILESTONE */
+					foreach ($dispute_milestones as $key => $value) {
+						$in['status'] = 5;
+						$in['service_status'] = "disputed";
+						$in['dispute_id'] = $run1;
+						$this->common_model->update('tbl_milestones', array('id' => $value), $in);
+
+						$insert0 = [];
+						$insert0['dispute_id'] = $run1;
+						$insert0['milestone_id'] = $value;
+						$insert0['created_at'] = $today;
+						$insert0['updated_at'] = $today;
+						$this->common_model->insert('dispute_milestones', $insert0);
+					}				
+				}
+				
+				
+			
+				// $milestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $serviceOrder['id']]);
+
+				// foreach ($milestones as $miles) {
+				// 	$insert0 = [];
+				// 	$insert0['dispute_id'] = $run1;
+				// 	$insert0['milestone_id'] = $miles['id'];
+				// 	$insert0['created_at'] = $today;
+				// 	$insert0['updated_at'] = $today;
+				// 	$this->common_model->insert('dispute_milestones', $insert0);
+				// }
+
+				if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
+					foreach ($_POST['file_name'] as $key => $file) {
+						$file_name = $_POST['file_name'][$key];
+						$file_original_name = $_POST['file_original_name'][$key];
+
+						$insertDoc = [];
+						$insertDoc['uploaded_by'] = $userid;
+						$insertDoc['dispute_id'] = $run1;
+						$insertDoc['file'] = $file_name;
+						$insertDoc['original_name'] = $file_original_name;
+						$insertDoc['created_at'] = date('Y-m-d H:i:s');
+						$insertDoc['updated_at'] = date('Y-m-d H:i:s');
+						$this->common_model->insert('dispute_file', $insertDoc);
+					}
+				}
+
+				$login_users = $this->common_model->get_single_data('users', array('id' => $userid));
+				$bid_users = $this->common_model->get_single_data('users', array('id' => $service['user_id']));
+				$setting = $this->common_model->get_coloum_value('admin', array('id' => 1), array('waiting_time'));
+
+				$newTime = date('Y-m-d H:i:s', strtotime($today . ' +' . $setting['waiting_time'] . ' days'));
+
+				$insertn['nt_userId'] = $receiverId;
+				$insertn['nt_message'] = "Your order has been disputed. <a href='" . $pageUrl . "'>Act Now!..</a>";
+				$insertn['nt_satus'] = 0;
+				$insertn['nt_apstatus'] = 0;
+				$insertn['nt_create'] = date('Y-m-d H:i:s');
+				$insertn['nt_update'] = date('Y-m-d H:i:s');
+				$insertn['job_id'] = $serviceOrder['id'];
+				$insertn['posted_by'] = $senderId;
+				$run2 = $this->common_model->insert('notification', $insertn);
+
+				$subject = "Urgent Action needed: Your order is been disputed - " . $service['service_name'] . ".";
+				$sent = $this->common_model->send_mail($uMail, $subject, $content);
+
+				echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
+			} else {
+				echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not disputed.']);
 			}
-			if ($userid == $tradesman['id']) {
-				$senderId = $userid;
-				$receiverId = $homeOwner['id'];
-
-				$content = '<p style="margin:0;padding:10px 0px">Dear ' . $homeOwner['f_name'] . ',</p>';
-
-				$content .= '<p style="margin:0;padding:10px 0px">Your order is been disputed by ' . $tradesman['trading_name'] . ' and awaits your response.</p>';
-
-				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Number:</b> ' . $serviceOrder['order_id'] . '</p>';
-
-				$content .= '<p style="margin:0;padding:0px 0px"><b>Order Dispute Amount:</b> £' . number_format($oPrice, 2) . '</p>';
-
-				$content .= '<div style="text-align:center"><a href="' . $pageUrl . '" style="background-color:#fe8a0f;color:#fff;padding:8px 22px;text-align:center;display:inline-block;line-height:25px;border-radius:3px;font-size:17px;text-decoration:none">View Dispute</a></div>';
-
-				$content .= "<p style='margin:0;padding:10px 0px'>We encourage to respond and resolve this issue you amicably. If you can't solve it, you or " . $tradesman['trading_name'] . " can ask us to step in.</p>";
-
-				$content .= '<p style="margin:0;padding:10px 0px">Note: You not responding before ' . $newTime . ' (i.e. ' . $setting['waiting_time'] . ' days) will result in closing this case and deciding in the favour of ' . $tradesman['trading_name'] . '.</p>';
-
-				$content .= '<p style="margin:0;padding:10px 0px">If you receive a reply from ' . $tradesman['trading_name'] . ', please respond as soon as you can as not responding within the given time closes the case automatically and decided in favour of ' . $tradesman['trading_name'] . '.</p>';
-
-				$content .= "<p style='margin:0;padding:10px 0px'>Any decision reached is final and irrevocable. Once a case is close, it can't reopen.</p>";
-
-				$content .= '<p style="margin:0;padding:10px 0px">Visit our customer help page or contact our customer services if you have any specific questions using our service.</p>';
-
-				$uMail = $homeOwner['email'];
-			}
-
-			/*Manage Order History*/
-			$insert1 = [
-				'user_id' => $senderId,
-				'service_id' => $serviceOrder['service_id'],
-				'order_id' => $oId,
-				'status' => 'disputed'
-			];
-			$this->common_model->insert('service_order_status_history', $insert1);
-
-			$insert2['sender'] = $senderId;
-			$insert2['receiver'] = $receiverId;
-			$insert2['order_id'] = $oId;
-			$insert2['status'] = 'disputed';
-			$insert2['description'] = $reason;
-			$this->common_model->insert('order_submit_conversation', $insert2);
-
-			/*Entry in Dispute Table*/
-
+		} else {
+			
+			$input['reason'] = $reason;
+			$runfull = $this->common_model->update('service_order', array('id' => $oId), $input);
+			
 			if ($userid == $homeOwner['id']) {
 				$dispute_to	= $tradesman['id'];
 			}
@@ -5524,70 +5646,7 @@ class Users extends CI_Controller
 				}				
 			}
 			
-			
-		
-			$getAllDisputesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $oId, 'milestone_type' => 'service']);
-					
-			$getAllDisputedMilestonesCount = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $oId, 'milestone_type' => 'service', 'status' => 5]);
-
-			/* CHECK IF ORDER ALL MILSTONE CANCELLED THEN ORDER WILL BE CANCELLED */
-			if(count($getAllDisputesCount) == count($getAllDisputedMilestonesCount)){
-				$input['status'] = 'disputed';
-				$input['is_cancel'] = 5;
-				$runfull = $this->common_model->update('service_order', array('id' => $oId), $input);
-			}
-			
-			
-
-			// $milestones = $this->common_model->get_all_data('tbl_milestones', ['post_id' => $serviceOrder['id']]);
-
-			// foreach ($milestones as $miles) {
-			// 	$insert0 = [];
-			// 	$insert0['dispute_id'] = $run1;
-			// 	$insert0['milestone_id'] = $miles['id'];
-			// 	$insert0['created_at'] = $today;
-			// 	$insert0['updated_at'] = $today;
-			// 	$this->common_model->insert('dispute_milestones', $insert0);
-			// }
-
-			if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
-				foreach ($_POST['file_name'] as $key => $file) {
-					$file_name = $_POST['file_name'][$key];
-					$file_original_name = $_POST['file_original_name'][$key];
-
-					$insertDoc = [];
-					$insertDoc['uploaded_by'] = $userid;
-					$insertDoc['dispute_id'] = $run1;
-					$insertDoc['file'] = $file_name;
-					$insertDoc['original_name'] = $file_original_name;
-					$insertDoc['created_at'] = date('Y-m-d H:i:s');
-					$insertDoc['updated_at'] = date('Y-m-d H:i:s');
-					$this->common_model->insert('dispute_file', $insertDoc);
-				}
-			}
-
-			$login_users = $this->common_model->get_single_data('users', array('id' => $userid));
-			$bid_users = $this->common_model->get_single_data('users', array('id' => $service['user_id']));
-			$setting = $this->common_model->get_coloum_value('admin', array('id' => 1), array('waiting_time'));
-
-			$newTime = date('Y-m-d H:i:s', strtotime($today . ' +' . $setting['waiting_time'] . ' days'));
-
-			$insertn['nt_userId'] = $receiverId;
-			$insertn['nt_message'] = "Your order has been disputed. <a href='" . $pageUrl . "'>Act Now!..</a>";
-			$insertn['nt_satus'] = 0;
-			$insertn['nt_apstatus'] = 0;
-			$insertn['nt_create'] = date('Y-m-d H:i:s');
-			$insertn['nt_update'] = date('Y-m-d H:i:s');
-			$insertn['job_id'] = $serviceOrder['id'];
-			$insertn['posted_by'] = $senderId;
-			$run2 = $this->common_model->insert('notification', $insertn);
-
-			$subject = "Urgent Action needed: Your order is been disputed - " . $service['service_name'] . ".";
-			$sent = $this->common_model->send_mail($uMail, $subject, $content);
-
-			echo json_encode(['status' => 'error', 'message' => 'Order disputed successfully.']);
-		} else {
-			echo json_encode(['status' => 'error', 'message' => 'Something is wrong. Order is not disputed.']);
+			echo json_encode(['status' => 'error', 'message' => 'Milestone disputed successfully.']);
 		}
 	}
 
