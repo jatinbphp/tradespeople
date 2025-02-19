@@ -1519,9 +1519,12 @@
                 <label class="control-label" for="textinput"><b>Select the milestone you want to dispute</b></label><br>
                 <?php
                 	$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
-                 	foreach($milestones as $m){ ?>
+                 	foreach($milestones as $m){ 
+						if(!in_array($m['status'], ['5'])){ 		
+					?>
                  		<input data-amount="<?php echo $m['total_amount']; ?>" class="dispute_milestones" type="checkbox" onchange="selectMilesForDispute(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
-                <?php } ?>
+                <?php } 
+				} ?>
 
 				<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span></b></label>
 
