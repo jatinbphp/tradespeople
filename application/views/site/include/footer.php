@@ -2913,8 +2913,8 @@ $('#customOfferModalBody').on('click', '.previewBtn', function (event) {
       $('#customOfferPreviewModalBody #singleOffer').removeClass('hidden');
     }
 
-    
-    var deliveryDate = addDaysToDate(totalDays);    
+    var totalDaysNew = parseInt(totalDays);
+    var deliveryDate = addDaysToDate(totalDaysNew);    
 
     //$('#customOfferPreviewModalBody #previewDescription').text(description).css({'border': '1px solid #dfdfdf','padding': '1rem'});
     
