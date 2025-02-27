@@ -3668,8 +3668,7 @@ class Common_model extends CI_Model
 			        SUM(CASE WHEN ms.status = 'draft' THEN 1 ELSE 0 END) AS total_draft,
 			        SUM(CASE WHEN ms.status = 'denied' THEN 1 ELSE 0 END) AS total_denied,
 			        SUM(CASE WHEN ms.status = 'paused' THEN 1 ELSE 0 END) AS total_paused,
-			        SUM(CASE WHEN so.status IN ('active', 'extened_request') THEN 1 ELSE 0 END) AS total_active,
-			        /*SUM(CASE WHEN ms.status = 'active' THEN 1 ELSE 0 END) AS total_active*/
+			        SUM(CASE WHEN ms.status IN ('active', 'extened_request') THEN 1 ELSE 0 END) AS total_active
 			    FROM
 			        my_services ms
 			    WHERE

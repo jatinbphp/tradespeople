@@ -1,8 +1,10 @@
 	<?php
+
 	include 'include/header.php';
 	$get_commision = $this->common_model->get_commision();
 
-	function ordinal($number) {
+	function ordinal($number)
+	{
 		$suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
 		if ((($number % 100) >= 11) && (($number % 100) <= 13)) {
 			return $number . 'th';
@@ -13,10 +15,11 @@
 
 	?>
 	<style type="text/css">
-		.width-100{
+		.width-100 {
 			width: 100%;
 		}
-		.other-post-view img{
+
+		.other-post-view img {
 			height: 110px;
 			width: 100%;
 			object-fit: cover;
@@ -24,7 +27,7 @@
 			padding: 5px;
 		}
 
-		.other-post-view video{
+		.other-post-view video {
 			height: 110px;
 			width: 100%;
 			object-fit: cover;
@@ -32,19 +35,25 @@
 			padding: 5px;
 		}
 
-		.member-summary .member-image{
+		.member-summary .member-image {
 			width: 165px;
 			height: 165px;
 			max-width: none;
 			max-height: none;
 		}
-		.order-details{
+
+		.order-details {
 			cursor: pointer;
 		}
-		.names{
+
+		.names {
 			color: #3d78cb;
 		}
-		#openChat, .openRequirementModal{cursor: pointer;}
+
+		#openChat,
+		.openRequirementModal {
+			cursor: pointer;
+		}
 
 		/*----------LOADER CSS START----------*/
 		.loader_ajax_small {
@@ -60,57 +69,126 @@
 		}
 
 		@-webkit-keyframes spin_loader_ajax_small {
-			0% { -webkit-transform: rotate(0deg); }
-			100% { -webkit-transform: rotate(360deg); }
+			0% {
+				-webkit-transform: rotate(0deg);
+			}
+
+			100% {
+				-webkit-transform: rotate(360deg);
+			}
 		}
 
 		@keyframes spin_loader_ajax_small {
-			0% { transform: rotate(0deg); }
-			100% { transform: rotate(360deg); }
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
 		}
+
 		/*----------LOADER CSS END----------*/
 
-		.imagePreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
-		.btn-primary{display:block;border-radius:0;box-shadow:0 4px 6px 2px rgba(0,0,0,0.2);margin-top:-5px}
-		.imgUp{margin-bottom:15px}
-		.removeImage {position: absolute; top: 0; right: 0; margin-right: 15px;}
-		.boxImage { height: 100%; border: 1px solid #b0c0d3; border-radius: 10px;}
-		.boxImage img { height: 100%;object-fit: contain; border-radius: 10px;}		
-		.videoPreviewPlus{width:100%;height:134px;background-position:center center;background-size:cover;background-repeat:no-repeat;display:inline-block;display:flex;align-content:center;justify-content:center;align-items:center; border-radius: 10px;}
-		.boxImage video { height: 100%;object-fit: contain;}
+		.imagePreviewPlus {
+			width: 100%;
+			height: 134px;
+			background-position: center center;
+			background-size: cover;
+			background-repeat: no-repeat;
+			display: inline-block;
+			display: flex;
+			align-content: center;
+			justify-content: center;
+			align-items: center;
+			border-radius: 10px;
+		}
+
+		.btn-primary {
+			display: block;
+			border-radius: 0;
+			box-shadow: 0 4px 6px 2px rgba(0, 0, 0, 0.2);
+			margin-top: -5px
+		}
+
+		.imgUp {
+			margin-bottom: 15px
+		}
+
+		.removeImage {
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin-right: 15px;
+		}
+
+		.boxImage {
+			height: 100%;
+			border: 1px solid #b0c0d3;
+			border-radius: 10px;
+		}
+
+		.boxImage img {
+			height: 100%;
+			object-fit: contain;
+			border-radius: 10px;
+		}
+
+		.videoPreviewPlus {
+			width: 100%;
+			height: 134px;
+			background-position: center center;
+			background-size: cover;
+			background-repeat: no-repeat;
+			display: inline-block;
+			display: flex;
+			align-content: center;
+			justify-content: center;
+			align-items: center;
+			border-radius: 10px;
+		}
+
+		.boxImage video {
+			height: 100%;
+			object-fit: contain;
+		}
 
 		#imgpreview {
 			padding-top: 15px;
 		}
+
 		.boxImage {
 			margin: 0;
 			padding: 3px;
 		}
+
 		.imagePreviewPlus {
 			height: 140px;
 			box-shadow: none;
 		}
 
-		.tradesmen-top{
+		.tradesmen-top {
 			padding: 15px 15px 10px;
 		}
-		.img-name{
+
+		.img-name {
 			display: flex;
 			gap: 75px;
 		}
-		.img-name img{
+
+		.img-name img {
 			width: 130px;
 			height: 75px;
 			display: block;
-			max-width: 100%;	
+			max-width: 100%;
 		}
-		
-		.faicon{
+
+		.faicon {
 			font-size: 30px;
 			color: #2875D7;
 		}
 
-		.order-faicon{
+		.order-faicon {
 			font-size: 20px;
 			color: #35a311;
 		}
@@ -127,10 +205,10 @@
 			display: flex;
 			flex-direction: column;
 			padding: 0 0 0 32px;
-			border-left: 3px solid #ddd;		
+			border-left: 3px solid #ddd;
 		}
 
-		#Timeline .tradesmen-box{
+		#Timeline .tradesmen-box {
 			box-shadow: none;
 			border: 0;
 		}
@@ -143,34 +221,37 @@
 			display: flex;
 			flex-direction: column;
 			padding: 0 0 0 32px;
-			border-left: 3px solid #35a311;		
+			border-left: 3px solid #35a311;
 		}
 
-		.timeline li{
+		.timeline li {
 			border-bottom: 1px solid #dbd6d6;
 			padding-bottom: 1.5rem;
 		}
 
-		.delivery-time li{
-			padding-bottom: 0;	
+		.delivery-time li {
+			padding-bottom: 0;
 		}
 
 		.timeline-item {
 			display: flex;
 			gap: 24px;
-			& + * {
+
+			&+* {
 				margin-top: 6px;
-			}		
+			}
 		}
 
 		.new-comment {
 			width: 100%;
+
 			input {
-				border: 1px solid #f1f1f1 ;
+				border: 1px solid #f1f1f1;
 				border-radius: 6px;
 				height: 48px;
 				padding: 0 16px;
 				width: 100%;
+
 				&::placeholder {
 					color: var(--c-grey-300);
 				}
@@ -192,6 +273,7 @@
 			margin-left: -48px;
 			flex-shrink: 0;
 			overflow: hidden;
+
 			/*box-shadow: 0 0 0 6px #fff;*/
 			svg {
 				width: 20px;
@@ -218,6 +300,7 @@
 			margin-left: -48px;
 			flex-shrink: 0;
 			overflow: hidden;
+
 			/*box-shadow: 0 0 0 6px #fff;*/
 			svg {
 				width: 20px;
@@ -241,6 +324,7 @@
 			gap: 8px;
 			color: var(--c-grey-400);
 			flex-wrap: wrap;
+
 			.delivery-time {
 				width: 100%;
 				background: #dddddd;
@@ -254,6 +338,7 @@
 				text-align: center;
 				font-size: 15px;
 			}
+
 			.delivery-conversation {
 				width: 100%;
 				/*background: #dddddd;*/
@@ -264,16 +349,19 @@
 				justify-content: space-around;
 				/*border-radius: 10px;*/
 				border: 1px solid #dfdfdf;
-				padding: 10px;		    
+				padding: 10px;
 				font-size: 15px;
 			}
+
 			img {
 				flex-shrink: 0;
 			}
+
 			a {
 				color: var(--c-grey-500);
 				font-weight: 500;
 				text-decoration: none;
+
 				&:hover,
 				&:focus {
 					outline: 0; // Don't actually do this
@@ -292,6 +380,7 @@
 			flex-shrink: 0;
 			width: 40px;
 			height: 40px;
+
 			&.small {
 				width: 28px;
 				height: 28px;
@@ -336,6 +425,7 @@
 				width: 32px;
 				height: 32px;
 				padding: 0;
+
 				svg {
 					width: 24px;
 					height: 24px;
@@ -359,6 +449,7 @@
 			gap: 6px;
 			font-size: 1rem;
 			cursor: pointer;
+
 			svg {
 				flex-shrink: 0;
 				width: 24px;
@@ -374,44 +465,45 @@
 		.avatar-list {
 			display: flex;
 			align-items: center;
-			& > * {
+
+			&>* {
 				position: relative;
 				box-shadow: 0 0 0 2px #fff;
 				margin-right: -8px;
 			}
 		}
 
-		.timeline-item-description h5{
-			margin-top: 0!important;
+		.timeline-item-description h5 {
+			margin-top: 0 !important;
 			width: 100%;
 		}
 
-		.verification-checklist{
+		.verification-checklist {
 			margin-bottom: 0;
 		}
 
-		.verification-checklist.order-metrics .list{
+		.verification-checklist.order-metrics .list {
 			border-bottom: 0;
 			padding-bottom: 0;
 			margin-bottom: 0;
 			font-weight: 600;
 		}
 
-		.verification-checklist.order-metrics .list li a{
+		.verification-checklist.order-metrics .list li a {
 			color: #000;
 		}
 
-		.verification-checklist.order-metrics .list .active a{
+		.verification-checklist.order-metrics .list .active a {
 			color: #3d78cb;
 			/*border-bottom: 2px solid #fe8a0f;*/
 			padding-bottom: 8px;
 		}
 
-		#Details table{
+		#Details table {
 			border: 1px solid #ddd;
 		}
 
-		#approved-btn-div{
+		#approved-btn-div {
 			width: 100%;
 			text-align: center;
 		}
@@ -440,10 +532,12 @@
 				opacity: 0;
 				transform: scale(1);
 			}
+
 			50% {
 				opacity: 1;
 				transform: scale(1.2);
 			}
+
 			100% {
 				opacity: 1;
 				transform: scale(1);
@@ -465,7 +559,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-3">
-					<?php include 'include/sidebar.php'; ?>				
+					<?php include 'include/sidebar.php'; ?>
 				</div>
 				<div class="col-md-9">
 					<div class="row">
@@ -498,7 +592,7 @@
 											<div class="img-name p-0">
 												<div class="names" style="width:100%">
 													<span class="services-description">
-														<?php if($order['status'] == 'offer_created'):?>
+														<?php if ($order['status'] == 'offer_created'): ?>
 															<span>
 																<h4 style="color: #000;">Your custom offer is now created</h4>
 																<span class="text-muted">
@@ -507,59 +601,59 @@
 																	We notified <?php echo $tradesman['trading_name']; ?> about your respond.
 																</span>
 															</span>
-														<?php else:?>
-															<?php if(empty($requirements) && $order['is_cancel'] == 0):?>
+														<?php else: ?>
+															<?php if (empty($requirements) && $order['is_cancel'] == 0): ?>
 																<span>
 																	<h4 style="color: #000;">One last step to get your order started!</h4>
 																	<span class="text-muted">
 																		We notified <?php echo $tradesman['trading_name']; ?> about your order. Submit your requirement to get your order started.
 																	</span>
-																</span>	
-															<?php elseif($order['status'] == 'disputed'):?>
+																</span>
+															<?php elseif ($order['status'] == 'disputed'): ?>
 																<span>
 																	<h4 style="color: #000;">Your Order is disputed</h4>
 																</span>
-															<?php else:?>	
-																<?php if(!in_array($order['status'],['completed','cancelled'])):?>
+															<?php else: ?>
+																<?php if (!in_array($order['status'], ['completed', 'cancelled'])): ?>
 																	<span>
 																		<h4 style="color: #000;">Your order is now in the works</h4>
 																		<span class="text-muted">
 																			We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
 
-																			<?php if($order['is_exten_delivery_accepted'] == 1):?>
-					                              You should receive your delivery by <b class="text-b"><?php echo $expected_delivery_date; ?></b>
-					                            <?php else:?>
-					                              You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
-					                            <?php endif;?>																			
+																			<?php if ($order['is_exten_delivery_accepted'] == 1): ?>
+																				You should receive your delivery by <b class="text-b"><?php echo $expected_delivery_date; ?></b>
+																			<?php else: ?>
+																				You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+																			<?php endif; ?>
 																		</span>
 																	</span>
-																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 1):?>	
+																<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == 1): ?>
 																	<span>
 																		<h4 style="color: #000;">Your order has been cancelled</h4>
-																		<?php if($order['is_custom'] == 0 || $order['is_accepted'] == 1):?>
+																		<?php if ($order['is_custom'] == 0 || $order['is_accepted'] == 1): ?>
 																			<span class="text-muted">
 																				Your payment has been creadited to your Tradespeople Wallet and can be used or refunded at any time.
 																			</span>
 																		<?php endif; ?>
 																	</span>
-																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == 2):?>	
+																<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == 2): ?>
 																	<span>
 																		<h4 style="color: #000;">Order cancellation requested</h4>
 																		<span class="text-muted">
 																			<?php
-																				if($this->session->userdata('type')==1){
-																					if($all_conversation[0]['sender'] == $user['id']){
-																						$cUserName = 'You';
-																					}else{
-																						$cUserName = $homeowner['f_name'].' '.$homeowner['l_name'];
-																					}	
-																				}else{
-																					if($all_conversation[0]['sender'] == $user['id']){
-																						$cUserName = 'You';
-																					}else{
-																						$cUserName = $tradesman['trading_name'];
-																					}	
-																				}																			
+																			if ($this->session->userdata('type') == 1) {
+																				if ($all_conversation[0]['sender'] == $user['id']) {
+																					$cUserName = 'You';
+																				} else {
+																					$cUserName = $homeowner['f_name'] . ' ' . $homeowner['l_name'];
+																				}
+																			} else {
+																				if ($all_conversation[0]['sender'] == $user['id']) {
+																					$cUserName = 'You';
+																				} else {
+																					$cUserName = $tradesman['trading_name'];
+																				}
+																			}
 																			?>
 																			<?php echo $cUserName; ?> has requested the cancellation of your order.
 																			<br>
@@ -570,111 +664,124 @@
 																	<span>
 																		<h4 style="color: #000;">Your order is completed</h4>
 																	</span>
-																<?php endif;?>	
-															<?php endif; ?>	
-														<?php endif;?>
+																<?php endif; ?>
+															<?php endif; ?>
+														<?php endif; ?>
 													</span>
 													<span class="pull-right">
-														<?php if($this->session->userdata('type')==1):?>
-															<?php if($order['status'] == 'request_modification'):?>
-																<?php if($order['is_custom'] == 1):?>
-																	<?php if($order['order_type'] == 'single'):?>
-																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
-																	<?php endif;?>
-																<?php else:?>	
-																	<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
+														<?php if ($this->session->userdata('type') == 1): ?>
+															<?php if ($order['status'] == 'request_modification'): ?>
+																<?php if ($order['is_custom'] == 1): ?>
+																	<?php if ($order['order_type'] == 'single'): ?>
+																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id'] ?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
+																	<?php endif; ?>
+																<?php else: ?>
+																	<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id'] ?>" data-toggle="modal" data-target="#order_submit_modal">Re-deliver Work</button>
 																<?php endif; ?>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'active' && $is_delivery == 1):?>	
-																<?php if($order['is_custom'] == 1):?>
-																	<?php if($order['order_type'] == 'single'):?>
-																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
-																	<?php endif;?>
-																<?php else:?>	
-																	<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id']?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
-																<?php endif; ?>	
+															<?php if ($order['status'] == 'active' && $is_delivery == 1): ?>
+																<?php if ($order['is_custom'] == 1): ?>
+																	<?php if ($order['order_type'] == 'single'): ?>
+																		<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id'] ?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
+																	<?php endif; ?>
+																<?php else: ?>
+																	<button type="button" class="btn btn-warning " data-id="<?php echo $order['user_id'] ?>" data-toggle="modal" data-target="#order_submit_modal">Deliver Work</button>
+																<?php endif; ?>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
-																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
+															<?php if ($order['is_custom'] == 1 && $order['is_cancel'] == 0 && count($disputeMilestoneExist) > 0): ?>
+
+																<a href="<?php echo base_url() . 'order-dispute/' . $order['id'] ?>">
+																	<button type="button" class="btn btn-outline-warning ">View Dispute</button>
+																</a>
+
+															<?php elseif ($order['status'] == 'disputed' || $order['is_cancel'] == 8): ?>
+																<a href="<?php echo base_url() . 'order-dispute/' . $order['id'] ?>">
 																	<button type="button" class="btn btn-outline-warning ">View Dispute</button>
 																</a>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'completed'):?>
-																<a href="<?php echo base_url('orderCompleted/'.$order['id']); ?>">
+															<?php if ($order['status'] == 'completed'): ?>
+																<a href="<?php echo base_url('orderCompleted/' . $order['id']); ?>">
 																	<button type="button" class="btn btn-warning">
-																		View Review 
+																		View Review
 																	</button>
 																</a>
 															<?php endif; ?>
 
-															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id']?>" onclick="openChat(<?php echo $order['user_id']?>)">Chat</button>
+															<button type="button" class="btn btn-outline-warning" data-id="<?php echo $order['user_id'] ?>" onclick="openChat(<?php echo $order['user_id'] ?>)">Chat</button>
 
-															<?php if($is_extended == 1 && in_array($order['status'], ['active','extened_decline'])):?>
+															<?php if ($is_extended == 1 && in_array($order['status'], ['active', 'extened_decline'])): ?>
 																<button type="button" class="btn btn-warning" id="extendedDelivery">
 																	Extend Delivery Time
 																</button>
-															<?php endif; ?>															
+															<?php endif; ?>
 														<?php else: ?>
-															<?php if($order['status'] == 'disputed' || $order['is_cancel'] == 8):?>
-																<a href="<?php echo base_url().'order-dispute/'.$order['id']?>">
+
+															<?php if ($order['is_custom'] == 1 && $order['is_cancel'] == 0 && count($disputeMilestoneExist) > 0): ?>
+
+																<a href="<?php echo base_url() . 'order-dispute/' . $order['id'] ?>">
+																	<button type="button" class="btn btn-outline-warning ">View Dispute</button>
+																</a>
+
+															<?php elseif ($order['status'] == 'disputed' || $order['is_cancel'] == 8): ?>
+																<a href="<?php echo base_url() . 'order-dispute/' . $order['id'] ?>">
 																	<button type="button" class="btn btn-outline-warning">View Dispute</button>
 																</a>
 															<?php endif; ?>
 
-															<?php if($order['status'] == 'completed'):?>
-																<a href="<?php echo base_url('orderCompleted/'.$order['id']); ?>">
+															<?php if ($order['status'] == 'completed'): ?>
+																<a href="<?php echo base_url('orderCompleted/' . $order['id']); ?>">
 																	<button type="button" class="btn btn-warning">
 																		View Review
 																	</button>
-																</a>	
+																</a>
 															<?php endif; ?>
-															<button class="btn btn-outline-warning" data-id="<?php echo $service['user_id']?>" onclick="openChat(<?php echo $service['user_id']?>)">
+															<button class="btn btn-outline-warning" data-id="<?php echo $service['user_id'] ?>" onclick="openChat(<?php echo $service['user_id'] ?>)">
 																Chat
 															</button>
 
-															<?php if($order['status'] == 'offer_created'):?>
-																<?php if($order['is_accepted'] == 1 && empty($requirements)):?>
+															<?php if ($order['status'] == 'offer_created'): ?>
+																<?php if ($order['is_accepted'] == 1 && empty($requirements)): ?>
 																	<button class="btn btn-warning" class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</button>
 																<?php endif; ?>
 															<?php else: ?>
-																<?php if(empty($requirements) && $order['is_cancel'] == 0):?>
+																<?php if (empty($requirements) && $order['is_cancel'] == 0): ?>
 																	<button class="btn btn-warning" class="openRequirementModal btn btn-warning" data-toggle="modal" data-target="#order_requirement_modal">Submit Requirement</button>
 																<?php endif; ?>
 															<?php endif; ?>
 														<?php endif; ?>
-													</span>										
-												</div>									
+													</span>
+												</div>
 											</div>
 										</div>
 									</div>
 									<div class="timeline-div bg-white p-4">
 										<ol class="timeline">
-											<?php if(in_array($order['status'], ['active','offer_created','extened_request'])):?>
+											<?php if (in_array($order['status'], ['active', 'offer_created', 'extened_request'])): ?>
 												<li class="timeline-item">
 													<span class="timeline-item-icon | faded-icon">
 														<i class="fa fa-clock-o faicon"></i>
 													</span>
 													<div class="timeline-item-description">
-														<?php if(!empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
+														<?php if (!empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0): ?>
 															<h5>Delivery time extension requested</h5>
-															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $expected_delivery_date; ?></h5>
-														<?php elseif($order['is_exten_delivery_accepted'] == 1):?>
-															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $expected_delivery_date; ?></h5>
-														<?php else:?>
-															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>  <?php echo $delivery_date; ?></h5>
-														<?php endif;?>
-														
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?> <?php echo $expected_delivery_date; ?></h5>
+														<?php elseif ($order['is_exten_delivery_accepted'] == 1): ?>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?> <?php echo $expected_delivery_date; ?></h5>
+														<?php else: ?>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?> <?php echo $delivery_date; ?></h5>
+														<?php endif; ?>
+
 														<ul class="delivery-time">
-															<li><b><?php echo $rDays; ?></b><br/>Days</li>
-															<li><b><?php echo $rHours; ?></b><br/>Hours</li>
-															<li><b><?php echo $rMinutes; ?></b><br/>Minutes</li>
+															<li><b><?php echo $rDays; ?></b><br />Days</li>
+															<li><b><?php echo $rHours; ?></b><br />Hours</li>
+															<li><b><?php echo $rMinutes; ?></b><br />Minutes</li>
 														</ul>
 
-														<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 0):?>
-															<?php if($this->session->userdata('type')==1):?>
+														<?php if ($order['is_custom'] == 1 && $order['is_accepted'] == 0): ?>
+															<?php if ($this->session->userdata('type') == 1): ?>
 																<div id="approved-btn-div">
 																	<button type="button" id="withdraw-offer-btn" class="btn btn-default">
 																		Withdraw Offer
@@ -690,22 +797,22 @@
 																	</button>
 																</div>
 															<?php endif; ?>
-														<?php elseif($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0):?>
-																<div id="approved-btn-div">
-																	<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
-																		Accept
-																	</button>
-																	<button type="button" id="reject-extended-btn" class="btn btn-default">
-																		Decline
-																	</button>
-																</div>
-														<?php endif; ?>	
-														
+														<?php elseif ($this->session->userdata('type') == 2 && !empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0): ?>
+															<div id="approved-btn-div">
+																<button type="button" id="accept-extended-btn" class="btn btn-warning mr-3">
+																	Accept
+																</button>
+																<button type="button" id="reject-extended-btn" class="btn btn-default">
+																	Decline
+																</button>
+															</div>
+														<?php endif; ?>
+
 													</div>
 												</li>
-											<?php endif;?>
+											<?php endif; ?>
 
-											<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
+											<?php if ($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
 												<li class="timeline-item" id="milestoneList">
 													<span class="timeline-item-icon | faded-icon">
 														<i class="fa fa-clock-o faicon"></i>
@@ -721,182 +828,233 @@
 																	<th>Description</th>
 																	<th>Amount</th>
 																	<th>Status</th>
-																	<?php if($this->session->userdata('type')==1):?>
+																	<?php if ($this->session->userdata('type') == 1): ?>
 																		<th>Action</th>
-																	<?php endif; ?>	
+																	<?php endif; ?>
 																</thead>
 																<tbody>
-																	<?php 
-																	$is_mCancel = 0; 
+																	<?php
+																	$is_mCancel = 0;
 																	$lastMilestoneCancelReason = "";
 																	?>
-																	<?php foreach($milestones as $list):?>
+																	<?php foreach ($milestones as $list): ?>
 																		<?php
-																			if($list['status'] == 3){
-																				$is_mCancel = 1;
-																				$sender_id = $list['sender_id'];
-																				$receiver_id = $list['receiver_id'];
+																		if ($list['status'] == 3) {
+																			$is_mCancel = 1;
+																			$sender_id = $list['sender_id'];
+																			$receiver_id = $list['receiver_id'];
 
-																				$lastMilestoneCancelReason = $list['reason_cancel'];
-																			}
+																			$lastMilestoneCancelReason = $list['reason_cancel'];
+																		}
 																		?>
 																		<tr>
 																			<td><?php echo $list['milestone_name']; ?></td>
 																			<td>
 																				<?php
-																					$days = $list['delivery'];
-																					$currentDate = new DateTime($list['cdate']);
-																					$currentDate->modify("+$days days");
-																					$milestone_delivery_date = $currentDate->format('jS F, Y');	
-																					echo $milestone_delivery_date;
-																				?>																				
+																				$days = $list['delivery'];
+																				$currentDate = new DateTime($list['cdate']);
+																				$currentDate->modify("+$days days");
+																				$milestone_delivery_date = $currentDate->format('jS F, Y');
+																				echo $milestone_delivery_date;
+																				?>
 																			</td>
 																			<td><?php echo $list['quantity']; ?></td>
 																			<td>
-																				<?php 
-																					$totalDescriptionChr = strlen($list['description']);
-																					if($totalDescriptionChr > 50){
-																						echo substr($list['description'], 0, 50).'...';
-																					}else{
-																						echo $list['description'];
-																					}
+																				<?php
+																				$totalDescriptionChr = strlen($list['description']);
+																				if ($totalDescriptionChr > 50) {
+																					echo substr($list['description'], 0, 50) . '...';
+																				} else {
+																					echo $list['description'];
+																				}
 																				?>
 																			</td>
-																			<td><?php echo '£'.number_format($list['total_amount'],2); ?></td>
+																			<td><?php echo '£' . number_format($list['total_amount'], 2); ?></td>
 																			<td>
-																				<?php if($list['service_status'] == 'withdraw'){ ?>
-																					<?php echo ucfirst('active');?>
-																				<?php }elseif($list['service_status'] == 'cancel'){ ?>
-																					<?php echo ucfirst('Cancellation Requested');?>
-																				<?php }else{ ?>
-																					<?php echo ucfirst(str_replace('_', ' ', $list['service_status']));?>
+																				<?php if ($list['service_status'] == 'withdraw') { ?>
+																					<?php echo ucfirst('active'); ?>
+																				<?php } elseif ($list['service_status'] == 'cancel') { ?>
+																					<?php echo ucfirst('Cancellation Requested'); ?>
+																				<?php } else { ?>
+																					<?php echo ucfirst(str_replace('_', ' ', $list['service_status'])); ?>
 																				<?php } ?>
 																			</td>
 																			<td>
-																				<?php if($this->session->userdata('type')==1):?>
-																					<?php if(!empty($requirements) && $order['is_cancel'] == 0):?>
-																						<?php if(!in_array($list['service_status'],['delivered','request_modification','completed','offer_created','cancelled','cancel'])):?>
-																							<button type="button" class="btn btn-warning btn-sm milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>">
+																				<?php if ($this->session->userdata('type') == 1): ?>
+																					<?php if (!empty($requirements) && $order['is_cancel'] == 0): ?>
+																						<?php if (!in_array($list['service_status'], ['delivered', 'request_modification', 'completed', 'offer_created', 'cancelled', 'cancel'])): ?>
+																							<button type="button" class="btn btn-warning btn-sm milestoneBtn" data-id="<?php echo $order['user_id'] ?>" data-mId="<?php echo $list['id']; ?>">
 																								Deliver Work
 																							</button>
-																						<?php elseif($list['service_status'] == 'request_modification'):?>	
-																							<button type="button" class="btn btn-warning milestoneBtn" data-id="<?php echo $order['user_id']?>" data-mId="<?php echo $list['id']; ?>" >Re-deliver Work</button>
-																						<?php elseif($list['service_status'] == 'completed'):?>	
+																						<?php elseif ($list['service_status'] == 'request_modification'): ?>
+																							<button type="button" class="btn btn-warning milestoneBtn" data-id="<?php echo $order['user_id'] ?>" data-mId="<?php echo $list['id']; ?>">Re-deliver Work</button>
+																						<?php elseif ($list['service_status'] == 'completed'): ?>
 																							<span class="text-info">Completed</span>
-																						<?php elseif($list['service_status'] == 'offer_created'):?>	
+																						<?php elseif ($list['service_status'] == 'offer_created'): ?>
 																							<span class="text-info">Awaiting Response</span>
-																						<?php elseif($list['service_status'] == 'cancelled'):?>	
+																						<?php elseif ($list['service_status'] == 'cancelled'): ?>
 																							<span class="text-info"></span>
-																						<?php elseif($list['service_status'] == 'cancel'):?>	
+																						<?php elseif ($list['service_status'] == 'cancel'): ?>
 																							<span class="text-info"></span>
-																						<?php else:?>
+																						<?php else: ?>
 																							<span class="text-info">Delivered</span>
-																						<?php endif;?>
-																					<?php else:?>
-																							<span class="text-info">Awaiting Requirement</span>
-																					<?php endif;?>
+																						<?php endif; ?>
+																					<?php else: ?>
+																						<span class="text-info">Awaiting Requirement</span>
+																					<?php endif; ?>
 																				<?php else: ?>
-																					<!--<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id']?>">View Work</button>-->
-																				<?php endif; ?>	
+																					<!--<button type="button" class="btn btn-warning btn-sm" data-id="<?php echo $order['user_id'] ?>">View Work</button>-->
+																				<?php endif; ?>
 																			</td>
 																		</tr>
-																		<?php if(!empty($list['order_submit_conversation']) && count($list['order_submit_conversation']) > 0):?>
+
+																		<?php if ($order['is_custom'] == 1 && $order['is_cancel'] == 0 && count($disputeMilestoneExist) > 0 && $list['status'] == 5): ?>
+																			<tr>
+																				<td colspan="6">
+																					<p class="alert alert-danger mb-0 dd">
+																						<?php								
+																						
+																							if ($list['sender_id'] == $homeowner['id']) {
+																								// Homeowner opens the dispute
+																								$homeownerMessage = "{$tradesman['trading_name']} has until {$newTime} to respond. Not responding within the time frame will result in closing and deciding the case in your favor.";
+																							
+																								$tradesmanMessage = "You have until {$newTime} to respond. Not responding within the time frame will result in closing and deciding the case in your favor.";
+																								
+																							}elseif ($list['sender_id'] == $tradesman['id']) {
+																								// Tradesman opens the dispute
+																								$tradesmanMessage = "{$homeowner['f_name']} {$homeowner['l_name']} has until {$newTime} to respond. Not responding within the time frame will result in closing and deciding the case in your favor.";
+
+																								$homeownerMessage = "You have until {$newTime} to respond. Not responding within the time frame will result in closing and deciding the case in {$tradesman['trading_name']} favor.";
+																							}
+																					
+																						?>
+
+																						<?php if ($order['is_custom'] == 1 && $order['is_cancel'] == 0 && count($disputeMilestoneExist) > 0): ?>
+																							<?php
+																						
+																							if (in_array($list['id'], $disputeMilestoneExist)): ?>
+
+																									<?php if ($this->session->userdata('user_id') == $homeowner['id']): ?>
+																										<i class="fa fa-info-circle"></i>
+																										<?php echo $homeownerMessage; ?>
+																									<?php else: ?>
+																										<i class="fa fa-info-circle"></i>
+																										<?php echo $tradesmanMessage; ?>
+																									<?php endif; ?>
+
+																							<?php endif; ?>
+
+																						<?php else: ?>
+																							<i class="fa fa-info-circle"></i>
+																							<?php echo $ocruName; ?> have until <?php echo $newTime; ?> to respond to this request or the order will be cancelled. Cancelled orders will be credited to your Tradespeople Wallet. Need another tradesman? We can help?
+																						<?php endif; ?>
+																					</p>
+																				</td>
+																			</tr>
+																		<?php endif; ?>
+
+																		<?php if (!empty($list['order_submit_conversation']) && count($list['order_submit_conversation']) > 0): ?>
 																			<tr>
 																				<?php
-																					$colspan = 6;
-																				?>	
+																				$colspan = 6;
+																				?>
 																				<td colspan="6" class="pl-0">
-																					<h6 class="mt-1 mb-0" style="width:100%; cursor:pointer" onclick="togglemilestoneDeliveryData(<?php echo $list['id']?>);"> 
-																	          <b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
-																	          <i class="fa fa-angle-down pull-right"></i>
-																	        </h6>
-																	        <div class="mt-4" id="milestoneDeliveryData_<?php echo $list['id']?>" style="width: 100%; border-top: 1px solid #eee;">
-																						<?php include 'milestone_tracking_timeline.php'; ?>	
+																					<h6 class="mt-1 mb-0" style="width:100%; cursor:pointer" onclick="togglemilestoneDeliveryData(<?php echo $list['id'] ?>);">
+																						<b><?php echo ordinal($list['milestone_level']); ?> Milestone Delivery</b>
+																						<i class="fa fa-angle-down pull-right"></i>
+																					</h6>
+																					<div class="mt-4" id="milestoneDeliveryData_<?php echo $list['id'] ?>" style="width: 100%; border-top: 1px solid #eee;">
+
+
+																						<?php include 'milestone_tracking_timeline.php'; ?>
+
 																					</div>
 																				</td>
 																			</tr>
-																		<?php endif;?>	
-																	<?php endforeach;?>
+																		<?php endif; ?>
+																	<?php endforeach; ?>
 																</tbody>
 															</table>
-															<?php if($order['is_custom'] == 1 && $order['is_accepted'] == 1 && !empty($cancelMilestoneExist) ):?>
+															<?php if ($order['is_custom'] == 1 && $order['is_accepted'] == 1 && !empty($cancelMilestoneExist)): ?>
 
-																<?php if(!empty($lastMilestoneCancelReason)){ ?>
-																<div class="timeline-item-description mb-3">
-																	<span class="delivery-conversation text-left" style="display:block;"><p><?php echo $lastMilestoneCancelReason; ?></p></span>
-																</div>
+																<?php if (!empty($lastMilestoneCancelReason)) { ?>
+																	<div class="timeline-item-description mb-3">
+																		<span class="delivery-conversation text-left" style="display:block;">
+																			<p><?php echo $lastMilestoneCancelReason; ?></p>
+																		</span>
+																	</div>
 																<?php } ?>
 
 																<p class="alert alert-danger mb-3">
-																	<?php 
-																		if($this->session->userdata('user_id') == $tradesman['id']){
-																			$ocruName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'].' has' : 'You have';
-																			$oppoName = $this->session->userdata('type')==1 ? 'your' : $tradesman['trading_name'];
-																		}
+																	<?php
+																	if ($this->session->userdata('user_id') == $tradesman['id']) {
+																		$ocruName = $this->session->userdata('type') == 1 ? $homeowner['f_name'] . ' ' . $homeowner['l_name'] . ' has' : 'You have';
+																		$oppoName = $this->session->userdata('type') == 1 ? 'your' : $tradesman['trading_name'];
+																	}
 
-																		if($this->session->userdata('user_id') == $homeowner['id']){
-																			$ocruName = $this->session->userdata('type')==1 ? 'You have' : $tradesman['trading_name'].' has';
-																			$oppoName = $this->session->userdata('type')==1 ? $homeowner['f_name'].' '.$homeowner['l_name'] : 'your';
-																		}
+																	if ($this->session->userdata('user_id') == $homeowner['id']) {
+																		$ocruName = $this->session->userdata('type') == 1 ? 'You have' : $tradesman['trading_name'] . ' has';
+																		$oppoName = $this->session->userdata('type') == 1 ? $homeowner['f_name'] . ' ' . $homeowner['l_name'] : 'your';
+																	}
 																	?>
-																	<?php if($is_mCancel == 1):?>
-																		<?php if($this->session->userdata('user_id') == $sender_id): ?>
-																			<i class="fa fa-info-circle"></i> 
+																	<?php if ($is_mCancel == 1): ?>
+																		<?php if ($this->session->userdata('user_id') == $sender_id): ?>
+																			<i class="fa fa-info-circle"></i>
 																			<?php echo $ocruName; ?> until <?php echo $newTime; ?> to respond. Not responding within the time frame will result in closing the case and deciding in <?php echo $oppoName; ?> favour.
 																		<?php else: ?>
 																			<i class="fa fa-info-circle"></i> You have until <?php echo $newTime; ?> to respond to the request or the order will be cancelled automatically.
 																		<?php endif; ?>
-																	<?php endif;?>	
+																	<?php endif; ?>
 																</p>
 
-																<?php if($is_mCancel == 1):?>
-																<?php if($this->session->userdata('user_id') == $sender_id):?>
-																	
-																	<div id="approved-btn-div">																	
-																		<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMilestone()" class="btn btn-default">
-																			Withdraw Request
-																		</button>
-																	</div>
+																<?php if ($is_mCancel == 1): ?>
+																	<?php if ($this->session->userdata('user_id') == $sender_id): ?>
 
-																<?php else: ?>
-																	
-																	<div id="approved-btn-div">																	
-																		<button type="button" id="accept-migration-offer-btn" onclick="acceptCancellationMilestone()" class="btn btn-warning mr-3">
-																			Accept
-																		</button>
-																		<button type="button" id="reject-migration-offer-btn" onclick="rejectCancellationMilestone()" class="btn btn-default">
-																			Reject
-																		</button>
-																	</div>
-																<?php endif; ?>															
-																<?php endif; ?>															
-															<?php endif; ?>	
+																		<div id="approved-btn-div">
+																			<button type="button" id="withdraw-migration-offer-btn" onclick="withdrawCancellationMilestone()" class="btn btn-default">
+																				Withdraw Request
+																			</button>
+																		</div>
+
+																	<?php else: ?>
+
+																		<div id="approved-btn-div">
+																			<button type="button" id="accept-migration-offer-btn" onclick="acceptCancellationMilestone()" class="btn btn-warning mr-3">
+																				Accept
+																			</button>
+																			<button type="button" id="reject-migration-offer-btn" onclick="rejectCancellationMilestone()" class="btn btn-default">
+																				Reject
+																			</button>
+																		</div>
+																	<?php endif; ?>
+																<?php endif; ?>
+															<?php endif; ?>
 														</div>
 													</div>
 												</li>
 											<?php endif; ?>
 
 											<?php
-												if($order['is_custom'] == 0 || $order['is_custom'] == 1 && $order['order_type'] == 'single' ){
-													include 'order_tracking_timeline.php';
-												}
+											if ($order['is_custom'] == 0 || $order['is_custom'] == 1 && $order['order_type'] == 'single') {
+												include 'order_tracking_timeline.php';
+											}
 											?>
 
-											<?php if(!empty($delivery_date)):?>
-												<?php if($order['is_custom'] == 0):?>
+											<?php if (!empty($delivery_date)): ?>
+												<?php if ($order['is_custom'] == 0): ?>
 													<li class="timeline-item">
 														<span class="timeline-item-icon | faded-icon">
 															<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
 														</span>
 														<div class="timeline-item-description">
-															<?php if($order['is_exten_delivery_accepted'] == 1):?>
+															<?php if ($order['is_exten_delivery_accepted'] == 1): ?>
 																<h5>Your delivery data was updated to <?php echo $expected_delivery_date; ?></h5>
-															<?php else:?>
+															<?php else: ?>
 																<h5>Your delivery data was updated to <?php echo $delivery_date; ?></h5>
-															<?php endif;?>
+															<?php endif; ?>
 														</div>
 													</li>
-												<?php endif;?>
+												<?php endif; ?>
 												<li class="timeline-item | extra-space">
 													<span class="timeline-item-icon | filled-icon ">
 														<i class="fa fa-paper-plane faicon" aria-hidden="true"></i>
@@ -916,26 +1074,26 @@
 													<i class="fa fa-file-text-o faicon" aria-hidden="true"></i>
 												</span>
 												<div class="timeline-item-description" style="width:100%">
-													<h5 id="order-requirement" onclick="toggleOrderReq();"> 
-														<?php if($order['is_custom'] == 1 && empty($requirements)):?>
+													<h5 id="order-requirement" onclick="toggleOrderReq();">
+														<?php if ($order['is_custom'] == 1 && empty($requirements)): ?>
 															Order Requirement Requested
-														<?php else: ?>	
+														<?php else: ?>
 															Order Requirement Submitted
 															<i class="fa fa-angle-down pull-right"></i>
-														<?php endif;?>
+														<?php endif; ?>
 													</h5>
 
-													<?php if(!empty($requirements)): ?>
-														<div class="comment" id="requirement-div"  style="display:none; width: 100%;">
+													<?php if (!empty($requirements)): ?>
+														<div class="comment" id="requirement-div" style="display:none; width: 100%;">
 															<h4 style="margin-top:0px">Order Requirements</h4>
 															<p><?php echo $requirements['requirement']; ?></p>
 
-															<?php if(!empty($requirements['location'])):?>
+															<?php if (!empty($requirements['location'])): ?>
 																<h4 style="margin-top:0px">Order Location</h4>
 																<p><?php echo $requirements['location']; ?></p>
-															<?php endif;?>
+															<?php endif; ?>
 
-															<?php if(!empty($attachements)):?>
+															<?php if (!empty($attachements)): ?>
 																<h4>Order Attachments</h4>
 
 																<div class="row other-post-view" id="con_attachments">
@@ -949,19 +1107,19 @@
 																			?>
 																			<div class="col-md-4 pr-3 pl-3">
 																				<?php if ($is_image): ?>
-																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
-																					<img src="<?php echo base_url('img/services/') . $value['attachment']; ?>" alt="">
+																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id'] ?>" data-title="<?php echo $order['order_id'] ?>">
+																						<img src="<?php echo base_url('img/services/') . $value['attachment']; ?>" alt="">
 																					</a>
-																				<?php elseif ($is_video): ?>	
-																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id']?>" data-title="<?php echo $order['order_id']?>">
+																				<?php elseif ($is_video): ?>
+																					<a href="<?php echo base_url('img/services/') . $value['attachment']; ?>" data-fslightbox="<?php echo $order['order_id'] ?>" data-title="<?php echo $order['order_id'] ?>">
 																						<video controls src="<?php echo base_url('img/services/') . $value['attachment']; ?>" type="<?php echo $mime_type; ?>" loop class="serviceVideo">
 																						</video>
 																					</a>
 																				<?php endif; ?>
 																			</div>
-																		<?php endif; ?>	
+																		<?php endif; ?>
 																	<?php endforeach; ?>
-															 	</div>
+																</div>
 															<?php endif; ?>
 														</div>
 													<?php endif; ?>
@@ -977,7 +1135,7 @@
 														<?php echo $order['is_custom'] == 1 ? 'Offer Created' : 'Order Created'; ?>
 														<i class="fa fa-angle-down pull-right"></i>
 													</h5>
-													<div class="comment" id="order-created-div"  style="display:none; width: 100%;">
+													<div class="comment" id="order-created-div" style="display:none; width: 100%;">
 														<p><?php echo $created_date; ?></p>
 													</div>
 												</div>
@@ -992,18 +1150,18 @@
 											<div class="col-md-12 pl-0">
 												<h4 class="mt-1"><?php echo $service['service_name']; ?></h4>
 											</div>
-											<?php if(!empty($description)):?>
+											<?php if (!empty($description)): ?>
 												<div class="col-md-12 p-3" style="border: 1px solid #eee;">
 													<?php echo $description; ?>
 												</div>
-											<?php endif?>
+											<?php endif ?>
 										</div>
-										<div class="row pt-4 ml-0 mr-0" <?php if(!empty($attributes) && !empty($order['offer_includes_ids']) || !empty($order['ex_services'])):?> style="border-bottom:1px solid #f1f1f1;" <?php endif;?> >
+										<div class="row pt-4 ml-0 mr-0" <?php if (!empty($attributes) && !empty($order['offer_includes_ids']) || !empty($order['ex_services'])): ?> style="border-bottom:1px solid #f1f1f1;" <?php endif; ?>>
 											<div class="col-md-12 pl-0">
-												<?php if(!empty($attributes) && !empty($order['offer_includes_ids'])): ?>
+												<?php if (!empty($attributes) && !empty($order['offer_includes_ids'])): ?>
 													<b>Offer Includes</b>
 													<ul class="pl-4">
-														<?php foreach($attributes as $att):?>
+														<?php foreach ($attributes as $att): ?>
 															<li>
 																<?php echo $att['attribute_name']; ?>
 															</li>
@@ -1011,28 +1169,28 @@
 													</ul>
 												<?php endif; ?>
 
-												<?php if(!empty($order['ex_services'])):?>
+												<?php if (!empty($order['ex_services'])): ?>
 													<b>Extra Services</b>
-													<?php if(!empty($extra_services) && !empty($selectedExs)): ?>
+													<?php if (!empty($extra_services) && !empty($selectedExs)): ?>
 														<ul class="pl-4">
-															<?php foreach($extra_services as $exs):?>
-																<?php if(in_array($exs['id'], $selectedExs)): ?>
+															<?php foreach ($extra_services as $exs): ?>
+																<?php if (in_array($exs['id'], $selectedExs)): ?>
 																	<li>
 																		<?php echo $exs['ex_service_name']; ?>
 																	</li>
-																<?php endif;?>
+																<?php endif; ?>
 															<?php endforeach; ?>
 														</ul>
 													<?php endif; ?>
-												<?php endif;?>
+												<?php endif; ?>
 											</div>
 										</div>
 										<div class="row mt-3">
 											<div class="col-md-12">
 												<table class="table table-striped">
 													<thead class="bg-gray">
-														<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): $i=0;?>
-															<?php foreach($milestones as $list): $i++; ?>
+														<?php if ($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): $i = 0; ?>
+															<?php foreach ($milestones as $list): $i++; ?>
 																<tr>
 																	<th colspan="2"><?php echo ordinal($i); ?> Milestone</th>
 																</tr>
@@ -1041,15 +1199,15 @@
 																	<th class="text-right"><?php echo $list['milestone_name']; ?> </th>
 																</tr>-->
 																<tr>
-																	<th class="font-12">Price</th>                     
+																	<th class="font-12">Price</th>
 																	<th class="text-right font-12">
-																		<?php echo '£'.number_format($list['milestone_amount'],2); ?><?php echo !empty($list['price_per_type']) ? '/'.$list['price_per_type'] : ''; ?>
+																		<?php echo '£' . number_format($list['milestone_amount'], 2); ?><?php echo !empty($list['price_per_type']) ? '/' . $list['price_per_type'] : ''; ?>
 																	</th>
 																</tr>
 																<tr>
 																	<th class="font-12">Duration</th>
 																	<th class="text-right font-12">
-																		<?php echo $list['delivery'].' Days'; ?>
+																		<?php echo $list['delivery'] . ' Days'; ?>
 																	</th>
 																</tr>
 																<tr>
@@ -1058,36 +1216,36 @@
 																		<?php echo $list['quantity']; ?>
 																	</th>
 																</tr>
-																<?php 
-																$isCancelledMilestone = ($list['status'] == 4)?'YES':'NO';
-																$cancelledMilestoneStrike = ($isCancelledMilestone == 'YES')?"strike":"";
+																<?php
+																$isCancelledMilestone = ($list['status'] == 4) ? 'YES' : 'NO';
+																$cancelledMilestoneStrike = ($isCancelledMilestone == 'YES') ? "strike" : "";
 																?>
 																<tr class="<?php echo $cancelledMilestoneStrike; ?>">
-																	
-																	<th class="font-12">Sub Total</th>                     
+
+																	<th class="font-12">Sub Total</th>
 																	<th class="text-right font-12">
-																		<?php echo '£'.number_format($list['total_amount'],2); ?>
+																		<?php echo '£' . number_format($list['total_amount'], 2); ?>
 																	</th>
 																</tr>
 															<?php endforeach; ?>
 														<?php else: ?>
 															<tr>
-																<th>Price</th>                     
+																<th>Price</th>
 																<th class="text-right">
 																	<?php
-																		$servicePrice = $order['price'];
-																		if($order['is_custom'] == 1 && $order['order_type'] == 'single'){
-																			$servicePrice = $order['price'] / $order['service_qty'];
-																		}
+																	$servicePrice = $order['price'];
+																	if ($order['is_custom'] == 1 && $order['order_type'] == 'single') {
+																		$servicePrice = $order['price'] / $order['service_qty'];
+																	}
 																	?>
-																	<?php echo '£'.number_format($servicePrice,2); ?><?php echo !empty($order['price_per_type']) ? '/'.$order['price_per_type'] : ''; ?>
+																	<?php echo '£' . number_format($servicePrice, 2); ?><?php echo !empty($order['price_per_type']) ? '/' . $order['price_per_type'] : ''; ?>
 																</th>
 															</tr>
 
 															<tr>
-																<th>Duration</th>                     
+																<th>Duration</th>
 																<th class="text-right">
-																	<?php echo $duration.' Days'; ?>
+																	<?php echo $duration . ' Days'; ?>
 																</th>
 															</tr>
 
@@ -1099,30 +1257,30 @@
 															</tr>
 
 															<tr>
-																<th>Sub Total</th>                     
+																<th>Sub Total</th>
 																<th class="text-right">
-																	<?php 
-																		$subTotal = $order['total_price'] - $order['service_fee'];
-																		echo '£'.number_format($subTotal,2); 
-																		?>
+																	<?php
+																	$subTotal = $order['total_price'] - $order['service_fee'];
+																	echo '£' . number_format($subTotal, 2);
+																	?>
 																</th>
 															</tr>
-														<?php endif; ?>	
-														<?php if($this->session->userdata('type')==2):?>
+														<?php endif; ?>
+														<?php if ($this->session->userdata('type') == 2): ?>
+															<tr>
+																<th>Service Fee</th>
+																<th class="text-right">
+																	<?php echo '£' . number_format($order['service_fee'], 2); ?>
+																</th>
+															</tr>
+														<?php endif; ?>
 														<tr>
-															<th>Service Fee</th>
+															<th>Total</th>
 															<th class="text-right">
-																<?php echo '£'.number_format($order['service_fee'],2); ?>
-															</th>
-														</tr>
-													<?php endif; ?>
-														<tr>
-															<th>Total</th>                     
-															<th class="text-right">
-																<?php if($this->session->userdata('type')==2):?>
-																	<?php echo '£'.number_format($order['total_price'],2); ?>
-																<?php else:?>	
-																	<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
+																<?php if ($this->session->userdata('type') == 2): ?>
+																	<?php echo '£' . number_format($order['total_price'], 2); ?>
+																<?php else: ?>
+																	<?php echo '£' . number_format($order['total_price'] - $order['service_fee'], 2); ?>
 																<?php endif; ?>
 															</th>
 														</tr>
@@ -1135,46 +1293,46 @@
 
 								<div id="Requirements" class="tab-pane fade">
 									<div class="timeline-div bg-white mt-4 p-5">
-										<?php if(!empty($requirements)): ?>
+										<?php if (!empty($requirements)): ?>
 											<div class="comment">
 												<h4 style="margin-top:0px">Order Requirements</h4>
 												<p><?php echo $requirements['requirement']; ?></p>
 
-												<?php if(!empty($requirements['location'])):?>
+												<?php if (!empty($requirements['location'])): ?>
 													<h4 style="margin-top:0px">Order Location</h4>
 													<p><?php echo $requirements['location']; ?></p>
-												<?php endif;?>
+												<?php endif; ?>
 
-												<?php if(!empty($attachements)):?>
+												<?php if (!empty($attachements)): ?>
 													<h4>Order Attachments</h4>
 													<div class="row" id="attachments">
 														<?php foreach ($attachements as $key => $value): ?>
 															<?php $image_path = FCPATH . 'img/services/' . ($value['attachment'] ?? ''); ?>
-															<?php if (file_exists($image_path) && $value['attachment']):?>
+															<?php if (file_exists($image_path) && $value['attachment']): ?>
 																<div class="col-md-4 col-sm-6 col-xs-12">
 																	<div class="boxImage imgUp">
 																		<div class="imagePreviewPlus">
-																			<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/').$value['attachment']?>" alt="<?php echo $value['id']; ?>">
+																			<img style="width: inherit; height: inherit;" src="<?php echo base_url('img/services/') . $value['attachment'] ?>" alt="<?php echo $value['id']; ?>">
 																		</div>
 																	</div>
 																</div>
 															<?php endif; ?>
 														<?php endforeach; ?>
 													</div>
-												<?php endif; ?>											
+												<?php endif; ?>
 											</div>
-										<?php else:?>
+										<?php else: ?>
 											<div class="comment">
 												<h4 style="margin-top:0px">Order Requirements Not Submitted</h4>
 											</div>
 										<?php endif; ?>
 
-										<?php if(!empty($taskAddress)):?>
+										<?php if (!empty($taskAddress)): ?>
 											<div class="comment mt-3">
 												<h4 style="margin-top:0px">Task Address</h4>
 												<p>
 													<?php echo $taskAddress['address']; ?>,
-													<?php echo $taskAddress['city'].'-'.$taskAddress['zip_code']; ?>														
+													<?php echo $taskAddress['city'] . '-' . $taskAddress['zip_code']; ?>
 												</p>
 											</div>
 										<?php endif; ?>
@@ -1182,28 +1340,28 @@
 								</div>
 
 								<div id="Delivery" class="tab-pane fade">
-									<?php if(empty($delivery_date)): ?>
+									<?php if (empty($delivery_date)): ?>
 										<div class="timeline-div bg-white mt-4 p-5" style="height:400px;">
 											<div class="text-center">
 												<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
 											</div>
 											<div class="text-center">
-												<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-													<?php echo $tradesman['trading_name'];?>
-												</a> 
+												<a href="<?php echo base_url('profile/' . $tradesman['id']); ?>">
+													<?php echo $tradesman['trading_name']; ?>
+												</a>
 												should deliver this order as soon as
 											</div>
 										</div>
 									<?php else: ?>
-										<?php if(empty($all_conversation)):?>
+										<?php if (empty($all_conversation)): ?>
 											<div class="timeline-div bg-white mt-4 p-5" style="height:400px;">
 												<div class="text-center">
 													<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
 												</div>
 												<div class="text-center">
-													<a href="<?php echo base_url('profile/'.$tradesman['id']); ?>">
-														<?php echo $tradesman['trading_name'];?>
-													</a> 
+													<a href="<?php echo base_url('profile/' . $tradesman['id']); ?>">
+														<?php echo $tradesman['trading_name']; ?>
+													</a>
 													should deliver this order as soon as
 												</div>
 											</div>
@@ -1211,18 +1369,18 @@
 
 										<div class="timeline-div bg-white mt-4 p-4">
 											<ol class="timeline">
-												<?php if($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
-													<?php foreach($milestones as $list):?>
-														<?php if(!empty($list['order_submit_conversation']) && count($list['order_submit_conversation']) > 0):?>
-															<h4 class="mt-1 mb-0"> 
-											          <b><?php echo ordinal($list['milestone_level']);?> Milestone Delivery</b>
-											        </h4>
-											        <div class="mt-4">
-																<?php include 'milestone_tracking_timeline.php'; ?>	
+												<?php if ($order['is_custom'] == 1 && $order['order_type'] == 'milestone' && !empty($milestones)): ?>
+													<?php foreach ($milestones as $list): ?>
+														<?php if (!empty($list['order_submit_conversation']) && count($list['order_submit_conversation']) > 0): ?>
+															<h4 class="mt-1 mb-0">
+																<b><?php echo ordinal($list['milestone_level']); ?> Milestone Delivery</b>
+															</h4>
+															<div class="mt-4">
+																<?php include 'milestone_tracking_timeline.php'; ?>
 															</div>
-														<?php endif; ?>	
-													<?php endforeach;?>
-												<?php else: ?>	
+														<?php endif; ?>
+													<?php endforeach; ?>
+												<?php else: ?>
 													<?php include 'order_tracking_timeline.php'; ?>
 												<?php endif; ?>
 											</ol>
@@ -1237,35 +1395,61 @@
 								<div class="order-detail-box">
 									<div class="summary-box-heding">
 										<h4>Order Details</h4>
-										<?php if($this->session->userdata('type')==1 && !in_array($order['status'], ['cancelled','completed'])):?>
+										<?php if ($this->session->userdata('type') == 1 && !in_array($order['status'], ['cancelled', 'completed'])): ?>
 											<div class="ellipsis-btn">
 												<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 												</button>
 												<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-													<?php if(!in_array($order['status'], ['disputed','placed','pending','active']) || in_array($order['status'],[ 'delivered', 'request_modification'])):?>
+													<?php
+													if (!empty($deliveredMilestoneExist)) { ?>
+
+														<?php /* if(!in_array($order['status'], ['disputed','placed','pending'])): */ ?>
 														<li>
 															<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
 														</li>
-													<?php endif; ?>
-													<?php if(!in_array($order['status'], ['request_modification', 'delivered', 'disputed'])):?>
-														<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>	
+														<?php /*  endif; */ ?>
+
+													<?php } else { ?>
+
+														<?php if (!in_array($order['status'], ['disputed', 'placed', 'pending', 'active', 'offer_created']) || in_array($order['status'], ['delivered', 'request_modification'])): ?>
+															<li>
+																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+															</li>
+														<?php endif; ?>
+
+													<?php } ?>
+
+													<?php if (!in_array($order['status'], ['request_modification', 'delivered', 'disputed', 'offer_created'])): ?>
+														<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
 													<?php endif; ?>
 												</ul>
 											</div>
 										<?php else: ?>
-											<?php if(!in_array($order['status'], ['cancelled','completed'])):?>
+											<?php if (!in_array($order['status'], ['cancelled', 'completed'])): ?>
 												<div class="ellipsis-btn">
 													<button class="dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown" aria-expanded="false">
 														<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
 													</button>
 													<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-														<?php if(!in_array($order['status'], ['disputed','placed','pending','active']) || in_array($order['status'], ['delivered', 'request_modification'])):?>
-															<li>
-																<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
-															</li>
-														<?php endif; ?>
-														<?php if(!in_array($order['status'], ['request_modification', 'delivered', 'disputed'])):?>
+														<?php if (!empty($deliveredMilestoneExist)) { ?>
+
+															<?php if (!in_array($order['status'], ['disputed', 'placed', 'pending'])): ?>
+																<li>
+																	<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+																</li>
+															<?php endif;  ?>
+
+														<?php } else { ?>
+
+															<?php if (!in_array($order['status'], ['disputed', 'placed', 'pending', 'active', 'offer_created']) || in_array($order['status'], ['delivered', 'request_modification'])): ?>
+																<li>
+																	<a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_dispute_modal">Dispute</a>
+																</li>
+															<?php endif; ?>
+
+														<?php } ?>
+														<?php if (!in_array($order['status'], ['request_modification', 'delivered', 'disputed', 'offer_created'])): ?>
 															<li style="margin-top: 0;"><a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#order_cancel_modal">Order Cancellation</a></li>
 														<?php endif; ?>
 													</ul>
@@ -1274,70 +1458,72 @@
 										<?php endif; ?>
 									</div>
 
-									
+
 									<div class="summary-feature-article">
-										<a href="<?php echo base_url().'service/'.$service['slug']?>">
-											<?php 
-												$image_path = FCPATH . 'img/services/' . ($service['image'] ?? ''); 
-												$mime_type = get_mime_by_extension($image_path);
-				                $is_image = strpos($mime_type, 'image') !== false;
-				                $is_video = strpos($mime_type, 'video') !== false;
+										<a href="<?php echo base_url() . 'service/' . $service['slug'] ?>">
+											<?php
+											$image_path = FCPATH . 'img/services/' . ($service['image'] ?? '');
+											$mime_type = get_mime_by_extension($image_path);
+											$is_image = strpos($mime_type, 'image') !== false;
+											$is_video = strpos($mime_type, 'video') !== false;
 											?>
 											<?php if (file_exists($image_path) && $service['image']): ?>
 												<?php if ($is_image): ?>
 													<img src="<?php echo base_url('img/services/') . $service['image']; ?>" class="img-responsive">
 												<?php else: ?>
-													<video width="80" controls autoplay><source src="<?php echo base_url('img/services/') . $service['image']; ?>" type="video/mp4">Your browser does not support the video tag.</video>
+													<video width="80" controls autoplay>
+														<source src="<?php echo base_url('img/services/') . $service['image']; ?>" type="video/mp4">Your browser does not support the video tag.
+													</video>
 												<?php endif; ?>
-											<?php else: ?>	
+											<?php else: ?>
 												<img src="<?php echo base_url('img/default-image.jpg'); ?>" class="img-responsive">
 											<?php endif; ?>
 											<span>
 												<p>
 													<?php
 													$totalChr = strlen($service['service_name']);
-													if($totalChr > 15){
-														echo substr($service['service_name'], 0, 15).'...';
-													}else{
+													if ($totalChr > 15) {
+														echo substr($service['service_name'], 0, 15) . '...';
+													} else {
 														echo $service['service_name'];
 													}
 													?>
 												</p>
 												<span class="badge bg-warning p-2 pl-4 pr-4 mt-4">
-													<?php if($order['status'] == 'offer_created'):?>
+													<?php if ($order['status'] == 'offer_created'): ?>
 														Awaiting Response
 													<?php else: ?>
-														<?php if($this->session->userdata('type')==1):?>
-															<?php if(empty($requirements) && count($all_conversation) == 0):?>
-																Awaiting Requirement 
+														<?php if ($this->session->userdata('type') == 1): ?>
+															<?php if (empty($requirements) && count($all_conversation) == 0): ?>
+																Awaiting Requirement
 															<?php else: ?>
-																<?php if($order['status'] == 'active'):?>
+																<?php if ($order['status'] == 'active'): ?>
 																	In Progress
-																<?php elseif($order['status'] == 'request_modification'):?>
+																<?php elseif ($order['status'] == 'request_modification'): ?>
 																	Revision
-																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '2'):?>
+																<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == '2'): ?>
 																	Cancellation pending
-																<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
+																<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == '1'): ?>
 																	Cancelled
-																<?php else: ?>	
+																<?php else: ?>
 																	<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 																<?php endif; ?>
 															<?php endif; ?>
 														<?php else: ?>
-															<?php if($order['status'] == 'active'):?>
+															<?php if ($order['status'] == 'active'): ?>
 																In Progress
-															<?php elseif($order['status'] == 'request_modification'):?>
+															<?php elseif ($order['status'] == 'request_modification'): ?>
 																Revision
-															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '2'):?>
+															<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == '2'): ?>
 																Cancellation pending
-															<?php elseif($order['status'] == 'cancelled' && $order['is_cancel'] == '1'):?>
+															<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == '1'): ?>
 																Cancelled
-															<?php else: ?>	
+															<?php else: ?>
 																<?php echo ucfirst(str_replace('_', ' ', $order['status'])) ?>
 															<?php endif; ?>
 														<?php endif; ?>
 													<?php endif; ?>
-												</span>								
+												</span>
 											</span>
 										</a>
 									</div>
@@ -1347,7 +1533,7 @@
 											<p>
 												<b>
 													<?php $dotColor = !empty($tradesman['is_active']) && $tradesman['is_active'] == 1 ? '#35a311' : '#dbd5d5'; ?>
-													<i class="fa fa-circle" style="font-size: 8px; color: <?php echo $dotColor?>;"></i>
+													<i class="fa fa-circle" style="font-size: 8px; color: <?php echo $dotColor ?>;"></i>
 													<?php echo $tradesman['f_name']; ?>
 												</b>
 												<br>
@@ -1358,9 +1544,9 @@
 											<p>Delivery Date</p>
 											<p class="text-right">
 												<b>
-													<?php if(!empty($delivery_date)): ?>
+													<?php if (!empty($delivery_date)): ?>
 														<?php echo $delivery_date; ?>
-													<?php else:?>	
+													<?php else: ?>
 														To be determined
 													<?php endif; ?>
 												</b>
@@ -1370,12 +1556,12 @@
 											<p>Total Price</p>
 											<p>
 												<b>
-												
-													<?php if($this->session->userdata('type')==2):?>
-														<?php echo '£'.number_format($order['total_price'],2); ?>
-													<?php else:?>	
-														<?php echo '£'.number_format($order['total_price']-$order['service_fee'],2); ?>
-													<?php endif; ?>	
+
+													<?php if ($this->session->userdata('type') == 2): ?>
+														<?php echo '£' . number_format($order['total_price'], 2); ?>
+													<?php else: ?>
+														<?php echo '£' . number_format($order['total_price'] - $order['service_fee'], 2); ?>
+													<?php endif; ?>
 												</b>
 											</p>
 										</li>
@@ -1390,7 +1576,7 @@
 											<b>Track Order</b>
 											<i class="fa fa-angle-up pull-right"></i>
 										</h5>
-										<div id="track-order-div"  style=" width: 100%;">
+										<div id="track-order-div" style=" width: 100%;">
 											<ol class="timeline mb-0">
 												<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
 													<span class="timeline-item-icon | filled-icon ">
@@ -1398,10 +1584,10 @@
 													</span>
 													<div class="timeline-item-description">
 														<h5>Order Placed</h5>
-													</div>												
+													</div>
 												</li>
 												<li class="timeline-item | extra-space order-details" style="padding-bottom: 0; border-bottom: 0;">
-													<?php if(empty($requirements)):?>
+													<?php if (empty($requirements)): ?>
 														<span class="timeline-item-icon | filled-icon pb-1">
 															<i class="fa fa-circle-o order-faicon" aria-hidden="true"></i>
 														</span>
@@ -1418,21 +1604,21 @@
 													<?php endif; ?>
 												</li>
 											</ol>
-										</div>									
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="modal fade in" id="order_requirement_modal">
 		<div class="modal-body" id="msg">
-			<div class="modal-dialog modal-lg">	 
-				<div class="modal-content">         	
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
 					<form method="post" id="order_requirement_form" enctype="multipart/form-data">
 						<div class="modal-header">
 							<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
@@ -1453,13 +1639,13 @@
 								<div class="col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer2">
 									<div class="file-upload-btn addWorkImage imgUp">
 										<div class="btn-text main-label">Attachments</div>
-										<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
+										<img src="<?php echo base_url() ?>img/dImg.png" id="defaultImg">
 										<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
-										<input type="file" name="attachments" id="attachments">		
+										<input type="file" name="attachments" id="attachments">
 									</div>
 								</div>
 							</div>
-							<input type="hidden" name="multiImgIds" id="multiImgIds">	
+							<input type="hidden" name="multiImgIds" id="multiImgIds">
 							<div class="row" id="previousImg">
 							</div>
 						</div>
@@ -1469,28 +1655,28 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="modal fade in" id="order_dispute_modal">
 		<div class="modal-body" id="msg">
-			<div class="modal-dialog modal-lg">	 
-				<div class="modal-content">         	
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
 					<form method="post" id="order_dispute_form" enctype="multipart/form-data">
 						<div class="modal-header">
 							<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
 							<h4 class="modal-title">Dispute Order</h4>
 							<div class="alert alert-warning">
-                  <ul>
-                     <li> Most disputes are the result of a simple misunderstanding.</li>
-                     <li> Our dispute resolution system is designed to allow both parties to resolve the issue amongst themselves.</li>
-                     <li> Most disputes are resolved without arbitration.</li>
-                     <li> If an agreement cannot be reached, either party may elect to pay an arbitration fee for our dispute team to resolve the matter.</li>
-                  </ul>
-               </div>
+								<ul>
+									<li> Most disputes are the result of a simple misunderstanding.</li>
+									<li> Our dispute resolution system is designed to allow both parties to resolve the issue amongst themselves.</li>
+									<li> Most disputes are resolved without arbitration.</li>
+									<li> If an agreement cannot be reached, either party may elect to pay an arbitration fee for our dispute team to resolve the matter.</li>
+								</ul>
+							</div>
 						</div>
 						<div class="modal-body form_width100">
 							<div class="form-group">
@@ -1507,44 +1693,46 @@
 							<input type="file" onchange="uploadImageForDispute(<?php echo $order['id']; ?>)" id="dispute-file-upload-input-<?php echo $order['id']; ?>" name="files[]" accept="image/*,pdf" multiple="" class="form-control">
 
 							<table class="table">
-                 <thead>
-                    <tr>
-                    </tr>
-                 </thead>
-                 <tbody class="disputeUploadFilesHtml<?php echo $order['id']; ?>">
-                 </tbody>
-              </table>
+								<thead>
+									<tr>
+									</tr>
+								</thead>
+								<tbody class="disputeUploadFilesHtml<?php echo $order['id']; ?>">
+								</tbody>
+							</table>
 
-              <div class="from-group">
-                <label class="control-label" for="textinput"><b>Select the milestone you want to dispute</b></label><br>
-                <?php
-                	$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
-                 	foreach($milestones as $m){ 
-						if(!in_array($m['status'], ['5'])){ 		
-					?>
-                 		<input data-amount="<?php echo $m['total_amount']; ?>" class="dispute_milestones" type="checkbox" onchange="selectMilesForDispute(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
-                <?php } 
-				} ?>
+							<?php if (!empty($deliveredMilestoneExist)): ?>
+							<div class="from-group">
+								<label class="control-label" for="textinput"><b>Select the milestone you want to dispute</b></label><br>
+								<?php
+								$get_milestones_notpaid = $this->common_model->get_milestones_notpaid($mile['post_id']);
+								foreach ($milestones as $m) {
+									if(in_array($m['status'], ['10'])){ 
+								?>
+									<input data-amount="<?php echo $m['total_amount']; ?>" class="dispute_milestones" type="checkbox" onchange="selectMilesForDispute(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if ($mile['id'] == $m['id']) { ?>checked<?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
+								<?php } 
+								} ?>
 
-				<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span></b></label>
+								<label class="control-label mt-4" for="textinput"><b>Total Amount In dispute: <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price'] * $order['service_qty']; ?></span></b></label>
 
-              </div>
+							</div>
+							<?php endif; ?>
+						
 
-							
 							<label class="control-label" for="textinput"><b>Offer the amount you are prepared to pay:</b></label>
 
 							<div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-gbp"></i></span>
-                <input type="number" id="offer_amount<?php echo $order['id']; ?>" required="" min="0" name="offer_amount" max="<?php echo $order['price']*$order['service_qty']; ?>" class="form-control" placeholder="Amount">
-             	</div>
+								<span class="input-group-addon"><i class="fa fa-gbp"></i></span>
+								<input type="number" id="offer_amount<?php echo $order['id']; ?>" required="" min="0" name="offer_amount" max="<?php echo $order['price'] * $order['service_qty']; ?>" class="form-control" placeholder="Amount">
+							</div>
 
-             	<p>Please enter an amount between <i class="fa fa-gbp"></i>0 to <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price']*$order['service_qty']; ?></span>.</p>
+							<p>Please enter an amount between <i class="fa fa-gbp"></i>0 to <i class="fa fa-gbp"></i><span class="totalDispute<?php echo $order['id']; ?>"><?php echo $order['price'] * $order['service_qty']; ?></span>.</p>
 
-             	<div class="caution-txt">
-                <b class="text-danger">Caution!</b> You are entering the amount of the order that you are happy for the other
-                party to receive.
-                You may increase your offer in the future but you may not lower it.
-             	</div>
+							<div class="caution-txt">
+								<b class="text-danger">Caution!</b> You are entering the amount of the order that you are happy for the other
+								party to receive.
+								You may increase your offer in the future but you may not lower it.
+							</div>
 						</div>
 						<div class="modal-footer">
 							<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
@@ -1552,58 +1740,60 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="modal fade in" id="order_cancel_modal">
 		<div class="modal-body" id="msg">
-			<div class="modal-dialog modal-lg">	 
-				<div class="modal-content">         	
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
 					<form method="post" id="order_cancel_form" enctype="multipart/form-data">
 						<div class="modal-header">
 							<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-							<h4 class="modal-title">Order Cancellation Request</h4>						
+							<h4 class="modal-title">Order Cancellation Request</h4>
 						</div>
 						<div class="modal-body form_width100">
 							<p>
-								In order to cancel a order, you nee to send a cancellation request to your tradesmen. Once they accept the request, the order will be cancelled and the funds will be returned to you. If the request is denied, you can initiate a dispute. 
+								In order to cancel a order, you nee to send a cancellation request to your tradesmen. Once they accept the request, the order will be cancelled and the funds will be returned to you. If the request is denied, you can initiate a dispute.
 							</p>
 
-							<hr> 
+							<hr>
 
 							<div class="Milestone2">
 								<div class="row">
 									<div class="col-sm-8">
 										<p><b>Order Id</b><span style="float: right;"><?php echo $order['order_id']; ?></span></p>
 										<p><b>Tradesmen Name</b><span style="float: right;"><?php echo $tradesman['trading_name']; ?></span></p>
-										<p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo number_format($order['price'],2); ?></span></p>
+										<p><b>Order Amount</b><span style="float: right;"><i class="fa fa-gbp"></i><?php echo number_format($order['price'], 2); ?></span></p>
 										<p><b>Date Created</b><span style="float: right;"><?php echo $created_date; ?></span></p>
 
 									</div>
 								</div>
 							</div>
 
-							<?php if(!empty($milestones)){ ?>
-							<div class="from-group">
-								<label class="control-label" for="textinput"><b>Select the milestone you want to cancel</b></label><br>
-								<?php
-									$get_milestones_notpaid=$this->common_model->get_milestones_notpaid($mile['post_id']);
-									foreach($milestones as $m){ 
-										if(!in_array($m['status'], ['4'])){ 	
+							<?php if (!empty($milestones)) { ?>
+								<div class="from-group">
+									<label class="control-label" for="textinput"><b>Select the milestone you want to cancel</b></label><br>
+									<?php
+									$get_milestones_notpaid = $this->common_model->get_milestones_notpaid($mile['post_id']);
+									foreach ($milestones as $m) {
+										if (!in_array($m['status'], ['4'])) {
 									?>
-										<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if($mile['id']==$m['id']){ ?>checked<?php } ?> <?php if($m['status'] == '3'){ ?> disabled <?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
-								<?php } 
+											<input data-amount="<?php echo $m['total_amount']; ?>" class="cancellation_milestones" type="checkbox" onchange="selectMilesForCancel(this,<?php echo $order['id']; ?>)" name="milestones[]" <?php if ($mile['id'] == $m['id']) { ?>checked<?php } ?> <?php if ($m['status'] == '3') { ?> disabled <?php } ?> value="<?php echo $m['id']; ?>"> <?php echo $m['milestone_name']; ?><br>
+									<?php }
 									} ?>
 
-								
-								<p><spna class="error" id="milestoneSelectionError"></spna></p>
-								<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i><?php echo number_format($order['price'],2); ?></span></p>
-							</div>
+
+									<p>
+										<spna class="error" id="milestoneSelectionError"></spna>
+									</p>
+									<p>Total amount to cancel: <span class="totalCancellation<?php echo $order['id']; ?>"><i class="fa fa-gbp"></i><?php echo number_format($order['price'], 2); ?></span></p>
+								</div>
 							<?php } ?>
-						
+
 
 							<div class="form-group mt-4">
 								<label for="reason"> <b>Why do you want to cancel this order?</b></label>
@@ -1620,7 +1810,7 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1640,7 +1830,7 @@
 									<p><b>Reason of Cancellation:</b></p>
 									<p><?php echo $order['reason']; ?>
 								</div>
-							</div>						
+							</div>
 							<div class="row">
 								<div class="col-md-12">
 									<p style="text-align: center;">If you approve this request of cancellation, then the order amount that you have created will be added to your wallet.</p>
@@ -1657,7 +1847,7 @@
 									</div>
 								</div>
 							</div>
-						</div> 
+						</div>
 
 						<div class="input-append1">
 							<div id="fields">
@@ -1674,18 +1864,18 @@
 
 	<div class="modal fade in" id="decline_request_modal">
 		<div class="modal-body" id="msg">
-			<div class="modal-dialog modal-lg">	 
-				<div class="modal-content">         	
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
 					<form method="post" id="order_cancel_decline_form" enctype="multipart/form-data">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-							<h4 class="modal-title">Order Decline Cancellation</h4>						
+							<h4 class="modal-title">Order Decline Cancellation</h4>
 						</div>
 						<div class="modal-body form_width100">
 							<div class="form-group">
 								<label for="reason"> Why do you want to decline this request?</label>
 								<textarea rows="5" placeholder="Reason of decline" name="decline_reason" id="reason" class="form-control"></textarea>
-							</div>						
+							</div>
 						</div>
 						<div class="modal-footer">
 							<input type="hidden" name="order_id" value="<?php echo $order['id']; ?>" id="order_id">
@@ -1693,15 +1883,15 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="modal fade in" id="declined_reason_modal">
 		<div class="modal-body" id="msg">
-			<div class="modal-dialog modal-lg">	 
-				<div class="modal-content">         	
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
 					<form method="post" id="order_dispute_form" enctype="multipart/form-data">
 						<div class="modal-header">
 							<div class="msg"><?= $this->session->flashdata('msg'); ?></div>
@@ -1718,15 +1908,15 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="modal fade in" id="order_submit_modal">
 		<div class="modal-body" id="msg">
-			<div class="modal-dialog modal-lg">	 
-				<div class="modal-content">         	
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
 					<form method="post" id="order_submit_form" enctype="multipart/form-data">
 						<input type="hidden" name="orderId" id="orderId" value="<?php echo $order['id']; ?>">
 						<input type="hidden" name="milestoneId" id="milestoneId" value="0">
@@ -1745,13 +1935,13 @@
 								<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 imgAdd" id="imageContainer3">
 									<div class="file-upload-btn addWorkImage3 imgUp">
 										<div class="btn-text main-label">Attachments</div>
-										<img src="<?php echo base_url()?>img/dImg.png" id="defaultImg">
+										<img src="<?php echo base_url() ?>img/dImg.png" id="defaultImg">
 										<div class="btn-text">Drag & drop Photo or <span>Browser</span></div>
-										<input type="file" name="attachments" id="attachments3">		
+										<input type="file" name="attachments" id="attachments3">
 									</div>
 								</div>
 							</div>
-							<input type="hidden" name="multiImgIds1" id="multiImgIds3">	
+							<input type="hidden" name="multiImgIds1" id="multiImgIds3">
 							<div class="row" id="previousImg3">
 							</div>
 						</div>
@@ -1760,7 +1950,7 @@
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</form>
-				</div>			
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1780,49 +1970,66 @@
 					<div class="order-hourlie-addons-sidebar p-0" id="sellerAvailability">
 						<div id="datepickerAvailability"></div>
 						<input type="hidden" name="selected_dates" id="selectedDates">
-						<div class="mt-4">					
+						<div class="mt-4">
 							<select class="form-control input-md" name="time_slot" id="timeSlot">
 								<option value="">Select time slot from</option>
 								<?php for ($hour = 0; $hour <= 23; $hour++) {
-					        $hour_padded = sprintf("%02d", $hour);  // Pad the hour to two digits
-					        echo "<option value=\"{$hour_padded}:00\">{$hour_padded}:00</option>\n";  // Display in 24-hour format
-					      }?>
-						  </select>
+									$hour_padded = sprintf("%02d", $hour);  // Pad the hour to two digits
+									echo "<option value=\"{$hour_padded}:00\">{$hour_padded}:00</option>\n";  // Display in 24-hour format
+								} ?>
+							</select>
 						</div>
 					</div>
 					<input type="hidden" id="packageType">
 					<input class="btn btn-warning btn-lg col-md-12 mt-4" type="button" id="extenedBtn" value="Submit">
 				</div>
-			</div>											
+			</div>
 		</div>
 	</div>
-</div>
+	</div>
 
 	<?php include 'include/footer.php'; ?>
 
 	<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 	<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 	<script>
-		$(document).ready(function () {
+		$(document).ready(function() {
 			$('#milestoneDataTable').DataTable({
-	      paging: false,
-        searching: false,
-        ordering: false,
-        info: false,
-	      responsive: true,
-	      columnDefs: [
-            { width: "10%", targets: 0 },
-            { width: "15%", targets: 1 },
-            { width: "10%", targets: 2 },
-            { width: "30%", targets: 3 },
-            { width: "15%", targets: 4 },
-            { width: "10%", targets: 5 },
-        ]
-	    });
+				paging: false,
+				searching: false,
+				ordering: false,
+				info: false,
+				responsive: true,
+				columnDefs: [{
+						width: "10%",
+						targets: 0
+					},
+					{
+						width: "15%",
+						targets: 1
+					},
+					{
+						width: "10%",
+						targets: 2
+					},
+					{
+						width: "30%",
+						targets: 3
+					},
+					{
+						width: "15%",
+						targets: 4
+					},
+					{
+						width: "10%",
+						targets: 5
+					},
+				]
+			});
 
 			$.validator.addMethod("requiredHidden", function(value, element) {
-		        return $(element).val() !== ""; // Validate that the value is not empty
-		    }, "This field is required.");
+				return $(element).val() !== ""; // Validate that the value is not empty
+			}, "This field is required.");
 
 			$("#order_submit_form").validate({
 				ignore: [],
@@ -1838,17 +2045,17 @@
 					description: "Please enter a description.",
 					multiImgIds1: "Please upload at least one image.",
 				},
-				errorPlacement: function (error, element) {
+				errorPlacement: function(error, element) {
 					if (element.attr("id") == "multiImgIds3") {
-            error.insertAfter("#attachmentRow"); // Adjust error placement
-          } else {
-          	error.insertAfter(element);
-          }
-        },
-        submitHandler: function (form) {
-          orderSubmit(); // Ensure this function is defined
-        }
-		  });
+						error.insertAfter("#attachmentRow"); // Adjust error placement
+					} else {
+						error.insertAfter(element);
+					}
+				},
+				submitHandler: function(form) {
+					orderSubmit(); // Ensure this function is defined
+				}
+			});
 		});
 
 		const el = document.getElementById('imageContainer1');
@@ -1856,7 +2063,7 @@
 			document.getElementById('imageContainer1').addEventListener('click', function() {
 				document.getElementById('modification_attachments').click();
 			});
-		}	
+		}
 
 		document.getElementById('imageContainer2').addEventListener('click', function() {
 			document.getElementById('attachments').click();
@@ -1867,14 +2074,16 @@
 		});
 
 		const dropArea3 = document.querySelector(".addWorkImage3"),
-		button3 = dropArea3.querySelector("img"),
-		input3 = dropArea3.querySelector("input");
+			button3 = dropArea3.querySelector("img"),
+			input3 = dropArea3.querySelector("input");
 		let file3;
 		var filename3;
 
-		button3.onclick = () => {input.click();};
+		button3.onclick = () => {
+			input.click();
+		};
 
-		input3.addEventListener("change", function (e) {
+		input3.addEventListener("change", function(e) {
 			e.preventDefault();
 			var multiImgIds = $('#multiImgIds3').val();
 
@@ -1887,12 +2096,12 @@
 				$('#loader3').hide();
 				alert("File size exceeds 60MB. Please upload a smaller file.");
 				return;
-			}		
+			}
 
 			var validFileTypes = [
-			    "image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp", // Image types
-			    "video/mp4", "video/avi", "video/mpeg", "video/quicktime", "video/x-ms-wmv", "video/webm", "video/3gpp", "video/x-flv" // Video types
-			    ];
+				"image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp", // Image types
+				"video/mp4", "video/avi", "video/mpeg", "video/quicktime", "video/x-ms-wmv", "video/webm", "video/3gpp", "video/x-flv" // Video types
+			];
 
 			if (validFileTypes.indexOf(file_data.type) == -1) {
 				alert("Please upload a valid image or video file (GIF, JPEG, JPG, PNG, WEBP, MP4, AVI, MPEG, MOV, WMV, WebM, 3GP, FLV).");
@@ -1905,32 +2114,32 @@
 			$('#loader3').show();
 			$('#previousImg3').css('opacity', '0.6');
 			$.ajax({
-				url:site_url+'users/dragDropProjectSubmitAttachment',
+				url: site_url + 'users/dragDropProjectSubmitAttachment',
 				type: "POST",
 				data: form_data,
 				contentType: false,
 				cache: false,
-				processData:false,
-				dataType:'json',
-				success: function(response){
-					if(response.status == 1){
-						if(multiImgIds != ""){
-							var ids = multiImgIds+','+response.id;
+				processData: false,
+				dataType: 'json',
+				success: function(response) {
+					if (response.status == 1) {
+						if (multiImgIds != "") {
+							var ids = multiImgIds + ',' + response.id;
 							$('#multiImgIds3').val(ids);
-						}else{
+						} else {
 							$('#multiImgIds3').val(response.id);
 						}
-						
+
 						if (file_data.type.startsWith('video/')) {
 							var reader = new FileReader();
 							reader.readAsDataURL(file_data);
-							reader.onload = function (e) {
+							reader.onload = function(e) {
 								var videoElement = '<div class="col-md-6 col-xs-12" id="portDiv' + response.id + '">' +
-								'<div class="boxImage imgUp">' +
-								'<div class="imagePreviewPlus">' +
-								'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage3(' + response.id + ', 1)"><i class="fa fa-trash"></i></button></div>' +
-								'<video src="' + e.target.result + '" controls style="width:inherit; height:113px;"></video>' +
-								'</div></div></div>';
+									'<div class="boxImage imgUp">' +
+									'<div class="imagePreviewPlus">' +
+									'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage3(' + response.id + ', 1)"><i class="fa fa-trash"></i></button></div>' +
+									'<video src="' + e.target.result + '" controls style="width:inherit; height:113px;"></video>' +
+									'</div></div></div>';
 								$('#previousImg3').append(videoElement);
 								$('#loader3').hide();
 								$('#previousImg3').css('opacity', '1');
@@ -1938,11 +2147,11 @@
 							};
 						} else {
 							var portElement = '<div class="col-md-6 col-xs-12" id="portDiv' + response.id + '">' +
-							'<div class="boxImage imgUp">' +
-							'<div class="imagePreviewPlus">' +
-							'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage3(' + response.id + ', 1)"><i class="fa fa-trash"></i></button></div>' +
-							'<img style="width: inherit; height: inherit;" src="' + response.imgName + '" alt="' + response.id + '">' +
-							'</div></div></div>';
+								'<div class="boxImage imgUp">' +
+								'<div class="imagePreviewPlus">' +
+								'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage3(' + response.id + ', 1)"><i class="fa fa-trash"></i></button></div>' +
+								'<img style="width: inherit; height: inherit;" src="' + response.imgName + '" alt="' + response.id + '">' +
+								'</div></div></div>';
 							$('#previousImg3').append(portElement);
 							$('#loader3').hide();
 							$('#previousImg3').css('opacity', '1');
@@ -1953,31 +2162,35 @@
 			});
 		});
 
-		function removeImage3(imgId, type){
+		function removeImage3(imgId, type) {
 			$.ajax({
-				url:site_url+'users/removeAttachment',
-				type:"POST",
-				data:{'imgId':imgId},
-				success:function(data){
-					$('#portDiv'+imgId).remove();
+				url: site_url + 'users/removeAttachment',
+				type: "POST",
+				data: {
+					'imgId': imgId
+				},
+				success: function(data) {
+					$('#portDiv' + imgId).remove();
 					removeIdFromHiddenField(imgId.toString(), 'multiImgIds3');
-					alert('Attachment deleted successfully');				
+					alert('Attachment deleted successfully');
 				}
 			});
 		}
 
 		/*Start Code For Submit Requirement */
 		const dropArea = document.querySelector(".addWorkImage"),
-		button = dropArea.querySelector("img"),
-		input = dropArea.querySelector("input");
+			button = dropArea.querySelector("img"),
+			input = dropArea.querySelector("input");
 		let file;
 		var filename;
 
-		button.onclick = () => {input.click();};
+		button.onclick = () => {
+			input.click();
+		};
 
-		input.addEventListener("change", function (e) {
+		input.addEventListener("change", function(e) {
 			e.preventDefault();
-			var multiImgIds = $('#multiImgIds').val();    	
+			var multiImgIds = $('#multiImgIds').val();
 			var file_data = $('#attachments').prop('files')[0];
 
 			var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -1992,27 +2205,27 @@
 			$('#loader1').show();
 			$('#previousImg').css('opacity', '0.6');
 			$.ajax({
-				url:site_url+'users/dragDropRequirementAttachment',
+				url: site_url + 'users/dragDropRequirementAttachment',
 				type: "POST",
 				data: form_data,
 				contentType: false,
 				cache: false,
-				processData:false,
-				dataType:'json',
-				success: function(response){
-					if(response.status == 1){
-						if(multiImgIds != ""){
-							var ids = multiImgIds+','+response.id;
+				processData: false,
+				dataType: 'json',
+				success: function(response) {
+					if (response.status == 1) {
+						if (multiImgIds != "") {
+							var ids = multiImgIds + ',' + response.id;
 							$('#multiImgIds').val(ids);
-						}else{
+						} else {
 							$('#multiImgIds').val(response.id);
 						}
-						var portElement = '<div class="col-md-6 col-xs-12" id="portDiv'+response.id+'">' +
-						'<div class="boxImage imgUp">'+
-						'<div class="imagePreviewPlus">'+
-						'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
-						'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-						'</div></div></div>';
+						var portElement = '<div class="col-md-6 col-xs-12" id="portDiv' + response.id + '">' +
+							'<div class="boxImage imgUp">' +
+							'<div class="imagePreviewPlus">' +
+							'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeImage(' + response.id + ', 1)"><i class="fa fa-trash"></i></button></div>' +
+							'<img style="width: inherit; height: inherit;" src="' + response.imgName + '" alt="' + response.id + '">' +
+							'</div></div></div>';
 						$('#previousImg').append(portElement);
 						$('#loader1').hide();
 						$('#previousImg').css('opacity', '1');
@@ -2021,42 +2234,44 @@
 			});
 		});
 
-		function removeImage(imgId, type){
+		function removeImage(imgId, type) {
 			$.ajax({
-				url:site_url+'users/removeAttachment',
-				type:"POST",
-				data:{'imgId':imgId},
-				success:function(data){
-					$('#portDiv'+imgId).remove();
+				url: site_url + 'users/removeAttachment',
+				type: "POST",
+				data: {
+					'imgId': imgId
+				},
+				success: function(data) {
+					$('#portDiv' + imgId).remove();
 					removeIdFromHiddenField(imgId.toString(), 'multiImgIds');
-					alert('Attachment deleted successfully');				
+					alert('Attachment deleted successfully');
 				}
 			});
 		}
 
 		function removeIdFromHiddenField(idToRemove, divId) {
-			var hiddenFieldValue = $('#'+divId).val();
+			var hiddenFieldValue = $('#' + divId).val();
 			var idsArray = hiddenFieldValue.split(',');
 			var newIdsArray = idsArray.filter(function(id) {
 				return id !== idToRemove.toString();
 			});
 			var newHiddenFieldValue = newIdsArray.join(',');
-			$('#'+divId).val(newHiddenFieldValue);        
+			$('#' + divId).val(newHiddenFieldValue);
 		}
 
-		function submitRequirement(){
+		function submitRequirement() {
 			$('#loader').removeClass('hide');
 			formData = $("#order_requirement_form").serialize();
 
 			$.ajax({
-				url: '<?= site_url().'users/submitRequirement'; ?>',
+				url: '<?= site_url() . 'users/submitRequirement'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					console.log(result);
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						$('#order_requirement_modal').modal('hide');
 						swal({
 							title: "Error",
@@ -2064,16 +2279,16 @@
 							type: "error"
 						}, function() {
 							window.location.reload();
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						$('#order_requirement_modal').modal('hide');
 						swal({
 							title: "Success",
@@ -2082,10 +2297,10 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
-	                // Handle error
+					// Handle error
 				}
 			});
 		}
@@ -2095,19 +2310,21 @@
 		/* Start Code For Submit Request Modification & Approved Order */
 		const el1 = document.getElementsByClassName('addWorkImage1');
 
-		if(el1 && el1.length > 0){
+		if (el1 && el1.length > 0) {
 			console.log('inini');
 			const dropArea1 = document.querySelector(".addWorkImage1"),
-			button1 = dropArea1.querySelector("img"),
-			input1 = dropArea1.querySelector("input");
+				button1 = dropArea1.querySelector("img"),
+				input1 = dropArea1.querySelector("input");
 			let file1;
 			var filename1;
 
-			button1.onclick = () => {input1.click();};
+			button1.onclick = () => {
+				input1.click();
+			};
 
-			input1.addEventListener("change", function (e) {
+			input1.addEventListener("change", function(e) {
 				e.preventDefault();
-				var multiImgIds = $('#multiModificationImgIds').val();    	
+				var multiImgIds = $('#multiModificationImgIds').val();
 				var file_data = $('#modification_attachments').prop('files')[0];
 
 				var validImageTypes = ["image/gif", "image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -2122,27 +2339,27 @@
 				$('#loader2').show();
 				$('#previousModificationImg').css('opacity', '0.6');
 				$.ajax({
-					url:site_url+'users/dragDropProjectSubmitAttachment',
+					url: site_url + 'users/dragDropProjectSubmitAttachment',
 					type: "POST",
 					data: form_data,
 					contentType: false,
 					cache: false,
-					processData:false,
-					dataType:'json',
-					success: function(response){
-						if(response.status == 1){
-							if(multiImgIds != ""){
-								var ids = multiImgIds+','+response.id;
+					processData: false,
+					dataType: 'json',
+					success: function(response) {
+						if (response.status == 1) {
+							if (multiImgIds != "") {
+								var ids = multiImgIds + ',' + response.id;
 								$('#multiModificationImgIds').val(ids);
-							}else{
+							} else {
 								$('#multiModificationImgIds').val(response.id);
 							}
-							var portElement = '<div class="col-md-6 col-xs-12" id="portDiv'+response.id+'">' +
-							'<div class="boxImage imgUp">'+
-							'<div class="imagePreviewPlus">'+
-							'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeModificationImage('+response.id+', 1)"><i class="fa fa-trash"></i></button></div>'+
-							'<img style="width: inherit; height: inherit;" src="'+response.imgName+'" alt="'+response.id+'">'+
-							'</div></div></div>';
+							var portElement = '<div class="col-md-6 col-xs-12" id="portDiv' + response.id + '">' +
+								'<div class="boxImage imgUp">' +
+								'<div class="imagePreviewPlus">' +
+								'<div class="text-right"><button type="button" class="btn btn-danger removeImage" onclick="removeModificationImage(' + response.id + ', 1)"><i class="fa fa-trash"></i></button></div>' +
+								'<img style="width: inherit; height: inherit;" src="' + response.imgName + '" alt="' + response.id + '">' +
+								'</div></div></div>';
 							$('#previousModificationImg').append(portElement);
 							$('#loader2').hide();
 							$('#previousModificationImg').css('opacity', '1');
@@ -2151,20 +2368,22 @@
 				});
 			});
 
-			function removeModificationImage(imgId, type){
+			function removeModificationImage(imgId, type) {
 				$.ajax({
-					url:site_url+'users/removeOrderSubmitAttachment',
-					type:"POST",
-					data:{'imgId':imgId},
-					success:function(data){
-						$('#portDiv'+imgId).remove();
+					url: site_url + 'users/removeOrderSubmitAttachment',
+					type: "POST",
+					data: {
+						'imgId': imgId
+					},
+					success: function(data) {
+						$('#portDiv' + imgId).remove();
 						removeIdFromHiddenField(imgId.toString(), 'multiModificationImgIds');
-						alert('Attachment deleted successfully');				
+						alert('Attachment deleted successfully');
 					}
 				});
 			}
 
-			$('.approved-order-btn').on('click', function(){
+			$('.approved-order-btn').on('click', function() {
 				var cId = $(this).data('id');
 				swal({
 					title: "Confirm?",
@@ -2174,7 +2393,7 @@
 					confirmButtonText: 'Yes, Approved',
 					cancelButtonText: 'Cancel'
 				}, function() {
-					submitModification('approved_order_form_'+cId);
+					submitModification('approved_order_form_' + cId);
 				});
 			});
 
@@ -2183,7 +2402,7 @@
 				formData = $("#"+frmId).serialize();
 
 				$.ajax({
-					url: '<?= site_url().'users/submitModification'; ?>',
+					url: '<?= site_url() . 'users/submitModification'; ?>',
 					type: 'POST',
 					data: formData,
 					dataType: 'json',		                
@@ -2203,12 +2422,12 @@
 								text: "If you want to order the please login first!",
 								type: "warning"
 							}, function() {
-								window.location.href = '<?php echo base_url().'login'; ?>';
+								window.location.href = '<?php echo base_url() . 'login'; ?>';
 							});	
 						}else{
 							//if(frmId == 'approved_order_form'){
 							if(result.is_review == 1){
-								window.location.href = '<?php echo base_url().'orderCompleted/'.$order['id']; ?>';
+								window.location.href = '<?php echo base_url() . 'orderCompleted/' . $order['id']; ?>';
 							}else{
 								swal({
 									title: "Success",
@@ -2233,93 +2452,93 @@
 			}*/
 
 			function submitModification(frmId) {
-			    // Show the loader
-			    $('#loader').removeClass('hide');
+				// Show the loader
+				$('#loader').removeClass('hide');
 
-			    // Get the form element
-			    var form = $("#" + frmId);
-			    
-			    if (frmId.startsWith('request_modification_form_')) {
-			    	form.find(".error-message").remove();
-		        // Validation for Request Modification Form
-		        var isValid = true;
+				// Get the form element
+				var form = $("#" + frmId);
 
-		        var description = form.find("textarea[name='modification_decription']");
-		        if (description.val().trim() === "") {
-		            isValid = false;
-		            description.after("<span class='error-message' style='color: red;'>Modification description is required.</span>");
-		        }
+				if (frmId.startsWith('request_modification_form_')) {
+					form.find(".error-message").remove();
+					// Validation for Request Modification Form
+					var isValid = true;
 
-		        var fileInput = form.find("input[name='modification_attachments']");
-		        if (fileInput.length && fileInput[0].files.length === 0) {
-		            isValid = false;
-		            var fileInputDiv = form.find(".addWorkImage1");
-		            fileInputDiv.after("<span class='error-message' style='color: red;'>Please upload at least one image.</span>");
-		        }
+					var description = form.find("textarea[name='modification_decription']");
+					if (description.val().trim() === "") {
+						isValid = false;
+						description.after("<span class='error-message' style='color: red;'>Modification description is required.</span>");
+					}
 
-		        if (!isValid) {
-		            $('#loader').addClass('hide');
-		            return;
-		        }
-			    }
+					var fileInput = form.find("input[name='modification_attachments']");
+					if (fileInput.length && fileInput[0].files.length === 0) {
+						isValid = false;
+						var fileInputDiv = form.find(".addWorkImage1");
+						fileInputDiv.after("<span class='error-message' style='color: red;'>Please upload at least one image.</span>");
+					}
 
-			    // If validation passed, proceed with AJAX submission
-			    var formData = new FormData(form[0]); // Use FormData for file uploads
+					if (!isValid) {
+						$('#loader').addClass('hide');
+						return;
+					}
+				}
 
-			    $.ajax({
-		        url: '<?= site_url().'users/submitModification'; ?>',
-		        type: 'POST',
-		        data: formData,
-		        processData: false, // Required for file uploads
-		        contentType: false, // Required for file uploads
-		        dataType: 'json',
-		        success: function (result) {
-		            $('#loader').addClass('hide');
-		            if (result.status == 0) {
-		                swal({
-		                    title: "Error",
-		                    text: result.message,
-		                    icon: "error"
-		                }, function () {
-		                    window.location.reload();
-		                });
-		            } else if (result.status == 2) {
-		                swal({
-		                    title: "Login Required!",
-		                    text: "If you want to order, please login first!",
-		                    icon: "warning"
-		                }, function () {
-		                    window.location.href = '<?php echo base_url().'login'; ?>';
-		                });
-		            } else {
-		                if (result.is_review == 1) {
-		                    window.location.href = '<?php echo base_url().'orderCompleted/'.$order['id']; ?>';
-		                } else {
-		                    swal({
-		                        title: "Success",
-		                        text: result.message,
-		                        icon: "success"
-		                    }, function () {
-		                        window.location.reload();
-		                    });
-		                }
-		            }
-		        },
-		        error: function (xhr, status, error) {
-		            $('#loader').addClass('hide');
-		            swal({
-		                title: "Error",
-		                text: "Something went wrong.",
-		                icon: "error"
-		            }, function () {
-		                window.location.reload();
-		            });
-		        }
-		    });
+				// If validation passed, proceed with AJAX submission
+				var formData = new FormData(form[0]); // Use FormData for file uploads
+
+				$.ajax({
+					url: '<?= site_url() . 'users/submitModification'; ?>',
+					type: 'POST',
+					data: formData,
+					processData: false, // Required for file uploads
+					contentType: false, // Required for file uploads
+					dataType: 'json',
+					success: function(result) {
+						$('#loader').addClass('hide');
+						if (result.status == 0) {
+							swal({
+								title: "Error",
+								text: result.message,
+								icon: "error"
+							}, function() {
+								window.location.reload();
+							});
+						} else if (result.status == 2) {
+							swal({
+								title: "Login Required!",
+								text: "If you want to order, please login first!",
+								icon: "warning"
+							}, function() {
+								window.location.href = '<?php echo base_url() . 'login'; ?>';
+							});
+						} else {
+							if (result.is_review == 1) {
+								window.location.href = '<?php echo base_url() . 'orderCompleted/' . $order['id']; ?>';
+							} else {
+								swal({
+									title: "Success",
+									text: result.message,
+									icon: "success"
+								}, function() {
+									window.location.reload();
+								});
+							}
+						}
+					},
+					error: function(xhr, status, error) {
+						$('#loader').addClass('hide');
+						swal({
+							title: "Error",
+							text: "Something went wrong.",
+							icon: "error"
+						}, function() {
+							window.location.reload();
+						});
+					}
+				});
 			}
-		}	
+		}
 
-		$('#reject-offer-btn').on('click', function(){
+		$('#reject-offer-btn').on('click', function() {
 			swal({
 				title: "Confirm?",
 				text: "Are you sure you want to reject this offer?",
@@ -2332,7 +2551,7 @@
 			});
 		});
 
-		$('#withdraw-offer-btn').on('click', function(){
+		$('#withdraw-offer-btn').on('click', function() {
 			swal({
 				title: "Confirm?",
 				text: "Are you sure you want to withdraw this offer?",
@@ -2345,7 +2564,7 @@
 			});
 		});
 
-		$('#accept-offer-btn').on('click', function(){
+		$('#accept-offer-btn').on('click', function() {
 			swal({
 				title: "Confirm?",
 				text: "Are you sure you want to accept this offer?",
@@ -2354,7 +2573,7 @@
 				confirmButtonText: 'Yes, Accept',
 				cancelButtonText: 'Cancel'
 			}, function() {
-				window.location.href = '<?php echo base_url().'serviceCheckout?offer='.substr($order['order_id'],1); ?>';
+				window.location.href = '<?php echo base_url() . 'serviceCheckout?offer=' . substr($order['order_id'], 1); ?>';
 				acceptOffer();
 			});
 		});
@@ -2362,34 +2581,34 @@
 		/* End Code For Submit Request Modification & Approved Order */
 
 		/* Start Code For Submit Review & Rating */
-		function giveRating(){
+		function giveRating() {
 			$('#loader').removeClass('hide');
 			formData = $("#order_service_review_form").serialize();
 
 			$.ajax({
-				url: '<?= site_url().'users/submitReviewRating'; ?>',
+				url: '<?= site_url() . 'users/submitReviewRating'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						swal({
 							title: "Error",
 							text: result.message,
 							type: "error"
 						}, function() {
 							window.location.reload();
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						swal({
 							title: "Success",
 							text: result.message,
@@ -2397,10 +2616,10 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
-	                // Handle error
+					// Handle error
 				}
 			});
 		}
@@ -2408,33 +2627,33 @@
 
 		/* Start Code For Dispute Order */
 
-		function disputeOrder(){
+		function disputeOrder() {
 			$('#loader').removeClass('hide');
 			formData = $("#order_dispute_form").serialize();
 			$.ajax({
-				url: '<?= site_url().'users/orderDispute'; ?>',
+				url: '<?= site_url() . 'users/orderDispute'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						swal({
 							title: "Error",
 							text: result.message,
 							type: "error"
 						}, function() {
 							window.location.reload();
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						$('#order_dispute_modal').modal('hide');
 						swal({
 							title: "Success",
@@ -2443,55 +2662,55 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
-	                // Handle error
+					// Handle error
 				}
 			});
 		}
 		/* End Code For Dispute Order */
 
 		/* Start Code For Cancel Order */
-		function cancelOrder(){
+		function cancelOrder() {
 			$('#loader').removeClass('hide');
 
 			if ($('input[name="milestones[]"]').length > 0) {
 				if ($('input[name="milestones[]"]:checked').length === 0) {
 					$('#milestoneSelectionError').html('Kindly select the milestone you wish to cancel.').show();
-					$('#loader').addClass('hide');					
+					$('#loader').addClass('hide');
 					return false;
 				} else {
 					$('#milestoneSelectionError').hide(); // Hide error if at least one checkbox is selected
 				}
 			}
 
-			formData = $("#order_cancel_form").serialize();		
+			formData = $("#order_cancel_form").serialize();
 
 			$.ajax({
-				url: '<?= site_url().'users/orderCancel'; ?>',
+				url: '<?= site_url() . 'users/orderCancel'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						swal({
 							title: "Error",
 							text: result.message,
 							type: "error"
 						}, function() {
 							window.location.reload();
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						swal({
 							title: "Success",
 							text: result.message,
@@ -2499,44 +2718,44 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
-	                // Handle error
+					// Handle error
 				}
 			});
 		}
 		/* End Code For Cancel Order */
 
 		/* Start Code For Cancel Offer */
-		function cancelOffer(){
+		function cancelOffer() {
 			$('#loader').removeClass('hide');
 			formData = $("#order_cancel_form").serialize();
 
 			$.ajax({
-				url: '<?= site_url().'users/offerCancel'; ?>',
+				url: '<?= site_url() . 'users/offerCancel'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						swal({
 							title: "Error",
 							text: result.message,
 							type: "error"
 						}, function() {
 							window.location.reload();
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						swal({
 							title: "Success",
 							text: result.message,
@@ -2544,41 +2763,41 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
-	                // Handle error
+					// Handle error
 				}
 			});
 		}
 		/* End Code For Cancel Offer */
 
-		function toggleOrderReq(){
+		function toggleOrderReq() {
 			$("#requirement-div").slideToggle(); // Toggle the visibility with sliding effect
-		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+			$(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 		}
 
-		function toggleOrderCreated(){
+		function toggleOrderCreated() {
 			$("#order-created-div").slideToggle(); // Toggle the visibility with sliding effect
-		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+			$(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 		}
 
-		function toggleTrackOrder(){
+		function toggleTrackOrder() {
 			$("#track-order-div").slideToggle(); // Toggle the visibility with sliding effect
-		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+			$(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 		}
 
-		function togglemilestoneDeliveryData(id){
-			$("#milestoneDeliveryData_"+id).slideToggle(); // Toggle the visibility with sliding effect
-		    $(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
+		function togglemilestoneDeliveryData(id) {
+			$("#milestoneDeliveryData_" + id).slideToggle(); // Toggle the visibility with sliding effect
+			$(this).find("i").toggleClass("fa-angle-down fa-angle-up"); // Toggle the icon class
 		}
 
-		function openChat(uId){
-			get_chat_onclick(uId, <?php echo $service['id'];?>);
+		function openChat(uId) {
+			get_chat_onclick(uId, <?php echo $service['id']; ?>);
 			showdiv();
 		}
 
-		$('#modification-btn').on('click', function (){
+		$('#modification-btn').on('click', function() {
 			$('#modification-div').show();
 		});
 
@@ -2594,14 +2813,14 @@
 				}
 
 				for (let i = 0; i <= index; i++) {
-		            allStar[i].classList.add('active');  // Mark as active
-		        }
-		    } else {
-		    	console.error('Rating stars or input element not found.');
-		    }
+					allStar[i].classList.add('active'); // Mark as active
+				}
+			} else {
+				console.error('Rating stars or input element not found.');
+			}
 
-		    const activeStars = document.getElementsByClassName('star active').length;
-		    $('#ratingValue').val(activeStars);        
+			const activeStars = document.getElementsByClassName('star active').length;
+			$('#ratingValue').val(activeStars);
 		}
 
 		function accept_decision(id) {
@@ -2617,29 +2836,29 @@
 				formData = $("#order_cancel_decline_form").serialize();
 
 				$.ajax({
-					url:site_url+'users/approve_decision/'+id,
+					url: site_url + 'users/approve_decision/' + id,
 					type: 'POST',
 					data: formData,
-					dataType: 'json',		                
+					dataType: 'json',
 					success: function(result) {
 						$('#loader').addClass('hide');
-						if(result.status == 0){
+						if (result.status == 0) {
 							swal({
 								title: "Error",
 								text: result.message,
 								type: "error"
 							}, function() {
 								window.location.reload();
-							});	
-						}else if(result.status == 2){
+							});
+						} else if (result.status == 2) {
 							swal({
 								title: "Login Required!",
 								text: "If you want to order the please login first!",
 								type: "warning"
 							}, function() {
-								window.location.href = '<?php echo base_url().'login'; ?>';
-							});	
-						}else{
+								window.location.href = '<?php echo base_url() . 'login'; ?>';
+							});
+						} else {
 							swal({
 								title: "Success",
 								text: result.message,
@@ -2647,15 +2866,15 @@
 							}, function() {
 								window.location.reload();
 							});
-						}		                    
+						}
 					},
 					error: function(xhr, status, error) {
-		                // Handle error
+						// Handle error
 					}
 				});
-			});	
+			});
 		}
-		
+
 		function withdraw_request(id) {
 			swal({
 				title: "Withdraw Request",
@@ -2666,30 +2885,30 @@
 				cancelButtonText: 'Cancel'
 			}, function() {
 				$('#loader').removeClass('hide');
-			
+
 				$.ajax({
-					url:site_url+'users/withdraw_request/'+id,
+					url: site_url + 'users/withdraw_request/' + id,
 					type: 'POST',
-					dataType: 'json',		                
+					dataType: 'json',
 					success: function(result) {
 						$('#loader').addClass('hide');
-						if(result.status == 0){
+						if (result.status == 0) {
 							swal({
 								title: "Error",
 								text: result.message,
 								type: "error"
 							}, function() {
 								window.location.reload();
-							});	
-						}else if(result.status == 2){
+							});
+						} else if (result.status == 2) {
 							swal({
 								title: "Login Required!",
 								text: "If you want to order the please login first!",
 								type: "warning"
 							}, function() {
-								window.location.href = '<?php echo base_url().'login'; ?>';
-							});	
-						}else{
+								window.location.href = '<?php echo base_url() . 'login'; ?>';
+							});
+						} else {
 							swal({
 								title: "Success",
 								text: result.message,
@@ -2697,12 +2916,12 @@
 							}, function() {
 								window.location.reload();
 							});
-						}		                    
+						}
 					},
 					error: function(xhr, status, error) {
-		                // Handle error
+						// Handle error
 					}
-				});	
+				});
 			});
 		}
 
@@ -2711,34 +2930,34 @@
 			$('#decline_request_modal').modal('show');
 		}
 
-		function declineOrder(){
+		function declineOrder() {
 			$('#loader').removeClass('hide');
 			formData = $("#order_cancel_decline_form").serialize();
 
 			$.ajax({
-				url: '<?= site_url().'users/declineCancel'; ?>',
+				url: '<?= site_url() . 'users/declineCancel'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						swal({
 							title: "Error",
 							text: result.message,
 							type: "error"
 						}, function() {
 							window.location.reload();
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						swal({
 							title: "Success",
 							text: result.message,
@@ -2746,40 +2965,40 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
-	                // Handle error
+					// Handle error
 				}
 			});
 		}
 
-		function orderSubmit(){
+		function orderSubmit() {
 			formData = $("#order_submit_form").serialize();
 			var orderId = $('#orderId').val();
 			$('#loader').removeClass('hide');
 			$.ajax({
-				url: '<?= site_url().'users/submitProject'; ?>',
+				url: '<?= site_url() . 'users/submitProject'; ?>',
 				type: 'POST',
 				data: formData,
-				dataType: 'json',		                
+				dataType: 'json',
 				success: function(result) {
 					$('#loader').addClass('hide');
-					if(result.status == 0){
+					if (result.status == 0) {
 						swal({
 							title: "Error",
 							text: result.message,
 							type: "error"
-						});	
-					}else if(result.status == 2){
+						});
+					} else if (result.status == 2) {
 						swal({
 							title: "Login Required!",
 							text: "If you want to order the please login first!",
 							type: "warning"
 						}, function() {
-							window.location.href = '<?php echo base_url().'login'; ?>';
-						});	
-					}else{
+							window.location.href = '<?php echo base_url() . 'login'; ?>';
+						});
+					} else {
 						$('#order_submit_modal').modal('hide');
 						swal({
 							title: "Success",
@@ -2788,7 +3007,7 @@
 						}, function() {
 							window.location.reload();
 						});
-					}		                    
+					}
 				},
 				error: function(xhr, status, error) {
 					swal({
@@ -2801,273 +3020,284 @@
 		}
 
 		function uploadImageForDispute(id) {
-      var formData = new FormData($('#order_dispute_form')[0]);
+			var formData = new FormData($('#order_dispute_form')[0]);
 
-      $.ajax({
-         url: '<?= base_url() ?>Order_dispute/add_dispute_files',
-         type: 'POST',
-         cache: false,
-         contentType: false,
-         processData: false,
-         data: formData,
-         dataType: 'json',
-         success: function(res) {            
-            if (res.status == 1){               
-               $(`#dispute-file-upload-input-`+id).val('');
-               for(let i =0 ; i < res.files.length; i++){
-                  let fileData = res.files[i];
-                  let html = `<tr>
+			$.ajax({
+				url: '<?= base_url() ?>Order_dispute/add_dispute_files',
+				type: 'POST',
+				cache: false,
+				contentType: false,
+				processData: false,
+				data: formData,
+				dataType: 'json',
+				success: function(res) {
+					if (res.status == 1) {
+						$(`#dispute-file-upload-input-` + id).val('');
+						for (let i = 0; i < res.files.length; i++) {
+							let fileData = res.files[i];
+							let html = `<tr>
                                  <td>${fileData.original_name}</td>
                                  <td>${fileData.size}</td>
                                  <td><button onclick="$(this).parent('td').parent('tr').remove()" type="button" class="btn btn-default" style=" padding: 1px 11px;">Delete</button></td>
                                  <input type="hidden" name="file_name[]" value="${fileData.name}">
                                  <input type="hidden" name="file_original_name[]" value="${fileData.original_name}">
                               </tr>`;
-                     $('.disputeUploadFilesHtml'+id).append(html)
-               }
-            } else {
-               swal({
-                  html: true,
-                  title: res.message,
-                  type: "warning"
-               });
-            }
-         }
-      });
-      return false;
-   }
-	
-	/* ACCEPT CANCELLATION MIGRATION REQUEST */
-	function acceptCancellationMilestone(){
-		var order_id = $('#order_id').val();
-
-		swal({
-			title: "Accept Request",
-			text: "Are you sure you want to accept cancellation request for this milestone?",
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonText: 'Yes, Accept',
-			cancelButtonText: 'Cancel'
-		}, function() {
-
-			$.ajax({
-				url: '<?= base_url() ?>users/acceptCancellationMilestone',
-				type: 'POST',			
-				data: {'order_id':order_id},
-				dataType: 'json',
-				success: function(res) {     
-					if (res.status == 1){     
-						window.location.reload();
+							$('.disputeUploadFilesHtml' + id).append(html)
+						}
 					} else {
-						window.location.reload();
+						swal({
+							html: true,
+							title: res.message,
+							type: "warning"
+						});
 					}
-
 				}
 			});
-		});
-	}
+			return false;
+		}
 
-	/* REJECT CANCELLATION MIGRTION REQUEST */
-	function rejectCancellationMilestone(){
-		var order_id = $('#order_id').val();
+		/* ACCEPT CANCELLATION MIGRATION REQUEST */
+		function acceptCancellationMilestone() {
+			var order_id = $('#order_id').val();
 
-		swal({
-			title: "Reject Request",
-			text: "Are you sure you want to reject cancellation request for this milestone?",
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonText: 'Yes, Reject',
-			cancelButtonText: 'Cancel'
-		}, function() {
+			swal({
+				title: "Accept Request",
+				text: "Are you sure you want to accept cancellation request for this milestone?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Accept',
+				cancelButtonText: 'Cancel'
+			}, function() {
 
-			$.ajax({
-				url: '<?= base_url() ?>users/rejectCancellationMilestone',
-				type: 'POST',			
-				data: {'order_id':order_id},
-				dataType: 'json',
-				success: function(res) {     
-					if (res.status == 1){     
-						window.location.reload();
-					} else {
-						window.location.reload();
+				$.ajax({
+					url: '<?= base_url() ?>users/acceptCancellationMilestone',
+					type: 'POST',
+					data: {
+						'order_id': order_id
+					},
+					dataType: 'json',
+					success: function(res) {
+						if (res.status == 1) {
+							window.location.reload();
+						} else {
+							window.location.reload();
+						}
+
 					}
-
-				}
+				});
 			});
-		});
-	}
-	
-	/* WITHDRAW CANCELLATION MILESTONE REQUEST */
-	function withdrawCancellationMilestone(){
-		var order_id = $('#order_id').val();
+		}
 
-		swal({
-			title: "Withdraw Request",
-			text: "Are you sure you want to withdraw cancellation request for this milestone?",
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonText: 'Yes, Withdraw',
-			cancelButtonText: 'Cancel'
-		}, function() {
+		/* REJECT CANCELLATION MIGRTION REQUEST */
+		function rejectCancellationMilestone() {
+			var order_id = $('#order_id').val();
 
-			$.ajax({
-				url: '<?= base_url() ?>users/withdrawCancellationMilestone',
-				type: 'POST',			
-				data: {'order_id':order_id},
-				dataType: 'json',
-				success: function(res) {     
-					if (res.status == 1){     
-						window.location.reload();
-					} else {
-						window.location.reload();
+			swal({
+				title: "Reject Request",
+				text: "Are you sure you want to reject cancellation request for this milestone?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Reject',
+				cancelButtonText: 'Cancel'
+			}, function() {
+
+				$.ajax({
+					url: '<?= base_url() ?>users/rejectCancellationMilestone',
+					type: 'POST',
+					data: {
+						'order_id': order_id
+					},
+					dataType: 'json',
+					success: function(res) {
+						if (res.status == 1) {
+							window.location.reload();
+						} else {
+							window.location.reload();
+						}
+
 					}
-
-				}
+				});
 			});
+		}
+
+		/* WITHDRAW CANCELLATION MILESTONE REQUEST */
+		function withdrawCancellationMilestone() {
+			var order_id = $('#order_id').val();
+
+			swal({
+				title: "Withdraw Request",
+				text: "Are you sure you want to withdraw cancellation request for this milestone?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, Withdraw',
+				cancelButtonText: 'Cancel'
+			}, function() {
+
+				$.ajax({
+					url: '<?= base_url() ?>users/withdrawCancellationMilestone',
+					type: 'POST',
+					data: {
+						'order_id': order_id
+					},
+					dataType: 'json',
+					success: function(res) {
+						if (res.status == 1) {
+							window.location.reload();
+						} else {
+							window.location.reload();
+						}
+
+					}
+				});
+			});
+		}
+
+		$('.milestoneBtn').on('click', function() {
+			var mId = $(this).data('mid');
+			$('#milestoneId').val(mId);
+			$('#order_submit_modal').modal('show');
 		});
-	}
 
-	$('.milestoneBtn').on('click', function(){
-   	var mId = $(this).data('mid');
-   	$('#milestoneId').val(mId);
-   	$('#order_submit_modal').modal('show');
-  });
+		$('#extendedDelivery').on('click', function() {
+			$('#extendedDeliveryModal').modal('show');
+		});
 
-  $('#extendedDelivery').on('click', function(){
-  	$('#extendedDeliveryModal').modal('show');  		
-  });
-
-  $('#extenedBtn').on('click', function(){
-  	var selectedDates = $('#selectedDates').val();
-  	var timeSlot = $('#timeSlot').val();
-  	var isOpen = 1;
-  	if(selectedDates == "" || timeSlot == ""){
-  		isOpen = 0;
-  	}
-
-  	if(isOpen == 0){
-  		swal({
-  			title: "Error",
-  			text: 'Please select date & time',
-  			type: "error"
-  		});	
-  	}else{
-  		var date = $('#selectedDates').val();
-  		var time = $('#timeSlot').val();
-  		var oId = <?php echo $order['id'];?>;
-  		$('#loader').removeClass('hide');
-  		$.ajax({
-  			url: "<?= site_url().'users/extenedTime'; ?>", 
-  			data: {ex_date:date,ex_time:time,oId:oId}, 
-  			type: "POST", 
-  			dataType: 'json',
-  			success: function (data) {
-  				$('#loader').addClass('hide');
-  				if (data.status == 1) {
-  					window.location.reload();
-  				} else if (data.status == 2) {
-  					swal({
-  						title: "Login Required!",
-  						text: "If you want to order the please login first!",
-  						type: "warning"
-  					}, function() {
-  						window.location.href = '<?php echo base_url().'login'; ?>';
-  					});        
-  				} else {
-  					alert('Something is wrong. Please try again!!!');
-  				}            
-  			},
-  			error: function(e) {
-  				console.log(JSON.stringify(e));
-  			}
-  		});
-  	}
-  });
-
-  $('#accept-extended-btn').on('click', function(){
-  	acceptExtenedTime(1);
-	});
-
-	$('#reject-extended-btn').on('click', function(){
-  	acceptExtenedTime(2);
-	});
-
-	function acceptExtenedTime(exType){
-		if(exType == 1){
-			var exTitle = 'Accept';
-			var exTitle1 = 'accept';
-		}else{
-			var exTitle = 'Decline';
-			var exTitle1 = 'decline';
-		}		
-
-		swal({
-			title: "Confirm?",
-			text: "Are you sure you want to "+exTitle1+" this extended time?",
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonText: 'Yes, '+exTitle,
-			cancelButtonText: 'Cancel'
-		}, function() {				
-			var oId = <?php echo $order['id'];?>;
-			$('#loader').removeClass('hide');
-  		$.ajax({
-  			url: "<?= site_url().'users/acceptExtenedTime'; ?>", 
-  			data: {type:exType,oId:oId}, 
-  			type: "POST", 
-  			dataType: 'json',
-  			success: function (data) {
-  				$('#loader').addClass('hide');
-  				if (data.status == 1) {
-  					window.location.reload();
-  				} else if (data.status == 2) {
-  					swal({
-  						title: "Login Required!",
-  						text: "If you want to "+exTitle1+" this extended time then please login first!",
-  						type: "warning"
-  					}, function() {
-  						window.location.href = '<?php echo base_url().'login'; ?>';
-  					});        
-  				} else {
-  					alert('Something is wrong. Please try again!!!');
-  				}            
-  			},
-  			error: function(e) {
-  				console.log(JSON.stringify(e));
-  			}
-  		});
-		});  		
-	}
-
-	function selectMilesForDispute(e,id) {
-		var mId = e.value;
-		var total = 0;
-		$('.dispute_milestones').each((index,item)=>{
-			if($(item).is(':checked')){
-				let amount = $(item).data('amount');
-				total += amount;
+		$('#extenedBtn').on('click', function() {
+			var selectedDates = $('#selectedDates').val();
+			var timeSlot = $('#timeSlot').val();
+			var isOpen = 1;
+			if (selectedDates == "" || timeSlot == "") {
+				isOpen = 0;
 			}
-		})
-		$('.totalDispute'+id).html(total);
-		$('#offer_amount'+id).attr('max',total);
-	}
 
-  	function selectMilesForCancel(e,id){
-		var mId = e.value;
-		var total = 0;
-		
-		$('.cancellation_milestones').each((index,item)=>{
-			if($(item).is(':checked')){
-				let amount = $(item).data('amount');
-				total += amount;
+			if (isOpen == 0) {
+				swal({
+					title: "Error",
+					text: 'Please select date & time',
+					type: "error"
+				});
+			} else {
+				var date = $('#selectedDates').val();
+				var time = $('#timeSlot').val();
+				var oId = <?php echo $order['id']; ?>;
+				$('#loader').removeClass('hide');
+				$.ajax({
+					url: "<?= site_url() . 'users/extenedTime'; ?>",
+					data: {
+						ex_date: date,
+						ex_time: time,
+						oId: oId
+					},
+					type: "POST",
+					dataType: 'json',
+					success: function(data) {
+						$('#loader').addClass('hide');
+						if (data.status == 1) {
+							window.location.reload();
+						} else if (data.status == 2) {
+							swal({
+								title: "Login Required!",
+								text: "If you want to order the please login first!",
+								type: "warning"
+							}, function() {
+								window.location.href = '<?php echo base_url() . 'login'; ?>';
+							});
+						} else {
+							alert('Something is wrong. Please try again!!!');
+						}
+					},
+					error: function(e) {
+						console.log(JSON.stringify(e));
+					}
+				});
 			}
 		});
 
-		console.log(total);
+		$('#accept-extended-btn').on('click', function() {
+			acceptExtenedTime(1);
+		});
 
-		$('.totalCancellation'+id).html('<i class="fa fa-gbp"></i>'+total);
-	}
+		$('#reject-extended-btn').on('click', function() {
+			acceptExtenedTime(2);
+		});
 
+		function acceptExtenedTime(exType) {
+			if (exType == 1) {
+				var exTitle = 'Accept';
+				var exTitle1 = 'accept';
+			} else {
+				var exTitle = 'Decline';
+				var exTitle1 = 'decline';
+			}
+
+			swal({
+				title: "Confirm?",
+				text: "Are you sure you want to " + exTitle1 + " this extended time?",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonText: 'Yes, ' + exTitle,
+				cancelButtonText: 'Cancel'
+			}, function() {
+				var oId = <?php echo $order['id']; ?>;
+				$('#loader').removeClass('hide');
+				$.ajax({
+					url: "<?= site_url() . 'users/acceptExtenedTime'; ?>",
+					data: {
+						type: exType,
+						oId: oId
+					},
+					type: "POST",
+					dataType: 'json',
+					success: function(data) {
+						$('#loader').addClass('hide');
+						if (data.status == 1) {
+							window.location.reload();
+						} else if (data.status == 2) {
+							swal({
+								title: "Login Required!",
+								text: "If you want to " + exTitle1 + " this extended time then please login first!",
+								type: "warning"
+							}, function() {
+								window.location.href = '<?php echo base_url() . 'login'; ?>';
+							});
+						} else {
+							alert('Something is wrong. Please try again!!!');
+						}
+					},
+					error: function(e) {
+						console.log(JSON.stringify(e));
+					}
+				});
+			});
+		}
+
+		function selectMilesForDispute(e, id) {
+			var mId = e.value;
+			var total = 0;
+			$('.dispute_milestones').each((index, item) => {
+				if ($(item).is(':checked')) {
+					let amount = $(item).data('amount');
+					total += amount;
+				}
+			})
+			$('.totalDispute' + id).html(total);
+			$('#offer_amount' + id).attr('max', total);
+		}
+
+		function selectMilesForCancel(e, id) {
+			var mId = e.value;
+			var total = 0;
+
+			$('.cancellation_milestones').each((index, item) => {
+				if ($(item).is(':checked')) {
+					let amount = $(item).data('amount');
+					total += amount;
+				}
+			});
+
+			console.log(total);
+
+			$('.totalCancellation' + id).html('<i class="fa fa-gbp"></i>' + total);
+		}
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.3.1/index.min.js"></script>
-	

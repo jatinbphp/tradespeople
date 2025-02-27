@@ -198,7 +198,7 @@ class Custom_offer extends CI_Controller
 		$name = $this->input->post('name');		
 		$delivery = $this->input->post('delivery');		
 		$price = $this->input->post('price');		
-		$delivery = $this->input->post('delivery');		
+		$delivery = $this->input->post('delivery');		 
 		$description = $this->input->post('description');		
 		$price_per_type = $this->input->post('price_per_type');	
 		$quantity = $this->input->post('quantity');	

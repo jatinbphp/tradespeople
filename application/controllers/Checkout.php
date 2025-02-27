@@ -79,9 +79,14 @@ class Checkout extends CI_Controller
 		$setting = $this->common_model->get_single_data('admin',array('id'=>1));
 		$data['service_fee'] = $setting['service_fees'];
 		$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
-
+		
+		
 		if(isset($_GET['offer']) && !empty($_GET['offer'])){
 			$order = $this->common_model->get_single_data('service_order',array('order_id'=>'#'.$_GET['offer']));
+			
+			$sId = empty($order) ? $cartData['service_id'] : $order['service_id'];
+			$data['service_details'] = $this->common_model->GetSingleData('my_services',['id'=>$sId]);
+		
 			$serviceQty = $order['service_qty'];
 			$exsId = $cartData['ex_services'];
 

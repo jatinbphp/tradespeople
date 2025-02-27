@@ -1,4 +1,5 @@
 <?php 
+
     $total_deliveries1 = 0;
       foreach($list['order_submit_conversation'] as $clist1) {
           if($clist1['status'] == 'delivered') {
@@ -385,7 +386,8 @@
           }
         ?>
 
-        <?php if($this->session->userdata('type')==2 && $mList['status'] == 'delivered' && $ckey == 0):?>
+        <?php
+        if($this->session->userdata('type')==2 && $mList['status'] == 'delivered' && $ckey == 0):?>
           <form id="approved_order_form_<?php echo $mList['id']; ?>" style="width:100%">
             <input type="hidden" name="order_id" value="<?php echo $order['id']?>">
             <input type="hidden" name="milestone_id" value="<?php echo $mList['milestone_id']?>">
@@ -395,21 +397,44 @@
             <!-- <textarea rows="7" class="form-control" id="approve-decription" name="approve_decription"></textarea> -->
           </form>
 
-          <?php if($order['status'] != 'disputed'){ ?>
-          <p class="alert alert-info mb-0">
-            <i class="fa fa-info-circle"></i> 
-            Keep in mind that you have untill <?php echo $newTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
-          </p>
+          <?php if($order['is_custom'] == 1 && $order['order_type'] == "milestone"): ?>
 
-          <div id="approved-btn-div">
-            <button type="button" id="approved-order-btn" data-id="<?php echo $mList['id']; ?>" class="btn btn-warning mr-3 approved-order-btn">
-              Approve
-            </button>
-            <button type="button" id="modification-btn" class="btn btn-default">
-              Request Modification
-            </button>
-          </div>
-          <?php } ?>
+            <?php if($list['service_status'] == 'delivered'): ?>
+            <p class="alert alert-info mb-0">
+              <i class="fa fa-info-circle"></i> 
+              Keep in mind that you have untill <?php echo $newTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
+            </p>
+
+            <div id="approved-btn-div">
+              <button type="button" id="approved-order-btn" data-id="<?php echo $mList['id']; ?>" class="btn btn-warning mr-3 approved-order-btn">
+                Approve
+              </button>
+              <button type="button" id="modification-btn" class="btn btn-default">
+                Request Modification
+              </button>
+            </div>
+            <?php endif; ?>
+
+          <?php else: ?>
+
+            <?php if($order['status'] != 'disputed'){ ?>
+            <p class="alert alert-info mb-0">
+              <i class="fa fa-info-circle"></i> 
+              Keep in mind that you have untill <?php echo $newTime; ?> to approve this delivery or request a revision. After this date, the order will be finalized and marked as complete.
+            </p>
+
+            <div id="approved-btn-div">
+              <button type="button" id="approved-order-btn" data-id="<?php echo $mList['id']; ?>" class="btn btn-warning mr-3 approved-order-btn">
+                Approve
+              </button>
+              <button type="button" id="modification-btn" class="btn btn-default">
+                Request Modification
+              </button>
+            </div>
+            <?php } ?>
+
+          <?php endif; ?>
+          
 
           <div id="modification-div" style="display:none; width: 100%;">
             <form id="request_modification_form_<?php echo $mList['id']; ?>">

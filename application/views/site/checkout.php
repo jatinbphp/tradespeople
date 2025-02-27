@@ -308,8 +308,8 @@ if ($remaining_amount >= $min && $remaining_amount <= $max) {
 									<?php 
 										$image_path = FCPATH . 'img/services/' . ($service_details['image'] ?? ''); 
 										$mime_type = get_mime_by_extension($image_path);
-		                $is_image = strpos($mime_type, 'image') !== false;
-		                $is_video = strpos($mime_type, 'video') !== false;
+										$is_image = strpos($mime_type, 'image') !== false;
+										$is_video = strpos($mime_type, 'video') !== false;
 									?>
 									<?php if (file_exists($image_path) && $service_details['image']): ?>
 										<?php if ($is_image): ?>
