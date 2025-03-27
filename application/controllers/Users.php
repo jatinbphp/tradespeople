@@ -4003,7 +4003,7 @@ class Users extends CI_Controller
 				}
 
 
-				echo json_encode(['status' => 1, 'message' => 'Order Submited']);
+				echo json_encode(['status' => 1, 'message' => 'Your work has been successfully delivered.']);
 			}else{
 				echo json_encode(['status' => 0, 'message' => 'Order Not Submitted']);
 			}
@@ -4089,7 +4089,7 @@ class Users extends CI_Controller
 					$run2 = $this->common_model->insert('notification', $insertn);
 				}
 	
-				echo json_encode(['status' => 1, 'message' => 'Order Submited']);
+				echo json_encode(['status' => 1, 'message' => 'Your work has been successfully delivered.']);
 			} else {
 				echo json_encode(['status' => 0, 'message' => 'Order Not Submitted']);
 			}
@@ -4784,7 +4784,7 @@ class Users extends CI_Controller
 				$days = $order['delivery'];
 				$currentDate = new DateTime($statusHistory['created_at']);
 				$currentDate->modify("+$days days");
-				$delivery_date = $currentDate->format('D jS F, Y H:i');
+				$delivery_date = $currentDate->format('l, jS F Y, H:i');
 				$currentDate1 = new DateTime();
 				$interval = $currentDate1->diff($currentDate);
 				$rDays = $interval->days;
@@ -4796,7 +4796,7 @@ class Users extends CI_Controller
 				$days = $package_data[$order['package_type']]['days'];
 				$currentDate = new DateTime($statusHistory['created_at']);
 				$currentDate->modify("+$days days");
-				$delivery_date = $currentDate->format('D jS F, Y H:i');
+				$delivery_date = $currentDate->format('l, jS F Y, H:i');
 				$currentDate1 = new DateTime();
 				$interval = $currentDate1->diff($currentDate);
 
@@ -4814,7 +4814,7 @@ class Users extends CI_Controller
 				$currentDateTime = new DateTime();
 				$interval = $currentDateTime->diff($targetDateTime);
 
-				$expected_delivery_date = $targetDateTime->format('D jS F, Y H:i');
+				$expected_delivery_date = $targetDateTime->format('l, jS F Y, H:i');
 
 				$rDays = $interval->days;
 				$rHours = $interval->h;

@@ -615,18 +615,35 @@
 																</span>
 															<?php else: ?>
 																<?php if (!in_array($order['status'], ['completed', 'cancelled'])): ?>
+																	<?php if ($this->session->userdata('type') == 1): ?>
 																	<span>
-																		<h4 style="color: #000;">Your order is now in the works</h4>
+																		<h4 style="color: #000;">Service Delivery Pending</h4>
 																		<span class="text-muted">
-																			We notified <?php echo $tradesman['trading_name']; ?> about your order. <br>
-
+																			Your client has completed payment and is awaiting your service delivery. Expected delivery:
 																			<?php if ($order['is_exten_delivery_accepted'] == 1): ?>
-																				You should receive your delivery by <b class="text-b"><?php echo $expected_delivery_date; ?></b>
+																				<b class="text-b"><?php echo $expected_delivery_date; ?></b>
 																			<?php else: ?>
-																				You should receive your delivery by <b class="text-b"><?php echo $delivery_date; ?></b>
+																				<b class="text-b"><?php echo $delivery_date; ?></b>
 																			<?php endif; ?>
+																			Feel free to reach out if you have any questions.
 																		</span>
 																	</span>
+																	<?php else: ?>
+																	<span>
+																		<h4 style="color: #000;">Your order is now in progress</h4>
+																		<span class="text-muted">
+																			<?php echo $tradesman['trading_name']; ?> has been notified about your order, and your service is set to be delivered by
+
+																			<?php if ($order['is_exten_delivery_accepted'] == 1): ?>
+																				<b class="text-b"><?php echo $expected_delivery_date; ?></b>
+																			<?php else: ?>
+																				<b class="text-b"><?php echo $delivery_date; ?></b>
+																			<?php endif; ?>
+																			<br>
+																			You can reach out to the PRO by clicking the chat button
+																		</span>
+																	</span>
+																	<?php endif; ?>
 																<?php elseif ($order['status'] == 'cancelled' && $order['is_cancel'] == 1): ?>
 																	<span>
 																		<h4 style="color: #000;">Your order has been cancelled</h4>
@@ -767,11 +784,11 @@
 													<div class="timeline-item-description">
 														<?php if (!empty($order['extended_date']) && !empty($order['extended_time']) && $order['is_exten_delivery_accepted'] == 0): ?>
 															<h5>Delivery time extension requested</h5>
-															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?> <?php echo $expected_delivery_date; ?></h5>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>: <?php echo $expected_delivery_date; ?></h5>
 														<?php elseif ($order['is_exten_delivery_accepted'] == 1): ?>
-															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?> <?php echo $expected_delivery_date; ?></h5>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>: <?php echo $expected_delivery_date; ?></h5>
 														<?php else: ?>
-															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?> <?php echo $delivery_date; ?></h5>
+															<h5>Expected <?php echo $order['is_custom'] == 0 && $order['is_accepted'] == 0 ? 'delivery' : 'response'; ?>: <?php echo $delivery_date; ?></h5>
 														<?php endif; ?>
 
 														<ul class="delivery-time">
@@ -1345,12 +1362,21 @@
 											<div class="text-center">
 												<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
 											</div>
+											<?php if ($this->session->userdata('type') == 1): ?>
 											<div class="text-center">
 												<a href="<?php echo base_url('profile/' . $tradesman['id']); ?>">
 													<?php echo $tradesman['trading_name']; ?>
 												</a>
-												should deliver this order as soon as
+												You are required to deliver this order as soon as possible.
 											</div>
+											<?php else: ?>
+											<div class="text-center">
+												<a href="<?php echo base_url('profile/' . $tradesman['id']); ?>">
+													<?php echo $tradesman['trading_name']; ?>
+												</a>
+												Should deliver this order as soon as possible.
+											</div>
+											<?php endif; ?>
 										</div>
 									<?php else: ?>
 										<?php if (empty($all_conversation)): ?>
@@ -1358,12 +1384,18 @@
 												<div class="text-center">
 													<img src="<?php echo base_url(); ?>img/delivery_icon.png" style="width: 20%;">
 												</div>
+												<?php if ($this->session->userdata('type') == 1): ?>
+												<div class="text-center">
+													You are required to deliver this order by <?php echo $delivery_date; ?>.
+												</div>
+												<?php else: ?>
 												<div class="text-center">
 													<a href="<?php echo base_url('profile/' . $tradesman['id']); ?>">
 														<?php echo $tradesman['trading_name']; ?>
 													</a>
-													should deliver this order as soon as
+													is expected to deliver this order by <?php echo $delivery_date; ?>.
 												</div>
+												<?php endif; ?>
 											</div>
 										<?php endif; ?>
 
@@ -1962,7 +1994,7 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<div class="modal-body">
-					<h3 class="sharing-title" style="margin-top:0!important">Extened Delivery Time</h3>
+					<h3 class="sharing-title" style="margin-top:0!important">Delivery time extension</h3>
 					<div class="sharing-description">
 						<p>Choose your date & time</p>
 					</div>
